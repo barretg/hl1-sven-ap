@@ -47,7 +47,7 @@ the panel labels themselves rather than from the map names.
 Sven Co-op exposes a real server-plugin API (AngelScript) with the exact hooks
 this needs to function. It also already ships the full campaign as co-op maps and a hub map
 with a console per chapter. Vanilla Half-Life has a separate, engine-level effort
-at [GoldSRC-Archipelago/halflife-archipelago](https://github.com/GoldSRC-Archipelago/halflife-archipelago).
+at [Half-Life Updated AP](https://github.com/randomcodegen/halflife-updated_ap).
 
 ## Layout
 
