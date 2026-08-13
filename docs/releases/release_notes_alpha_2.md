@@ -3,7 +3,6 @@ Note that this is a very early build of the apworld. Please report any problems 
 
 Sven Co-op's Half-Life campaign is meant to be played in multiplayer. No support will be offered to players attempting to circumvent this restriction.
 
-
 ## What's New
 * Added Blue Shift Campaign
   * NOTE: Host must own the game.
@@ -22,6 +21,14 @@ Sven Co-op's Half-Life campaign is meant to be played in multiplayer. No support
 * Console variants of all commands using `.ap` or `.ap_<cmd>`
 * Updated weapon locations and added locations for HEV Suit pickups in all campaigns that have an HEV Suit equivalent
 * Universal Tracker integration
+
+## Setup
+As the game host:
+Install the apworld by downloading and double clicking (or placing it in your custom_worlds folder)
+Open the Half-Life (Sven Co-op) Client and select your install directory
+Run /install in the client
+Connect the client to the multiworld, and open a server on the map -sp_campaign_lobby
+Once your friends are in game with you (they can just join!), you can type !ap to see unlocked missions in the console, and !warp to change maps to the unlocked mission. (The in-game panels also work)
 
 ## Known Issues
 * General instability: expect some crashing or other random issues

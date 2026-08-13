@@ -1,5 +1,5 @@
 {
- "data_version": "13d591d76c0d",
+ "data_version": "5972553447c7",
  "campaigns": [
   {
    "key": "half_life",
@@ -687,8 +687,7 @@
    "name": "Worlds Collide",
    "maps": [
     "of6a4",
-    "of6a4b",
-    "of6a5"
+    "of6a4b"
    ],
    "index": 29,
    "campaign": "opposing_force",
@@ -699,7 +698,7 @@
     ]
    },
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": true
   },
   {
    "key": "bs_living_quarters",
@@ -4569,16 +4568,6 @@
    ]
   },
   {
-   "id": 7720230,
-   "name": "Worlds Collide - Part 3 Reached",
-   "chapter": "of_worlds_collide",
-   "map": "of6a5",
-   "trigger": {
-    "type": "map_reached",
-    "map": "of6a5"
-   }
-  },
-  {
    "id": 7720231,
    "name": "Living Quarters Outbound - Part 1 Reached",
    "chapter": "bs_living_quarters",
@@ -6665,14 +6654,14 @@
    }
   },
   {
-   "id": 7720343,
+   "id": 7720436,
    "name": "Worlds Collide - Complete",
    "chapter": "of_worlds_collide",
-   "map": "of6a5",
+   "map": "of6a4b",
    "trigger": {
     "type": "chapter_complete",
     "chapter": "of_worlds_collide",
-    "map": "of6a5"
+    "map": "of6a4b"
    }
   },
   {

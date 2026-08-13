@@ -10,7 +10,7 @@
 #   R|<classname>|<campaign,...>   grantable only on those campaigns' maps
 #   D|<data version>               must match the client's, or ids differ
 V|3
-D|13d591d76c0d
+D|5972553447c7
 M|half_life|Half-Life|nihilanth
 M|opposing_force|Opposing Force|of_worlds_collide
 M|blue_shift|Blue Shift|bs_leap_of_faith
@@ -44,7 +44,7 @@ C|25|of_vicarious_reality|Vicarious Reality|of3a4,of3a5,of3a6|0|opposing_force||
 C|26|of_pit_worms_nest|Pit Worm's Nest|of4a1,of4a2,of4a3,of4a4|0|opposing_force||0
 C|27|of_foxtrot_uniform|Foxtrot Uniform|of5a1,of5a2,of5a3,of5a4|0|opposing_force||0
 C|28|of_the_package|The Package|of6a1,of6a2,of6a3|0|opposing_force||0
-C|29|of_worlds_collide|Worlds Collide|of6a4,of6a4b,of6a5|1|opposing_force||0
+C|29|of_worlds_collide|Worlds Collide|of6a4,of6a4b|1|opposing_force||1
 C|30|bs_living_quarters|Living Quarters Outbound|ba_tram1,ba_tram2,ba_tram3|0|blue_shift||0
 C|31|bs_insecurity|Insecurity|ba_security1,ba_security2,ba_maint,ba_elevator|0|blue_shift||0
 C|32|bs_duty_calls|Duty Calls|ba_canal1,ba_canal1b,ba_canal2,ba_canal3|0|blue_shift||0
@@ -289,7 +289,6 @@ L|7720226|of6a4|map_reached||Worlds Collide - Part 1 Reached
 L|7720227|of6a4b|map_reached||Worlds Collide - Part 2 Reached
 L|7720228|of6a4b|charger|func_healthcharger:*109|Worlds Collide - Health Charger (Part 2)|-1860 -1088 -488
 L|7720229|of6a4b|charger|func_recharge:*110|Worlds Collide - HEV Charger (Part 2)|-1860 -1136 -488
-L|7720230|of6a5|map_reached||Worlds Collide - Part 3 Reached
 L|7720231|ba_tram1|map_reached||Living Quarters Outbound - Part 1 Reached
 L|7720232|ba_tram2|map_reached||Living Quarters Outbound - Part 2 Reached
 L|7720233|ba_tram3|map_reached||Living Quarters Outbound - Part 3 Reached
@@ -440,7 +439,7 @@ L|7720341|of3a6|chapter_complete|of_vicarious_reality|Vicarious Reality - Comple
 L|7720342|of4a4|chapter_complete|of_pit_worms_nest|Pit Worm's Nest - Complete
 L|7720362|of5a4|chapter_complete|of_foxtrot_uniform|Foxtrot Uniform - Complete
 L|7720416|of6a3|chapter_complete|of_the_package|The Package - Complete
-L|7720343|of6a5|chapter_complete|of_worlds_collide|Worlds Collide - Complete
+L|7720436|of6a4b|chapter_complete|of_worlds_collide|Worlds Collide - Complete
 L|7720344|ba_tram3|chapter_complete|bs_living_quarters|Living Quarters Outbound - Complete
 L|7720345|ba_elevator|chapter_complete|bs_insecurity|Insecurity - Complete
 L|7720346|ba_canal3|chapter_complete|bs_duty_calls|Duty Calls - Complete

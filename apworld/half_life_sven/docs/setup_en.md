@@ -114,7 +114,7 @@ will fail the moment someone warps into it, so check before you generate.
 | Campaign | Missions | Maps it needs | Check for |
 | --- | --- | --- | --- |
 | Half-Life | 18 | `hl_c00` … `hl_c18` | `svencoop/maps/hl_c00.bsp` |
-| Opposing Force | 13 | `of0a0` … `of6a5` | `svencoop/maps/of0a0.bsp` |
+| Opposing Force | 12 | `of0a0` … `of6a4b` | `svencoop/maps/of0a0.bsp` |
 | Blue Shift | 7 | `ba_tram1` … `ba_outro` | `svencoop/maps/ba_tram1.bsp` |
 | They Hunger | 3 | `th_ep1_00` … `th_ep3_07` | `svencoop/maps/th_ep1_00.bsp` |
 

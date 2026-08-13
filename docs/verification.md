@@ -69,6 +69,12 @@ that have never run in-game at all.
   completion, the goal and the trip back to the hub should all land after the
   map's `game_end`, from the next map load if the server cycled somewhere else.
   Leaving early with `!hub` or `!warp` must credit nothing.
+- **Worlds Collide is credited when it ends too.** This port never plays
+  `of6a5`: `of6a4b` ends the campaign itself, at the button by the guard before
+  the descent, with "Sven Co-op Opposing Force: thanks for playing!" and a
+  `game_end` five seconds later. Arriving on `of6a4b` must send its "Part 2
+  Reached" and nothing more; press the button and the completion, the goal and
+  the return to the hub should all land after the map ends.
 - **The counts stay separate.** With `missions_required: 1` and
   `opposing_force_missions_required: 9`, one Half-Life mission opens Nihilanth
   and does nothing at all for Worlds Collide.

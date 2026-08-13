@@ -107,10 +107,17 @@ class Campaign:
     # when the player arrives on it.
     #
     # A finale normally ends in a `game_end` that never changes level, so
-    # arriving on its last map is the only moment the plugin can see -- fine for
-    # a multi-map finale, wrong for a one-map one, where arriving is the whole
-    # mission. Blue Shift's `ba_outro` is the case that broke: connecting to it
-    # cleared the campaign before a second of it had played.
+    # arriving on its last map is the only moment the plugin can see. That reads
+    # fairly where the last map is the ending -- Half-Life's `hl_c18` is what
+    # plays once Nihilanth is dead -- and wrongly in two other shapes:
+    #
+    #   - the finale that *is* one map. Blue Shift's `ba_outro`: connecting to it
+    #     cleared the campaign before a second of it had played.
+    #   - the finale whose last map is a level you still have to fight through,
+    #     because the map after it is unreachable in this port. Opposing Force's
+    #     `of6a4b` ends the campaign itself rather than travelling to `of6a5`.
+    #
+    # Both are armed on arrival instead and credited when the map really ends.
     endgame_chapters: list[str] = field(default_factory=list)
 
 
@@ -242,7 +249,14 @@ OPPOSING_FORCE = Campaign(
         ("of_pit_worms_nest", "Pit Worm's Nest", ["of4a1", "of4a2", "of4a3", "of4a4"]),
         ("of_foxtrot_uniform", "Foxtrot Uniform", ["of5a1", "of5a2", "of5a3", "of5a4"]),
         ("of_the_package", "The Package", ["of6a1", "of6a2", "of6a3"]),
-        ("of_worlds_collide", "Worlds Collide", ["of6a4", "of6a4b", "of6a5"]),
+        # `of6a5`, the Gene Worm fight, is left out for the same reason as
+        # `of4a5`: this port does not play it. `of6a4b` still carries retail's
+        # `trigger_changelevel` to it, but the func_button by the guard -- the one
+        # that should open the descent -- fires a `trigger_relay` instead, which
+        # puts up "Sven Co-op Opposing Force: thanks for playing!" and then a
+        # `game_end` five seconds later. That is where the campaign stops, so
+        # `of6a5` is a map with no way in, and a goal sitting on it never fired.
+        ("of_worlds_collide", "Worlds Collide", ["of6a4", "of6a4b"]),
     ],
     # Read off the hub's own panels, in order:
     #
@@ -262,6 +276,12 @@ OPPOSING_FORCE = Campaign(
         "of_ch07", "of_ch08", "of_ch09", "of_ch10", "of_ch11",
     ],
     goal_chapter="of_worlds_collide",
+    # With `of6a5` gone the finale ends on `of6a4b`, and arriving there is not
+    # finishing it -- there is a whole map to fight through first. The `game_end`
+    # on the button is the real ending and no changelevel follows it, so this is
+    # credited the same way Blue Shift's outro is: armed on arrival, sent once the
+    # map has actually ended.
+    endgame_chapters=["of_worlds_collide"],
     # Incoming, the osprey ride in: Opposing Force's answer to the tram ride,
     # and what `exclude_intro_missions` drops. Boot Camp is the training course
     # rather than the intro -- Half-Life's equivalent, the Hazard Course, is not

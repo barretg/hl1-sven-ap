@@ -781,20 +781,19 @@ def test_the_paired_mission_reaches_the_chapters(campaign: dict) -> None:
         assert by_key[entry["goal_chapter"]].get("requires_chapter", "") == paired
 
 
-def test_endgame_missions_are_one_map_finales(campaign: dict) -> None:
-    """Waiting for the map to end is for a mission that *is* its last map.
+def test_endgame_missions_are_finales(campaign: dict) -> None:
+    """Waiting for the map to end is only ever a finale's business.
 
-    Anywhere else the ordinary rules already fire at the right moment, and
-    arming the marker would only add a way to miss a completion.
+    Every other mission is finished by leaving its last map, which the plugin
+    already sees; arming the marker there would only add a way to miss a
+    completion. Two finale shapes need it -- a one-map finale, and one whose last
+    map ends the campaign instead of travelling on -- so the map count is not
+    the test.
     """
     for chapter in campaign["chapters"]:
         if not chapter.get("complete_on_endgame"):
             continue
         assert chapter["is_goal"], f"{chapter['key']} is not a finale"
-        assert len(chapter["maps"]) == 1, (
-            f"{chapter['key']} has more than one map, so arriving on its last is"
-            " already a fair reading of finishing it"
-        )
 
 
 def test_checkdata_carries_the_pairing_and_the_endgame_flag(
