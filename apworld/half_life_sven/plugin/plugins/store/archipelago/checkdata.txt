@@ -10,7 +10,7 @@
 #   R|<classname>|<campaign,...>   grantable only on those campaigns' maps
 #   D|<data version>               must match the client's, or ids differ
 V|3
-D|5972553447c7
+D|1ecd59a83722
 M|half_life|Half-Life|nihilanth
 M|opposing_force|Opposing Force|of_worlds_collide
 M|blue_shift|Blue Shift|bs_leap_of_faith
@@ -102,14 +102,13 @@ L|7720056|hl_c02_a1|charger|func_healthcharger:*119|Unforeseen Consequences - He
 L|7720058|hl_c02_a1|charger|func_healthcharger:*278|Unforeseen Consequences - Health Charger 2 (Part 1)|2153 1968 865
 L|7720057|hl_c02_a1|charger|func_healthcharger:*277|Unforeseen Consequences - Health Charger 3 (Part 1)|2041 3564 848
 L|7720004|hl_c02_a2|map_reached||Unforeseen Consequences - Part 2 Reached
-L|7720059|hl_c02_a2|charger|func_healthcharger:*1|Unforeseen Consequences - Health Charger 1 (Part 2)|-2455 -2128 1377
-L|7720062|hl_c02_a2|charger|func_healthcharger:*85|Unforeseen Consequences - Health Charger 2 (Part 2)|-995 -2504 1372
-L|7720060|hl_c02_a2|charger|func_healthcharger:*68|Unforeseen Consequences - Health Charger 3 (Part 2)|-1941 -2940 1520
-L|7720061|hl_c02_a2|charger|func_healthcharger:*84|Unforeseen Consequences - Health Charger 4 (Part 2)|-459 -3204 1352
-L|7720064|hl_c02_a2|charger|func_healthcharger:*170|Unforeseen Consequences - Health Charger 5 (Part 2)|1310 -1443 -927
-L|7720063|hl_c02_a2|charger|func_healthcharger:*161|Unforeseen Consequences - Health Charger 6 (Part 2)|1836 -715 -1142
-L|7720066|hl_c02_a2|charger|func_healthcharger:*247|Unforeseen Consequences - Health Charger 7 (Part 2)|-1252 913 -1451
-L|7720065|hl_c02_a2|charger|func_healthcharger:*231|Unforeseen Consequences - Health Charger 8 (Part 2)|924 265 -1432
+L|7720062|hl_c02_a2|charger|func_healthcharger:*85|Unforeseen Consequences - Health Charger 1 (Part 2)|-995 -2504 1372
+L|7720060|hl_c02_a2|charger|func_healthcharger:*68|Unforeseen Consequences - Health Charger 2 (Part 2)|-1941 -2940 1520
+L|7720061|hl_c02_a2|charger|func_healthcharger:*84|Unforeseen Consequences - Health Charger 3 (Part 2)|-459 -3204 1352
+L|7720064|hl_c02_a2|charger|func_healthcharger:*170|Unforeseen Consequences - Health Charger 4 (Part 2)|1310 -1443 -927
+L|7720063|hl_c02_a2|charger|func_healthcharger:*161|Unforeseen Consequences - Health Charger 5 (Part 2)|1836 -715 -1142
+L|7720066|hl_c02_a2|charger|func_healthcharger:*247|Unforeseen Consequences - Health Charger 6 (Part 2)|-1252 913 -1451
+L|7720065|hl_c02_a2|charger|func_healthcharger:*231|Unforeseen Consequences - Health Charger 7 (Part 2)|924 265 -1432
 L|7720005|hl_c03|map_reached||Office Complex - Reached
 L|7720071|hl_c03|charger|func_healthcharger:*508|Office Complex - Health Charger 1|1039 14 -509
 L|7720068|hl_c03|charger|func_healthcharger:*68|Office Complex - Health Charger 2|1855 -452 -197

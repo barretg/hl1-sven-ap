@@ -553,6 +553,33 @@ RESTRICTED_CLASSNAMES: dict[str, list[str]] = {
     for classname in classnames
 }
 
+# --- Unreachable placements ------------------------------------------------
+
+# Chargers the BSP places that no player in this port can get to.
+#
+# Valve cut a chapter into maps by building the seam room into both halves, and
+# single-player Half-Life lets you walk back through a transition into the copy.
+# Sven Co-op's transitions are one way, so the copy on the far side is sealed:
+# you arrive behind the wall it is on and nothing takes you back. The entity is
+# still in the map, the derived table still finds it, and the check it produced
+# could never be sent -- which under `accessibility: full` holds the whole seed
+# on a location nobody can collect.
+#
+# Keyed `{map: {classname:model, ...}}`, exactly how a charger's location id is
+# keyed, so dropping one here leaves every other id untouched. The chargers the
+# map keeps *are* renumbered, because they are numbered by distance from the
+# spawn and the display name is all that depends on that.
+#
+# This cannot be derived. Whether a room is walled off is geometry, not entity
+# data, so every entry here comes from someone playing the map and finding they
+# could not reach it.
+UNREACHABLE_CHARGERS: dict[str, set[str]] = {
+    # Unforeseen Consequences, Part 2. `*1` is the health charger from the end of
+    # Part 1, rebuilt 451 units from where Part 2 drops you and on the other side
+    # of the wall you arrive behind.
+    "hl_c02_a2": {"func_healthcharger:*1"},
+}
+
 # What you start with when nothing randomises it: the crowbar, as it always was.
 # `random_starting_weapon` replaces the melee half with one of MELEE_STARTERS,
 # chosen per seed and sent through the snapshot rather than living here.

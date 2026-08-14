@@ -1,5 +1,5 @@
 {
- "data_version": "5972553447c7",
+ "data_version": "1ecd59a83722",
  "campaigns": [
   {
    "key": "half_life",
@@ -1830,25 +1830,8 @@
    }
   },
   {
-   "id": 7720059,
-   "name": "Unforeseen Consequences - Health Charger 1 (Part 2)",
-   "chapter": "unforeseen_consequences",
-   "map": "hl_c02_a2",
-   "trigger": {
-    "type": "charger",
-    "map": "hl_c02_a2",
-    "classname": "func_healthcharger",
-    "model": "*1"
-   },
-   "position": [
-    -2455,
-    -2128,
-    1377
-   ]
-  },
-  {
    "id": 7720062,
-   "name": "Unforeseen Consequences - Health Charger 2 (Part 2)",
+   "name": "Unforeseen Consequences - Health Charger 1 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -1865,7 +1848,7 @@
   },
   {
    "id": 7720060,
-   "name": "Unforeseen Consequences - Health Charger 3 (Part 2)",
+   "name": "Unforeseen Consequences - Health Charger 2 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -1882,7 +1865,7 @@
   },
   {
    "id": 7720061,
-   "name": "Unforeseen Consequences - Health Charger 4 (Part 2)",
+   "name": "Unforeseen Consequences - Health Charger 3 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -1899,7 +1882,7 @@
   },
   {
    "id": 7720064,
-   "name": "Unforeseen Consequences - Health Charger 5 (Part 2)",
+   "name": "Unforeseen Consequences - Health Charger 4 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -1916,7 +1899,7 @@
   },
   {
    "id": 7720063,
-   "name": "Unforeseen Consequences - Health Charger 6 (Part 2)",
+   "name": "Unforeseen Consequences - Health Charger 5 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -1933,7 +1916,7 @@
   },
   {
    "id": 7720066,
-   "name": "Unforeseen Consequences - Health Charger 7 (Part 2)",
+   "name": "Unforeseen Consequences - Health Charger 6 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -1950,7 +1933,7 @@
   },
   {
    "id": 7720065,
-   "name": "Unforeseen Consequences - Health Charger 8 (Part 2)",
+   "name": "Unforeseen Consequences - Health Charger 7 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {

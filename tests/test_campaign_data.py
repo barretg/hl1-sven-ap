@@ -796,6 +796,38 @@ def test_endgame_missions_are_finales(campaign: dict) -> None:
         assert chapter["is_goal"], f"{chapter['key']} is not a finale"
 
 
+def test_unreachable_chargers_are_gone_from_the_build(campaign: dict) -> None:
+    """Nothing hand-listed as unreachable may survive into the location table.
+
+    The table is keyed `classname:model` on a map, and a recompiled BSP can
+    renumber brush models -- at which point the entry silently stops matching and
+    the check comes back, unreachable and holding up the seed. Failing here is
+    how that gets noticed.
+    """
+    from campaign_layout import UNREACHABLE_CHARGERS
+
+    live = {
+        (entry["trigger"]["map"],
+         f"{entry['trigger']['classname']}:{entry['trigger']['model']}")
+        for entry in campaign["locations"]
+        if entry["trigger"]["type"] == "charger"
+    }
+    for map_name, keys in UNREACHABLE_CHARGERS.items():
+        for key in keys:
+            assert (map_name, key) not in live, (
+                f"{map_name} {key} is listed unreachable but still a location"
+            )
+
+
+def test_unreachable_chargers_name_a_map_the_seed_has(campaign: dict) -> None:
+    """An entry against a map no campaign contains is a typo doing nothing."""
+    from campaign_layout import UNREACHABLE_CHARGERS
+
+    maps = {m for chapter in campaign["chapters"] for m in chapter["maps"]}
+    for map_name in UNREACHABLE_CHARGERS:
+        assert map_name in maps, f"{map_name} is not a map any mission uses"
+
+
 def test_checkdata_carries_the_pairing_and_the_endgame_flag(
     campaign: dict, checkdata: list[list[str]]
 ) -> None:

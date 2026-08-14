@@ -16,6 +16,7 @@ import collections
 import hashlib
 import json
 import math
+from collections.abc import Iterable
 from pathlib import Path
 
 from bsp_entities import brush_model_centres, load_map
@@ -39,6 +40,7 @@ from campaign_layout import (
     OPTIONAL_ITEMS,
     REQUIREMENT_GROUPS,
     RESTRICTED_CLASSNAMES,
+    UNREACHABLE_CHARGERS,
     WEAPON_ALIASES,
     WEAPON_ANCHORS,
     UNRANDOMISED_WEAPON_LOCATIONS,
@@ -168,13 +170,22 @@ class IdRegistry:
         self.path.write_text(json.dumps(self.data, indent=1, sort_keys=True) + "\n",
                              encoding="utf-8")
 
-    def fingerprint(self) -> str:
-        """Short digest of the whole id map.
+    def fingerprint(self, live: Iterable[str] = ()) -> str:
+        """Short digest of the id map *and* of what this build actually uses.
 
         Written into both the apworld and the plugin's data file so a mismatched
         pair can be detected instead of quietly sending the wrong checks.
+
+        The registry alone is not enough, because it is append-only: *removing* a
+        location leaves it untouched, so the two halves agreed on the version
+        while disagreeing on the location set. That is the worse direction of the
+        mismatch -- an apworld holding a check the plugin will never send is a
+        seed nobody can finish -- and it went undetected when Unforeseen
+        Consequences lost its sealed-off charger.
         """
-        payload = json.dumps(self.data, sort_keys=True).encode("utf-8")
+        payload = json.dumps(
+            {"registry": self.data, "live": sorted(live)}, sort_keys=True
+        ).encode("utf-8")
         return hashlib.sha1(payload).hexdigest()[:12]
 
 
@@ -357,11 +368,17 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
             # before this stays exactly where it was.
             if "charger" in enabled:
                 spawn = spawn_point(ents)
+                # Sealed on the far side of a one-way transition, so the check
+                # could never be sent. Dropped before the numbering, which is
+                # why the map's remaining chargers close the gap rather than
+                # skipping a number.
+                unreachable = UNREACHABLE_CHARGERS.get(map_name, set())
                 for classname, display in CHARGER_CLASSNAMES.items():
                     found = [
                         e for e in ents
                         if e.get("classname", "") == classname
                         and brush_model_index(e) >= 0
+                        and f"{classname}:{e['model']}" not in unreachable
                     ]
 
                     # Numbered by how far they are from where players arrive,
@@ -579,8 +596,15 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
 
     items = build_items(chapters, entities, registry)
 
+    # What this build actually ships, so that dropping a location moves the
+    # version even though the append-only registry keeps its id forever.
+    live = (
+        [f"L{location['id']}" for location in builder.locations]
+        + [f"I{item['id']}" for item in items]
+    )
+
     return {
-        "data_version": registry.fingerprint(),
+        "data_version": registry.fingerprint(live),
         "campaigns": [
             {
                 "key": campaign.key,
