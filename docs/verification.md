@@ -90,12 +90,12 @@ that have never run in-game at all.
   `game_end` five seconds later. Arriving on `of6a4b` must send its "Part 2
   Reached" and nothing more; press the button and the completion, the goal and
   the return to the hub should all land after the map ends.
-- [ ] **The counts stay separate.** With `missions_required: 1` and
+- [x] **The counts stay separate.** With `missions_required: 1` and
   `opposing_force_missions_required: 9`, one Half-Life mission opens Nihilanth
   and does nothing at all for Worlds Collide.
 - [x] **A campaign left out of the seed** shows every one of its missions as "not in
   this seed" in `!ap`, and its consoles refuse with that message.
-- [ ] **Shared weapons still arrive without Half-Life.** On an Opposing Force only
+- [x] **Shared weapons still arrive without Half-Life.** On an Opposing Force only
   seed, receive the Shotgun and confirm you can pick one up. Attributing shared
   weapons to whichever campaign declared them left this seed with shotguns and no
   shotgun item, so every one of them was refused for the whole run.
@@ -106,8 +106,8 @@ With `random_starting_weapon: true` and Opposing Force or They Hunger enabled:
   weapon after a map change and after dying.
 - [x] **Crowbars are refused.** Walk over one: the `First Crowbar` check still sends,
   the weapon is not kept. That is the point of the swap.
-- [ ] **The rolled weapon never arrives as an item**, because it left the pool.
-- [ ] With `allow_restricted_starting_weapon: true` and They Hunger enabled, the
+- [x] **The rolled weapon never arrives as an item**, because it left the pool.
+- [x] With `allow_restricted_starting_weapon: true` and They Hunger enabled, the
   spanner becomes possible. If it rolls, expect to be **empty-handed outside They
   Hunger** until a weapon arrives: that is the documented rough edge, not a bug.
   Check the medkit is still there.
@@ -118,7 +118,7 @@ With `random_starting_weapon: true` and Opposing Force or They Hunger enabled:
 
 - [x] Prints to console grouped by mission and map, `[x]` for found. The chat line
   reports the same totals.
-- [ ] Charger lines are absent entirely on a `chargesanity: false` seed, rather than
+- [x] Charger lines are absent entirely on a `chargesanity: false` seed, rather than
   listed and permanently unticked. Same for a campaign left out.
 - [x] `!tracker hl_c03` and `!tracker office` both narrow it; the totals at the
   bottom stay for the whole seed.
@@ -249,7 +249,7 @@ first:
   level; a restart re-enters the same map and is not a transition.
 - [x] Type `!hub` from the middle of a mission. You should go back to the hub with
   **no** completion check, since you did not leave from the mission's last map.
-- [ ] Type `!hub` from a **one-map** mission you just warped into (Office Complex).
+- [x] Type `!hub` from a **one-map** mission you just warped into (Office Complex).
   Still no completion: a transition we asked for is never a completion, however
   far into the map you got.
 - [x] Finish a mission the campaign chains straight into another (Unforeseen
@@ -287,7 +287,7 @@ With `death_link_amnesty: 2`:
 - [x] Spend one death, change level, die again → the countdown continues from where
   it was. It lives in `ap_amnesty.txt`, not in a global.
 - [x] An inbound DeathLink must not spend amnesty; only local deaths do.
-- [ ] `/amnesty 0` in the client → the very next death goes straight out.
+- [x] `/amnesty 0` in the client → the very next death goes straight out.
 
 ### 4b. HEV suit
 
@@ -299,13 +299,13 @@ With `shuffle_hev_suit: true` and the item not yet received:
 - [x] Pick up a battery → armour stays 0.
 - [x] Hold use on an HEV charge panel → the number does not climb.
 - [x] An `Armor Battery` filler grant → chat says it arrived, armour stays 0.
-- [ ] Walk over the suit pickup in Anomalous Materials → refused, with the usual
+- [x] Walk over the suit pickup in Anomalous Materials → refused, with the usual
   "you have not found the HEV Suit yet".
 
 Then receive the item:
 
-- [ ] Chat announces the suit, and armour starts accumulating from all four sources.
-- [ ] Cross a map boundary → no second announcement.
+- [x] Chat announces the suit, and armour starts accumulating from all four sources.
+- [x] Cross a map boundary → no second announcement.
 
 With `shuffle_hev_suit: false`, armour must work from the first spawn. This used
 to be gated on an item the seed never sends, leaving the player with no armour
@@ -314,14 +314,14 @@ for the entire run.
 `shuffle_longjump: false` is deliberately *not* the same. The module is left to
 the campaign rather than granted, so on a seed with it off:
 
-- [ ] Anomalous Materials through Surface Tension: no long jump. Granting it here was
+- [x] Anomalous Materials through Surface Tension: no long jump. Granting it here was
   the bug this split fixed, and it looked like the module being permanently on.
-- [ ] Xen (`hl_c14`) and everything after: the module works, from
+- [x] Xen (`hl_c14`) and everything after: the module works, from
   the map's own `.cfg`, with nothing from us. The pickup itself is in Lambda
   Core (`hl_c13_a4`), the only map that has an `item_longjump` entity at all;
   `hl_c14`, `hl_c15`, `hl_c16_a1`-`a4` and `hl_c17` are the maps whose `.cfg`
   equips one.
-- [ ] Check `ungated=item_longjump` is in `ap_in.txt`, and that it is absent with
+- [x] Check `ungated=item_longjump` is in `ap_in.txt`, and that it is absent with
   `shuffle_longjump: true`.
 
 ### 5a. Weapon pickups
@@ -335,12 +335,12 @@ the campaign rather than granted, so on a seed with it off:
   hook does not fire for a duplicate, so this is the proximity sweep doing it.
 - [x] `First Crowbar`, the case that only the sweep can send, since the crowbar is
   never collectable. Stand next to Half-Life's crowbar and wait a second.
-- [ ] With `chargesanity: false`, charger presses send nothing and the client logs no
+- [x] With `chargesanity: false`, charger presses send nothing and the client logs no
   rejected checks.
 
 ### 5b. Chargers
 
-- [ ] **`ba_canal1`'s two health chargers.** They are built from one brush, `*196`,
+- [x] **`ba_canal1`'s two health chargers.** They are built from one brush, `*196`,
   with the second shifted 80 units, so they are the only pair in the game the
   model alone cannot tell apart. Drink from both: each must send its own check,
   and neither may send the other's. If the second sends nothing, the engine is
