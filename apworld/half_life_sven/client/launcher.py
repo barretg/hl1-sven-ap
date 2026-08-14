@@ -439,10 +439,35 @@ class HalfLifeSvenContext(SuperContext):
         await self.get_username()
         await self.send_connect()
 
+    def sync_completed_missions(self) -> None:
+        """Rebuild the finished-mission set from the server's checked locations.
+
+        The server is the authority on what has been checked, and a mission's
+        completion *is* a location. Tracking only the `COMPLETE` events the game
+        reports made the client disagree with the server the moment a location
+        was released or collected from anywhere else -- sending a mission's
+        completion check by hand did nothing in game, because the client had
+        never seen the event that normally accompanies it.
+
+        Additive rather than a replacement: the game may report a completion a
+        beat before the check round-trips, and dropping it in between would
+        re-seal a finale that had just opened.
+        """
+        self.completed_missions |= {
+            self.chapter_for_location(location_id)
+            for location_id in self.checked_locations
+            if self.is_mission_complete(location_id)
+        } - {""}
+
     def on_package(self, cmd: str, args: dict) -> None:
         # Universal Tracker does its work in here when its context is the base,
         # so it has to see every packet. Harmless otherwise.
         super().on_package(cmd, args)
+
+        # Any packet can move `checked_locations` on: RoomUpdate carries them
+        # after somebody releases, and ReceivedItems after a collect.
+        if cmd in ("Connected", "RoomUpdate", "ReceivedItems"):
+            self.sync_completed_missions()
 
         if cmd == "Connected":
             slot_data = args.get("slot_data", {})
@@ -495,11 +520,7 @@ class HalfLifeSvenContext(SuperContext):
                 asyncio.create_task(self.update_death_link(True), name="UpdateDeathLink")
 
             # A mission we already finished before a reconnect still counts.
-            self.completed_missions = {
-                self.chapter_for_location(location_id)
-                for location_id in self.checked_locations
-                if self.is_mission_complete(location_id)
-            } - {""}
+            self.sync_completed_missions()
 
             for campaign_key in sorted(self.missions_required_for):
                 name = self.campaign_names.get(campaign_key, campaign_key or "?")

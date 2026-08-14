@@ -298,12 +298,22 @@ void BridgePoll()
 
 	// A restarted client numbers its events from 1 again. Without this, every
 	// new event would look like one we had already applied and be ACKed away.
+	//
+	// It is also the only signal that the slot may have changed underneath us. A
+	// player who disconnects and connects a different slot is playing a different
+	// seed, and everything the plugin remembers about the last one -- which
+	// checks it has already sent, which mission it thinks is being played -- is
+	// now wrong. Reconnecting has to be a safe thing to do, so the whole run
+	// state goes and the lobby goes back to the hub.
 	if( szSession != g_szSession )
 	{
-		if( g_szSession.Length() > 0 )
-			APLog( "client session changed; resetting event sequence" );
+		bool bWasSession = g_szSession.Length() > 0;
+		if( bWasSession )
+			APLog( "client session changed; resetting run state" );
 		g_szSession = szSession;
 		g_State.lastEventSeq = 0;
+		if( bWasSession )
+			ResetRunState();
 	}
 
 	bool bWasConnected = g_State.connected;
@@ -329,6 +339,11 @@ void BridgePoll()
 	g_State.connected = bConnected;
 	g_State.deathLink = bDeathLink;
 	g_State.deathLinkAmnesty = iAmnesty;
+
+	// An item arriving opens a Suspension tier or class, and the locks are
+	// entity state rather than a question asked at press time -- so they have to
+	// be brought back in line here, not on the next map load.
+	SuspensionSyncLocks();
 
 	if( bConnected && !bWasConnected )
 		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,

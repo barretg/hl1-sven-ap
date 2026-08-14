@@ -43,7 +43,7 @@
     "targetname": "jugger",
     "classname": "trigger_hurt"
    },
-   "reveal": "display_jugger_rdr"
+   "reveal": "display_change"
   },
   "difficulties": [
    {
@@ -132,33 +132,37 @@
   "classes": [
    {
     "key": "soldier",
-    "name": "Soldier",
+    "name": "Assault",
     "targetname": "class_soldier",
     "signal": "soldier",
+    "portal": "pick_soldier",
     "map_gated": false,
     "grant": {}
    },
    {
     "key": "gl_soldier",
-    "name": "GL Soldier",
+    "name": "Grenadier",
     "targetname": "class_GL_soldier",
     "signal": "GL_soldier",
+    "portal": "pick_GLsoldier",
     "map_gated": false,
     "grant": {}
    },
    {
     "key": "shotty",
-    "name": "Shotgunner",
+    "name": "Pointman",
     "targetname": "class_shotty",
     "signal": "shotty",
+    "portal": "pick_shotty",
     "map_gated": false,
     "grant": {}
    },
    {
     "key": "saw",
-    "name": "SAW Gunner",
+    "name": "Support",
     "targetname": "class_saw",
     "signal": "saw",
+    "portal": "pick_saw",
     "map_gated": false,
     "grant": {}
    },
@@ -167,6 +171,7 @@
     "name": "Sniper",
     "targetname": "class_sniper",
     "signal": "sniper",
+    "portal": "pick_sniper",
     "map_gated": false,
     "grant": {}
    },
@@ -175,6 +180,7 @@
     "name": "Medic",
     "targetname": "class_medic",
     "signal": "medic",
+    "portal": "pick_medic",
     "map_gated": false,
     "grant": {}
    },
@@ -183,6 +189,7 @@
     "name": "Engineer",
     "targetname": "class_engineer",
     "signal": "engineer",
+    "portal": "pick_engi",
     "map_gated": false,
     "grant": {}
    },
@@ -191,6 +198,7 @@
     "name": "Juggernaut",
     "targetname": "class_jugger",
     "signal": "jugger",
+    "portal": "pick_jugger",
     "map_gated": true,
     "grant": {
      "health": 200,
@@ -251,32 +259,32 @@
  },
  "items": [
   {
-   "id": 7710079,
-   "name": "Suspension: Soldier",
+   "id": 7710088,
+   "name": "Suspension: Assault",
    "classification": "progression",
    "group": "suspension_class",
    "arcade": "suspension",
    "class": "soldier"
   },
   {
-   "id": 7710080,
-   "name": "Suspension: GL Soldier",
+   "id": 7710089,
+   "name": "Suspension: Grenadier",
    "classification": "progression",
    "group": "suspension_class",
    "arcade": "suspension",
    "class": "gl_soldier"
   },
   {
-   "id": 7710081,
-   "name": "Suspension: Shotgunner",
+   "id": 7710090,
+   "name": "Suspension: Pointman",
    "classification": "progression",
    "group": "suspension_class",
    "arcade": "suspension",
    "class": "shotty"
   },
   {
-   "id": 7710082,
-   "name": "Suspension: SAW Gunner",
+   "id": 7710091,
+   "name": "Suspension: Support",
    "classification": "progression",
    "group": "suspension_class",
    "arcade": "suspension",
@@ -338,7 +346,7 @@
   },
   {
    "id": 7720438,
-   "name": "Suspension: Easy - Section 1: The Approach (Soldier)",
+   "name": "Suspension: Easy - Section 1: The Approach (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -351,7 +359,7 @@
   },
   {
    "id": 7720439,
-   "name": "Suspension: Easy - Section 1: The Approach (GL Soldier)",
+   "name": "Suspension: Easy - Section 1: The Approach (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -364,7 +372,7 @@
   },
   {
    "id": 7720440,
-   "name": "Suspension: Easy - Section 1: The Approach (Shotgunner)",
+   "name": "Suspension: Easy - Section 1: The Approach (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -377,7 +385,7 @@
   },
   {
    "id": 7720441,
-   "name": "Suspension: Easy - Section 1: The Approach (SAW Gunner)",
+   "name": "Suspension: Easy - Section 1: The Approach (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -455,7 +463,7 @@
   },
   {
    "id": 7720447,
-   "name": "Suspension: Easy - Section 2: The APC (Soldier)",
+   "name": "Suspension: Easy - Section 2: The APC (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -468,7 +476,7 @@
   },
   {
    "id": 7720448,
-   "name": "Suspension: Easy - Section 2: The APC (GL Soldier)",
+   "name": "Suspension: Easy - Section 2: The APC (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -481,7 +489,7 @@
   },
   {
    "id": 7720449,
-   "name": "Suspension: Easy - Section 2: The APC (Shotgunner)",
+   "name": "Suspension: Easy - Section 2: The APC (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -494,7 +502,7 @@
   },
   {
    "id": 7720450,
-   "name": "Suspension: Easy - Section 2: The APC (SAW Gunner)",
+   "name": "Suspension: Easy - Section 2: The APC (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -572,7 +580,7 @@
   },
   {
    "id": 7720456,
-   "name": "Suspension: Easy - Section 3: The Helipad (Soldier)",
+   "name": "Suspension: Easy - Section 3: The Helipad (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -585,7 +593,7 @@
   },
   {
    "id": 7720457,
-   "name": "Suspension: Easy - Section 3: The Helipad (GL Soldier)",
+   "name": "Suspension: Easy - Section 3: The Helipad (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -598,7 +606,7 @@
   },
   {
    "id": 7720458,
-   "name": "Suspension: Easy - Section 3: The Helipad (Shotgunner)",
+   "name": "Suspension: Easy - Section 3: The Helipad (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -611,7 +619,7 @@
   },
   {
    "id": 7720459,
-   "name": "Suspension: Easy - Section 3: The Helipad (SAW Gunner)",
+   "name": "Suspension: Easy - Section 3: The Helipad (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -689,7 +697,7 @@
   },
   {
    "id": 7720465,
-   "name": "Suspension: Easy - Section 4: The Tank (Soldier)",
+   "name": "Suspension: Easy - Section 4: The Tank (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -702,7 +710,7 @@
   },
   {
    "id": 7720466,
-   "name": "Suspension: Easy - Section 4: The Tank (GL Soldier)",
+   "name": "Suspension: Easy - Section 4: The Tank (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -715,7 +723,7 @@
   },
   {
    "id": 7720467,
-   "name": "Suspension: Easy - Section 4: The Tank (Shotgunner)",
+   "name": "Suspension: Easy - Section 4: The Tank (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -728,7 +736,7 @@
   },
   {
    "id": 7720468,
-   "name": "Suspension: Easy - Section 4: The Tank (SAW Gunner)",
+   "name": "Suspension: Easy - Section 4: The Tank (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -806,7 +814,7 @@
   },
   {
    "id": 7720474,
-   "name": "Suspension: Easy - Section 5: The Apache (Soldier)",
+   "name": "Suspension: Easy - Section 5: The Apache (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -819,7 +827,7 @@
   },
   {
    "id": 7720475,
-   "name": "Suspension: Easy - Section 5: The Apache (GL Soldier)",
+   "name": "Suspension: Easy - Section 5: The Apache (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -832,7 +840,7 @@
   },
   {
    "id": 7720476,
-   "name": "Suspension: Easy - Section 5: The Apache (Shotgunner)",
+   "name": "Suspension: Easy - Section 5: The Apache (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -845,7 +853,7 @@
   },
   {
    "id": 7720477,
-   "name": "Suspension: Easy - Section 5: The Apache (SAW Gunner)",
+   "name": "Suspension: Easy - Section 5: The Apache (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -923,7 +931,7 @@
   },
   {
    "id": 7720483,
-   "name": "Suspension: Easy - Section 6: The Flag (Soldier)",
+   "name": "Suspension: Easy - Section 6: The Flag (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -936,7 +944,7 @@
   },
   {
    "id": 7720484,
-   "name": "Suspension: Easy - Section 6: The Flag (GL Soldier)",
+   "name": "Suspension: Easy - Section 6: The Flag (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -949,7 +957,7 @@
   },
   {
    "id": 7720485,
-   "name": "Suspension: Easy - Section 6: The Flag (Shotgunner)",
+   "name": "Suspension: Easy - Section 6: The Flag (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -962,7 +970,7 @@
   },
   {
    "id": 7720486,
-   "name": "Suspension: Easy - Section 6: The Flag (SAW Gunner)",
+   "name": "Suspension: Easy - Section 6: The Flag (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1040,7 +1048,7 @@
   },
   {
    "id": 7720492,
-   "name": "Suspension: Easy - Section 7: The Counterattack (Soldier)",
+   "name": "Suspension: Easy - Section 7: The Counterattack (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1053,7 +1061,7 @@
   },
   {
    "id": 7720493,
-   "name": "Suspension: Easy - Section 7: The Counterattack (GL Soldier)",
+   "name": "Suspension: Easy - Section 7: The Counterattack (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1066,7 +1074,7 @@
   },
   {
    "id": 7720494,
-   "name": "Suspension: Easy - Section 7: The Counterattack (Shotgunner)",
+   "name": "Suspension: Easy - Section 7: The Counterattack (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1079,7 +1087,7 @@
   },
   {
    "id": 7720495,
-   "name": "Suspension: Easy - Section 7: The Counterattack (SAW Gunner)",
+   "name": "Suspension: Easy - Section 7: The Counterattack (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1157,7 +1165,7 @@
   },
   {
    "id": 7720501,
-   "name": "Suspension: Easy - Section 8: The Assassin (Soldier)",
+   "name": "Suspension: Easy - Section 8: The Assassin (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1170,7 +1178,7 @@
   },
   {
    "id": 7720502,
-   "name": "Suspension: Easy - Section 8: The Assassin (GL Soldier)",
+   "name": "Suspension: Easy - Section 8: The Assassin (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1183,7 +1191,7 @@
   },
   {
    "id": 7720503,
-   "name": "Suspension: Easy - Section 8: The Assassin (Shotgunner)",
+   "name": "Suspension: Easy - Section 8: The Assassin (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1196,7 +1204,7 @@
   },
   {
    "id": 7720504,
-   "name": "Suspension: Easy - Section 8: The Assassin (SAW Gunner)",
+   "name": "Suspension: Easy - Section 8: The Assassin (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1274,7 +1282,7 @@
   },
   {
    "id": 7720510,
-   "name": "Suspension: Medium - Section 1: The Approach (Soldier)",
+   "name": "Suspension: Medium - Section 1: The Approach (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1287,7 +1295,7 @@
   },
   {
    "id": 7720511,
-   "name": "Suspension: Medium - Section 1: The Approach (GL Soldier)",
+   "name": "Suspension: Medium - Section 1: The Approach (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1300,7 +1308,7 @@
   },
   {
    "id": 7720512,
-   "name": "Suspension: Medium - Section 1: The Approach (Shotgunner)",
+   "name": "Suspension: Medium - Section 1: The Approach (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1313,7 +1321,7 @@
   },
   {
    "id": 7720513,
-   "name": "Suspension: Medium - Section 1: The Approach (SAW Gunner)",
+   "name": "Suspension: Medium - Section 1: The Approach (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1391,7 +1399,7 @@
   },
   {
    "id": 7720519,
-   "name": "Suspension: Medium - Section 2: The APC (Soldier)",
+   "name": "Suspension: Medium - Section 2: The APC (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1404,7 +1412,7 @@
   },
   {
    "id": 7720520,
-   "name": "Suspension: Medium - Section 2: The APC (GL Soldier)",
+   "name": "Suspension: Medium - Section 2: The APC (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1417,7 +1425,7 @@
   },
   {
    "id": 7720521,
-   "name": "Suspension: Medium - Section 2: The APC (Shotgunner)",
+   "name": "Suspension: Medium - Section 2: The APC (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1430,7 +1438,7 @@
   },
   {
    "id": 7720522,
-   "name": "Suspension: Medium - Section 2: The APC (SAW Gunner)",
+   "name": "Suspension: Medium - Section 2: The APC (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1508,7 +1516,7 @@
   },
   {
    "id": 7720528,
-   "name": "Suspension: Medium - Section 3: The Helipad (Soldier)",
+   "name": "Suspension: Medium - Section 3: The Helipad (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1521,7 +1529,7 @@
   },
   {
    "id": 7720529,
-   "name": "Suspension: Medium - Section 3: The Helipad (GL Soldier)",
+   "name": "Suspension: Medium - Section 3: The Helipad (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1534,7 +1542,7 @@
   },
   {
    "id": 7720530,
-   "name": "Suspension: Medium - Section 3: The Helipad (Shotgunner)",
+   "name": "Suspension: Medium - Section 3: The Helipad (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1547,7 +1555,7 @@
   },
   {
    "id": 7720531,
-   "name": "Suspension: Medium - Section 3: The Helipad (SAW Gunner)",
+   "name": "Suspension: Medium - Section 3: The Helipad (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1625,7 +1633,7 @@
   },
   {
    "id": 7720537,
-   "name": "Suspension: Medium - Section 4: The Tank (Soldier)",
+   "name": "Suspension: Medium - Section 4: The Tank (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1638,7 +1646,7 @@
   },
   {
    "id": 7720538,
-   "name": "Suspension: Medium - Section 4: The Tank (GL Soldier)",
+   "name": "Suspension: Medium - Section 4: The Tank (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1651,7 +1659,7 @@
   },
   {
    "id": 7720539,
-   "name": "Suspension: Medium - Section 4: The Tank (Shotgunner)",
+   "name": "Suspension: Medium - Section 4: The Tank (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1664,7 +1672,7 @@
   },
   {
    "id": 7720540,
-   "name": "Suspension: Medium - Section 4: The Tank (SAW Gunner)",
+   "name": "Suspension: Medium - Section 4: The Tank (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1742,7 +1750,7 @@
   },
   {
    "id": 7720546,
-   "name": "Suspension: Medium - Section 5: The Apache (Soldier)",
+   "name": "Suspension: Medium - Section 5: The Apache (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1755,7 +1763,7 @@
   },
   {
    "id": 7720547,
-   "name": "Suspension: Medium - Section 5: The Apache (GL Soldier)",
+   "name": "Suspension: Medium - Section 5: The Apache (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1768,7 +1776,7 @@
   },
   {
    "id": 7720548,
-   "name": "Suspension: Medium - Section 5: The Apache (Shotgunner)",
+   "name": "Suspension: Medium - Section 5: The Apache (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1781,7 +1789,7 @@
   },
   {
    "id": 7720549,
-   "name": "Suspension: Medium - Section 5: The Apache (SAW Gunner)",
+   "name": "Suspension: Medium - Section 5: The Apache (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1859,7 +1867,7 @@
   },
   {
    "id": 7720555,
-   "name": "Suspension: Medium - Section 6: The Flag (Soldier)",
+   "name": "Suspension: Medium - Section 6: The Flag (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1872,7 +1880,7 @@
   },
   {
    "id": 7720556,
-   "name": "Suspension: Medium - Section 6: The Flag (GL Soldier)",
+   "name": "Suspension: Medium - Section 6: The Flag (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1885,7 +1893,7 @@
   },
   {
    "id": 7720557,
-   "name": "Suspension: Medium - Section 6: The Flag (Shotgunner)",
+   "name": "Suspension: Medium - Section 6: The Flag (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1898,7 +1906,7 @@
   },
   {
    "id": 7720558,
-   "name": "Suspension: Medium - Section 6: The Flag (SAW Gunner)",
+   "name": "Suspension: Medium - Section 6: The Flag (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1976,7 +1984,7 @@
   },
   {
    "id": 7720564,
-   "name": "Suspension: Medium - Section 7: The Counterattack (Soldier)",
+   "name": "Suspension: Medium - Section 7: The Counterattack (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -1989,7 +1997,7 @@
   },
   {
    "id": 7720565,
-   "name": "Suspension: Medium - Section 7: The Counterattack (GL Soldier)",
+   "name": "Suspension: Medium - Section 7: The Counterattack (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2002,7 +2010,7 @@
   },
   {
    "id": 7720566,
-   "name": "Suspension: Medium - Section 7: The Counterattack (Shotgunner)",
+   "name": "Suspension: Medium - Section 7: The Counterattack (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2015,7 +2023,7 @@
   },
   {
    "id": 7720567,
-   "name": "Suspension: Medium - Section 7: The Counterattack (SAW Gunner)",
+   "name": "Suspension: Medium - Section 7: The Counterattack (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2093,7 +2101,7 @@
   },
   {
    "id": 7720573,
-   "name": "Suspension: Medium - Section 8: The Assassin (Soldier)",
+   "name": "Suspension: Medium - Section 8: The Assassin (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2106,7 +2114,7 @@
   },
   {
    "id": 7720574,
-   "name": "Suspension: Medium - Section 8: The Assassin (GL Soldier)",
+   "name": "Suspension: Medium - Section 8: The Assassin (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2119,7 +2127,7 @@
   },
   {
    "id": 7720575,
-   "name": "Suspension: Medium - Section 8: The Assassin (Shotgunner)",
+   "name": "Suspension: Medium - Section 8: The Assassin (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2132,7 +2140,7 @@
   },
   {
    "id": 7720576,
-   "name": "Suspension: Medium - Section 8: The Assassin (SAW Gunner)",
+   "name": "Suspension: Medium - Section 8: The Assassin (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2210,7 +2218,7 @@
   },
   {
    "id": 7720582,
-   "name": "Suspension: Hard - Section 1: The Approach (Soldier)",
+   "name": "Suspension: Hard - Section 1: The Approach (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2223,7 +2231,7 @@
   },
   {
    "id": 7720583,
-   "name": "Suspension: Hard - Section 1: The Approach (GL Soldier)",
+   "name": "Suspension: Hard - Section 1: The Approach (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2236,7 +2244,7 @@
   },
   {
    "id": 7720584,
-   "name": "Suspension: Hard - Section 1: The Approach (Shotgunner)",
+   "name": "Suspension: Hard - Section 1: The Approach (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2249,7 +2257,7 @@
   },
   {
    "id": 7720585,
-   "name": "Suspension: Hard - Section 1: The Approach (SAW Gunner)",
+   "name": "Suspension: Hard - Section 1: The Approach (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2327,7 +2335,7 @@
   },
   {
    "id": 7720591,
-   "name": "Suspension: Hard - Section 2: The APC (Soldier)",
+   "name": "Suspension: Hard - Section 2: The APC (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2340,7 +2348,7 @@
   },
   {
    "id": 7720592,
-   "name": "Suspension: Hard - Section 2: The APC (GL Soldier)",
+   "name": "Suspension: Hard - Section 2: The APC (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2353,7 +2361,7 @@
   },
   {
    "id": 7720593,
-   "name": "Suspension: Hard - Section 2: The APC (Shotgunner)",
+   "name": "Suspension: Hard - Section 2: The APC (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2366,7 +2374,7 @@
   },
   {
    "id": 7720594,
-   "name": "Suspension: Hard - Section 2: The APC (SAW Gunner)",
+   "name": "Suspension: Hard - Section 2: The APC (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2444,7 +2452,7 @@
   },
   {
    "id": 7720600,
-   "name": "Suspension: Hard - Section 3: The Helipad (Soldier)",
+   "name": "Suspension: Hard - Section 3: The Helipad (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2457,7 +2465,7 @@
   },
   {
    "id": 7720601,
-   "name": "Suspension: Hard - Section 3: The Helipad (GL Soldier)",
+   "name": "Suspension: Hard - Section 3: The Helipad (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2470,7 +2478,7 @@
   },
   {
    "id": 7720602,
-   "name": "Suspension: Hard - Section 3: The Helipad (Shotgunner)",
+   "name": "Suspension: Hard - Section 3: The Helipad (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2483,7 +2491,7 @@
   },
   {
    "id": 7720603,
-   "name": "Suspension: Hard - Section 3: The Helipad (SAW Gunner)",
+   "name": "Suspension: Hard - Section 3: The Helipad (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2561,7 +2569,7 @@
   },
   {
    "id": 7720609,
-   "name": "Suspension: Hard - Section 4: The Tank (Soldier)",
+   "name": "Suspension: Hard - Section 4: The Tank (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2574,7 +2582,7 @@
   },
   {
    "id": 7720610,
-   "name": "Suspension: Hard - Section 4: The Tank (GL Soldier)",
+   "name": "Suspension: Hard - Section 4: The Tank (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2587,7 +2595,7 @@
   },
   {
    "id": 7720611,
-   "name": "Suspension: Hard - Section 4: The Tank (Shotgunner)",
+   "name": "Suspension: Hard - Section 4: The Tank (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2600,7 +2608,7 @@
   },
   {
    "id": 7720612,
-   "name": "Suspension: Hard - Section 4: The Tank (SAW Gunner)",
+   "name": "Suspension: Hard - Section 4: The Tank (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2678,7 +2686,7 @@
   },
   {
    "id": 7720618,
-   "name": "Suspension: Hard - Section 5: The Apache (Soldier)",
+   "name": "Suspension: Hard - Section 5: The Apache (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2691,7 +2699,7 @@
   },
   {
    "id": 7720619,
-   "name": "Suspension: Hard - Section 5: The Apache (GL Soldier)",
+   "name": "Suspension: Hard - Section 5: The Apache (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2704,7 +2712,7 @@
   },
   {
    "id": 7720620,
-   "name": "Suspension: Hard - Section 5: The Apache (Shotgunner)",
+   "name": "Suspension: Hard - Section 5: The Apache (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2717,7 +2725,7 @@
   },
   {
    "id": 7720621,
-   "name": "Suspension: Hard - Section 5: The Apache (SAW Gunner)",
+   "name": "Suspension: Hard - Section 5: The Apache (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2795,7 +2803,7 @@
   },
   {
    "id": 7720627,
-   "name": "Suspension: Hard - Section 6: The Flag (Soldier)",
+   "name": "Suspension: Hard - Section 6: The Flag (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2808,7 +2816,7 @@
   },
   {
    "id": 7720628,
-   "name": "Suspension: Hard - Section 6: The Flag (GL Soldier)",
+   "name": "Suspension: Hard - Section 6: The Flag (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2821,7 +2829,7 @@
   },
   {
    "id": 7720629,
-   "name": "Suspension: Hard - Section 6: The Flag (Shotgunner)",
+   "name": "Suspension: Hard - Section 6: The Flag (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2834,7 +2842,7 @@
   },
   {
    "id": 7720630,
-   "name": "Suspension: Hard - Section 6: The Flag (SAW Gunner)",
+   "name": "Suspension: Hard - Section 6: The Flag (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2912,7 +2920,7 @@
   },
   {
    "id": 7720636,
-   "name": "Suspension: Hard - Section 7: The Counterattack (Soldier)",
+   "name": "Suspension: Hard - Section 7: The Counterattack (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2925,7 +2933,7 @@
   },
   {
    "id": 7720637,
-   "name": "Suspension: Hard - Section 7: The Counterattack (GL Soldier)",
+   "name": "Suspension: Hard - Section 7: The Counterattack (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2938,7 +2946,7 @@
   },
   {
    "id": 7720638,
-   "name": "Suspension: Hard - Section 7: The Counterattack (Shotgunner)",
+   "name": "Suspension: Hard - Section 7: The Counterattack (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -2951,7 +2959,7 @@
   },
   {
    "id": 7720639,
-   "name": "Suspension: Hard - Section 7: The Counterattack (SAW Gunner)",
+   "name": "Suspension: Hard - Section 7: The Counterattack (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3029,7 +3037,7 @@
   },
   {
    "id": 7720645,
-   "name": "Suspension: Hard - Section 8: The Assassin (Soldier)",
+   "name": "Suspension: Hard - Section 8: The Assassin (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3042,7 +3050,7 @@
   },
   {
    "id": 7720646,
-   "name": "Suspension: Hard - Section 8: The Assassin (GL Soldier)",
+   "name": "Suspension: Hard - Section 8: The Assassin (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3055,7 +3063,7 @@
   },
   {
    "id": 7720647,
-   "name": "Suspension: Hard - Section 8: The Assassin (Shotgunner)",
+   "name": "Suspension: Hard - Section 8: The Assassin (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3068,7 +3076,7 @@
   },
   {
    "id": 7720648,
-   "name": "Suspension: Hard - Section 8: The Assassin (SAW Gunner)",
+   "name": "Suspension: Hard - Section 8: The Assassin (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3146,7 +3154,7 @@
   },
   {
    "id": 7720654,
-   "name": "Suspension: Insane - Section 1: The Approach (Soldier)",
+   "name": "Suspension: Insane - Section 1: The Approach (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3159,7 +3167,7 @@
   },
   {
    "id": 7720655,
-   "name": "Suspension: Insane - Section 1: The Approach (GL Soldier)",
+   "name": "Suspension: Insane - Section 1: The Approach (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3172,7 +3180,7 @@
   },
   {
    "id": 7720656,
-   "name": "Suspension: Insane - Section 1: The Approach (Shotgunner)",
+   "name": "Suspension: Insane - Section 1: The Approach (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3185,7 +3193,7 @@
   },
   {
    "id": 7720657,
-   "name": "Suspension: Insane - Section 1: The Approach (SAW Gunner)",
+   "name": "Suspension: Insane - Section 1: The Approach (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3263,7 +3271,7 @@
   },
   {
    "id": 7720663,
-   "name": "Suspension: Insane - Section 2: The APC (Soldier)",
+   "name": "Suspension: Insane - Section 2: The APC (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3276,7 +3284,7 @@
   },
   {
    "id": 7720664,
-   "name": "Suspension: Insane - Section 2: The APC (GL Soldier)",
+   "name": "Suspension: Insane - Section 2: The APC (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3289,7 +3297,7 @@
   },
   {
    "id": 7720665,
-   "name": "Suspension: Insane - Section 2: The APC (Shotgunner)",
+   "name": "Suspension: Insane - Section 2: The APC (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3302,7 +3310,7 @@
   },
   {
    "id": 7720666,
-   "name": "Suspension: Insane - Section 2: The APC (SAW Gunner)",
+   "name": "Suspension: Insane - Section 2: The APC (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3380,7 +3388,7 @@
   },
   {
    "id": 7720672,
-   "name": "Suspension: Insane - Section 3: The Helipad (Soldier)",
+   "name": "Suspension: Insane - Section 3: The Helipad (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3393,7 +3401,7 @@
   },
   {
    "id": 7720673,
-   "name": "Suspension: Insane - Section 3: The Helipad (GL Soldier)",
+   "name": "Suspension: Insane - Section 3: The Helipad (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3406,7 +3414,7 @@
   },
   {
    "id": 7720674,
-   "name": "Suspension: Insane - Section 3: The Helipad (Shotgunner)",
+   "name": "Suspension: Insane - Section 3: The Helipad (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3419,7 +3427,7 @@
   },
   {
    "id": 7720675,
-   "name": "Suspension: Insane - Section 3: The Helipad (SAW Gunner)",
+   "name": "Suspension: Insane - Section 3: The Helipad (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3497,7 +3505,7 @@
   },
   {
    "id": 7720681,
-   "name": "Suspension: Insane - Section 4: The Tank (Soldier)",
+   "name": "Suspension: Insane - Section 4: The Tank (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3510,7 +3518,7 @@
   },
   {
    "id": 7720682,
-   "name": "Suspension: Insane - Section 4: The Tank (GL Soldier)",
+   "name": "Suspension: Insane - Section 4: The Tank (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3523,7 +3531,7 @@
   },
   {
    "id": 7720683,
-   "name": "Suspension: Insane - Section 4: The Tank (Shotgunner)",
+   "name": "Suspension: Insane - Section 4: The Tank (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3536,7 +3544,7 @@
   },
   {
    "id": 7720684,
-   "name": "Suspension: Insane - Section 4: The Tank (SAW Gunner)",
+   "name": "Suspension: Insane - Section 4: The Tank (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3614,7 +3622,7 @@
   },
   {
    "id": 7720690,
-   "name": "Suspension: Insane - Section 5: The Apache (Soldier)",
+   "name": "Suspension: Insane - Section 5: The Apache (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3627,7 +3635,7 @@
   },
   {
    "id": 7720691,
-   "name": "Suspension: Insane - Section 5: The Apache (GL Soldier)",
+   "name": "Suspension: Insane - Section 5: The Apache (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3640,7 +3648,7 @@
   },
   {
    "id": 7720692,
-   "name": "Suspension: Insane - Section 5: The Apache (Shotgunner)",
+   "name": "Suspension: Insane - Section 5: The Apache (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3653,7 +3661,7 @@
   },
   {
    "id": 7720693,
-   "name": "Suspension: Insane - Section 5: The Apache (SAW Gunner)",
+   "name": "Suspension: Insane - Section 5: The Apache (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3731,7 +3739,7 @@
   },
   {
    "id": 7720699,
-   "name": "Suspension: Insane - Section 6: The Flag (Soldier)",
+   "name": "Suspension: Insane - Section 6: The Flag (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3744,7 +3752,7 @@
   },
   {
    "id": 7720700,
-   "name": "Suspension: Insane - Section 6: The Flag (GL Soldier)",
+   "name": "Suspension: Insane - Section 6: The Flag (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3757,7 +3765,7 @@
   },
   {
    "id": 7720701,
-   "name": "Suspension: Insane - Section 6: The Flag (Shotgunner)",
+   "name": "Suspension: Insane - Section 6: The Flag (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3770,7 +3778,7 @@
   },
   {
    "id": 7720702,
-   "name": "Suspension: Insane - Section 6: The Flag (SAW Gunner)",
+   "name": "Suspension: Insane - Section 6: The Flag (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3848,7 +3856,7 @@
   },
   {
    "id": 7720708,
-   "name": "Suspension: Insane - Section 7: The Counterattack (Soldier)",
+   "name": "Suspension: Insane - Section 7: The Counterattack (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3861,7 +3869,7 @@
   },
   {
    "id": 7720709,
-   "name": "Suspension: Insane - Section 7: The Counterattack (GL Soldier)",
+   "name": "Suspension: Insane - Section 7: The Counterattack (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3874,7 +3882,7 @@
   },
   {
    "id": 7720710,
-   "name": "Suspension: Insane - Section 7: The Counterattack (Shotgunner)",
+   "name": "Suspension: Insane - Section 7: The Counterattack (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3887,7 +3895,7 @@
   },
   {
    "id": 7720711,
-   "name": "Suspension: Insane - Section 7: The Counterattack (SAW Gunner)",
+   "name": "Suspension: Insane - Section 7: The Counterattack (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3965,7 +3973,7 @@
   },
   {
    "id": 7720717,
-   "name": "Suspension: Insane - Section 8: The Assassin (Soldier)",
+   "name": "Suspension: Insane - Section 8: The Assassin (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3978,7 +3986,7 @@
   },
   {
    "id": 7720718,
-   "name": "Suspension: Insane - Section 8: The Assassin (GL Soldier)",
+   "name": "Suspension: Insane - Section 8: The Assassin (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -3991,7 +3999,7 @@
   },
   {
    "id": 7720719,
-   "name": "Suspension: Insane - Section 8: The Assassin (Shotgunner)",
+   "name": "Suspension: Insane - Section 8: The Assassin (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4004,7 +4012,7 @@
   },
   {
    "id": 7720720,
-   "name": "Suspension: Insane - Section 8: The Assassin (SAW Gunner)",
+   "name": "Suspension: Insane - Section 8: The Assassin (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4081,7 +4089,7 @@
   },
   {
    "id": 7720726,
-   "name": "Suspension: Easy - Bridge Retaken (Soldier)",
+   "name": "Suspension: Easy - Bridge Retaken (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4093,7 +4101,7 @@
   },
   {
    "id": 7720727,
-   "name": "Suspension: Easy - Bridge Retaken (GL Soldier)",
+   "name": "Suspension: Easy - Bridge Retaken (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4105,7 +4113,7 @@
   },
   {
    "id": 7720728,
-   "name": "Suspension: Easy - Bridge Retaken (Shotgunner)",
+   "name": "Suspension: Easy - Bridge Retaken (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4117,7 +4125,7 @@
   },
   {
    "id": 7720729,
-   "name": "Suspension: Easy - Bridge Retaken (SAW Gunner)",
+   "name": "Suspension: Easy - Bridge Retaken (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4189,7 +4197,7 @@
   },
   {
    "id": 7720735,
-   "name": "Suspension: Medium - Bridge Retaken (Soldier)",
+   "name": "Suspension: Medium - Bridge Retaken (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4201,7 +4209,7 @@
   },
   {
    "id": 7720736,
-   "name": "Suspension: Medium - Bridge Retaken (GL Soldier)",
+   "name": "Suspension: Medium - Bridge Retaken (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4213,7 +4221,7 @@
   },
   {
    "id": 7720737,
-   "name": "Suspension: Medium - Bridge Retaken (Shotgunner)",
+   "name": "Suspension: Medium - Bridge Retaken (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4225,7 +4233,7 @@
   },
   {
    "id": 7720738,
-   "name": "Suspension: Medium - Bridge Retaken (SAW Gunner)",
+   "name": "Suspension: Medium - Bridge Retaken (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4297,7 +4305,7 @@
   },
   {
    "id": 7720744,
-   "name": "Suspension: Hard - Bridge Retaken (Soldier)",
+   "name": "Suspension: Hard - Bridge Retaken (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4309,7 +4317,7 @@
   },
   {
    "id": 7720745,
-   "name": "Suspension: Hard - Bridge Retaken (GL Soldier)",
+   "name": "Suspension: Hard - Bridge Retaken (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4321,7 +4329,7 @@
   },
   {
    "id": 7720746,
-   "name": "Suspension: Hard - Bridge Retaken (Shotgunner)",
+   "name": "Suspension: Hard - Bridge Retaken (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4333,7 +4341,7 @@
   },
   {
    "id": 7720747,
-   "name": "Suspension: Hard - Bridge Retaken (SAW Gunner)",
+   "name": "Suspension: Hard - Bridge Retaken (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4405,7 +4413,7 @@
   },
   {
    "id": 7720753,
-   "name": "Suspension: Insane - Bridge Retaken (Soldier)",
+   "name": "Suspension: Insane - Bridge Retaken (Assault)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4417,7 +4425,7 @@
   },
   {
    "id": 7720754,
-   "name": "Suspension: Insane - Bridge Retaken (GL Soldier)",
+   "name": "Suspension: Insane - Bridge Retaken (Grenadier)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4429,7 +4437,7 @@
   },
   {
    "id": 7720755,
-   "name": "Suspension: Insane - Bridge Retaken (Shotgunner)",
+   "name": "Suspension: Insane - Bridge Retaken (Pointman)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {
@@ -4441,7 +4449,7 @@
   },
   {
    "id": 7720756,
-   "name": "Suspension: Insane - Bridge Retaken (SAW Gunner)",
+   "name": "Suspension: Insane - Bridge Retaken (Support)",
    "chapter": "suspension",
    "map": "suspension",
    "trigger": {

@@ -68,6 +68,9 @@ class APClass
 	// What the map sets the player's own targetname to.
 	string targetname;
 	string signal;
+	// The teleport destination this class's lobby portal sends a player to.
+	// Locking a class means finding that portal and making it non-solid.
+	string portal;
 	bool mapGated = false;
 
 	// Only the map-gated class carries these: what to do to a player to grant it
@@ -360,7 +363,11 @@ void SuspensionCreateSignal( const string& in szSignal, const string& in szCount
 	g_EntityFuncs.CreateEntity( "trigger_changevalue", keys, true );
 }
 
-void SuspensionMapStart()
+/*
+* Forget the round in progress. Every one of these is per round and none of it
+* means anything once the map reloads or the slot changes.
+*/
+void SuspensionResetRound()
 {
 	g_bSusRoundActive = false;
 	g_szSusTier = "";
@@ -368,6 +375,11 @@ void SuspensionMapStart()
 	g_iSusDeaths = 0;
 	g_SusClassSections.deleteAll();
 	g_szSusJuggerHolder = "";
+}
+
+void SuspensionMapStart()
+{
+	SuspensionResetRound();
 
 	if( !SuspensionManaged() )
 		return;
@@ -390,8 +402,9 @@ void SuspensionMapStart()
 	SuspensionCreateSignal( g_pArcade.startSignal, SUS_COUNTER_START, 1 );
 	SuspensionCreateSignal( g_pArcade.endSignal, SUS_COUNTER_END, 1 );
 
-	SuspensionSealJuggernaut( !SuspensionJuggernautAllowed() );
+	SuspensionSyncLocks();
 	SuspensionEnsureScheduled();
+	SuspensionAnnounce();
 
 	APLog( "suspension: managing " + g_pArcade.map + ", "
 	     + g_Suspension.tiers.length() + " tiers, "
@@ -408,6 +421,119 @@ void SuspensionEnsureScheduled()
 
 	@g_pSusTimer = g_Scheduler.SetInterval(
 		"SuspensionThink", SUS_THINK_INTERVAL, g_Scheduler.REPEAT_INFINITE_TIMES );
+}
+
+// --- Locking what the seed has not opened ---------------------------------
+//
+// Everything here works by making an entity non-solid rather than by refusing
+// the press afterwards. Refusing at PlayerUse was not enough: the message
+// printed and the vote went through anyway, because the button had already been
+// used by the time our trace agreed it was the thing being looked at.
+//
+// A non-solid brush cannot be traced against, touched or used, so a locked tier
+// or class is simply not there. Both are restored the moment the item arrives,
+// which is why nothing is ever removed.
+
+void SuspensionSetSolid( CBaseEntity@ pEntity, bool bSolid, int iSolidType )
+{
+	if( pEntity is null )
+		return;
+	pEntity.pev.solid = bSolid ? iSolidType : SOLID_NOT;
+	if( bSolid )
+		pEntity.pev.effects &= ~EF_NODRAW;
+	else
+		pEntity.pev.effects |= EF_NODRAW;
+}
+
+/*
+* The teleport a class's lobby portal uses, found by where it sends people.
+*
+* By destination rather than by targetname because the portals have none: the
+* map identifies them only by the `pick_<class>` they point at, and those are
+* spelled inconsistently enough (`pick_engi`, `pick_GLsoldier`) that they are
+* carried in the data rather than derived.
+*/
+CBaseEntity@ SuspensionPortalOf( APClass@ pClass )
+{
+	if( pClass is null || pClass.portal.Length() == 0 )
+		return null;
+
+	CBaseEntity@ pEntity = null;
+	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname(
+		pEntity, "trigger_teleport" ) ) !is null )
+	{
+		if( string( pEntity.pev.target ) == pClass.portal )
+			return pEntity;
+	}
+	return null;
+}
+
+/*
+* Bring every lock in line with what the client says the seed has opened.
+*
+* Called on map start and whenever a snapshot changes something, so an item
+* arriving mid-round opens its booth without waiting for a map load.
+*/
+void SuspensionSyncLocks()
+{
+	if( !SuspensionManaged() )
+		return;
+
+	for( uint i = 0; i < g_SusTiers.length(); ++i )
+	{
+		APTier@ pTier = g_SusTiers[i];
+		CBaseEntity@ pButton = g_EntityFuncs.FindEntityByTargetname( null, pTier.voteButton );
+		// func_button is a brush entity, so SOLID_BSP is what it goes back to.
+		SuspensionSetSolid( pButton, g_Suspension.TierOpen( pTier.key ), SOLID_BSP );
+	}
+
+	for( uint i = 0; i < g_SusClasses.length(); ++i )
+	{
+		APClass@ pClass = g_SusClasses[i];
+		bool bOpen = g_Suspension.HoldsClass( pClass.key );
+		// The map-gated class has a seal of its own on top of the portal, and
+		// only one player may hold it at a time.
+		if( pClass.mapGated )
+		{
+			bOpen = bOpen && g_szSusJuggerHolder.Length() == 0;
+			SuspensionSealJuggernaut( !bOpen );
+		}
+		SuspensionSetSolid( SuspensionPortalOf( pClass ), bOpen, SOLID_TRIGGER );
+	}
+}
+
+/*
+* Say what is open, since a locked booth is now simply absent and a player
+* standing in front of a gap deserves to be told why.
+*/
+void SuspensionAnnounce()
+{
+	if( !SuspensionManaged() )
+		return;
+
+	string szTiers;
+	for( uint i = 0; i < g_Suspension.tiers.length(); ++i )
+	{
+		if( !g_Suspension.TierOpen( g_Suspension.tiers[i] ) )
+			continue;
+		APTier@ pTier = SuspensionTierByKey( g_Suspension.tiers[i] );
+		if( pTier is null )
+			continue;
+		szTiers += ( szTiers.Length() > 0 ? ", " : "" ) + pTier.name;
+	}
+
+	string szClasses;
+	for( uint i = 0; i < g_SusClasses.length(); ++i )
+	{
+		if( !g_Suspension.HoldsClass( g_SusClasses[i].key ) )
+			continue;
+		szClasses += ( szClasses.Length() > 0 ? ", " : "" ) + g_SusClasses[i].name;
+	}
+
+	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+		"[AP] Suspension difficulties: " + ( szTiers.Length() > 0 ? szTiers : "none" ) + "\n" );
+	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+		"[AP] Suspension classes: " + ( szClasses.Length() > 0 ? szClasses : "none" ) + "\n" );
 }
 
 // --- The Juggernaut -------------------------------------------------------
@@ -526,7 +652,9 @@ void SuspensionGrantJuggernaut( CBasePlayer@ pPlayer )
 		g_EntityFuncs.SetOrigin( pPlayer, pClass.teleport );
 
 	g_szSusJuggerHolder = szHolder;
-	SuspensionSealJuggernaut( true );
+	// Shuts the portal behind them, which is what the map does itself on its own
+	// tier: one Juggernaut per round.
+	SuspensionSyncLocks();
 	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
 		"[AP] " + pPlayer.pev.netname + " took the Juggernaut.\n" );
 }

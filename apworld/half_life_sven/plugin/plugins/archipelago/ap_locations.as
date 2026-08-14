@@ -64,6 +64,13 @@ const float WEAPON_REACH = 72.0f;
 */
 void SweepWeaponPickups()
 {
+	// Weapon checks are campaign-wide rather than scoped to the map they are
+	// anchored in, so the sweep has to be told to keep away from the arcade map
+	// altogether: a class loadout containing a shotgun is not Half-Life's first
+	// shotgun, and standing near one on a bridge is not finding it.
+	if( SuspensionManaged() )
+		return;
+
 	for( uint i = 0; i < g_WeaponPickups.length(); ++i )
 	{
 		APLocation@ pLocation = g_WeaponPickups[i];
@@ -82,12 +89,37 @@ void SweepWeaponPickups()
 	}
 }
 
+/*
+* Is this weapon entity in somebody's inventory rather than lying in the world?
+*
+* `m_hPlayer` is the item's own answer and is what a carried weapon sets. The
+* owner check behind it covers the moment after a drop, before the engine has
+* finished handing the entity back to the world, where the item link is already
+* gone but the weapon is not yet something anyone could walk over.
+*/
+bool WeaponIsHeld( CBaseEntity@ pEntity )
+{
+	CBasePlayerItem@ pItem = cast<CBasePlayerItem@>( pEntity );
+	if( pItem !is null && pItem.m_hPlayer.IsValid() )
+		return true;
+
+	return pEntity.pev.owner !is null;
+}
+
 bool AnyPlayerNear( const string& in szClassname )
 {
 	CBaseEntity@ pEntity = null;
 
 	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname( pEntity, szClassname ) ) !is null )
 	{
+		// A weapon in someone's inventory is still an entity of this classname,
+		// and its origin is that player's origin -- so the sweep found a shotgun
+		// nought units from a player who was simply carrying one, and sent the
+		// check for standing in the map it happens to be anchored to. The check
+		// belongs to the copy lying in the world, so anything held is skipped.
+		if( WeaponIsHeld( pEntity ) )
+			continue;
+
 		for( int i = 1; i <= g_Engine.maxClients; ++i )
 		{
 			CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( i );

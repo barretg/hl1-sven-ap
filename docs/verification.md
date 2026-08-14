@@ -8,7 +8,7 @@
 | Data consistency (`data/` ↔ `checkdata.txt`) | `pytest tests/test_campaign_data.py` | passing |
 | Suspension data and its checkdata records | `pytest tests/test_suspension_data.py` | passing |
 | Suspension generation | `ArchipelagoGenerate` at the easy cap and at the insane cap with classanity, platinum and priority medals | passing |
-| Suspension in-game | — | **not yet run in-game**, see below |
+| Suspension in-game | — | first pass 08/14/26 found it broken; fixed and awaiting a retest |
 | World generation, AP 0.6.7 | `ArchipelagoGenerate` on real seeds | passing |
 | Option matrix | `missions_required` 1 / 8 / 17, strict + loose, suit and long jump on and off, 3-slot multiworld | passing |
 | Campaign matrix | all four enabled, Opposing Force alone, They Hunger alone, every campaign switched off, and a pre-campaign YAML | passing |
@@ -77,19 +77,6 @@ that have never run in-game at all.
   opens; with it still unfinished, A Leap Of Faith should read
   `sealed (finish more missions, including Power Struggle)` however many other
   missions are done. Clear Power Struggle and it opens.
-- [ ] **A Leap Of Faith is credited when it ends, not when it loads.** Warp in and
-  confirm nothing is sent on arrival -- the campaign used to be won by
-  connecting, because the outro is one map and arriving on a finale's last map
-  is normally the only moment there is. Watch it through to the credits: the
-  completion, the goal and the trip back to the hub should all land after the
-  map's `game_end`, from the next map load if the server cycled somewhere else.
-  Leaving early with `!hub` or `!warp` must credit nothing.
-- [ ] **Worlds Collide is credited when it ends too.** This port never plays
-  `of6a5`: `of6a4b` ends the campaign itself, at the button by the guard before
-  the descent, with "Sven Co-op Opposing Force: thanks for playing!" and a
-  `game_end` five seconds later. Arriving on `of6a4b` must send its "Part 2
-  Reached" and nothing more; press the button and the completion, the goal and
-  the return to the hub should all land after the map ends.
 - [x] **The counts stay separate.** With `missions_required: 1` and
   `opposing_force_missions_required: 9`, one Half-Life mission opens Nihilanth
   and does nothing at all for Worlds Collide.
@@ -257,8 +244,6 @@ first:
   no "Reached" on the way through, no "Complete" on the way back to the hub. This
   is the phantom-check regression: reaching a mission you were bounced out of
   used to credit both.
-- [ ] Repeat with the next mission **unlocked**. Still nothing: you were carried
-  through it, not playing it.
 - [x] `MapChange` is observational only. Cancelling a transition with
   `HOOK_HANDLED` and then scheduling our own `changelevel` crashed the game, both
   on `restart` and on genuine mission completion, so the hook now only records
@@ -274,7 +259,6 @@ With two players in the lobby and two AP slots on DeathLink:
   DeathLink is sent, not one per player.
 - [x] An inbound DeathLink gibs the whole lobby, in the hub and mid-mission.
 - [x] No bounce-back loop (watch the client log for a run of alternating deaths).
-- [ ] Kill four players with one explosion → still exactly one DeathLink.
 - [x] Trigger a DeathLink during a map load → it must be ignored on arrival, not
   applied.
 
@@ -347,7 +331,8 @@ the campaign rather than granted, so on a seed with it off:
   not reporting the `origin` the generator wrote into its key.
 - [x] Press use on a health charger and an HEV charger; each sends its own check
   once, and pressing it again sends nothing.
-- [x] An empty charger still sends its check.
+- [x] ~~An empty charger still sends its check.~~ Sven appears to have no empty
+  chargers, so there is nothing here to test.
 - [x] Chargers in a mission you re-enter later do not resend.
 - [x] Press use on ordinary buttons, doors and levers → no checks, no log spam.
 
@@ -400,10 +385,109 @@ On a short test seed with `missions_required: 1`:
 
 ### 7. Suspension
 
-None of this has been run in game. Generate with `suspension: true`,
-`suspension_max_difficulty: hard`, `suspension_classanity: false` and warp with
-`!warp suspension`. Four things carry real assumptions, in the order they would
-bite:
+Nothing here has passed yet; the whole section is below the divider.
+
+---
+
+## Still open — 08/14/26
+
+Everything above has been run in game and passed. What follows has not, or
+failed when it was tried and has been changed since. Each item keeps the heading
+it belongs to.
+
+Use [examples/verification/](../examples/verification/) — five seeds, each
+covering a group of these, with the unlocks and weapons already in the starting
+inventory. Suspension is seed 5, which now contains nothing but the bridge.
+
+### What changed after the first pass
+
+Fixed and awaiting a retest, in the order they were found:
+
+- Class names were invented from entity names and are now the lobby's own:
+  Assault, Grenadier, Pointman, Support.
+- `!ap` never listed Suspension and `!warp suspension` did not exist. Both work.
+- No class booth or vote button was ever locked. Both lock now by going
+  non-solid, because refusing at PlayerUse printed the message and let the press
+  through underneath it.
+- The Juggernaut icon drew on top of the placeholder instead of replacing it.
+- Weapons and equipment were still being gated on the arcade map through
+  `PickupCanCollect` and the weapon sweep, which also meant a class loadout's
+  shotgun could send Half-Life's First Shotgun from the bridge.
+- Loadout ammo arrived one grant at a time at each weapon's uneven default.
+  Every held weapon is now topped up to half its maximum in one step.
+- The weapon sweep counted the weapon in your own hands. A carried weapon is
+  still an entity of that classname and its origin is your origin, so holding a
+  shotgun anywhere in the map its check is anchored to sent that check. Only
+  copies lying in the world count now.
+- Missions the seed left out are no longer listed at all.
+- Releasing a mission's completion from the server did nothing in game. The
+  client now rebuilds finished missions from the server's checked locations.
+- Reconnecting kept the previous slot's state. A changed client session now
+  clears everything and returns the lobby to the hub.
+- A finale could be credited on arrival, because the armed-but-unplayed flag
+  carried no record of which map armed it and a second `MapStart` on the same
+  load consumed what the first had set.
+- Being carried into an *unlocked* mission counted as playing it. The pass-through
+  guard only ever asked whether a mission was playable, so the lock check caught
+  locked ones and nothing caught the rest. It now asks whether we meant to be
+  there at all: we asked for the map, it is another part of the same mission, or
+  the server started on it.
+- Both pending-state writes now log loudly when they fail. A silent failure of
+  the hub-return write is what a phantom check looks like from the outside.
+
+### 0. Campaigns, first
+
+- [ ] **A Leap Of Faith is credited when it ends, not when it loads.** Warp in and
+  confirm nothing is sent on arrival -- the campaign used to be won by
+  connecting, because the outro is one map and arriving on a finale's last map
+  is normally the only moment there is. Watch it through to the credits: the
+  completion, the goal and the trip back to the hub should all land after the
+  map's `game_end`, from the next map load if the server cycled somewhere else.
+  Leaving early with `!hub` or `!warp` must credit nothing.
+- [ ] **Worlds Collide is credited when it ends too.** This port never plays
+  `of6a5`: `of6a4b` ends the campaign itself, at the button by the guard before
+  the descent, with "Sven Co-op Opposing Force: thanks for playing!" and a
+  `game_end` five seconds later. Arriving on `of6a4b` must send its "Part 2
+  Reached" and nothing more; press the button and the completion, the goal and
+  the return to the hub should all land after the map ends.
+
+### 4. Mission gating and completion
+
+- [ ] Repeat with the next mission **unlocked**. Still nothing: you were carried
+  through it, not playing it.
+
+### 5. DeathLink
+
+- [ ] Kill four players with one explosion → still exactly one DeathLink.
+
+### Fixed since the first pass, needs a retest
+
+- [ ] **Holding a weapon does not send its check.** Stand anywhere in the mission
+  a weapon's check is anchored to while carrying that weapon: nothing sends.
+  Walk over the copy lying in the world: it sends.
+- [ ] **Loadout ammo arrives in one step**, at half of each weapon's maximum, and
+  a respawn is one pickup sound per weapon rather than a long crawl.
+- [ ] **Missions the seed left out are absent from `!ap`**, campaign headings and
+  all, rather than listed as "not in this seed".
+- [ ] **Releasing a mission's completion from the server console applies in
+  game.** `/send` its "- Complete" location and the mission counts toward the
+  seal without the game having played it.
+- [ ] **Reconnecting is safe.** Disconnect, connect a different slot: the lobby
+  returns to the hub, previously sent checks are forgotten, and the new slot's
+  first checks send rather than being swallowed as duplicates.
+- [ ] **A finale is not credited on arrival.** Warp into A Leap Of Faith or
+  Worlds Collide's last map, then leave with `!hub`: nothing is credited. Play
+  it out instead and the credit lands after the map ends.
+- [ ] **A carried-through mission sends nothing, unlocked or not.** Finish
+  Unforeseen Consequences with Office Complex already unlocked: no "Reached", no
+  weapon checks, and a bounce back to the hub. The only guard used to be the
+  locked test, so an unlocked mission counted as played. The console now says
+  `carried into <mission> from <mission>; not playing it` when it bounces, and
+  `FATAL: could not queue the hub return` if the older file-based guard fails.
+- [ ] **Suspension is a seed of its own.** With every campaign off and
+  `suspension: true`, the seed contains the bridge and nothing else.
+
+### 7. Suspension
 
 - [ ] **The counters.** The plugin creates `trigger_changevalue` entities answering
    to names the map already fires (`s3_events`, `win_red_tickets`,
@@ -415,8 +499,21 @@ bite:
 - [ ] **Section boundaries.** Confirm each section credit lands as that section
    falls, not one early or one late. `s6` hangs off `s6_captured_text` rather
    than `s7_apc_start`, because the latter is delayed twenty seconds.
+- [ ] **You can get there at all.** `!ap` lists Suspension under an Arcade
+  heading with `!warp suspension` beside it, and that warp works from the hub.
+  It is not a mission and has no console, so this is the only way in.
+- [ ] **The class names match the lobby signs.** Assault, Grenadier, Pointman,
+  Support, Sniper, Medic, Engineer, Juggernaut. The map's entities are named
+  differently (`shotty` is Pointman) and the checks must read as the signs do.
+- [ ] **Locked classes have no portal.** A class whose item has not arrived is
+  simply not enterable: the portal is non-solid rather than refusing on use.
+  Chat lists what is open on arrival.
+- [ ] **The Juggernaut icon replaces the placeholder** rather than drawing on
+  top of it.
 - [ ] **The vote buttons.** With one Progressive Suspension Difficulty item held,
-   easy and medium should press and hard and insane should refuse with a message.
+   easy and medium should be pressable and hard and insane should not be there
+   at all. A locked button is made non-solid rather than refused on use:
+   refusing at PlayerUse printed the message and let the vote through anyway.
    The mapping is `vote_button4` easy through `vote_button1` insane — backwards
    from the tier order, so an off-by-one here locks the wrong buttons.
 - [ ] **The Juggernaut.** Below insane the booth is believed to be inert, so the
@@ -426,9 +523,6 @@ bite:
    `targetname`), and that the model change takes — `g_EntityFuncs.SetModel` on a
    player is the least certain call in the module, and if it does nothing the
    class is still mechanically correct and merely looks wrong.
-
-Then clear a run:
-
 - [ ] The medal matches the team's death count.
 - [ ] Every lesser medal arrives with it.
 - [ ] Section checks land for the classes in play, and nothing lands for a class

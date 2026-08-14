@@ -214,8 +214,44 @@ void MapStart()
 		return;
 	}
 
+	if( g_CurrentChapter is null )
+	{
+		// The hub, or a map belonging to no mission. Nothing to carry forward.
+		g_szLastChapterKey = "";
+		g_szIntendedMap = "";
+	}
+
 	if( g_CurrentChapter !is null )
 	{
+		// Did we *mean* to be here? Three ways this map is legitimately ours:
+		//
+		//   - we asked for it, by console button, `!warp` or a return to the hub
+		//   - it is another part of the mission we were already playing
+		//   - the server started here, so there is no previous mission to have
+		//     been carried out of
+		//
+		// Anything else is the campaign running one mission straight into the
+		// next, and the mission it carried us into is not being played however
+		// unlocked it happens to be. That last part is what was missing: the
+		// only guard was the locked test below, so an unlocked mission counted
+		// as played and sent its "Reached" on the way through.
+		bool bDeliberate = g_szIntendedMap == g_szCurrentMap;
+		bool bSameMission = g_szLastChapterKey == g_CurrentChapter.key;
+		bool bFirstMap = g_szLastChapterKey.Length() == 0;
+		g_szIntendedMap = "";
+
+		if( !bDeliberate && !bSameMission && !bFirstMap )
+		{
+			APLog( "carried into " + g_CurrentChapter.key + " from "
+			     + g_szLastChapterKey + "; not playing it" );
+			g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+				"[AP] Returning to the hub...\n" );
+			g_Scheduler.SetTimeout( "ReturnToHub", 3.0f );
+			return;
+		}
+
+		g_szLastChapterKey = g_CurrentChapter.key;
+
 		// Are we allowed to be here? Checked *before* anything is sent, not
 		// after. The campaign runs one mission straight into the next, so the
 		// engine will happily drop us on the first map of a mission we never

@@ -248,6 +248,33 @@ int g_iMapKills = 0;
 */
 bool g_bMissionActive = false;
 
+// The same answer as `ap_pending.txt`, kept in memory as well as on disk.
+//
+// Two channels because the file has one failure mode with no symptom: if the
+// write is refused -- the store directory locked, the disk busy -- the bounce
+// silently never happens, the map the campaign carried us into counts as played,
+// and it sends its "Reached" and every weapon lying around it. Globals survive a
+// map change here (which is why Initialise exists to clear them), so this covers
+// the ordinary case, and the file still covers a plugin reload.
+//
+// Deliberately *not* cleared by Initialise: it is written before the map change
+// and has to be readable after it.
+bool g_bPendingHubReturn = false;
+
+// The map we asked the engine to load, and the mission we were last playing.
+//
+// Between them they answer "did we mean to be here", which is a different
+// question from "are we allowed to be here" and the one that was missing. The
+// campaign runs one mission straight into the next, and the old guard only
+// bounced missions that were *locked* -- so being carried into a mission that
+// happened to be unlocked read as playing it, and it sent its "Reached" and
+// whatever weapons lay near the path through it.
+//
+// Neither is cleared by Initialise, for the same reason as the flag above: both
+// are set before a map change and read after it.
+string g_szIntendedMap = "";
+string g_szLastChapterKey = "";
+
 // Set just before we issue our own changelevel. A transition we asked for is
 // never a mission completion: `!hub` out of a one-map mission is walking away
 // from it, not finishing it.
@@ -552,6 +579,8 @@ void LoadCheckData()
 			entry.targetname = parts[4];
 			entry.signal = parts[5];
 			entry.mapGated = parts[6] == "1";
+			if( parts.length() >= 8 )
+				entry.portal = parts[7];
 			g_SusClasses.insertLast( @entry );
 		}
 		else if( parts[0] == "A" && parts.length() >= 5 )

@@ -36,8 +36,10 @@
 #   8. Clear a medium round as the Juggernaut. That is the capped tier, so it
 #      must send GOAL|suspension.
 #
-# Half-Life is on because a seed has to contain a campaign, not because anything
-# here needs it. Its checks are noise; ignore them.
+# Every campaign is off. A seed normally falls back to Half-Life when nothing is
+# enabled, but Suspension counts as content in its own right, so this is a seed
+# with nothing in it but the bridge -- no campaign checks to wade through and no
+# hub missions to distract from what is being tested.
 
 name: Ver5Suspension
 description: the arcade map, from the vote buttons through to its goal
@@ -46,11 +48,11 @@ requires:
   version: 0.6.7
 
 Half-Life (Sven Co-op):
-  include_half_life: true
-  missions_required: 1
+  include_half_life: false
+  include_opposing_force: false
+  include_blue_shift: false
+  include_they_hunger: false
   chargesanity: false
-  exclude_intro_missions: true
-  logic_difficulty: loose
   trap_percentage: 0
 
   suspension: true
@@ -64,15 +66,15 @@ Half-Life (Sven Co-op):
   # Off, so a medium clear sends medium only and the two tiers stay legible.
   suspension_difficulty_rolldown: false
   suspension_max_awards_are_priority: false
-  suspension_starting_class: soldier
+  suspension_starting_class: assault
 
   start_inventory:
     # Every class, so switching mid-run is possible and the Juggernaut is
     # available without first clearing seven runs.
-    "Suspension: Soldier": 1
-    "Suspension: GL Soldier": 1
-    "Suspension: Shotgunner": 1
-    "Suspension: SAW Gunner": 1
+    "Suspension: Assault": 1
+    "Suspension: Grenadier": 1
+    "Suspension: Pointman": 1
+    "Suspension: Support": 1
     "Suspension: Sniper": 1
     "Suspension: Medic": 1
     "Suspension: Engineer": 1

@@ -129,13 +129,20 @@ END_SIGNAL = "end_script"
 @dataclass(frozen=True)
 class Class:
     key: str
+    # What the lobby display calls it, which is *not* what its entities are
+    # named: the booth that equips a shotgun is `shotty` and the sign above it
+    # reads Pointman. These came from the game rather than from the BSP, and
+    # guessing them from the entity names got every one of them wrong.
     name: str
     # What the map sets the player's targetname to. The plugin reads it rather
     # than tracking booth entries.
     targetname: str
-    # The name the booth fires. The plugin blocks a locked class by making its
-    # portal non-solid, and grants one itself by doing what this name does.
+    # The name the booth fires. The plugin grants a class itself by doing what
+    # this name does.
     signal: str
+    # The teleport destination its lobby portal sends a player to. The plugin
+    # finds the portal by this and makes it non-solid to lock the class.
+    portal: str
     # True where the map itself gates the class, rather than us. Only the
     # Juggernaut, which the map reveals on an Insane vote and seals behind the
     # first player to take it.
@@ -147,18 +154,22 @@ class Class:
 
 
 CLASSES: list[Class] = [
-    Class("soldier", "Soldier", "class_soldier", "soldier"),
-    Class("gl_soldier", "GL Soldier", "class_GL_soldier", "GL_soldier"),
-    Class("shotty", "Shotgunner", "class_shotty", "shotty"),
-    Class("saw", "SAW Gunner", "class_saw", "saw"),
-    Class("sniper", "Sniper", "class_sniper", "sniper"),
-    Class("medic", "Medic", "class_medic", "medic"),
-    Class("engineer", "Engineer", "class_engineer", "engineer"),
+    # Keys are the map's entity names and are permanent -- `data/ids.json` is
+    # keyed by them, so renaming one renumbers a location. The display names
+    # beside them are the lobby's and are free to change.
+    Class("soldier", "Assault", "class_soldier", "soldier", "pick_soldier"),
+    Class("gl_soldier", "Grenadier", "class_GL_soldier", "GL_soldier", "pick_GLsoldier"),
+    Class("shotty", "Pointman", "class_shotty", "shotty", "pick_shotty"),
+    Class("saw", "Support", "class_saw", "saw", "pick_saw"),
+    Class("sniper", "Sniper", "class_sniper", "sniper", "pick_sniper"),
+    Class("medic", "Medic", "class_medic", "medic", "pick_medic"),
+    Class("engineer", "Engineer", "class_engineer", "engineer", "pick_engi"),
     Class(
         "jugger",
         "Juggernaut",
         "class_jugger",
         "jugger",
+        "pick_jugger",
         map_gated=True,
         grant={
             "health": 200,
@@ -198,8 +209,10 @@ JUGGER_VOLUMES = {
 JUGGER_SEAL = {
     "wall": {"targetname": "jugger", "classname": "func_wall_toggle"},
     "hurt": {"targetname": "jugger", "classname": "trigger_hurt"},
-    # Reveals the icon on the display wall, which the map only does on Insane.
-    "reveal": "display_jugger_rdr",
+    # Swaps the display panel from the unknown placeholder to the Juggernaut
+    # icon. The map fires this whole multi_manager rather than the env_render
+    # alone, and firing only the render left both drawn on top of each other.
+    "reveal": "display_change",
 }
 
 

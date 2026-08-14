@@ -448,13 +448,21 @@ class SuspensionStartingClass(Choice):
 
     display_name = "Suspension Starting Class"
     option_random_class = 0
-    option_soldier = 1
-    option_gl_soldier = 2
-    option_shotty = 3
-    option_saw = 4
+    option_assault = 1
+    option_grenadier = 2
+    option_pointman = 3
+    option_support = 4
     option_sniper = 5
     option_medic = 6
     option_engineer = 7
+    # What the map's own entities call them, which is what this option used to
+    # take. The sign in the lobby and the entity behind it disagree -- the booth
+    # that hands out a shotgun is `shotty` and reads Pointman -- so both spell
+    # the same choice.
+    alias_soldier = 1
+    alias_gl_soldier = 2
+    alias_shotty = 3
+    alias_saw = 4
     default = 0
 
 

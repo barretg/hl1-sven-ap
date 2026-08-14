@@ -86,13 +86,14 @@ def arcade_records(arcades) -> list[str]:
             )
         for entry in arcade["classes"]:
             lines.append(
-                "W|{arcade}|{key}|{name}|{targetname}|{signal}|{gated}".format(
+                "W|{arcade}|{key}|{name}|{targetname}|{signal}|{gated}|{portal}".format(
                     arcade=key,
                     key=entry["key"],
                     name=entry["name"],
                     targetname=entry["targetname"],
                     signal=entry["signal"],
                     gated=1 if entry["map_gated"] else 0,
+                    portal=entry.get("portal", ""),
                 )
             )
         for entry in arcade["awards"]:
@@ -153,7 +154,7 @@ def render(campaign: dict) -> str:
         "#   X|<key>|<name>|<map>|<goal class>|<start signal>|<end signal>",
         "#   Y|<arcade>|<key>|<name>|<tickets>|<vote button>|<ticket signal>",
         "#   Z|<arcade>|<key>|<index>|<name>|<clear signal>",
-        "#   W|<arcade>|<key>|<name>|<player targetname>|<booth signal>|<map gated>",
+        "#   W|<arcade>|<key>|<name>|<player targetname>|<booth signal>|<map gated>|<portal>",
         "#   A|<arcade>|<key>|<name>|<max deaths>",
         "#   J|<arcade>|<volume>|<mins>|<maxs>   a box the plugin watches",
         "#   G|<arcade>|<part>|<targetname>|<classname>   the Juggernaut seal",

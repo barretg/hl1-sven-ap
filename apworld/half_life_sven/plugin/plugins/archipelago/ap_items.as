@@ -234,6 +234,47 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		if( !HasItem( pPlayer, szClassname ) )
 			pPlayer.GiveNamedItem( szClassname );
 	}
+
+	SetLoadoutAmmo( pPlayer );
+}
+
+/*
+* Bring every held weapon up to half its maximum ammo, once.
+*
+* `GiveNamedItem` hands over a weapon's default ammo along with the weapon, and
+* the defaults are wildly uneven -- a glock arrives near full, a revolver with
+* six. Worse, each grant is its own pickup, so a player respawning with ten
+* weapons hears ten pickups and watches the counters crawl up one grant at a
+* time.
+*
+* Half of maximum is the loadout's own rule, applied in one step per weapon and
+* only upward: a player who has been husbanding ammo keeps what they have.
+*/
+void SetLoadoutAmmo( CBasePlayer@ pPlayer )
+{
+	for( size_t iSlot = 0; iSlot < MAX_ITEM_TYPES; ++iSlot )
+	{
+		CBasePlayerItem@ pItem = pPlayer.m_rgpPlayerItems( iSlot );
+
+		while( pItem !is null )
+		{
+			CBasePlayerWeapon@ pWeapon = pItem.GetWeaponPtr();
+			if( pWeapon !is null )
+			{
+				string szAmmo = pWeapon.pszAmmo1();
+				int iMax = pWeapon.iMaxAmmo1();
+				if( szAmmo.Length() > 0 && iMax > 0 )
+				{
+					int iWanted = iMax / 2;
+					int iHeld = pPlayer.m_rgAmmo( pPlayer.GetAmmoIndex( szAmmo ) );
+					if( iHeld < iWanted )
+						pPlayer.GiveAmmo( iWanted - iHeld, szAmmo, iMax );
+				}
+			}
+
+			@pItem = cast<CBasePlayerItem@>( pItem.m_hNextItem.GetEntity() );
+		}
+	}
 }
 
 /*
@@ -426,6 +467,14 @@ HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool
 
 	CBasePlayer@ pPlayer = cast<CBasePlayer@>( pOther );
 	if( pPlayer is null )
+		return HOOK_CONTINUE;
+
+	// The arcade map is outside the randomiser entirely. Its classes hand out
+	// their own weapons and its restock stations refill them, so gating anything
+	// here left a Sniper with no rifle and a Medic with no medkit -- and the
+	// weapon checks are campaign-wide rather than per map, so collecting a
+	// class's shotgun would have sent Half-Life's First Shotgun from a bridge.
+	if( SuspensionManaged() )
 		return HOOK_CONTINUE;
 
 	string szClassname = pPickup.GetClassname();

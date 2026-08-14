@@ -208,8 +208,12 @@ class HalfLifeSvenWorld(World):
                 if key in set(passthrough["campaigns"])
             ]
         # A seed has to contain something. Rather than refuse to generate, fall
-        # back to the campaign this world started life as.
-        if not self.included_campaigns:
+        # back to the campaign this world started life as -- unless the arcade
+        # map is on, which is content in its own right and has a goal of its own,
+        # so `suspension: true` with every campaign off is a Suspension-only seed
+        # rather than a Half-Life one with a bridge attached.
+        wants_arcade = bool(self.options.suspension) and self.suspension is not None
+        if not self.included_campaigns and not wants_arcade:
             self.included_campaigns = [DEFAULT_CAMPAIGN]
 
         # A campaign that is switched off is excluded mission by mission, which
@@ -370,9 +374,19 @@ class HalfLifeSvenWorld(World):
             entry["key"] for entry in arcade["classes"]
             if entry["key"] != arcade["goal_class"]
         ]
+        # The option is spelled for the lobby sign; the data is keyed by the map's
+        # entity name, and the two disagree -- the booth that hands out a shotgun
+        # is `shotty` and reads Pointman. Both spellings resolve here.
+        by_option_key = {entry["key"]: entry["key"] for entry in arcade["classes"]}
+        by_option_key.update({
+            entry["name"].lower().replace(" ", "_"): entry["key"]
+            for entry in arcade["classes"]
+        })
+
         chosen = self.options.suspension_starting_class.current_key
         if passthrough and passthrough.get("suspension_starting_class"):
             chosen = passthrough["suspension_starting_class"]
+        chosen = by_option_key.get(chosen, chosen)
         self.suspension_starting_class = (
             chosen if chosen in startable else self.random.choice(startable)
         )

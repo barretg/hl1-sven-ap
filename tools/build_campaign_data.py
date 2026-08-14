@@ -876,6 +876,7 @@ def build_suspension(registry: IdRegistry) -> dict:
                     "name": c.name,
                     "targetname": c.targetname,
                     "signal": c.signal,
+                    "portal": c.portal,
                     "map_gated": c.map_gated,
                     "grant": c.grant,
                 }

@@ -59,8 +59,12 @@ void ShowStatus( CBasePlayer@ pPlayer )
 		APChapter@ pChapter = g_Chapters[i];
 		string szStatus;
 
+		// A mission the seed left out is not listed at all. It used to print as
+		// "not in this seed", which on a single-campaign seed meant three
+		// campaigns' worth of missions saying so and the list a player actually
+		// wanted buried underneath them.
 		if( g_State.ChapterExcluded( pChapter.key ) )
-			szStatus = "not in this seed";
+			continue;
 		// Said instead of "unlocked", and instead of a finale's seal, rather than
 		// alongside either: having got into a mission is implied by having
 		// emptied it, and the list is read to find where there is still something
@@ -96,12 +100,9 @@ void ShowStatus( CBasePlayer@ pPlayer )
 
 		// A seed can hold several campaigns, so say which one a mission is from
 		// as the list moves from one to the next. Skipped entirely on a
-		// single-campaign seed, where the heading would just be noise.
-		//
-		// Excluded missions count for the heading too: they are still printed as
-		// "not in this seed", and skipping them here filed an excluded intro --
-		// always the first mission of its campaign -- under the previous
-		// campaign's heading.
+		// single-campaign seed, where the heading would just be noise. Excluded
+		// missions never reach here, so a campaign the seed left out prints no
+		// heading either.
 		if( bMultiCampaign && pChapter.campaign != szShown )
 		{
 			szShown = pChapter.campaign;
@@ -112,6 +113,18 @@ void ShowStatus( CBasePlayer@ pPlayer )
 
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
 			"  " + ( i < 10 ? " " : "" ) + i + ". " + pChapter.name + "  [" + szStatus + "]\n" );
+	}
+
+	// The arcade map is not a mission and has no number, so it is listed apart
+	// from them rather than being squeezed into the numbering. It has no hub
+	// console either, which makes `!warp` the only way in and worth saying here.
+	if( g_pArcade !is null )
+	{
+		string szArcade = g_Suspension.enabled ? "open" : "not in this seed";
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
+			"-- Arcade\n" );
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
+			"  " + g_pArcade.name + "  [" + szArcade + "]  !warp " + g_pArcade.map + "\n" );
 	}
 
 	// One line per call: the print buffer is 128 bytes and silently truncates.
@@ -784,6 +797,24 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 
 	szWanted.ToLowercase();
 
+	// The arcade map, which is not a chapter and so is not in the list below.
+	// It has no hub console either, which makes this the only way in.
+	string szArcadeName = g_pArcade !is null ? g_pArcade.name : "";
+	szArcadeName.ToLowercase();
+	if( g_pArcade !is null && ( szWanted == g_pArcade.map || szWanted == szArcadeName ) )
+	{
+		if( !g_Suspension.enabled )
+		{
+			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+				"[AP] " + g_pArcade.name + " is not in this seed.\n" );
+			return;
+		}
+		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+			"[AP] Travelling to " + g_pArcade.name + "...\n" );
+		ChangeLevel( g_pArcade.map );
+		return;
+	}
+
 	// A map name outright: `!warp hl_c11_a3`.
 	for( uint i = 0; i < g_Chapters.length(); ++i )
 	{
@@ -982,6 +1013,43 @@ void ReturnToHub()
 	ChangeLevel( HUB_MAP );
 }
 
+/*
+* Forget everything about the run in progress.
+*
+* Called when the client's session changes, which is the only thing that can
+* mean "a different slot, possibly a different seed". Every one of these is
+* derived from the client and will be rebuilt from the next snapshot; what must
+* not survive is anything that would let the old seed's answers leak into the
+* new one -- above all `g_SentChecks`, which is what stops a check being sent
+* twice and would otherwise silently swallow the new slot's first checks.
+*
+* The trip back to the hub is part of the reset rather than a courtesy: the map
+* we are standing on belongs to a mission the new slot may not have unlocked, or
+* may not contain at all.
+*/
+void ResetRunState()
+{
+	g_SentChecks.deleteAll();
+	g_CheckedLocations.deleteAll();
+	g_MissingLocations.deleteAll();
+	g_bMissionActive = false;
+	g_szLastChapterKey = "";
+	g_szIntendedMap = "";
+
+	// Pending files outlive a map change on purpose; a new slot must not inherit
+	// either of them.
+	ClearPendingFinale();
+	SetPendingHubReturn( false );
+
+	SuspensionResetRound();
+
+	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+		"[AP] New client session: returning to the hub.\n" );
+
+	if( g_szCurrentMap != HUB_MAP )
+		g_Scheduler.SetTimeout( "ReturnToHub", 2.0f );
+}
+
 // The map we are about to travel to. Non-empty means a change is already
 // queued, which is what stops two button presses, or a button press racing the
 // portal map's own teleporter, from issuing two changelevels at once.
@@ -1004,6 +1072,9 @@ void ChangeLevel( const string& in szMap )
 	if( g_szPendingLevel.Length() > 0 )
 		return;
 
+	// Where we meant to end up. Anywhere else the engine drops us is somewhere
+	// the campaign took us rather than somewhere we chose to go.
+	g_szIntendedMap = szMap;
 	g_szPendingLevel = szMap;
 	g_Scheduler.SetTimeout( "PerformLevelChange", LEVEL_CHANGE_DELAY );
 }
@@ -1037,10 +1108,21 @@ void PerformLevelChange()
 */
 void SetPendingHubReturn( bool bPending )
 {
+	g_bPendingHubReturn = bPending;
+
 	File@ pFile = g_FileSystem.OpenFile( AP_PENDING, OpenFile::WRITE );
 
 	if( pFile is null || !pFile.IsOpen() )
+	{
+		// This failing is what a phantom check looks like from the outside: the
+		// bounce never happens, the map we were carried into counts as played,
+		// and it sends its "Reached" and whatever weapons lie around it. Silence
+		// here is what made that impossible to tell apart from a logic bug.
+		if( bPending )
+			APLog( "FATAL: could not queue the hub return; "
+			     + "the next map will count as played" );
 		return;
+	}
 
 	pFile.Write( bPending ? "1\n" : "\n" );
 	pFile.Close();
@@ -1063,9 +1145,20 @@ void SetPendingFinale( const string& in szChapter )
 	File@ pFile = g_FileSystem.OpenFile( AP_PENDING_FINALE, OpenFile::WRITE );
 
 	if( pFile is null || !pFile.IsOpen() )
+	{
+		// Loud, because the symptom of a silent failure here is a finale that is
+		// never credited and a player replaying an ending that already worked.
+		if( szChapter.Length() > 0 )
+			APLog( "FATAL: could not arm the pending finale for " + szChapter );
 		return;
+	}
 
-	pFile.Write( szChapter + "\n" );
+	// The map it was armed on, so it cannot be consumed while we are still
+	// standing on it. MapStart runs more than once for a single load in some
+	// cases -- a `restart`, a plugin reload -- and without this the second run
+	// credited what the first had only just armed, which reads in game as a
+	// finale completing the instant you walk into it.
+	pFile.Write( szChapter + ( szChapter.Length() > 0 ? "|" + g_szCurrentMap : "" ) + "\n" );
 	pFile.Close();
 }
 
@@ -1097,6 +1190,22 @@ void ConsumePendingFinale()
 	if( szChapter.Length() == 0 )
 		return;
 
+	// `<chapter>|<map it was armed on>`. An older file carries no map, which
+	// reads as "any map" and behaves exactly as it did before.
+	string szArmedOn;
+	int iSplit = szChapter.Find( "|" );
+	if( iSplit >= 0 )
+	{
+		szArmedOn = szChapter.SubString( iSplit + 1, szChapter.Length() - iSplit - 1 );
+		szChapter = szChapter.SubString( 0, iSplit );
+	}
+
+	// Still standing where it was armed, so the map it belongs to has not ended
+	// yet and there is nothing to credit. Left armed rather than cleared: the
+	// map ending is still to come.
+	if( szArmedOn.Length() > 0 && szArmedOn == g_szCurrentMap )
+		return;
+
 	ClearPendingFinale();
 
 	APChapter@ pChapter = ChapterByKey( szChapter );
@@ -1126,17 +1235,22 @@ void ConsumePendingFinale()
 
 bool ConsumePendingHubReturn()
 {
+	// Either channel is enough. The file is the one that survives a plugin
+	// reload; the global is the one that survives the file being unwritable.
+	bool bPending = g_bPendingHubReturn;
+
 	File@ pFile = g_FileSystem.OpenFile( AP_PENDING, OpenFile::READ );
 
-	if( pFile is null || !pFile.IsOpen() )
-		return false;
+	if( pFile !is null && pFile.IsOpen() )
+	{
+		string szLine;
+		if( !pFile.EOFReached() )
+			pFile.ReadLine( szLine );
+		pFile.Close();
+		bPending = bPending || APTrim( szLine ) == "1";
+	}
 
-	string szLine;
-	if( !pFile.EOFReached() )
-		pFile.ReadLine( szLine );
-	pFile.Close();
-
-	if( APTrim( szLine ) != "1" )
+	if( !bPending )
 		return false;
 
 	SetPendingHubReturn( false );
