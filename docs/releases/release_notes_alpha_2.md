@@ -27,7 +27,7 @@ As the game host:
 Install the apworld by downloading and double clicking (or placing it in your custom_worlds folder)
 Open the Half-Life (Sven Co-op) Client and select your install directory
 Run /install in the client
-Connect the client to the multiworld, and open a server on the map -sp_campaign_lobby
+Connect the client to the multiworld, and open a server on the map -sp_campaign_portal
 Once your friends are in game with you (they can just join!), you can type !ap to see unlocked missions in the console, and !warp to change maps to the unlocked mission. (The in-game panels also work)
 
 ## Known Issues
