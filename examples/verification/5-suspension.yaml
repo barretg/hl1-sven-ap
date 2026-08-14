@@ -1,0 +1,79 @@
+# Verification seed 5 of 5 — Suspension, none of which has run in game
+#
+# Covers every unchecked item in section 7:
+#   The counters, the section boundaries, the vote buttons, the Juggernaut,
+#   the medal, the lesser medals rolling down, per-class section checks,
+#   the majority-class clear, and GOAL|suspension.
+#
+# Capped at medium, so exactly one Progressive Suspension Difficulty item
+# exists and the lobby starts able to vote easy and nothing else. Every class is
+# in the starting inventory, including the Juggernaut, because in game the
+# Juggernaut is gated on holding its item and nothing else -- the seven clears
+# that earn it are a logic rule, and waiting for them would mean seven full runs
+# before any of this could be tested at all.
+#
+# Order to work through, after !warp suspension:
+#
+#   1. Vote buttons. Press all four in the lobby. Easy presses; medium, hard and
+#      insane all refuse with a message. Hard and insane are not in this seed at
+#      all, and must refuse for that reason rather than open.
+#   2. Start an easy round. The server console should show
+#         suspension: tier voted easy
+#      If it never does, the counters are not being driven and nothing else in
+#      this section can pass. That is the one assumption everything rests on.
+#   3. Watch each section fall and confirm the check lands with it, not one
+#      section early or late.
+#   4. Switch class between sections, at least once. Each section check must name
+#      the class you were holding for *that* section.
+#   5. Walk the Juggernaut portal. It should grant the class on the spot even on
+#      easy, seal behind you, and refuse a second player. Check the restock
+#      stations still resupply you.
+#   6. Finish the round. The medal must match the team's death count, every
+#      lesser medal must arrive with it, and your clear must be credited to
+#      whichever class you spent most of the run as.
+#   7. From the Archipelago server console:  /send Ver5Suspension Progressive Suspension Difficulty
+#      Medium now votes.
+#   8. Clear a medium round as the Juggernaut. That is the capped tier, so it
+#      must send GOAL|suspension.
+#
+# Half-Life is on because a seed has to contain a campaign, not because anything
+# here needs it. Its checks are noise; ignore them.
+
+name: Ver5Suspension
+description: the arcade map, from the vote buttons through to its goal
+game: Half-Life (Sven Co-op)
+requires:
+  version: 0.6.7
+
+Half-Life (Sven Co-op):
+  include_half_life: true
+  missions_required: 1
+  chargesanity: false
+  exclude_intro_missions: true
+  logic_difficulty: loose
+  trap_percentage: 0
+
+  suspension: true
+  # On, so sections are credited per class and step 4 above has something to
+  # show. Every section then exists once per class per tier.
+  suspension_classanity: true
+  # Two tiers: easy open from the start, medium behind the one Progressive item.
+  suspension_max_difficulty: medium
+  # Reachable without a flawless run, so the medal test does not need one.
+  suspension_required_award: bronze
+  # Off, so a medium clear sends medium only and the two tiers stay legible.
+  suspension_difficulty_rolldown: false
+  suspension_max_awards_are_priority: false
+  suspension_starting_class: soldier
+
+  start_inventory:
+    # Every class, so switching mid-run is possible and the Juggernaut is
+    # available without first clearing seven runs.
+    "Suspension: Soldier": 1
+    "Suspension: GL Soldier": 1
+    "Suspension: Shotgunner": 1
+    "Suspension: SAW Gunner": 1
+    "Suspension: Sniper": 1
+    "Suspension: Medic": 1
+    "Suspension: Engineer": 1
+    "Suspension: Juggernaut": 1

@@ -245,8 +245,9 @@ The optional seventh field on `L` is `x y z`, and it is what `!find` points at.
 Only the kinds that are a *place* carry one: a charger's brush-model centre
 shifted by its `origin`, and the spot on the floor where a weapon's earliest copy
 sits. Reaching a map is not somewhere a player can be pointed, so those have
-none. 197 of the 353 locations have a position, and a plugin reading the older
-six-field form ignores the field entirely.
+none. 199 of the 706 locations have a position, and a plugin reading the older
+six-field form ignores the field entirely. Suspension's carry none: a section or
+a medal is an event, not a place.
 
 Chargers are the reason the generator parses BSP lump 14 at all: a
 `func_healthcharger` has no `origin` key, so its bounding box is the only record

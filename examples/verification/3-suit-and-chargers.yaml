@@ -1,0 +1,73 @@
+# Verification seed 3 of 5 — the HEV suit, the long jump module, and chargers
+#
+# Covers these unchecked items in docs/verification.md:
+#   4b. The suit pickup in Anomalous Materials is refused before the item arrives
+#   4b. Receiving the suit announces it once, and armour starts working
+#   4b. Crossing a map boundary does not announce it again
+#   4b. No long jump from Anomalous Materials through Surface Tension
+#   4b. Xen (hl_c14) onward: the module works, from the map's own .cfg
+#   4b. ungated=item_longjump IS present with shuffle_longjump: false
+#   5b. ba_canal1's two health chargers, built from one brush
+#   5b. Each charger sends its own check once, and only once
+#   5b. An empty charger still sends
+#   5b. Re-entering a mission does not resend its chargers
+#   5b. Ordinary buttons and doors send nothing
+#
+# The suit is shuffled and the module is not, which is the split that matters:
+# the suit has to be granted by an item or armour never works, while the module
+# is left to the campaign to hand out on its own schedule.
+#
+# Do the no-suit half first, before you send yourself the item:
+#   1. !warp Anomalous Materials, walk over the suit    — refused
+#   2. Pick up a battery, hold use on an HEV panel      — armour stays 0
+#   3. Then, from the Archipelago server console:  /send Ver3Suit HEV Suit
+#      Chat announces it once; armour starts climbing; cross into hl_c01_a2 and
+#      there must be no second announcement.
+#
+# Long jump: duck-jump in Surface Tension (nothing), then in Xen (works, and
+# nothing from us). The module is picked up in Lambda Core and equipped by every
+# .cfg from hl_c14 onward, which is where the "and everything after" comes from.
+#
+# Chargers: Duty Calls holds ba_canal1, whose two health chargers share brush
+# *196 with the second shifted 80 units. Drink from both. Each must send its own
+# check and neither may send the other's.
+
+name: Ver3Suit
+description: HEV suit gating, long jump left to the campaign, and every charger case
+game: Half-Life (Sven Co-op)
+requires:
+  version: 0.6.7
+
+Half-Life (Sven Co-op):
+  include_half_life: true
+  include_opposing_force: false
+  include_blue_shift: true
+  include_they_hunger: false
+
+  missions_required: 1
+  blue_shift_missions_required: 1
+
+  # On, or there are no charger checks to test at all.
+  chargesanity: true
+  exclude_intro_missions: true
+  logic_difficulty: loose
+  trap_percentage: 0
+
+  shuffle_hev_suit: true
+  # Off, so the campaign hands the module out itself and `ungated` carries it.
+  shuffle_longjump: false
+
+  start_inventory:
+    # Half-Life: the suit pickup, the last mission before the module, and the
+    # first mission whose .cfg equips one.
+    Anomalous Materials Unlock: 1
+    Surface Tension Unlock: 1
+    Xen Unlock: 1
+    # Blue Shift: ba_canal1's twin chargers, plus a second mission to leave for
+    # and come back from, which is the re-entry test.
+    Duty Calls Unlock: 1
+    Insecurity Unlock: 1
+    Glock: 1
+    MP5: 1
+    Shotgun: 1
+    RPG: 1

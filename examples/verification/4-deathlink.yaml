@@ -1,0 +1,62 @@
+# Verification seed 4 of 5 — DeathLink, two slots
+#
+# Covers these unchecked items in docs/verification.md:
+#   5. One explosion killing several players still sends exactly one DeathLink
+#   5. /amnesty 0 in the client makes the very next death go straight out
+#
+# Two documents, so one generation gives two slots on DeathLink. Both start with
+# an RPG and a mission to stand around in, because the test is a single explosion
+# killing several players at once and you have to be able to cause one.
+#
+# Amnesty starts at 2, which is the order to work through:
+#   1. Die once, then again  — chat counts down, nothing leaves the lobby
+#   2. In the client:  /amnesty 0
+#   3. Die once more          — one DeathLink goes out immediately
+#   4. Gather both players and fire an RPG at your feet: still exactly one
+#      DeathLink in the log, not one per player
+#
+# The checklist says four players; two is enough to prove the same thing, since
+# what is being tested is one report per event rather than per corpse. Add more
+# players to the lobby if you have them.
+
+name: Ver4DeathA
+description: DeathLink slot A
+game: Half-Life (Sven Co-op)
+requires:
+  version: 0.6.7
+
+Half-Life (Sven Co-op):
+  include_half_life: true
+  missions_required: 1
+  chargesanity: false
+  exclude_intro_missions: true
+  logic_difficulty: loose
+  trap_percentage: 0
+  death_link: true
+  death_link_amnesty: 2
+  start_inventory:
+    Office Complex Unlock: 1
+    RPG: 1
+    Glock: 1
+
+---
+
+name: Ver4DeathB
+description: DeathLink slot B
+game: Half-Life (Sven Co-op)
+requires:
+  version: 0.6.7
+
+Half-Life (Sven Co-op):
+  include_half_life: true
+  missions_required: 1
+  chargesanity: false
+  exclude_intro_missions: true
+  logic_difficulty: loose
+  trap_percentage: 0
+  death_link: true
+  death_link_amnesty: 2
+  start_inventory:
+    Office Complex Unlock: 1
+    RPG: 1
+    Glock: 1

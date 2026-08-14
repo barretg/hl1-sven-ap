@@ -1,0 +1,72 @@
+# Verification seed 1 of 5 — endgame credit, separate counts, chargesanity off
+#
+# Covers these unchecked items in docs/verification.md:
+#   0. A Leap Of Faith is credited when it ends
+#   0. Worlds Collide is credited when it ends
+#   0. The counts stay separate
+#   0. Charger lines absent on a chargesanity:false seed, and for a campaign left out
+#   4. !hub from a one-map mission credits nothing
+#   4. A mission you are carried through credits nothing, even unlocked
+#   4b. ungated=item_longjump is ABSENT with shuffle_longjump: true
+#   5a. With chargesanity:false, charger presses send nothing
+#
+# Three campaigns, each sealed one or two missions from its finale, and the
+# unlocks handed over up front so every ending is a short trip rather than a run.
+# They Hunger is deliberately left out: the tracker must show none of its
+# locations at all, which is the other half of the chargesanity test.
+#
+# Suggested order once connected:
+#   1. !tracker            — no charger lines anywhere, no They Hunger lines
+#   2. !warp Office Complex, then !hub          — nothing sent (one-map mission)
+#   3. Clear Unforeseen Consequences            — Office Complex must stay silent
+#                                                 even though it is unlocked
+#   4. !ap  — Nihilanth now open, Worlds Collide still sealed (counts separate)
+#   5. Clear Welcome To Black Mesa and Crush Depth, then Worlds Collide:
+#      press the button in of6a4b and watch the credit land after the map ends
+#   6. Clear Insecurity, then Power Struggle, then A Leap Of Faith:
+#      nothing on arrival, everything after the credits
+
+name: Ver1Endgames
+description: endgame credit, separate counts, no chargers
+game: Half-Life (Sven Co-op)
+requires:
+  version: 0.6.7
+
+Half-Life (Sven Co-op):
+  include_half_life: true
+  include_opposing_force: true
+  include_blue_shift: true
+  include_they_hunger: false
+
+  # Low enough that each finale is one or two missions away.
+  missions_required: 1
+  opposing_force_missions_required: 2
+  blue_shift_missions_required: 1
+
+  chargesanity: false
+  exclude_intro_missions: true
+  logic_difficulty: loose
+  trap_percentage: 0
+  shuffle_hev_suit: false
+  # On, so `ungated=` should carry no item_longjump. Seed 3 has it off.
+  shuffle_longjump: true
+
+  start_inventory:
+    # Half-Life: the pair that proves a carried-through mission credits nothing.
+    Unforeseen Consequences Unlock: 1
+    Office Complex Unlock: 1
+    # Opposing Force: two short missions to meet its count of 2.
+    Welcome To Black Mesa Unlock: 1
+    Crush Depth Unlock: 1
+    # Blue Shift: one mission to open Power Struggle, and A Leap Of Faith behind it.
+    Insecurity Unlock: 1
+    # Enough firepower that none of the above is a fight for its own sake.
+    Glock: 1
+    MP5: 1
+    Shotgun: 1
+    .357 Magnum: 1
+    RPG: 1
+    Crossbow: 1
+    Tau Cannon: 1
+    Gluon Gun: 1
+    Snarks: 1

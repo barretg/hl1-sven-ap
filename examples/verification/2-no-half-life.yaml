@@ -1,0 +1,53 @@
+# Verification seed 2 of 5 — a seed with no Half-Life in it
+#
+# Covers these unchecked items in docs/verification.md:
+#   0. Shared weapons still arrive without Half-Life
+#   0. The rolled starting weapon never arrives as an item
+#   0. allow_restricted_starting_weapon and the They Hunger spanner
+#
+# Opposing Force and They Hunger together, so the melee roll has three
+# candidates -- Crowbar, Pipe Wrench, Spanner -- rather than two.
+#
+# Check the spoiler log before you start, under Starting Items:
+#   * Spanner rolled    -- both remaining items are testable in this one seed.
+#                          Expect empty hands outside They Hunger until a weapon
+#                          arrives. That is the documented rough edge.
+#   * Pipe Wrench       -- the "never arrives as an item" half is testable.
+#                          Regenerate if you want the spanner case too.
+#   * Crowbar           -- neither is testable; regenerate.
+#
+# The Shotgun is in the starting inventory on purpose: the bug this guards
+# against was an Opposing Force seed containing shotguns but no Shotgun item, so
+# every one of them was refused for the whole run. Walk over one in of1a1 and it
+# must be collectable.
+
+name: Ver2NoHalfLife
+description: shared weapons and the rolled melee weapon, with Half-Life switched off
+game: Half-Life (Sven Co-op)
+requires:
+  version: 0.6.7
+
+Half-Life (Sven Co-op):
+  include_half_life: false
+  include_opposing_force: true
+  include_blue_shift: false
+  include_they_hunger: true
+
+  random_starting_weapon: true
+  allow_restricted_starting_weapon: true
+
+  missions_required: 1
+  opposing_force_missions_required: 1
+  they_hunger_missions_required: 1
+
+  chargesanity: false
+  exclude_intro_missions: true
+  logic_difficulty: loose
+  trap_percentage: 0
+
+  start_inventory:
+    # The item under test: it must exist in a seed with no Half-Life.
+    Shotgun: 1
+    # One map of each campaign to walk around in.
+    Welcome To Black Mesa Unlock: 1
+    "They Hunger: Episode 1 Unlock": 1
