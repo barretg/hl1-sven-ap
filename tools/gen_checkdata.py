@@ -85,7 +85,10 @@ def render(campaign: dict) -> str:
         for console, chapter_key in sorted(entry.get("consoles", {}).items()):
             lines.append(f"P|{console}|{chapter_key}")
 
-    for location in campaign["locations"]:
+    # By id, not in list order. The plugin keys these by id and never cares, but
+    # emitting them in whatever order the data files happen to merge in means any
+    # future change to the data layout rewrites half this file for no reason.
+    for location in sorted(campaign["locations"], key=lambda l: l["id"]):
         trigger = location["trigger"]
         kind = trigger["type"]
         if kind in ("pickup", "weapon_pickup"):
