@@ -1,9 +1,11 @@
-"""Emit the AngelScript plugin's data file from `campaign.json`.
+"""Emit the AngelScript plugin's data file from the generated campaign data.
 
 AngelScript has no JSON parser, so the plugin reads a line-oriented, pipe
 delimited format that `string.Split("|")` handles in one call. Regenerating this
-from the same JSON the apworld reads is what keeps location ids from drifting
-between the two halves of the project.
+from the same data the apworld reads is what keeps location ids from drifting
+between the two halves of the project. It goes through the world's own loader
+rather than opening files itself, so the two can never disagree about how the
+per-campaign files merge.
 
 Usage:
     python tools/gen_checkdata.py
@@ -12,13 +14,16 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
+import sys
 from pathlib import Path
 
 from campaign_layout import CLASSNAME_TO_ITEM, STARTING_WEAPONS
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CAMPAIGN_PATH = REPO_ROOT / "apworld" / "half_life_sven" / "data" / "campaign.json"
+WORLD_DIR = REPO_ROOT / "apworld" / "half_life_sven"
+sys.path.insert(0, str(WORLD_DIR))
+
+from data import load_campaign  # noqa: E402
 # The plugin tree is bundled inside the world package so a zipped .apworld can
 # install itself. Plugins may only read and write under scripts/plugins/store/,
 # so the data file sits there rather than next to the .as sources.
@@ -137,11 +142,10 @@ def render(campaign: dict) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--campaign", type=Path, default=CAMPAIGN_PATH)
     parser.add_argument("--out", type=Path, default=OUT_PATH)
     args = parser.parse_args(argv)
 
-    campaign = json.loads(args.campaign.read_text(encoding="utf-8"))
+    campaign = load_campaign()
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(render(campaign), encoding="utf-8")
 

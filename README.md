@@ -53,7 +53,8 @@ at [Half-Life Updated AP](https://github.com/randomcodegen/halflife-updated_ap).
 
 ```
 apworld/half_life_sven/     the Archipelago world
-  data/campaign.json        generated: chapters, items, locations, logic groups
+  data/index.json           generated: data version, weapon pool, logic groups
+  data/campaigns/*.json     generated: one file per campaign, its chapters and locations
   client/                   the AP client and the file bridge
   plugin/                   the Sven Co-op server plugin, plus its installer
     plugins/                mirrors svencoop/scripts/
@@ -147,7 +148,7 @@ python tools/build_apworld.py --install "<Archipelago>/custom_worlds"
 python tools/install_plugin.py --game "<Sven Co-op>"
 ```
 
-`campaign.json` and `checkdata.txt` are both committed, so neither the apworld
+The generated data and `checkdata.txt` are both committed, so neither the apworld
 nor the client needs Sven Co-op installed — only the generators do.
 
 ## Status

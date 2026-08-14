@@ -7,7 +7,6 @@ if someone edits one without regenerating the other.
 
 from __future__ import annotations
 
-import json
 import re
 import sys
 from pathlib import Path
@@ -16,8 +15,10 @@ import pytest
 
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "tools"))
+sys.path.insert(0, str(REPO / "apworld" / "half_life_sven"))
 
-CAMPAIGN_PATH = REPO / "apworld" / "half_life_sven" / "data" / "campaign.json"
+from data import load_campaign  # noqa: E402
+
 CHECKDATA_PATH = (
     REPO / "apworld" / "half_life_sven" / "plugin"
     / "plugins" / "store" / "archipelago" / "checkdata.txt"
@@ -26,7 +27,12 @@ CHECKDATA_PATH = (
 
 @pytest.fixture(scope="module")
 def campaign() -> dict:
-    return json.loads(CAMPAIGN_PATH.read_text(encoding="utf-8"))
+    """The merged data, which is what every consumer sees.
+
+    Read through the world's own loader rather than off disk, so these tests
+    cover the merge of the per-campaign files as well as their contents.
+    """
+    return load_campaign()
 
 
 @pytest.fixture(scope="module")

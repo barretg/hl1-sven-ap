@@ -1,0 +1,638 @@
+{
+ "kind": "campaign",
+ "campaign": {
+  "key": "they_hunger",
+  "name": "They Hunger",
+  "option": "include_they_hunger",
+  "missions_option": "they_hunger_missions_required",
+  "goal_chapter": "th_episode_3",
+  "goal_requires": "",
+  "intro_chapter": "",
+  "chapters": [
+   "th_episode_1",
+   "th_episode_2",
+   "th_episode_3"
+  ],
+  "melee": {
+   "Crowbar": [
+    "weapon_crowbar"
+   ],
+   "Pipe Wrench": [
+    "weapon_pipewrench"
+   ],
+   "Spanner": [
+    "weapon_spanner"
+   ]
+  },
+  "consoles": {
+   "th_ep01": "th_episode_1",
+   "th_ep02": "th_episode_2",
+   "th_ep03": "th_episode_3"
+  }
+ },
+ "chapters": [
+  {
+   "key": "th_episode_1",
+   "name": "They Hunger: Episode 1",
+   "maps": [
+    "th_ep1_00",
+    "th_ep1_01",
+    "th_ep1_02",
+    "th_ep1_03",
+    "th_ep1_04",
+    "th_ep1_05"
+   ],
+   "index": 37,
+   "campaign": "they_hunger",
+   "is_goal": false,
+   "gates": {},
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "th_episode_2",
+   "name": "They Hunger: Episode 2",
+   "maps": [
+    "th_ep2_00",
+    "th_ep2_01",
+    "th_ep2_02",
+    "th_ep2_03",
+    "th_ep2_04"
+   ],
+   "index": 38,
+   "campaign": "they_hunger",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged_they_hunger"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "th_episode_3",
+   "name": "They Hunger: Episode 3",
+   "maps": [
+    "th_ep3_00",
+    "th_ep3_01",
+    "th_ep3_02",
+    "th_ep3_03",
+    "th_ep3_04",
+    "th_ep3_05",
+    "th_ep3_06",
+    "th_ep3_07"
+   ],
+   "index": 39,
+   "campaign": "they_hunger",
+   "is_goal": true,
+   "gates": {
+    "strict": [
+     "ranged_they_hunger"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  }
+ ],
+ "items": [
+  {
+   "id": 7710053,
+   "name": "They Hunger: Episode 1 Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "th_episode_1",
+   "campaign": "they_hunger"
+  },
+  {
+   "id": 7710054,
+   "name": "They Hunger: Episode 2 Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "th_episode_2",
+   "campaign": "they_hunger"
+  }
+ ],
+ "locations": [
+  {
+   "id": 7720273,
+   "name": "They Hunger: Episode 1 - Part 1 Reached",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_00",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep1_00"
+   }
+  },
+  {
+   "id": 7720274,
+   "name": "They Hunger: Episode 1 - Part 2 Reached",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_01",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep1_01"
+   }
+  },
+  {
+   "id": 7720275,
+   "name": "They Hunger: Episode 1 - Part 3 Reached",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_02",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep1_02"
+   }
+  },
+  {
+   "id": 7720276,
+   "name": "They Hunger: Episode 1 - Part 4 Reached",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_03",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep1_03"
+   }
+  },
+  {
+   "id": 7720277,
+   "name": "They Hunger: Episode 1 - Part 5 Reached",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_04",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep1_04"
+   }
+  },
+  {
+   "id": 7720278,
+   "name": "They Hunger: Episode 1 - Part 6 Reached",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_05",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep1_05"
+   }
+  },
+  {
+   "id": 7720279,
+   "name": "They Hunger: Episode 2 - Part 1 Reached",
+   "chapter": "th_episode_2",
+   "map": "th_ep2_00",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep2_00"
+   }
+  },
+  {
+   "id": 7720280,
+   "name": "They Hunger: Episode 2 - Part 2 Reached",
+   "chapter": "th_episode_2",
+   "map": "th_ep2_01",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep2_01"
+   }
+  },
+  {
+   "id": 7720281,
+   "name": "They Hunger: Episode 2 - Part 3 Reached",
+   "chapter": "th_episode_2",
+   "map": "th_ep2_02",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep2_02"
+   }
+  },
+  {
+   "id": 7720282,
+   "name": "They Hunger: Episode 2 - Part 4 Reached",
+   "chapter": "th_episode_2",
+   "map": "th_ep2_03",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep2_03"
+   }
+  },
+  {
+   "id": 7720283,
+   "name": "They Hunger: Episode 2 - Part 5 Reached",
+   "chapter": "th_episode_2",
+   "map": "th_ep2_04",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep2_04"
+   }
+  },
+  {
+   "id": 7720284,
+   "name": "They Hunger: Episode 3 - Part 1 Reached",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_00",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep3_00"
+   }
+  },
+  {
+   "id": 7720285,
+   "name": "They Hunger: Episode 3 - Health Charger 1 (Part 1)",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_00",
+   "trigger": {
+    "type": "charger",
+    "map": "th_ep3_00",
+    "classname": "func_healthcharger",
+    "model": "*273"
+   },
+   "position": [
+    -1504,
+    -3468,
+    248
+   ]
+  },
+  {
+   "id": 7720286,
+   "name": "They Hunger: Episode 3 - Health Charger 2 (Part 1)",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_00",
+   "trigger": {
+    "type": "charger",
+    "map": "th_ep3_00",
+    "classname": "func_healthcharger",
+    "model": "*471"
+   },
+   "position": [
+    -1038,
+    -3732,
+    2488
+   ]
+  },
+  {
+   "id": 7720287,
+   "name": "They Hunger: Episode 3 - Part 2 Reached",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_01",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep3_01"
+   }
+  },
+  {
+   "id": 7720288,
+   "name": "They Hunger: Episode 3 - Part 3 Reached",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_02",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep3_02"
+   }
+  },
+  {
+   "id": 7720289,
+   "name": "They Hunger: Episode 3 - Part 4 Reached",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_03",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep3_03"
+   }
+  },
+  {
+   "id": 7720290,
+   "name": "They Hunger: Episode 3 - Part 5 Reached",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_04",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep3_04"
+   }
+  },
+  {
+   "id": 7720291,
+   "name": "They Hunger: Episode 3 - Part 6 Reached",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_05",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep3_05"
+   }
+  },
+  {
+   "id": 7720292,
+   "name": "They Hunger: Episode 3 - Part 7 Reached",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_06",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep3_06"
+   }
+  },
+  {
+   "id": 7720293,
+   "name": "They Hunger: Episode 3 - Part 8 Reached",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_07",
+   "trigger": {
+    "type": "map_reached",
+    "map": "th_ep3_07"
+   }
+  },
+  {
+   "id": 7720321,
+   "name": "They Hunger - First .357 Magnum",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_02",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep1_02",
+    "classnames": [
+     "weapon_357"
+    ]
+   },
+   "position": [
+    3484,
+    -1708,
+    193
+   ]
+  },
+  {
+   "id": 7720322,
+   "name": "They Hunger - First TNT",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_03",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep1_03",
+    "classnames": [
+     "weapon_handgrenade"
+    ]
+   },
+   "position": [
+    -4802,
+    1980,
+    -84
+   ]
+  },
+  {
+   "id": 7720323,
+   "name": "They Hunger - First Shovel",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_01",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep1_01",
+    "classnames": [
+     "weapon_pipewrench"
+    ]
+   },
+   "position": [
+    -52,
+    -461,
+    -64
+   ]
+  },
+  {
+   "id": 7720324,
+   "name": "They Hunger - First Colt 1911",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_01",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep1_01",
+    "classnames": [
+     "weapon_colt1911"
+    ]
+   },
+   "position": [
+    1628,
+    1848,
+    278
+   ]
+  },
+  {
+   "id": 7720325,
+   "name": "They Hunger - First Taurus",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_00",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep3_00",
+    "classnames": [
+     "weapon_th_taurus"
+    ]
+   },
+   "position": [
+    -805,
+    -3630,
+    2608
+   ]
+  },
+  {
+   "id": 7720326,
+   "name": "They Hunger - First Sawed-Off Shotgun",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_01",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep1_01",
+    "classnames": [
+     "weapon_sawedoff"
+    ]
+   },
+   "position": [
+    -715,
+    239,
+    264
+   ]
+  },
+  {
+   "id": 7720327,
+   "name": "They Hunger - First Grease Gun",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_04",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep3_04",
+    "classnames": [
+     "weapon_greasegun"
+    ]
+   },
+   "position": [
+    -2124,
+    -802,
+    -976
+   ]
+  },
+  {
+   "id": 7720328,
+   "name": "They Hunger - First Tommy Gun",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_03",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep1_03",
+    "classnames": [
+     "weapon_tommygun"
+    ]
+   },
+   "position": [
+    1106,
+    750,
+    156
+   ]
+  },
+  {
+   "id": 7720329,
+   "name": "They Hunger - First M14",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_01",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep1_01",
+    "classnames": [
+     "weapon_m14"
+    ]
+   },
+   "position": [
+    411,
+    -169,
+    -88
+   ]
+  },
+  {
+   "id": 7720330,
+   "name": "They Hunger - First M16A1",
+   "chapter": "th_episode_2",
+   "map": "th_ep2_00",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep2_00",
+    "classnames": [
+     "weapon_m16a1"
+    ]
+   },
+   "position": [
+    2652,
+    -206,
+    80
+   ]
+  },
+  {
+   "id": 7720331,
+   "name": "They Hunger - First Tesla Gun",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_04",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep1_04",
+    "classnames": [
+     "weapon_teslagun"
+    ]
+   },
+   "position": [
+    2637,
+    -4784,
+    -1216
+   ]
+  },
+  {
+   "id": 7720332,
+   "name": "They Hunger - First Spanner",
+   "chapter": "th_episode_2",
+   "map": "th_ep2_00",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep2_00",
+    "classnames": [
+     "weapon_spanner"
+    ]
+   },
+   "position": [
+    -1362,
+    200,
+    34
+   ]
+  },
+  {
+   "id": 7720333,
+   "name": "They Hunger - First Umbrella",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_01",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep1_01",
+    "classnames": [
+     "weapon_crowbar"
+    ]
+   },
+   "position": [
+    64,
+    344,
+    267
+   ]
+  },
+  {
+   "id": 7720350,
+   "name": "They Hunger: Episode 1 - Complete",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_05",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "th_episode_1",
+    "map": "th_ep1_05"
+   }
+  },
+  {
+   "id": 7720351,
+   "name": "They Hunger: Episode 2 - Complete",
+   "chapter": "th_episode_2",
+   "map": "th_ep2_04",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "th_episode_2",
+    "map": "th_ep2_04"
+   }
+  },
+  {
+   "id": 7720352,
+   "name": "They Hunger: Episode 3 - Complete",
+   "chapter": "th_episode_3",
+   "map": "th_ep3_07",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "th_episode_3",
+    "map": "th_ep3_07"
+   }
+  }
+ ],
+ "restricted_classnames": {
+  "weapon_colt1911": [
+   "they_hunger"
+  ],
+  "weapon_th_taurus": [
+   "they_hunger"
+  ],
+  "weapon_sawedoff": [
+   "they_hunger"
+  ],
+  "weapon_greasegun": [
+   "they_hunger"
+  ],
+  "weapon_tommygun": [
+   "they_hunger"
+  ],
+  "weapon_m14": [
+   "they_hunger"
+  ],
+  "weapon_m16a1": [
+   "they_hunger"
+  ],
+  "weapon_teslagun": [
+   "they_hunger"
+  ],
+  "weapon_spanner": [
+   "they_hunger"
+  ]
+ }
+}

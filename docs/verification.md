@@ -5,7 +5,7 @@
 | Area | How | Status |
 | --- | --- | --- |
 | Bridge protocol | `pytest tests/test_bridge.py` | passing |
-| Data consistency (`campaign.json` ↔ `checkdata.txt`) | `pytest tests/test_campaign_data.py` | passing |
+| Data consistency (`data/` ↔ `checkdata.txt`) | `pytest tests/test_campaign_data.py` | passing |
 | World generation, AP 0.6.7 | `ArchipelagoGenerate` on real seeds | passing |
 | Option matrix | `missions_required` 1 / 8 / 17, strict + loose, suit and long jump on and off, 3-slot multiworld | passing |
 | Campaign matrix | all four enabled, Opposing Force alone, They Hunger alone, every campaign switched off, and a pre-campaign YAML | passing |

@@ -265,8 +265,8 @@ not run against the installed engine, try Metamod, and only then consider
 invalidate the plan, and it should also produce the map-diff between the two
 branches described above, since that is a generator run and needs no game.
 
-**Phase 1, data.** New layout module, regenerate `campaign.json`, `ids.json` and
-`checkdata.txt` against `valve/maps`. Port the test suite. This phase needs no
+**Phase 1, data.** New layout module, regenerate `data/index.json`,
+`data/campaigns/*.json`, `ids.json` and `checkdata.txt` against `valve/maps`. Port the test suite. This phase needs no
 game running and no C++, and it produces a world that generates seeds.
 
 **Phase 2, the world and client.** Fork the world package, strip the three

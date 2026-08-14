@@ -1,9 +1,14 @@
-"""Generate `apworld/half_life_sven/data/campaign.json` from the shipped BSPs.
+"""Generate `apworld/half_life_sven/data/` from the shipped BSPs.
 
 The Half-Life campaign maps are the source of truth for what a location can be:
 we only ever create a check for something that provably exists in the map file.
 The generated JSON is committed, so neither the apworld nor the client needs Sven
 Co-op installed -- only this tool does.
+
+Output is one file per campaign under `data/campaigns/`, plus `data/index.json`
+for what is genuinely shared: the data version, the weapon pool, the logic groups
+and the starting weapons. `data/__init__.py` merges them back into the single
+dict the rest of the project reads.
 
 Usage:
     python tools/build_campaign_data.py --maps "<...>/svencoop/maps"
@@ -51,7 +56,9 @@ from campaign_layout import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-OUT_PATH = REPO_ROOT / "apworld" / "half_life_sven" / "data" / "campaign.json"
+DATA_DIR = REPO_ROOT / "apworld" / "half_life_sven" / "data"
+INDEX_NAME = "index.json"
+CAMPAIGN_SUBDIR = "campaigns"
 
 # Append-only registry of every id ever handed out.
 #
@@ -722,6 +729,53 @@ def build_items(
     return items
 
 
+def split(data: dict) -> dict[str, dict]:
+    """Partition the built data into the files that get committed.
+
+    Keyed by path relative to `data/`. Everything a single campaign owns goes in
+    its own file; the rest is shared and stays in the index. Each partition keeps
+    the relative order `build` produced, which is what lets the loader rebuild
+    the chapter, campaign and item lists exactly as they were.
+    """
+    campaign_of_chapter = {c["key"]: c["campaign"] for c in data["chapters"]}
+    files: dict[str, dict] = {}
+
+    for campaign in data["campaigns"]:
+        key = campaign["key"]
+        files[f"{CAMPAIGN_SUBDIR}/{key}.json"] = {
+            "kind": "campaign",
+            "campaign": campaign,
+            "chapters": [c for c in data["chapters"] if c["campaign"] == key],
+            # Only the mission unlocks. Weapons are shared: the same Shotgun item
+            # is found across campaigns and must stay one item in one place.
+            "items": [
+                i for i in data["items"]
+                if i.get("group") == "chapter" and i.get("campaign") == key
+            ],
+            "locations": [
+                l for l in data["locations"]
+                if campaign_of_chapter.get(l["chapter"]) == key
+            ],
+            # Classnames only this campaign's map script defines.
+            "restricted_classnames": {
+                classname: keys
+                for classname, keys in data["restricted_classnames"].items()
+                if key in keys
+            },
+        }
+
+    files[INDEX_NAME] = {
+        "data_version": data["data_version"],
+        # Order is load-bearing: chapters[0] is the intro mission and
+        # campaigns[0] is the fallback campaign.
+        "files": [f"{CAMPAIGN_SUBDIR}/{c['key']}.json" for c in data["campaigns"]],
+        "items": [i for i in data["items"] if i.get("group") != "chapter"],
+        "requirement_groups": data["requirement_groups"],
+        "starting_weapons": data["starting_weapons"],
+    }
+    return files
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -730,7 +784,7 @@ def main(argv: list[str] | None = None) -> int:
         required=True,
         help="path to the svencoop/maps directory",
     )
-    parser.add_argument("--out", type=Path, default=OUT_PATH)
+    parser.add_argument("--out", type=Path, default=DATA_DIR, help="the data directory")
     parser.add_argument("--ids", type=Path, default=IDS_PATH)
     args = parser.parse_args(argv)
 
@@ -740,12 +794,15 @@ def main(argv: list[str] | None = None) -> int:
     data = build(args.maps, registry)
     registry.save()
 
-    args.out.parent.mkdir(parents=True, exist_ok=True)
-    args.out.write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8")
+    files = split(data)
+    for name, payload in files.items():
+        path = args.out / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(payload, indent=1) + "\n", encoding="utf-8")
 
     added = len(registry.data["locations"]) - known
     progression = sum(1 for i in data["items"] if i["classification"] == "progression")
-    print(f"wrote {args.out}")
+    print(f"wrote {len(files)} files into {args.out}")
     print(f"  data version: {data['data_version']}"
           + (f"  ({added} new location ids)" if added else ""))
     print(f"  chapters : {len(data['chapters'])}")

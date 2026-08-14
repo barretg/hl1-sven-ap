@@ -232,6 +232,40 @@ L|7720031|hl_c16_a3|map_reached||Interloper - Part 3 Reached
 L|7720032|hl_c16_a4|map_reached||Interloper - Part 4 Reached
 L|7720033|hl_c17|map_reached||Nihilanth - Part 1 Reached
 L|7720034|hl_c18|map_reached||Nihilanth - Part 2 Reached
+L|7720160|hl_c02_a1|weapon_pickup|weapon_glock,weapon_9mmhandgun|First Glock|2221 1976 914
+L|7720161|hl_c05_a3|weapon_pickup|weapon_357|First .357 Magnum|-1439 255 -1034
+L|7720162|hl_c04|weapon_pickup|weapon_9mmAR,weapon_m16|First MP5|-888 -1080 64
+L|7720163|hl_c03|weapon_pickup|weapon_shotgun|First Shotgun|1690 -742 255
+L|7720164|hl_c08_a1|weapon_pickup|weapon_crossbow|First Crossbow|1420 288 -588
+L|7720165|hl_c11_a2|weapon_pickup|weapon_rpg|First RPG|-2888 -5008 -1256
+L|7720166|hl_c10|weapon_pickup|weapon_gauss|First Tau Cannon|-1184 432 464
+L|7720167|hl_c13_a1|weapon_pickup|weapon_egon|First Gluon Gun|-2534 310 -80
+L|7720168|hl_c11_a3|weapon_pickup|weapon_hornetgun|First Hivehand|96 320 -1117
+L|7720169|hl_c07_a1|weapon_pickup|weapon_satchel|First Satchel Charge|1384 -2300 -860
+L|7720170|hl_c07_a1|weapon_pickup|weapon_tripmine|First Tripmine|3060 -1896 -1780
+L|7720171|hl_c10|weapon_pickup|weapon_snark|First Snarks|-608 144 256
+L|7720172|hl_c02_a2|weapon_pickup|weapon_handgrenade|First Hand Grenade|-1815 -2875 1509
+L|7720429|hl_c01_a1|weapon_pickup|item_suit|First HEV Suit|-3665 926 -280
+L|7720430|hl_c13_a4|weapon_pickup|item_longjump|First Long Jump Module|1855 -297 -244
+L|7720173|hl_c02_a1|weapon_pickup|weapon_crowbar|First Crowbar|1678 1943 -129
+L|7720035|hl_c00|chapter_complete|black_mesa_inbound|Black Mesa Inbound - Complete
+L|7720036|hl_c01_a2|chapter_complete|anomalous_materials|Anomalous Materials - Complete
+L|7720037|hl_c02_a2|chapter_complete|unforeseen_consequences|Unforeseen Consequences - Complete
+L|7720038|hl_c03|chapter_complete|office_complex|Office Complex - Complete
+L|7720039|hl_c04|chapter_complete|weve_got_hostiles|We've Got Hostiles - Complete
+L|7720040|hl_c05_a3|chapter_complete|blast_pit|Blast Pit - Complete
+L|7720041|hl_c06|chapter_complete|power_up|Power Up - Complete
+L|7720042|hl_c07_a2|chapter_complete|on_a_rail|On A Rail - Complete
+L|7720043|hl_c08_a2|chapter_complete|apprehension|Apprehension - Complete
+L|7720044|hl_c09|chapter_complete|residue_processing|Residue Processing - Complete
+L|7720045|hl_c10|chapter_complete|questionable_ethics|Questionable Ethics - Complete
+L|7720046|hl_c11_a5|chapter_complete|surface_tension|Surface Tension - Complete
+L|7720047|hl_c12|chapter_complete|forget_about_freeman|Forget About Freeman - Complete
+L|7720048|hl_c13_a4|chapter_complete|lambda_core|Lambda Core - Complete
+L|7720049|hl_c14|chapter_complete|xen|Xen - Complete
+L|7720050|hl_c15|chapter_complete|gonarchs_lair|Gonarch's Lair - Complete
+L|7720051|hl_c16_a4|chapter_complete|interloper|Interloper - Complete
+L|7720052|hl_c18|chapter_complete|nihilanth|Nihilanth - Complete
 L|7720417|of0a0|map_reached||Incoming - Reached
 L|7720175|of1a1|map_reached||Welcome To Black Mesa - Part 1 Reached
 L|7720176|of1a1|charger|func_healthcharger:*108|Welcome To Black Mesa - Health Charger (Part 1)|-584 2980 56
@@ -288,6 +322,36 @@ L|7720226|of6a4|map_reached||Worlds Collide - Part 1 Reached
 L|7720227|of6a4b|map_reached||Worlds Collide - Part 2 Reached
 L|7720228|of6a4b|charger|func_healthcharger:*109|Worlds Collide - Health Charger (Part 2)|-1860 -1088 -488
 L|7720229|of6a4b|charger|func_recharge:*110|Worlds Collide - HEV Charger (Part 2)|-1860 -1136 -488
+L|7720294|of1a5|weapon_pickup|weapon_glock,weapon_9mmhandgun|Opposing Force - First Glock|1824 -3456 1339
+L|7720295|of2a1b|weapon_pickup|weapon_9mmAR,weapon_m16|Opposing Force - First MP5|-516 2300 -784
+L|7720296|of1a3|weapon_pickup|weapon_shotgun|Opposing Force - First Shotgun|808 -2584 832
+L|7720297|of2a6|weapon_pickup|weapon_rpg|Opposing Force - First RPG|2988 3084 -576
+L|7720298|of1a6|weapon_pickup|weapon_satchel|Opposing Force - First Satchel Charge|232 -1284 8
+L|7720299|of2a4|weapon_pickup|weapon_tripmine|Opposing Force - First Tripmine|64 678 22
+L|7720300|of4a2|weapon_pickup|weapon_snark|Opposing Force - First Snarks|-1768 760 417
+L|7720301|of1a4b|weapon_pickup|weapon_handgrenade|Opposing Force - First Hand Grenade|-544 1856 -976
+L|7720302|of1a2|weapon_pickup|weapon_eagle|Opposing Force - First Desert Eagle|365 -589 -156
+L|7720303|of5a1|weapon_pickup|weapon_m249,weapon_saw|Opposing Force - First SAW|-869 -151 220
+L|7720304|of5a1|weapon_pickup|weapon_sniperrifle|Opposing Force - First Sniper Rifle|-640 -1408 136
+L|7720305|of3a5|weapon_pickup|weapon_displacer|Opposing Force - First Displacer Cannon|1414 302 240
+L|7720306|of4a2|weapon_pickup|weapon_sporelauncher|Opposing Force - First Spore Launcher|-1624 -432 384
+L|7720307|of4a3|weapon_pickup|weapon_grapple|Opposing Force - First Barnacle Grapple|-338 -504 337
+L|7720309|of1a1|weapon_pickup|weapon_pipewrench|Opposing Force - First Pipe Wrench|-1152 -560 -112
+L|7720310|of2a4|weapon_pickup|weapon_minigun|Opposing Force - First Minigun|83 564 6
+L|7720431|of1a1|weapon_pickup|item_suit|Opposing Force - First HEV Suit|367 2816 48
+L|7720311|of1a2|weapon_pickup|weapon_crowbar|Opposing Force - First Combat Knife|549 -2822 68
+L|7720426|of0a0|chapter_complete|of_incoming|Incoming - Complete
+L|7720335|of1a2|chapter_complete|of_welcome_to_black_mesa|Welcome To Black Mesa - Complete
+L|7720427|of1a4b|chapter_complete|of_we_are_pulling_out|We Are Pulling Out - Complete
+L|7720337|of1a6|chapter_complete|of_missing_in_action|Missing In Action - Complete
+L|7720338|of2a2|chapter_complete|of_friendly_fire|Friendly Fire - Complete
+L|7720428|of2a6|chapter_complete|of_we_are_not_alone|We Are Not Alone - Complete
+L|7720340|of3a2|chapter_complete|of_crush_depth|Crush Depth - Complete
+L|7720341|of3a6|chapter_complete|of_vicarious_reality|Vicarious Reality - Complete
+L|7720342|of4a4|chapter_complete|of_pit_worms_nest|Pit Worm's Nest - Complete
+L|7720362|of5a4|chapter_complete|of_foxtrot_uniform|Foxtrot Uniform - Complete
+L|7720416|of6a3|chapter_complete|of_the_package|The Package - Complete
+L|7720436|of6a4b|chapter_complete|of_worlds_collide|Worlds Collide - Complete
 L|7720231|ba_tram1|map_reached||Living Quarters Outbound - Part 1 Reached
 L|7720232|ba_tram2|map_reached||Living Quarters Outbound - Part 2 Reached
 L|7720233|ba_tram3|map_reached||Living Quarters Outbound - Part 3 Reached
@@ -331,6 +395,23 @@ L|7720269|ba_power2|map_reached||Power Struggle - Part 3 Reached
 L|7720271|ba_power2|charger|func_healthcharger:*197|Power Struggle - Health Charger 1 (Part 3)|-1560 694 80
 L|7720270|ba_power2|charger|func_healthcharger:*112|Power Struggle - Health Charger 2 (Part 3)|64 -1240 -356
 L|7720433|ba_outro|map_reached||A Leap Of Faith - Reached
+L|7720312|ba_security2|weapon_pickup|weapon_glock,weapon_9mmhandgun|Blue Shift - First Glock
+L|7720313|ba_yard1|weapon_pickup|weapon_357|Blue Shift - First .357 Magnum|-72 -1765 0
+L|7720314|ba_power1|weapon_pickup|weapon_9mmAR,weapon_m16|Blue Shift - First MP5|-898 -1882 -112
+L|7720315|ba_canal2|weapon_pickup|weapon_shotgun|Blue Shift - First Shotgun|400 2184 -88
+L|7720316|ba_yard5|weapon_pickup|weapon_rpg|Blue Shift - First RPG|-344 2000 93
+L|7720317|ba_yard1|weapon_pickup|weapon_satchel|Blue Shift - First Satchel Charge|-2662 -1550 92
+L|7720318|ba_xen2|weapon_pickup|weapon_snark|Blue Shift - First Snarks|1160 3384 -3576
+L|7720319|ba_yard1|weapon_pickup|weapon_handgrenade|Blue Shift - First Hand Grenade|-2635 -1550 92
+L|7720432|ba_tram1|weapon_pickup|item_suit|Blue Shift - First HEV Suit|80 -304 3088
+L|7720320|ba_canal1|weapon_pickup|weapon_crowbar|Blue Shift - First Crowbar|2080 288 56
+L|7720344|ba_tram3|chapter_complete|bs_living_quarters|Living Quarters Outbound - Complete
+L|7720345|ba_elevator|chapter_complete|bs_insecurity|Insecurity - Complete
+L|7720346|ba_canal3|chapter_complete|bs_duty_calls|Duty Calls - Complete
+L|7720347|ba_yard5a|chapter_complete|bs_captive_freight|Captive Freight - Complete
+L|7720348|ba_xen6|chapter_complete|bs_focal_point|Focal Point - Complete
+L|7720434|ba_power2|chapter_complete|bs_power_struggle|Power Struggle - Complete
+L|7720435|ba_outro|chapter_complete|bs_leap_of_faith|A Leap Of Faith - Complete
 L|7720273|th_ep1_00|map_reached||They Hunger: Episode 1 - Part 1 Reached
 L|7720274|th_ep1_01|map_reached||They Hunger: Episode 1 - Part 2 Reached
 L|7720275|th_ep1_02|map_reached||They Hunger: Episode 1 - Part 3 Reached
@@ -352,50 +433,6 @@ L|7720290|th_ep3_04|map_reached||They Hunger: Episode 3 - Part 5 Reached
 L|7720291|th_ep3_05|map_reached||They Hunger: Episode 3 - Part 6 Reached
 L|7720292|th_ep3_06|map_reached||They Hunger: Episode 3 - Part 7 Reached
 L|7720293|th_ep3_07|map_reached||They Hunger: Episode 3 - Part 8 Reached
-L|7720160|hl_c02_a1|weapon_pickup|weapon_glock,weapon_9mmhandgun|First Glock|2221 1976 914
-L|7720161|hl_c05_a3|weapon_pickup|weapon_357|First .357 Magnum|-1439 255 -1034
-L|7720162|hl_c04|weapon_pickup|weapon_9mmAR,weapon_m16|First MP5|-888 -1080 64
-L|7720163|hl_c03|weapon_pickup|weapon_shotgun|First Shotgun|1690 -742 255
-L|7720164|hl_c08_a1|weapon_pickup|weapon_crossbow|First Crossbow|1420 288 -588
-L|7720165|hl_c11_a2|weapon_pickup|weapon_rpg|First RPG|-2888 -5008 -1256
-L|7720166|hl_c10|weapon_pickup|weapon_gauss|First Tau Cannon|-1184 432 464
-L|7720167|hl_c13_a1|weapon_pickup|weapon_egon|First Gluon Gun|-2534 310 -80
-L|7720168|hl_c11_a3|weapon_pickup|weapon_hornetgun|First Hivehand|96 320 -1117
-L|7720169|hl_c07_a1|weapon_pickup|weapon_satchel|First Satchel Charge|1384 -2300 -860
-L|7720170|hl_c07_a1|weapon_pickup|weapon_tripmine|First Tripmine|3060 -1896 -1780
-L|7720171|hl_c10|weapon_pickup|weapon_snark|First Snarks|-608 144 256
-L|7720172|hl_c02_a2|weapon_pickup|weapon_handgrenade|First Hand Grenade|-1815 -2875 1509
-L|7720429|hl_c01_a1|weapon_pickup|item_suit|First HEV Suit|-3665 926 -280
-L|7720430|hl_c13_a4|weapon_pickup|item_longjump|First Long Jump Module|1855 -297 -244
-L|7720173|hl_c02_a1|weapon_pickup|weapon_crowbar|First Crowbar|1678 1943 -129
-L|7720294|of1a5|weapon_pickup|weapon_glock,weapon_9mmhandgun|Opposing Force - First Glock|1824 -3456 1339
-L|7720295|of2a1b|weapon_pickup|weapon_9mmAR,weapon_m16|Opposing Force - First MP5|-516 2300 -784
-L|7720296|of1a3|weapon_pickup|weapon_shotgun|Opposing Force - First Shotgun|808 -2584 832
-L|7720297|of2a6|weapon_pickup|weapon_rpg|Opposing Force - First RPG|2988 3084 -576
-L|7720298|of1a6|weapon_pickup|weapon_satchel|Opposing Force - First Satchel Charge|232 -1284 8
-L|7720299|of2a4|weapon_pickup|weapon_tripmine|Opposing Force - First Tripmine|64 678 22
-L|7720300|of4a2|weapon_pickup|weapon_snark|Opposing Force - First Snarks|-1768 760 417
-L|7720301|of1a4b|weapon_pickup|weapon_handgrenade|Opposing Force - First Hand Grenade|-544 1856 -976
-L|7720302|of1a2|weapon_pickup|weapon_eagle|Opposing Force - First Desert Eagle|365 -589 -156
-L|7720303|of5a1|weapon_pickup|weapon_m249,weapon_saw|Opposing Force - First SAW|-869 -151 220
-L|7720304|of5a1|weapon_pickup|weapon_sniperrifle|Opposing Force - First Sniper Rifle|-640 -1408 136
-L|7720305|of3a5|weapon_pickup|weapon_displacer|Opposing Force - First Displacer Cannon|1414 302 240
-L|7720306|of4a2|weapon_pickup|weapon_sporelauncher|Opposing Force - First Spore Launcher|-1624 -432 384
-L|7720307|of4a3|weapon_pickup|weapon_grapple|Opposing Force - First Barnacle Grapple|-338 -504 337
-L|7720309|of1a1|weapon_pickup|weapon_pipewrench|Opposing Force - First Pipe Wrench|-1152 -560 -112
-L|7720310|of2a4|weapon_pickup|weapon_minigun|Opposing Force - First Minigun|83 564 6
-L|7720431|of1a1|weapon_pickup|item_suit|Opposing Force - First HEV Suit|367 2816 48
-L|7720311|of1a2|weapon_pickup|weapon_crowbar|Opposing Force - First Combat Knife|549 -2822 68
-L|7720312|ba_security2|weapon_pickup|weapon_glock,weapon_9mmhandgun|Blue Shift - First Glock
-L|7720313|ba_yard1|weapon_pickup|weapon_357|Blue Shift - First .357 Magnum|-72 -1765 0
-L|7720314|ba_power1|weapon_pickup|weapon_9mmAR,weapon_m16|Blue Shift - First MP5|-898 -1882 -112
-L|7720315|ba_canal2|weapon_pickup|weapon_shotgun|Blue Shift - First Shotgun|400 2184 -88
-L|7720316|ba_yard5|weapon_pickup|weapon_rpg|Blue Shift - First RPG|-344 2000 93
-L|7720317|ba_yard1|weapon_pickup|weapon_satchel|Blue Shift - First Satchel Charge|-2662 -1550 92
-L|7720318|ba_xen2|weapon_pickup|weapon_snark|Blue Shift - First Snarks|1160 3384 -3576
-L|7720319|ba_yard1|weapon_pickup|weapon_handgrenade|Blue Shift - First Hand Grenade|-2635 -1550 92
-L|7720432|ba_tram1|weapon_pickup|item_suit|Blue Shift - First HEV Suit|80 -304 3088
-L|7720320|ba_canal1|weapon_pickup|weapon_crowbar|Blue Shift - First Crowbar|2080 288 56
 L|7720321|th_ep1_02|weapon_pickup|weapon_357|They Hunger - First .357 Magnum|3484 -1708 193
 L|7720322|th_ep1_03|weapon_pickup|weapon_handgrenade|They Hunger - First TNT|-4802 1980 -84
 L|7720323|th_ep1_01|weapon_pickup|weapon_pipewrench|They Hunger - First Shovel|-52 -461 -64
@@ -409,43 +446,6 @@ L|7720330|th_ep2_00|weapon_pickup|weapon_m16a1|They Hunger - First M16A1|2652 -2
 L|7720331|th_ep1_04|weapon_pickup|weapon_teslagun|They Hunger - First Tesla Gun|2637 -4784 -1216
 L|7720332|th_ep2_00|weapon_pickup|weapon_spanner|They Hunger - First Spanner|-1362 200 34
 L|7720333|th_ep1_01|weapon_pickup|weapon_crowbar|They Hunger - First Umbrella|64 344 267
-L|7720035|hl_c00|chapter_complete|black_mesa_inbound|Black Mesa Inbound - Complete
-L|7720036|hl_c01_a2|chapter_complete|anomalous_materials|Anomalous Materials - Complete
-L|7720037|hl_c02_a2|chapter_complete|unforeseen_consequences|Unforeseen Consequences - Complete
-L|7720038|hl_c03|chapter_complete|office_complex|Office Complex - Complete
-L|7720039|hl_c04|chapter_complete|weve_got_hostiles|We've Got Hostiles - Complete
-L|7720040|hl_c05_a3|chapter_complete|blast_pit|Blast Pit - Complete
-L|7720041|hl_c06|chapter_complete|power_up|Power Up - Complete
-L|7720042|hl_c07_a2|chapter_complete|on_a_rail|On A Rail - Complete
-L|7720043|hl_c08_a2|chapter_complete|apprehension|Apprehension - Complete
-L|7720044|hl_c09|chapter_complete|residue_processing|Residue Processing - Complete
-L|7720045|hl_c10|chapter_complete|questionable_ethics|Questionable Ethics - Complete
-L|7720046|hl_c11_a5|chapter_complete|surface_tension|Surface Tension - Complete
-L|7720047|hl_c12|chapter_complete|forget_about_freeman|Forget About Freeman - Complete
-L|7720048|hl_c13_a4|chapter_complete|lambda_core|Lambda Core - Complete
-L|7720049|hl_c14|chapter_complete|xen|Xen - Complete
-L|7720050|hl_c15|chapter_complete|gonarchs_lair|Gonarch's Lair - Complete
-L|7720051|hl_c16_a4|chapter_complete|interloper|Interloper - Complete
-L|7720052|hl_c18|chapter_complete|nihilanth|Nihilanth - Complete
-L|7720426|of0a0|chapter_complete|of_incoming|Incoming - Complete
-L|7720335|of1a2|chapter_complete|of_welcome_to_black_mesa|Welcome To Black Mesa - Complete
-L|7720427|of1a4b|chapter_complete|of_we_are_pulling_out|We Are Pulling Out - Complete
-L|7720337|of1a6|chapter_complete|of_missing_in_action|Missing In Action - Complete
-L|7720338|of2a2|chapter_complete|of_friendly_fire|Friendly Fire - Complete
-L|7720428|of2a6|chapter_complete|of_we_are_not_alone|We Are Not Alone - Complete
-L|7720340|of3a2|chapter_complete|of_crush_depth|Crush Depth - Complete
-L|7720341|of3a6|chapter_complete|of_vicarious_reality|Vicarious Reality - Complete
-L|7720342|of4a4|chapter_complete|of_pit_worms_nest|Pit Worm's Nest - Complete
-L|7720362|of5a4|chapter_complete|of_foxtrot_uniform|Foxtrot Uniform - Complete
-L|7720416|of6a3|chapter_complete|of_the_package|The Package - Complete
-L|7720436|of6a4b|chapter_complete|of_worlds_collide|Worlds Collide - Complete
-L|7720344|ba_tram3|chapter_complete|bs_living_quarters|Living Quarters Outbound - Complete
-L|7720345|ba_elevator|chapter_complete|bs_insecurity|Insecurity - Complete
-L|7720346|ba_canal3|chapter_complete|bs_duty_calls|Duty Calls - Complete
-L|7720347|ba_yard5a|chapter_complete|bs_captive_freight|Captive Freight - Complete
-L|7720348|ba_xen6|chapter_complete|bs_focal_point|Focal Point - Complete
-L|7720434|ba_power2|chapter_complete|bs_power_struggle|Power Struggle - Complete
-L|7720435|ba_outro|chapter_complete|bs_leap_of_faith|A Leap Of Faith - Complete
 L|7720350|th_ep1_05|chapter_complete|th_episode_1|They Hunger: Episode 1 - Complete
 L|7720351|th_ep2_04|chapter_complete|th_episode_2|They Hunger: Episode 2 - Complete
 L|7720352|th_ep3_07|chapter_complete|th_episode_3|They Hunger: Episode 3 - Complete

@@ -1,0 +1,989 @@
+{
+ "kind": "campaign",
+ "campaign": {
+  "key": "blue_shift",
+  "name": "Blue Shift",
+  "option": "include_blue_shift",
+  "missions_option": "blue_shift_missions_required",
+  "goal_chapter": "bs_leap_of_faith",
+  "goal_requires": "bs_power_struggle",
+  "intro_chapter": "bs_living_quarters",
+  "chapters": [
+   "bs_living_quarters",
+   "bs_insecurity",
+   "bs_duty_calls",
+   "bs_captive_freight",
+   "bs_focal_point",
+   "bs_power_struggle",
+   "bs_leap_of_faith"
+  ],
+  "melee": {
+   "Crowbar": [
+    "weapon_crowbar"
+   ]
+  },
+  "consoles": {
+   "bs_ch01": "bs_insecurity",
+   "bs_ch02": "bs_duty_calls",
+   "bs_ch03": "bs_captive_freight",
+   "bs_ch04": "bs_focal_point",
+   "bs_ch05": "bs_power_struggle",
+   "bs_ch06": "bs_leap_of_faith"
+  }
+ },
+ "chapters": [
+  {
+   "key": "bs_living_quarters",
+   "name": "Living Quarters Outbound",
+   "maps": [
+    "ba_tram1",
+    "ba_tram2",
+    "ba_tram3"
+   ],
+   "index": 30,
+   "campaign": "blue_shift",
+   "is_goal": false,
+   "gates": {},
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "bs_insecurity",
+   "name": "Insecurity",
+   "maps": [
+    "ba_security1",
+    "ba_security2",
+    "ba_maint",
+    "ba_elevator"
+   ],
+   "index": 31,
+   "campaign": "blue_shift",
+   "is_goal": false,
+   "gates": {},
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "bs_duty_calls",
+   "name": "Duty Calls",
+   "maps": [
+    "ba_canal1",
+    "ba_canal1b",
+    "ba_canal2",
+    "ba_canal3"
+   ],
+   "index": 32,
+   "campaign": "blue_shift",
+   "is_goal": false,
+   "gates": {},
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "bs_captive_freight",
+   "name": "Captive Freight",
+   "maps": [
+    "ba_yard1",
+    "ba_yard2",
+    "ba_yard3",
+    "ba_yard3a",
+    "ba_yard3b",
+    "ba_yard4",
+    "ba_yard4a",
+    "ba_yard5",
+    "ba_yard5a"
+   ],
+   "index": 33,
+   "campaign": "blue_shift",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "bs_focal_point",
+   "name": "Focal Point",
+   "maps": [
+    "ba_teleport1",
+    "ba_xen1",
+    "ba_xen2",
+    "ba_xen3",
+    "ba_xen4",
+    "ba_xen5",
+    "ba_xen6"
+   ],
+   "index": 34,
+   "campaign": "blue_shift",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "bs_power_struggle",
+   "name": "Power Struggle",
+   "maps": [
+    "ba_teleport2",
+    "ba_power1",
+    "ba_power2"
+   ],
+   "index": 35,
+   "campaign": "blue_shift",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "bs_leap_of_faith",
+   "name": "A Leap Of Faith",
+   "maps": [
+    "ba_outro"
+   ],
+   "index": 36,
+   "campaign": "blue_shift",
+   "is_goal": true,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "bs_power_struggle",
+   "complete_on_endgame": true
+  }
+ ],
+ "items": [
+  {
+   "id": 7710048,
+   "name": "Living Quarters Outbound Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "bs_living_quarters",
+   "campaign": "blue_shift"
+  },
+  {
+   "id": 7710049,
+   "name": "Insecurity Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "bs_insecurity",
+   "campaign": "blue_shift"
+  },
+  {
+   "id": 7710050,
+   "name": "Duty Calls Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "bs_duty_calls",
+   "campaign": "blue_shift"
+  },
+  {
+   "id": 7710051,
+   "name": "Captive Freight Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "bs_captive_freight",
+   "campaign": "blue_shift"
+  },
+  {
+   "id": 7710052,
+   "name": "Focal Point Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "bs_focal_point",
+   "campaign": "blue_shift"
+  },
+  {
+   "id": 7710078,
+   "name": "Power Struggle Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "bs_power_struggle",
+   "campaign": "blue_shift"
+  }
+ ],
+ "locations": [
+  {
+   "id": 7720231,
+   "name": "Living Quarters Outbound - Part 1 Reached",
+   "chapter": "bs_living_quarters",
+   "map": "ba_tram1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_tram1"
+   }
+  },
+  {
+   "id": 7720232,
+   "name": "Living Quarters Outbound - Part 2 Reached",
+   "chapter": "bs_living_quarters",
+   "map": "ba_tram2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_tram2"
+   }
+  },
+  {
+   "id": 7720233,
+   "name": "Living Quarters Outbound - Part 3 Reached",
+   "chapter": "bs_living_quarters",
+   "map": "ba_tram3",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_tram3"
+   }
+  },
+  {
+   "id": 7720234,
+   "name": "Insecurity - Part 1 Reached",
+   "chapter": "bs_insecurity",
+   "map": "ba_security1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_security1"
+   }
+  },
+  {
+   "id": 7720235,
+   "name": "Insecurity - Part 2 Reached",
+   "chapter": "bs_insecurity",
+   "map": "ba_security2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_security2"
+   }
+  },
+  {
+   "id": 7720236,
+   "name": "Insecurity - Health Charger (Part 2)",
+   "chapter": "bs_insecurity",
+   "map": "ba_security2",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_security2",
+    "classname": "func_healthcharger",
+    "model": "*14"
+   },
+   "position": [
+    416,
+    1710,
+    244
+   ]
+  },
+  {
+   "id": 7720237,
+   "name": "Insecurity - Part 3 Reached",
+   "chapter": "bs_insecurity",
+   "map": "ba_maint",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_maint"
+   }
+  },
+  {
+   "id": 7720238,
+   "name": "Insecurity - Part 4 Reached",
+   "chapter": "bs_insecurity",
+   "map": "ba_elevator",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_elevator"
+   }
+  },
+  {
+   "id": 7720239,
+   "name": "Duty Calls - Part 1 Reached",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_canal1"
+   }
+  },
+  {
+   "id": 7720353,
+   "name": "Duty Calls - Health Charger 1 (Part 1)",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal1",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_canal1",
+    "classname": "func_healthcharger",
+    "model": "*196",
+    "origin": "0 80 0"
+   },
+   "position": [
+    1554,
+    96,
+    56
+   ]
+  },
+  {
+   "id": 7720240,
+   "name": "Duty Calls - Health Charger 2 (Part 1)",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal1",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_canal1",
+    "classname": "func_healthcharger",
+    "model": "*196"
+   },
+   "position": [
+    1554,
+    16,
+    56
+   ]
+  },
+  {
+   "id": 7720241,
+   "name": "Duty Calls - Part 2 Reached",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal1b",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_canal1b"
+   }
+  },
+  {
+   "id": 7720242,
+   "name": "Duty Calls - Part 3 Reached",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_canal2"
+   }
+  },
+  {
+   "id": 7720243,
+   "name": "Duty Calls - Health Charger (Part 3)",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal2",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_canal2",
+    "classname": "func_healthcharger",
+    "model": "*110"
+   },
+   "position": [
+    -360,
+    708,
+    452
+   ]
+  },
+  {
+   "id": 7720244,
+   "name": "Duty Calls - Part 4 Reached",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal3",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_canal3"
+   }
+  },
+  {
+   "id": 7720245,
+   "name": "Duty Calls - Health Charger (Part 4)",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal3",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_canal3",
+    "classname": "func_healthcharger",
+    "model": "*117"
+   },
+   "position": [
+    -832,
+    894,
+    312
+   ]
+  },
+  {
+   "id": 7720246,
+   "name": "Captive Freight - Part 1 Reached",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_yard1"
+   }
+  },
+  {
+   "id": 7720247,
+   "name": "Captive Freight - Part 2 Reached",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_yard2"
+   }
+  },
+  {
+   "id": 7720248,
+   "name": "Captive Freight - Part 3 Reached",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard3",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_yard3"
+   }
+  },
+  {
+   "id": 7720249,
+   "name": "Captive Freight - Part 4 Reached",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard3a",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_yard3a"
+   }
+  },
+  {
+   "id": 7720250,
+   "name": "Captive Freight - Health Charger (Part 4)",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard3a",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_yard3a",
+    "classname": "func_healthcharger",
+    "model": "*39"
+   },
+   "position": [
+    -1188,
+    -1920,
+    -496
+   ]
+  },
+  {
+   "id": 7720251,
+   "name": "Captive Freight - Part 5 Reached",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard3b",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_yard3b"
+   }
+  },
+  {
+   "id": 7720252,
+   "name": "Captive Freight - Part 6 Reached",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard4",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_yard4"
+   }
+  },
+  {
+   "id": 7720253,
+   "name": "Captive Freight - Part 7 Reached",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard4a",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_yard4a"
+   }
+  },
+  {
+   "id": 7720254,
+   "name": "Captive Freight - Part 8 Reached",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard5",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_yard5"
+   }
+  },
+  {
+   "id": 7720255,
+   "name": "Captive Freight - Part 9 Reached",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard5a",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_yard5a"
+   }
+  },
+  {
+   "id": 7720256,
+   "name": "Focal Point - Part 1 Reached",
+   "chapter": "bs_focal_point",
+   "map": "ba_teleport1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_teleport1"
+   }
+  },
+  {
+   "id": 7720257,
+   "name": "Focal Point - Health Charger (Part 1)",
+   "chapter": "bs_focal_point",
+   "map": "ba_teleport1",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_teleport1",
+    "classname": "func_healthcharger",
+    "model": "*156"
+   },
+   "position": [
+    -616,
+    -792,
+    52
+   ]
+  },
+  {
+   "id": 7720258,
+   "name": "Focal Point - Part 2 Reached",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_xen1"
+   }
+  },
+  {
+   "id": 7720259,
+   "name": "Focal Point - Part 3 Reached",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_xen2"
+   }
+  },
+  {
+   "id": 7720260,
+   "name": "Focal Point - Part 4 Reached",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen3",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_xen3"
+   }
+  },
+  {
+   "id": 7720261,
+   "name": "Focal Point - Part 5 Reached",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen4",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_xen4"
+   }
+  },
+  {
+   "id": 7720262,
+   "name": "Focal Point - Part 6 Reached",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen5",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_xen5"
+   }
+  },
+  {
+   "id": 7720263,
+   "name": "Focal Point - Part 7 Reached",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen6",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_xen6"
+   }
+  },
+  {
+   "id": 7720264,
+   "name": "Power Struggle - Part 1 Reached",
+   "chapter": "bs_power_struggle",
+   "map": "ba_teleport2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_teleport2"
+   }
+  },
+  {
+   "id": 7720265,
+   "name": "Power Struggle - Health Charger (Part 1)",
+   "chapter": "bs_power_struggle",
+   "map": "ba_teleport2",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_teleport2",
+    "classname": "func_healthcharger",
+    "model": "*151"
+   },
+   "position": [
+    -616,
+    -792,
+    52
+   ]
+  },
+  {
+   "id": 7720266,
+   "name": "Power Struggle - Part 2 Reached",
+   "chapter": "bs_power_struggle",
+   "map": "ba_power1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_power1"
+   }
+  },
+  {
+   "id": 7720267,
+   "name": "Power Struggle - Health Charger 1 (Part 2)",
+   "chapter": "bs_power_struggle",
+   "map": "ba_power1",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_power1",
+    "classname": "func_healthcharger",
+    "model": "*133"
+   },
+   "position": [
+    128,
+    -632,
+    -452
+   ]
+  },
+  {
+   "id": 7720268,
+   "name": "Power Struggle - Health Charger 2 (Part 2)",
+   "chapter": "bs_power_struggle",
+   "map": "ba_power1",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_power1",
+    "classname": "func_healthcharger",
+    "model": "*228"
+   },
+   "position": [
+    42,
+    120,
+    -196
+   ]
+  },
+  {
+   "id": 7720269,
+   "name": "Power Struggle - Part 3 Reached",
+   "chapter": "bs_power_struggle",
+   "map": "ba_power2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_power2"
+   }
+  },
+  {
+   "id": 7720271,
+   "name": "Power Struggle - Health Charger 1 (Part 3)",
+   "chapter": "bs_power_struggle",
+   "map": "ba_power2",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_power2",
+    "classname": "func_healthcharger",
+    "model": "*197"
+   },
+   "position": [
+    -1560,
+    694,
+    80
+   ]
+  },
+  {
+   "id": 7720270,
+   "name": "Power Struggle - Health Charger 2 (Part 3)",
+   "chapter": "bs_power_struggle",
+   "map": "ba_power2",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_power2",
+    "classname": "func_healthcharger",
+    "model": "*112"
+   },
+   "position": [
+    64,
+    -1240,
+    -356
+   ]
+  },
+  {
+   "id": 7720433,
+   "name": "A Leap Of Faith - Reached",
+   "chapter": "bs_leap_of_faith",
+   "map": "ba_outro",
+   "trigger": {
+    "type": "map_reached",
+    "map": "ba_outro"
+   }
+  },
+  {
+   "id": 7720312,
+   "name": "Blue Shift - First Glock",
+   "chapter": "bs_insecurity",
+   "map": "ba_security2",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_security2",
+    "classnames": [
+     "weapon_glock",
+     "weapon_9mmhandgun"
+    ]
+   }
+  },
+  {
+   "id": 7720313,
+   "name": "Blue Shift - First .357 Magnum",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_yard1",
+    "classnames": [
+     "weapon_357"
+    ]
+   },
+   "position": [
+    -72,
+    -1765,
+    0
+   ]
+  },
+  {
+   "id": 7720314,
+   "name": "Blue Shift - First MP5",
+   "chapter": "bs_power_struggle",
+   "map": "ba_power1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_power1",
+    "classnames": [
+     "weapon_9mmAR",
+     "weapon_m16"
+    ]
+   },
+   "position": [
+    -898,
+    -1882,
+    -112
+   ]
+  },
+  {
+   "id": 7720315,
+   "name": "Blue Shift - First Shotgun",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal2",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_canal2",
+    "classnames": [
+     "weapon_shotgun"
+    ]
+   },
+   "position": [
+    400,
+    2184,
+    -88
+   ]
+  },
+  {
+   "id": 7720316,
+   "name": "Blue Shift - First RPG",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard5",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_yard5",
+    "classnames": [
+     "weapon_rpg"
+    ]
+   },
+   "position": [
+    -344,
+    2000,
+    93
+   ]
+  },
+  {
+   "id": 7720317,
+   "name": "Blue Shift - First Satchel Charge",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_yard1",
+    "classnames": [
+     "weapon_satchel"
+    ]
+   },
+   "position": [
+    -2662,
+    -1550,
+    92
+   ]
+  },
+  {
+   "id": 7720318,
+   "name": "Blue Shift - First Snarks",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen2",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_xen2",
+    "classnames": [
+     "weapon_snark"
+    ]
+   },
+   "position": [
+    1160,
+    3384,
+    -3576
+   ]
+  },
+  {
+   "id": 7720319,
+   "name": "Blue Shift - First Hand Grenade",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_yard1",
+    "classnames": [
+     "weapon_handgrenade"
+    ]
+   },
+   "position": [
+    -2635,
+    -1550,
+    92
+   ]
+  },
+  {
+   "id": 7720432,
+   "name": "Blue Shift - First HEV Suit",
+   "chapter": "bs_living_quarters",
+   "map": "ba_tram1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_tram1",
+    "classnames": [
+     "item_suit"
+    ]
+   },
+   "position": [
+    80,
+    -304,
+    3088
+   ]
+  },
+  {
+   "id": 7720320,
+   "name": "Blue Shift - First Crowbar",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_canal1",
+    "classnames": [
+     "weapon_crowbar"
+    ]
+   },
+   "position": [
+    2080,
+    288,
+    56
+   ]
+  },
+  {
+   "id": 7720344,
+   "name": "Living Quarters Outbound - Complete",
+   "chapter": "bs_living_quarters",
+   "map": "ba_tram3",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "bs_living_quarters",
+    "map": "ba_tram3"
+   }
+  },
+  {
+   "id": 7720345,
+   "name": "Insecurity - Complete",
+   "chapter": "bs_insecurity",
+   "map": "ba_elevator",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "bs_insecurity",
+    "map": "ba_elevator"
+   }
+  },
+  {
+   "id": 7720346,
+   "name": "Duty Calls - Complete",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal3",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "bs_duty_calls",
+    "map": "ba_canal3"
+   }
+  },
+  {
+   "id": 7720347,
+   "name": "Captive Freight - Complete",
+   "chapter": "bs_captive_freight",
+   "map": "ba_yard5a",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "bs_captive_freight",
+    "map": "ba_yard5a"
+   }
+  },
+  {
+   "id": 7720348,
+   "name": "Focal Point - Complete",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen6",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "bs_focal_point",
+    "map": "ba_xen6"
+   }
+  },
+  {
+   "id": 7720434,
+   "name": "Power Struggle - Complete",
+   "chapter": "bs_power_struggle",
+   "map": "ba_power2",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "bs_power_struggle",
+    "map": "ba_power2"
+   }
+  },
+  {
+   "id": 7720435,
+   "name": "A Leap Of Faith - Complete",
+   "chapter": "bs_leap_of_faith",
+   "map": "ba_outro",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "bs_leap_of_faith",
+    "map": "ba_outro"
+   }
+  }
+ ],
+ "restricted_classnames": {}
+}

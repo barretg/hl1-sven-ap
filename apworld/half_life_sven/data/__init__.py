@@ -1,9 +1,14 @@
 """Loader for the generated campaign data.
 
-`campaign.json` is produced by `tools/build_campaign_data.py` straight from the
-Sven Co-op BSPs. Everything downstream -- the world, the client, and the
-AngelScript plugin's `checkdata.json` -- reads it, so there is exactly one place
-where a location id is defined.
+`tools/build_campaign_data.py` produces all of it straight from the Sven Co-op
+BSPs: `index.json` for what is shared across campaigns, and one file per campaign
+under `campaigns/`. Everything downstream -- the world, the client, and the
+AngelScript plugin's `checkdata.txt` -- reads the merged result, so there is
+exactly one place where a location id is defined.
+
+The split is on-disk layout only. `load_campaign()` returns the same single dict
+it always did, and every name this module exports below is unchanged, so nothing
+downstream knows or cares how many files it came from.
 """
 
 from __future__ import annotations
@@ -12,20 +17,67 @@ import json
 import pkgutil
 from typing import Any
 
-DATA_FILE = "campaign.json"
+INDEX_FILE = "index.json"
+
+# The kind of data file a campaign entry holds. Only real campaigns exist today;
+# the key is here because what the hub fronts and what a standalone map offers
+# are not the same shape, and the loader has to be able to tell them apart.
+KIND_CAMPAIGN = "campaign"
 
 
-def load_campaign() -> dict[str, Any]:
-    """Read campaign.json.
+def _read(name: str) -> dict[str, Any]:
+    """Read one JSON file out of this package.
 
     `pkgutil.get_data` rather than a filesystem read: when the world is shipped
     as a zipped `.apworld`, `__file__` points inside the archive and `open()`
     fails.
     """
-    raw = pkgutil.get_data(__name__, DATA_FILE)
+    raw = pkgutil.get_data(__name__, name)
     if raw is None:
-        raise FileNotFoundError(f"{__name__}/{DATA_FILE} is missing from the world package")
+        raise FileNotFoundError(f"{__name__}/{name} is missing from the world package")
     return json.loads(raw.decode("utf-8"))
+
+
+def load_campaign() -> dict[str, Any]:
+    """Merge the index and every campaign file into the one dict.
+
+    File order comes from `index.json` rather than from a directory listing,
+    because order is load-bearing here: the first chapter is the intro mission
+    and the first campaign is the one a seed falls back on.
+    """
+    index = _read(INDEX_FILE)
+
+    campaigns: list[dict[str, Any]] = []
+    chapters: list[dict[str, Any]] = []
+    items: list[dict[str, Any]] = []
+    locations: list[dict[str, Any]] = []
+    restricted: dict[str, list[str]] = {}
+
+    for file_name in index["files"]:
+        part = _read(file_name)
+        if part.get("kind", KIND_CAMPAIGN) != KIND_CAMPAIGN:
+            raise ValueError(f"{file_name}: unsupported data kind {part.get('kind')!r}")
+        campaigns.append(part["campaign"])
+        chapters.extend(part["chapters"])
+        items.extend(part.get("items", ()))
+        locations.extend(part["locations"])
+        for classname, keys in part.get("restricted_classnames", {}).items():
+            # Union rather than overwrite: nothing shares a restricted classname
+            # today, but two campaigns shipping the same custom weapon would.
+            merged = restricted.setdefault(classname, [])
+            merged.extend(key for key in keys if key not in merged)
+
+    return {
+        "data_version": index["data_version"],
+        "campaigns": campaigns,
+        "chapters": chapters,
+        # Campaign-owned items first, in campaign order, then the shared pool.
+        "items": items + index["items"],
+        "locations": locations,
+        "requirement_groups": index["requirement_groups"],
+        "starting_weapons": index["starting_weapons"],
+        "restricted_classnames": restricted,
+    }
 
 
 CAMPAIGN: dict[str, Any] = load_campaign()

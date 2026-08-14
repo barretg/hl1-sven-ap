@@ -1,0 +1,589 @@
+{
+ "data_version": "1ecd59a83722",
+ "files": [
+  "campaigns/half_life.json",
+  "campaigns/opposing_force.json",
+  "campaigns/blue_shift.json",
+  "campaigns/they_hunger.json"
+ ],
+ "items": [
+  {
+   "id": 7710017,
+   "name": "Glock",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_glock",
+    "weapon_9mmhandgun"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life",
+    "opposing_force",
+    "blue_shift"
+   ]
+  },
+  {
+   "id": 7710018,
+   "name": ".357 Magnum",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_357"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life",
+    "blue_shift",
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710019,
+   "name": "MP5",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_9mmAR",
+    "weapon_m16"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life",
+    "opposing_force",
+    "blue_shift"
+   ]
+  },
+  {
+   "id": 7710020,
+   "name": "Shotgun",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_shotgun"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life",
+    "opposing_force",
+    "blue_shift"
+   ]
+  },
+  {
+   "id": 7710021,
+   "name": "Crossbow",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_crossbow"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life"
+   ]
+  },
+  {
+   "id": 7710022,
+   "name": "RPG",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_rpg"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life",
+    "opposing_force",
+    "blue_shift"
+   ]
+  },
+  {
+   "id": 7710023,
+   "name": "Tau Cannon",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_gauss"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life"
+   ]
+  },
+  {
+   "id": 7710024,
+   "name": "Gluon Gun",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_egon"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life"
+   ]
+  },
+  {
+   "id": 7710025,
+   "name": "Hivehand",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_hornetgun"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life"
+   ]
+  },
+  {
+   "id": 7710026,
+   "name": "Satchel Charge",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_satchel"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life",
+    "opposing_force",
+    "blue_shift"
+   ]
+  },
+  {
+   "id": 7710027,
+   "name": "Tripmine",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_tripmine"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life",
+    "opposing_force"
+   ]
+  },
+  {
+   "id": 7710028,
+   "name": "Snarks",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_snark"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life",
+    "opposing_force",
+    "blue_shift"
+   ]
+  },
+  {
+   "id": 7710029,
+   "name": "Hand Grenade",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_handgrenade"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life",
+    "opposing_force",
+    "blue_shift",
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710055,
+   "name": "Desert Eagle",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_eagle"
+   ],
+   "campaign": "opposing_force",
+   "campaigns": [
+    "opposing_force"
+   ]
+  },
+  {
+   "id": 7710056,
+   "name": "SAW",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_m249",
+    "weapon_saw"
+   ],
+   "campaign": "opposing_force",
+   "campaigns": [
+    "opposing_force"
+   ]
+  },
+  {
+   "id": 7710057,
+   "name": "Sniper Rifle",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_sniperrifle"
+   ],
+   "campaign": "opposing_force",
+   "campaigns": [
+    "opposing_force"
+   ]
+  },
+  {
+   "id": 7710058,
+   "name": "Displacer Cannon",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_displacer"
+   ],
+   "campaign": "opposing_force",
+   "campaigns": [
+    "opposing_force"
+   ]
+  },
+  {
+   "id": 7710059,
+   "name": "Spore Launcher",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_sporelauncher"
+   ],
+   "campaign": "opposing_force",
+   "campaigns": [
+    "opposing_force"
+   ]
+  },
+  {
+   "id": 7710060,
+   "name": "Barnacle Grapple",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_grapple"
+   ],
+   "campaign": "opposing_force",
+   "campaigns": [
+    "opposing_force"
+   ]
+  },
+  {
+   "id": 7710062,
+   "name": "Pipe Wrench",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_pipewrench"
+   ],
+   "campaign": "opposing_force",
+   "campaigns": [
+    "opposing_force",
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710063,
+   "name": "Minigun",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_minigun"
+   ],
+   "campaign": "opposing_force",
+   "campaigns": [
+    "opposing_force"
+   ]
+  },
+  {
+   "id": 7710064,
+   "name": "Colt 1911",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_colt1911"
+   ],
+   "campaign": "they_hunger",
+   "campaigns": [
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710065,
+   "name": "Taurus",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_th_taurus"
+   ],
+   "campaign": "they_hunger",
+   "campaigns": [
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710066,
+   "name": "Sawed-Off Shotgun",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_sawedoff"
+   ],
+   "campaign": "they_hunger",
+   "campaigns": [
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710067,
+   "name": "Grease Gun",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_greasegun"
+   ],
+   "campaign": "they_hunger",
+   "campaigns": [
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710068,
+   "name": "Tommy Gun",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_tommygun"
+   ],
+   "campaign": "they_hunger",
+   "campaigns": [
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710069,
+   "name": "M14",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_m14"
+   ],
+   "campaign": "they_hunger",
+   "campaigns": [
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710070,
+   "name": "M16A1",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_m16a1"
+   ],
+   "campaign": "they_hunger",
+   "campaigns": [
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710071,
+   "name": "Tesla Gun",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_teslagun"
+   ],
+   "campaign": "they_hunger",
+   "campaigns": [
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710072,
+   "name": "Spanner",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_spanner"
+   ],
+   "campaign": "they_hunger",
+   "campaigns": [
+    "they_hunger"
+   ]
+  },
+  {
+   "id": 7710030,
+   "name": "HEV Suit",
+   "classification": "progression",
+   "group": "optional",
+   "classnames": [
+    "item_suit"
+   ]
+  },
+  {
+   "id": 7710031,
+   "name": "Long Jump Module",
+   "classification": "progression",
+   "group": "optional",
+   "classnames": [
+    "item_longjump"
+   ]
+  },
+  {
+   "id": 7710032,
+   "name": "Ammo Cache",
+   "classification": "filler",
+   "group": "filler",
+   "classnames": [
+    "ammo_generic"
+   ],
+   "weight": 40
+  },
+  {
+   "id": 7710033,
+   "name": "Medkit",
+   "classification": "filler",
+   "group": "filler",
+   "classnames": [
+    "item_healthkit"
+   ],
+   "weight": 25
+  },
+  {
+   "id": 7710034,
+   "name": "Armor Battery",
+   "classification": "filler",
+   "group": "filler",
+   "classnames": [
+    "item_battery"
+   ],
+   "weight": 25
+  },
+  {
+   "id": 7710035,
+   "name": "Health Charge",
+   "classification": "filler",
+   "group": "filler",
+   "classnames": [
+    "item_healthkit"
+   ],
+   "weight": 10
+  },
+  {
+   "id": 7710036,
+   "name": "Scientist Trap",
+   "classification": "trap",
+   "group": "trap",
+   "weight": 34
+  },
+  {
+   "id": 7710037,
+   "name": "Headcrab Trap",
+   "classification": "trap",
+   "group": "trap",
+   "weight": 33
+  },
+  {
+   "id": 7710038,
+   "name": "Butterfingers Trap",
+   "classification": "trap",
+   "group": "trap",
+   "weight": 33
+  }
+ ],
+ "requirement_groups": {
+  "ranged": [
+   "Glock",
+   ".357 Magnum",
+   "MP5",
+   "Shotgun",
+   "Crossbow",
+   "RPG",
+   "Tau Cannon",
+   "Gluon Gun",
+   "Hivehand",
+   "Snarks",
+   "Desert Eagle",
+   "SAW",
+   "Sniper Rifle",
+   "Displacer Cannon",
+   "Spore Launcher",
+   "Minigun"
+  ],
+  "ranged_they_hunger": [
+   "Glock",
+   ".357 Magnum",
+   "MP5",
+   "Shotgun",
+   "Crossbow",
+   "RPG",
+   "Tau Cannon",
+   "Gluon Gun",
+   "Hivehand",
+   "Snarks",
+   "Desert Eagle",
+   "SAW",
+   "Sniper Rifle",
+   "Displacer Cannon",
+   "Spore Launcher",
+   "Minigun",
+   "Colt 1911",
+   "Taurus",
+   "Sawed-Off Shotgun",
+   "Grease Gun",
+   "Tommy Gun",
+   "M14",
+   "M16A1",
+   "Tesla Gun"
+  ],
+  "heavy": [
+   "RPG",
+   "Tau Cannon",
+   "Gluon Gun",
+   "Crossbow",
+   ".357 Magnum",
+   "Shotgun",
+   "MP5",
+   "SAW",
+   "Displacer Cannon",
+   "Spore Launcher",
+   "Minigun",
+   "Sniper Rifle"
+  ],
+  "explosives": [
+   "RPG",
+   "Hand Grenade",
+   "Satchel Charge",
+   "Tripmine",
+   "Spore Launcher"
+  ],
+  "underwater": [
+   "Glock",
+   ".357 Magnum",
+   "MP5",
+   "Crossbow",
+   "Tau Cannon",
+   "Gluon Gun",
+   "Hivehand",
+   "Desert Eagle"
+  ],
+  "tau_cannon": [
+   "Tau Cannon"
+  ],
+  "rpg": [
+   "RPG"
+  ]
+ },
+ "starting_weapons": [
+  "weapon_crowbar",
+  "weapon_medkit"
+ ]
+}

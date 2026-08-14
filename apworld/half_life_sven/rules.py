@@ -11,7 +11,7 @@ Two kinds of gate exist:
   where a weapon becomes necessary carries that requirement.
 
 The groups themselves live in `tools/campaign_layout.py` and are baked into
-`data/campaign.json`; this module only turns them into callables.
+`data/index.json`; this module only turns them into callables.
 """
 
 from __future__ import annotations

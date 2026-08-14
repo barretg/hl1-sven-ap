@@ -130,7 +130,7 @@ class HalfLifeSvenWorld(World):
         # Items that exist in *this* slot's pool. Logic groups are filtered
         # against it so a rule never asks for an item nobody will ever receive.
         self.available_item_names: set[str] = set()
-        # Campaigns this seed contains, in campaign.json order.
+        # Campaigns this seed contains, in data/index.json order.
         self.included_campaigns: list[str] = []
         # One mission per enabled campaign, open from the first spawn.
         self.starting_chapters: set[str] = set()

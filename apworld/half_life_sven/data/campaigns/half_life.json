@@ -1,0 +1,3166 @@
+{
+ "kind": "campaign",
+ "campaign": {
+  "key": "half_life",
+  "name": "Half-Life",
+  "option": "include_half_life",
+  "missions_option": "missions_required",
+  "goal_chapter": "nihilanth",
+  "goal_requires": "",
+  "intro_chapter": "black_mesa_inbound",
+  "chapters": [
+   "black_mesa_inbound",
+   "anomalous_materials",
+   "unforeseen_consequences",
+   "office_complex",
+   "weve_got_hostiles",
+   "blast_pit",
+   "power_up",
+   "on_a_rail",
+   "apprehension",
+   "residue_processing",
+   "questionable_ethics",
+   "surface_tension",
+   "forget_about_freeman",
+   "lambda_core",
+   "xen",
+   "gonarchs_lair",
+   "interloper",
+   "nihilanth"
+  ],
+  "melee": {
+   "Crowbar": [
+    "weapon_crowbar"
+   ]
+  },
+  "consoles": {
+   "hl_ch1": "anomalous_materials",
+   "hl_ch2": "unforeseen_consequences",
+   "hl_ch3": "office_complex",
+   "hl_ch4": "weve_got_hostiles",
+   "hl_ch5": "blast_pit",
+   "hl_ch6": "power_up",
+   "hl_ch7": "on_a_rail",
+   "hl_ch8": "apprehension",
+   "hl_ch9": "residue_processing",
+   "hl_ch10": "questionable_ethics",
+   "hl_ch11": "surface_tension",
+   "hl_ch12": "forget_about_freeman",
+   "hl_ch13": "lambda_core",
+   "hl_ch14": "xen",
+   "hl_ch15": "gonarchs_lair",
+   "hl_ch16": "interloper",
+   "hl_ch17": "nihilanth"
+  }
+ },
+ "chapters": [
+  {
+   "key": "black_mesa_inbound",
+   "name": "Black Mesa Inbound",
+   "maps": [
+    "hl_c00"
+   ],
+   "index": 0,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {},
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "anomalous_materials",
+   "name": "Anomalous Materials",
+   "maps": [
+    "hl_c01_a1",
+    "hl_c01_a2"
+   ],
+   "index": 1,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {},
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "unforeseen_consequences",
+   "name": "Unforeseen Consequences",
+   "maps": [
+    "hl_c02_a1",
+    "hl_c02_a2"
+   ],
+   "index": 2,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {},
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "office_complex",
+   "name": "Office Complex",
+   "maps": [
+    "hl_c03"
+   ],
+   "index": 3,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {},
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "weve_got_hostiles",
+   "name": "We've Got Hostiles",
+   "maps": [
+    "hl_c04"
+   ],
+   "index": 4,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "blast_pit",
+   "name": "Blast Pit",
+   "maps": [
+    "hl_c05_a1",
+    "hl_c05_a2",
+    "hl_c05_a3"
+   ],
+   "index": 5,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "power_up",
+   "name": "Power Up",
+   "maps": [
+    "hl_c06"
+   ],
+   "index": 6,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "on_a_rail",
+   "name": "On A Rail",
+   "maps": [
+    "hl_c07_a1",
+    "hl_c07_a2"
+   ],
+   "index": 7,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "apprehension",
+   "name": "Apprehension",
+   "maps": [
+    "hl_c08_a1",
+    "hl_c08_a2"
+   ],
+   "index": 8,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "residue_processing",
+   "name": "Residue Processing",
+   "maps": [
+    "hl_c09"
+   ],
+   "index": 9,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "questionable_ethics",
+   "name": "Questionable Ethics",
+   "maps": [
+    "hl_c10"
+   ],
+   "index": 10,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "surface_tension",
+   "name": "Surface Tension",
+   "maps": [
+    "hl_c11_a1",
+    "hl_c11_a2",
+    "hl_c11_a3",
+    "hl_c11_a4",
+    "hl_c11_a5"
+   ],
+   "index": 11,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "ranged"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "forget_about_freeman",
+   "name": "Forget About Freeman",
+   "maps": [
+    "hl_c12"
+   ],
+   "index": 12,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "heavy"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "lambda_core",
+   "name": "Lambda Core",
+   "maps": [
+    "hl_c13_a1",
+    "hl_c13_a2",
+    "hl_c13_a3",
+    "hl_c13_a4"
+   ],
+   "index": 13,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "heavy"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "xen",
+   "name": "Xen",
+   "maps": [
+    "hl_c14"
+   ],
+   "index": 14,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "tau_cannon",
+     "rpg"
+    ],
+    "always": [
+     "longjump",
+     "suit"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "gonarchs_lair",
+   "name": "Gonarch's Lair",
+   "maps": [
+    "hl_c15"
+   ],
+   "index": 15,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "tau_cannon",
+     "rpg"
+    ],
+    "always": [
+     "longjump",
+     "suit"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "interloper",
+   "name": "Interloper",
+   "maps": [
+    "hl_c16_a1",
+    "hl_c16_a2",
+    "hl_c16_a3",
+    "hl_c16_a4"
+   ],
+   "index": 16,
+   "campaign": "half_life",
+   "is_goal": false,
+   "gates": {
+    "strict": [
+     "tau_cannon",
+     "rpg"
+    ],
+    "always": [
+     "longjump",
+     "suit"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  },
+  {
+   "key": "nihilanth",
+   "name": "Nihilanth",
+   "maps": [
+    "hl_c17",
+    "hl_c18"
+   ],
+   "index": 17,
+   "campaign": "half_life",
+   "is_goal": true,
+   "gates": {
+    "strict": [
+     "tau_cannon",
+     "rpg"
+    ],
+    "always": [
+     "longjump",
+     "suit"
+    ]
+   },
+   "requires_chapter": "",
+   "complete_on_endgame": false
+  }
+ ],
+ "items": [
+  {
+   "id": 7710000,
+   "name": "Black Mesa Inbound Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "black_mesa_inbound",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710001,
+   "name": "Anomalous Materials Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "anomalous_materials",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710002,
+   "name": "Unforeseen Consequences Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "unforeseen_consequences",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710003,
+   "name": "Office Complex Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "office_complex",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710004,
+   "name": "We've Got Hostiles Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "weve_got_hostiles",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710005,
+   "name": "Blast Pit Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "blast_pit",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710006,
+   "name": "Power Up Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "power_up",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710007,
+   "name": "On A Rail Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "on_a_rail",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710008,
+   "name": "Apprehension Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "apprehension",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710009,
+   "name": "Residue Processing Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "residue_processing",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710010,
+   "name": "Questionable Ethics Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "questionable_ethics",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710011,
+   "name": "Surface Tension Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "surface_tension",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710012,
+   "name": "Forget About Freeman Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "forget_about_freeman",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710013,
+   "name": "Lambda Core Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "lambda_core",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710014,
+   "name": "Xen Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "xen",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710015,
+   "name": "Gonarch's Lair Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "gonarchs_lair",
+   "campaign": "half_life"
+  },
+  {
+   "id": 7710016,
+   "name": "Interloper Unlock",
+   "classification": "progression",
+   "group": "chapter",
+   "chapter": "interloper",
+   "campaign": "half_life"
+  }
+ ],
+ "locations": [
+  {
+   "id": 7720000,
+   "name": "Black Mesa Inbound - Reached",
+   "chapter": "black_mesa_inbound",
+   "map": "hl_c00",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c00"
+   }
+  },
+  {
+   "id": 7720001,
+   "name": "Anomalous Materials - Part 1 Reached",
+   "chapter": "anomalous_materials",
+   "map": "hl_c01_a1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c01_a1"
+   }
+  },
+  {
+   "id": 7720053,
+   "name": "Anomalous Materials - Health Charger 1 (Part 1)",
+   "chapter": "anomalous_materials",
+   "map": "hl_c01_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c01_a1",
+    "classname": "func_healthcharger",
+    "model": "*28"
+   },
+   "position": [
+    -436,
+    604,
+    -168
+   ]
+  },
+  {
+   "id": 7720054,
+   "name": "Anomalous Materials - Health Charger 2 (Part 1)",
+   "chapter": "anomalous_materials",
+   "map": "hl_c01_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c01_a1",
+    "classname": "func_healthcharger",
+    "model": "*29"
+   },
+   "position": [
+    -324,
+    -992,
+    -151
+   ]
+  },
+  {
+   "id": 7720055,
+   "name": "Anomalous Materials - Health Charger 3 (Part 1)",
+   "chapter": "anomalous_materials",
+   "map": "hl_c01_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c01_a1",
+    "classname": "func_healthcharger",
+    "model": "*235"
+   },
+   "position": [
+    -3372,
+    1556,
+    -232
+   ]
+  },
+  {
+   "id": 7720002,
+   "name": "Anomalous Materials - Part 2 Reached",
+   "chapter": "anomalous_materials",
+   "map": "hl_c01_a2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c01_a2"
+   }
+  },
+  {
+   "id": 7720003,
+   "name": "Unforeseen Consequences - Part 1 Reached",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c02_a1"
+   }
+  },
+  {
+   "id": 7720056,
+   "name": "Unforeseen Consequences - Health Charger 1 (Part 1)",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c02_a1",
+    "classname": "func_healthcharger",
+    "model": "*119"
+   },
+   "position": [
+    -895,
+    4516,
+    784
+   ]
+  },
+  {
+   "id": 7720058,
+   "name": "Unforeseen Consequences - Health Charger 2 (Part 1)",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c02_a1",
+    "classname": "func_healthcharger",
+    "model": "*278"
+   },
+   "position": [
+    2153,
+    1968,
+    865
+   ]
+  },
+  {
+   "id": 7720057,
+   "name": "Unforeseen Consequences - Health Charger 3 (Part 1)",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c02_a1",
+    "classname": "func_healthcharger",
+    "model": "*277"
+   },
+   "position": [
+    2041,
+    3564,
+    848
+   ]
+  },
+  {
+   "id": 7720004,
+   "name": "Unforeseen Consequences - Part 2 Reached",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c02_a2"
+   }
+  },
+  {
+   "id": 7720062,
+   "name": "Unforeseen Consequences - Health Charger 1 (Part 2)",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c02_a2",
+    "classname": "func_healthcharger",
+    "model": "*85"
+   },
+   "position": [
+    -995,
+    -2504,
+    1372
+   ]
+  },
+  {
+   "id": 7720060,
+   "name": "Unforeseen Consequences - Health Charger 2 (Part 2)",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c02_a2",
+    "classname": "func_healthcharger",
+    "model": "*68"
+   },
+   "position": [
+    -1941,
+    -2940,
+    1520
+   ]
+  },
+  {
+   "id": 7720061,
+   "name": "Unforeseen Consequences - Health Charger 3 (Part 2)",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c02_a2",
+    "classname": "func_healthcharger",
+    "model": "*84"
+   },
+   "position": [
+    -459,
+    -3204,
+    1352
+   ]
+  },
+  {
+   "id": 7720064,
+   "name": "Unforeseen Consequences - Health Charger 4 (Part 2)",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c02_a2",
+    "classname": "func_healthcharger",
+    "model": "*170"
+   },
+   "position": [
+    1310,
+    -1443,
+    -927
+   ]
+  },
+  {
+   "id": 7720063,
+   "name": "Unforeseen Consequences - Health Charger 5 (Part 2)",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c02_a2",
+    "classname": "func_healthcharger",
+    "model": "*161"
+   },
+   "position": [
+    1836,
+    -715,
+    -1142
+   ]
+  },
+  {
+   "id": 7720066,
+   "name": "Unforeseen Consequences - Health Charger 6 (Part 2)",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c02_a2",
+    "classname": "func_healthcharger",
+    "model": "*247"
+   },
+   "position": [
+    -1252,
+    913,
+    -1451
+   ]
+  },
+  {
+   "id": 7720065,
+   "name": "Unforeseen Consequences - Health Charger 7 (Part 2)",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c02_a2",
+    "classname": "func_healthcharger",
+    "model": "*231"
+   },
+   "position": [
+    924,
+    265,
+    -1432
+   ]
+  },
+  {
+   "id": 7720005,
+   "name": "Office Complex - Reached",
+   "chapter": "office_complex",
+   "map": "hl_c03",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c03"
+   }
+  },
+  {
+   "id": 7720071,
+   "name": "Office Complex - Health Charger 1",
+   "chapter": "office_complex",
+   "map": "hl_c03",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c03",
+    "classname": "func_healthcharger",
+    "model": "*508"
+   },
+   "position": [
+    1039,
+    14,
+    -509
+   ]
+  },
+  {
+   "id": 7720068,
+   "name": "Office Complex - Health Charger 2",
+   "chapter": "office_complex",
+   "map": "hl_c03",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c03",
+    "classname": "func_healthcharger",
+    "model": "*68"
+   },
+   "position": [
+    1855,
+    -452,
+    -197
+   ]
+  },
+  {
+   "id": 7720072,
+   "name": "Office Complex - Health Charger 3",
+   "chapter": "office_complex",
+   "map": "hl_c03",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c03",
+    "classname": "func_healthcharger",
+    "model": "*509"
+   },
+   "position": [
+    -285,
+    -148,
+    -433
+   ]
+  },
+  {
+   "id": 7720067,
+   "name": "Office Complex - Health Charger 4",
+   "chapter": "office_complex",
+   "map": "hl_c03",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c03",
+    "classname": "func_healthcharger",
+    "model": "*55"
+   },
+   "position": [
+    252,
+    -791,
+    -198
+   ]
+  },
+  {
+   "id": 7720070,
+   "name": "Office Complex - Health Charger 5",
+   "chapter": "office_complex",
+   "map": "hl_c03",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c03",
+    "classname": "func_healthcharger",
+    "model": "*323"
+   },
+   "position": [
+    405,
+    1004,
+    125
+   ]
+  },
+  {
+   "id": 7720069,
+   "name": "Office Complex - Health Charger 6",
+   "chapter": "office_complex",
+   "map": "hl_c03",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c03",
+    "classname": "func_healthcharger",
+    "model": "*292"
+   },
+   "position": [
+    201,
+    1004,
+    116
+   ]
+  },
+  {
+   "id": 7720073,
+   "name": "Office Complex - Health Charger 7",
+   "chapter": "office_complex",
+   "map": "hl_c03",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c03",
+    "classname": "func_healthcharger",
+    "model": "*678"
+   },
+   "position": [
+    -1810,
+    -526,
+    56
+   ]
+  },
+  {
+   "id": 7720006,
+   "name": "We've Got Hostiles - Reached",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c04"
+   }
+  },
+  {
+   "id": 7720075,
+   "name": "We've Got Hostiles - Health Charger 1",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*59"
+   },
+   "position": [
+    4,
+    1200,
+    56
+   ]
+  },
+  {
+   "id": 7720077,
+   "name": "We've Got Hostiles - Health Charger 2",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*103"
+   },
+   "position": [
+    360,
+    908,
+    56
+   ]
+  },
+  {
+   "id": 7720078,
+   "name": "We've Got Hostiles - Health Charger 3",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*158"
+   },
+   "position": [
+    1176,
+    -356,
+    -72
+   ]
+  },
+  {
+   "id": 7720074,
+   "name": "We've Got Hostiles - Health Charger 4",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*58"
+   },
+   "position": [
+    -868,
+    -848,
+    56
+   ]
+  },
+  {
+   "id": 7720076,
+   "name": "We've Got Hostiles - Health Charger 5",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*102"
+   },
+   "position": [
+    -1460,
+    -848,
+    56
+   ]
+  },
+  {
+   "id": 7720079,
+   "name": "We've Got Hostiles - Health Charger 6",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*175"
+   },
+   "position": [
+    1644,
+    -592,
+    -72
+   ]
+  },
+  {
+   "id": 7720082,
+   "name": "We've Got Hostiles - Health Charger 7",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*257"
+   },
+   "position": [
+    188,
+    -1028,
+    696
+   ]
+  },
+  {
+   "id": 7720080,
+   "name": "We've Got Hostiles - Health Charger 8",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*241"
+   },
+   "position": [
+    -1604,
+    -1952,
+    568
+   ]
+  },
+  {
+   "id": 7720084,
+   "name": "We've Got Hostiles - Health Charger 9",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*280"
+   },
+   "position": [
+    1124,
+    -2696,
+    568
+   ]
+  },
+  {
+   "id": 7720081,
+   "name": "We've Got Hostiles - Health Charger 10",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*256"
+   },
+   "position": [
+    -720,
+    -2876,
+    696
+   ]
+  },
+  {
+   "id": 7720085,
+   "name": "We've Got Hostiles - Health Charger 11",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*331"
+   },
+   "position": [
+    -348,
+    -1128,
+    1336
+   ]
+  },
+  {
+   "id": 7720083,
+   "name": "We've Got Hostiles - Health Charger 12",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*258"
+   },
+   "position": [
+    -364,
+    -3656,
+    952
+   ]
+  },
+  {
+   "id": 7720086,
+   "name": "We've Got Hostiles - Health Charger 13",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_healthcharger",
+    "model": "*360"
+   },
+   "position": [
+    -8604,
+    -9096,
+    824
+   ]
+  },
+  {
+   "id": 7720087,
+   "name": "We've Got Hostiles - HEV Charger 1",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_recharge",
+    "model": "*79"
+   },
+   "position": [
+    416,
+    908,
+    56
+   ]
+  },
+  {
+   "id": 7720088,
+   "name": "We've Got Hostiles - HEV Charger 2",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_recharge",
+    "model": "*276"
+   },
+   "position": [
+    -1604,
+    -2008,
+    568
+   ]
+  },
+  {
+   "id": 7720089,
+   "name": "We've Got Hostiles - HEV Charger 3",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_recharge",
+    "model": "*281"
+   },
+   "position": [
+    1124,
+    -2760,
+    568
+   ]
+  },
+  {
+   "id": 7720090,
+   "name": "We've Got Hostiles - HEV Charger 4",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c04",
+    "classname": "func_recharge",
+    "model": "*335"
+   },
+   "position": [
+    -8604,
+    -9032,
+    824
+   ]
+  },
+  {
+   "id": 7720007,
+   "name": "Blast Pit - Part 1 Reached",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c05_a1"
+   }
+  },
+  {
+   "id": 7720008,
+   "name": "Blast Pit - Part 2 Reached",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c05_a2"
+   }
+  },
+  {
+   "id": 7720093,
+   "name": "Blast Pit - Health Charger 1 (Part 2)",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c05_a2",
+    "classname": "func_healthcharger",
+    "model": "*164"
+   },
+   "position": [
+    1048,
+    3507,
+    -1852
+   ]
+  },
+  {
+   "id": 7720091,
+   "name": "Blast Pit - Health Charger 2 (Part 2)",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c05_a2",
+    "classname": "func_healthcharger",
+    "model": "*34"
+   },
+   "position": [
+    -2608,
+    6861,
+    -244
+   ]
+  },
+  {
+   "id": 7720092,
+   "name": "Blast Pit - Health Charger 3 (Part 2)",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c05_a2",
+    "classname": "func_healthcharger",
+    "model": "*141"
+   },
+   "position": [
+    1503,
+    3760,
+    -3820
+   ]
+  },
+  {
+   "id": 7720094,
+   "name": "Blast Pit - HEV Charger (Part 2)",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c05_a2",
+    "classname": "func_recharge",
+    "model": "*35"
+   },
+   "position": [
+    -2552,
+    6861,
+    -244
+   ]
+  },
+  {
+   "id": 7720009,
+   "name": "Blast Pit - Part 3 Reached",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a3",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c05_a3"
+   }
+  },
+  {
+   "id": 7720095,
+   "name": "Blast Pit - Health Charger (Part 3)",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a3",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c05_a3",
+    "classname": "func_healthcharger",
+    "model": "*82"
+   },
+   "position": [
+    -1506,
+    -291,
+    -1658
+   ]
+  },
+  {
+   "id": 7720096,
+   "name": "Blast Pit - HEV Charger (Part 3)",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a3",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c05_a3",
+    "classname": "func_recharge",
+    "model": "*83"
+   },
+   "position": [
+    -1450,
+    -291,
+    -1658
+   ]
+  },
+  {
+   "id": 7720010,
+   "name": "Power Up - Reached",
+   "chapter": "power_up",
+   "map": "hl_c06",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c06"
+   }
+  },
+  {
+   "id": 7720098,
+   "name": "Power Up - Health Charger 1",
+   "chapter": "power_up",
+   "map": "hl_c06",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c06",
+    "classname": "func_healthcharger",
+    "model": "*162"
+   },
+   "position": [
+    816,
+    892,
+    368
+   ]
+  },
+  {
+   "id": 7720097,
+   "name": "Power Up - Health Charger 2",
+   "chapter": "power_up",
+   "map": "hl_c06",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c06",
+    "classname": "func_healthcharger",
+    "model": "*53"
+   },
+   "position": [
+    -932,
+    1208,
+    -136
+   ]
+  },
+  {
+   "id": 7720099,
+   "name": "Power Up - Health Charger 3",
+   "chapter": "power_up",
+   "map": "hl_c06",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c06",
+    "classname": "func_healthcharger",
+    "model": "*223"
+   },
+   "position": [
+    756,
+    1704,
+    216
+   ]
+  },
+  {
+   "id": 7720100,
+   "name": "Power Up - Health Charger 4",
+   "chapter": "power_up",
+   "map": "hl_c06",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c06",
+    "classname": "func_healthcharger",
+    "model": "*224"
+   },
+   "position": [
+    692,
+    2672,
+    -264
+   ]
+  },
+  {
+   "id": 7720101,
+   "name": "Power Up - HEV Charger 1",
+   "chapter": "power_up",
+   "map": "hl_c06",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c06",
+    "classname": "func_recharge",
+    "model": "*81"
+   },
+   "position": [
+    -560,
+    252,
+    152
+   ]
+  },
+  {
+   "id": 7720102,
+   "name": "Power Up - HEV Charger 2",
+   "chapter": "power_up",
+   "map": "hl_c06",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c06",
+    "classname": "func_recharge",
+    "model": "*236"
+   },
+   "position": [
+    180,
+    2592,
+    440
+   ]
+  },
+  {
+   "id": 7720011,
+   "name": "On A Rail - Part 1 Reached",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c07_a1"
+   }
+  },
+  {
+   "id": 7720103,
+   "name": "On A Rail - Health Charger 1 (Part 1)",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c07_a1",
+    "classname": "func_healthcharger",
+    "model": "*113"
+   },
+   "position": [
+    -2236,
+    -2060,
+    -1384
+   ]
+  },
+  {
+   "id": 7720104,
+   "name": "On A Rail - Health Charger 2 (Part 1)",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c07_a1",
+    "classname": "func_healthcharger",
+    "model": "*132"
+   },
+   "position": [
+    84,
+    -484,
+    -1624
+   ]
+  },
+  {
+   "id": 7720105,
+   "name": "On A Rail - HEV Charger (Part 1)",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c07_a1",
+    "classname": "func_recharge",
+    "model": "*93"
+   },
+   "position": [
+    -2136,
+    -1592,
+    -448
+   ]
+  },
+  {
+   "id": 7720012,
+   "name": "On A Rail - Part 2 Reached",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c07_a2"
+   }
+  },
+  {
+   "id": 7720110,
+   "name": "On A Rail - Health Charger 1 (Part 2)",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c07_a2",
+    "classname": "func_healthcharger",
+    "model": "*239"
+   },
+   "position": [
+    2504,
+    3280,
+    -248
+   ]
+  },
+  {
+   "id": 7720106,
+   "name": "On A Rail - Health Charger 2 (Part 2)",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c07_a2",
+    "classname": "func_healthcharger",
+    "model": "*41"
+   },
+   "position": [
+    3000,
+    1348,
+    468
+   ]
+  },
+  {
+   "id": 7720108,
+   "name": "On A Rail - Health Charger 3 (Part 2)",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c07_a2",
+    "classname": "func_healthcharger",
+    "model": "*146"
+   },
+   "position": [
+    -156,
+    -2368,
+    -572
+   ]
+  },
+  {
+   "id": 7720107,
+   "name": "On A Rail - Health Charger 4 (Part 2)",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c07_a2",
+    "classname": "func_healthcharger",
+    "model": "*79"
+   },
+   "position": [
+    -16,
+    -2448,
+    352
+   ]
+  },
+  {
+   "id": 7720109,
+   "name": "On A Rail - Health Charger 5 (Part 2)",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c07_a2",
+    "classname": "func_healthcharger",
+    "model": "*150"
+   },
+   "position": [
+    -4336,
+    -2488,
+    -472
+   ]
+  },
+  {
+   "id": 7720112,
+   "name": "On A Rail - HEV Charger 1 (Part 2)",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c07_a2",
+    "classname": "func_recharge",
+    "model": "*220"
+   },
+   "position": [
+    312,
+    2964,
+    -572
+   ]
+  },
+  {
+   "id": 7720111,
+   "name": "On A Rail - HEV Charger 2 (Part 2)",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c07_a2",
+    "classname": "func_recharge",
+    "model": "*147"
+   },
+   "position": [
+    -1248,
+    -2460,
+    -396
+   ]
+  },
+  {
+   "id": 7720013,
+   "name": "Apprehension - Part 1 Reached",
+   "chapter": "apprehension",
+   "map": "hl_c08_a1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c08_a1"
+   }
+  },
+  {
+   "id": 7720114,
+   "name": "Apprehension - Health Charger 1 (Part 1)",
+   "chapter": "apprehension",
+   "map": "hl_c08_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c08_a1",
+    "classname": "func_healthcharger",
+    "model": "*125"
+   },
+   "position": [
+    1040,
+    376,
+    -542
+   ]
+  },
+  {
+   "id": 7720113,
+   "name": "Apprehension - Health Charger 2 (Part 1)",
+   "chapter": "apprehension",
+   "map": "hl_c08_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c08_a1",
+    "classname": "func_healthcharger",
+    "model": "*47"
+   },
+   "position": [
+    -920,
+    -1408,
+    -436
+   ]
+  },
+  {
+   "id": 7720115,
+   "name": "Apprehension - HEV Charger (Part 1)",
+   "chapter": "apprehension",
+   "map": "hl_c08_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c08_a1",
+    "classname": "func_recharge",
+    "model": "*126"
+   },
+   "position": [
+    992,
+    376,
+    -542
+   ]
+  },
+  {
+   "id": 7720014,
+   "name": "Apprehension - Part 2 Reached",
+   "chapter": "apprehension",
+   "map": "hl_c08_a2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c08_a2"
+   }
+  },
+  {
+   "id": 7720119,
+   "name": "Apprehension - Health Charger 1 (Part 2)",
+   "chapter": "apprehension",
+   "map": "hl_c08_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c08_a2",
+    "classname": "func_healthcharger",
+    "model": "*203"
+   },
+   "position": [
+    840,
+    1584,
+    2116
+   ]
+  },
+  {
+   "id": 7720117,
+   "name": "Apprehension - Health Charger 2 (Part 2)",
+   "chapter": "apprehension",
+   "map": "hl_c08_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c08_a2",
+    "classname": "func_healthcharger",
+    "model": "*143"
+   },
+   "position": [
+    -1996,
+    -900,
+    2344
+   ]
+  },
+  {
+   "id": 7720116,
+   "name": "Apprehension - Health Charger 3 (Part 2)",
+   "chapter": "apprehension",
+   "map": "hl_c08_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c08_a2",
+    "classname": "func_healthcharger",
+    "model": "*142"
+   },
+   "position": [
+    -2604,
+    -1916,
+    2344
+   ]
+  },
+  {
+   "id": 7720118,
+   "name": "Apprehension - Health Charger 4 (Part 2)",
+   "chapter": "apprehension",
+   "map": "hl_c08_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c08_a2",
+    "classname": "func_healthcharger",
+    "model": "*144"
+   },
+   "position": [
+    -4616,
+    -1056,
+    2344
+   ]
+  },
+  {
+   "id": 7720120,
+   "name": "Apprehension - HEV Charger 1 (Part 2)",
+   "chapter": "apprehension",
+   "map": "hl_c08_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c08_a2",
+    "classname": "func_recharge",
+    "model": "*73"
+   },
+   "position": [
+    168,
+    1328,
+    2276
+   ]
+  },
+  {
+   "id": 7720121,
+   "name": "Apprehension - HEV Charger 2 (Part 2)",
+   "chapter": "apprehension",
+   "map": "hl_c08_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c08_a2",
+    "classname": "func_recharge",
+    "model": "*141"
+   },
+   "position": [
+    -2668,
+    -1916,
+    2344
+   ]
+  },
+  {
+   "id": 7720015,
+   "name": "Residue Processing - Reached",
+   "chapter": "residue_processing",
+   "map": "hl_c09",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c09"
+   }
+  },
+  {
+   "id": 7720125,
+   "name": "Residue Processing - Health Charger 1",
+   "chapter": "residue_processing",
+   "map": "hl_c09",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c09",
+    "classname": "func_healthcharger",
+    "model": "*327"
+   },
+   "position": [
+    -3288,
+    1452,
+    -744
+   ]
+  },
+  {
+   "id": 7720126,
+   "name": "Residue Processing - Health Charger 2",
+   "chapter": "residue_processing",
+   "map": "hl_c09",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c09",
+    "classname": "func_healthcharger",
+    "model": "*346"
+   },
+   "position": [
+    -3204,
+    2536,
+    -696
+   ]
+  },
+  {
+   "id": 7720122,
+   "name": "Residue Processing - Health Charger 3",
+   "chapter": "residue_processing",
+   "map": "hl_c09",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c09",
+    "classname": "func_healthcharger",
+    "model": "*85"
+   },
+   "position": [
+    -344,
+    1324,
+    -1480
+   ]
+  },
+  {
+   "id": 7720124,
+   "name": "Residue Processing - Health Charger 4",
+   "chapter": "residue_processing",
+   "map": "hl_c09",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c09",
+    "classname": "func_healthcharger",
+    "model": "*237"
+   },
+   "position": [
+    -700,
+    2216,
+    -216
+   ]
+  },
+  {
+   "id": 7720123,
+   "name": "Residue Processing - Health Charger 5",
+   "chapter": "residue_processing",
+   "map": "hl_c09",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c09",
+    "classname": "func_healthcharger",
+    "model": "*227"
+   },
+   "position": [
+    388,
+    2016,
+    72
+   ]
+  },
+  {
+   "id": 7720127,
+   "name": "Residue Processing - HEV Charger",
+   "chapter": "residue_processing",
+   "map": "hl_c09",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c09",
+    "classname": "func_recharge",
+    "model": "*242"
+   },
+   "position": [
+    -680,
+    3004,
+    -216
+   ]
+  },
+  {
+   "id": 7720016,
+   "name": "Questionable Ethics - Reached",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c10"
+   }
+  },
+  {
+   "id": 7720133,
+   "name": "Questionable Ethics - Health Charger 1",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c10",
+    "classname": "func_healthcharger",
+    "model": "*121"
+   },
+   "position": [
+    3688,
+    612,
+    56
+   ]
+  },
+  {
+   "id": 7720132,
+   "name": "Questionable Ethics - Health Charger 2",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c10",
+    "classname": "func_healthcharger",
+    "model": "*113"
+   },
+   "position": [
+    1932,
+    832,
+    72
+   ]
+  },
+  {
+   "id": 7720131,
+   "name": "Questionable Ethics - Health Charger 3",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c10",
+    "classname": "func_healthcharger",
+    "model": "*105"
+   },
+   "position": [
+    1756,
+    416,
+    56
+   ]
+  },
+  {
+   "id": 7720130,
+   "name": "Questionable Ethics - Health Charger 4",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c10",
+    "classname": "func_healthcharger",
+    "model": "*37"
+   },
+   "position": [
+    -1012,
+    1776,
+    56
+   ]
+  },
+  {
+   "id": 7720129,
+   "name": "Questionable Ethics - Health Charger 5",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c10",
+    "classname": "func_healthcharger",
+    "model": "*36"
+   },
+   "position": [
+    -1412,
+    1728,
+    56
+   ]
+  },
+  {
+   "id": 7720128,
+   "name": "Questionable Ethics - Health Charger 6",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c10",
+    "classname": "func_healthcharger",
+    "model": "*35"
+   },
+   "position": [
+    -860,
+    944,
+    328
+   ]
+  },
+  {
+   "id": 7720134,
+   "name": "Questionable Ethics - Health Charger 7",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c10",
+    "classname": "func_healthcharger",
+    "model": "*213"
+   },
+   "position": [
+    -2416,
+    1788,
+    520
+   ]
+  },
+  {
+   "id": 7720135,
+   "name": "Questionable Ethics - HEV Charger",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c10",
+    "classname": "func_recharge",
+    "model": "*43"
+   },
+   "position": [
+    192,
+    -700,
+    184
+   ]
+  },
+  {
+   "id": 7720017,
+   "name": "Surface Tension - Part 1 Reached",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c11_a1"
+   }
+  },
+  {
+   "id": 7720136,
+   "name": "Surface Tension - Health Charger (Part 1)",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c11_a1",
+    "classname": "func_healthcharger",
+    "model": "*209"
+   },
+   "position": [
+    -5156,
+    888,
+    56
+   ]
+  },
+  {
+   "id": 7720018,
+   "name": "Surface Tension - Part 2 Reached",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c11_a2"
+   }
+  },
+  {
+   "id": 7720138,
+   "name": "Surface Tension - Health Charger 1 (Part 2)",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c11_a2",
+    "classname": "func_healthcharger",
+    "model": "*18"
+   },
+   "position": [
+    600,
+    -916,
+    56
+   ]
+  },
+  {
+   "id": 7720137,
+   "name": "Surface Tension - Health Charger 2 (Part 2)",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c11_a2",
+    "classname": "func_healthcharger",
+    "model": "*17"
+   },
+   "position": [
+    600,
+    -596,
+    56
+   ]
+  },
+  {
+   "id": 7720019,
+   "name": "Surface Tension - Part 3 Reached",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a3",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c11_a3"
+   }
+  },
+  {
+   "id": 7720020,
+   "name": "Surface Tension - Part 4 Reached",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a4",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c11_a4"
+   }
+  },
+  {
+   "id": 7720139,
+   "name": "Surface Tension - Health Charger (Part 4)",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a4",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c11_a4",
+    "classname": "func_healthcharger",
+    "model": "*112"
+   },
+   "position": [
+    -1540,
+    -72,
+    -1800
+   ]
+  },
+  {
+   "id": 7720140,
+   "name": "Surface Tension - HEV Charger (Part 4)",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a4",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c11_a4",
+    "classname": "func_recharge",
+    "model": "*111"
+   },
+   "position": [
+    -1540,
+    -120,
+    -1800
+   ]
+  },
+  {
+   "id": 7720021,
+   "name": "Surface Tension - Part 5 Reached",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a5",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c11_a5"
+   }
+  },
+  {
+   "id": 7720143,
+   "name": "Surface Tension - Health Charger 1 (Part 5)",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a5",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c11_a5",
+    "classname": "func_healthcharger",
+    "model": "*177"
+   },
+   "position": [
+    -758,
+    -4172,
+    -1608
+   ]
+  },
+  {
+   "id": 7720142,
+   "name": "Surface Tension - Health Charger 2 (Part 5)",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a5",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c11_a5",
+    "classname": "func_healthcharger",
+    "model": "*176"
+   },
+   "position": [
+    -508,
+    -4788,
+    -1752
+   ]
+  },
+  {
+   "id": 7720144,
+   "name": "Surface Tension - Health Charger 3 (Part 5)",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a5",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c11_a5",
+    "classname": "func_healthcharger",
+    "model": "*182"
+   },
+   "position": [
+    -2464,
+    -4076,
+    -1480
+   ]
+  },
+  {
+   "id": 7720141,
+   "name": "Surface Tension - Health Charger 4 (Part 5)",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a5",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c11_a5",
+    "classname": "func_healthcharger",
+    "model": "*80"
+   },
+   "position": [
+    -344,
+    -5520,
+    -1472
+   ]
+  },
+  {
+   "id": 7720022,
+   "name": "Forget About Freeman - Reached",
+   "chapter": "forget_about_freeman",
+   "map": "hl_c12",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c12"
+   }
+  },
+  {
+   "id": 7720145,
+   "name": "Forget About Freeman - Health Charger 1",
+   "chapter": "forget_about_freeman",
+   "map": "hl_c12",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c12",
+    "classname": "func_healthcharger",
+    "model": "*72"
+   },
+   "position": [
+    -400,
+    -780,
+    676
+   ]
+  },
+  {
+   "id": 7720146,
+   "name": "Forget About Freeman - Health Charger 2",
+   "chapter": "forget_about_freeman",
+   "map": "hl_c12",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c12",
+    "classname": "func_healthcharger",
+    "model": "*154"
+   },
+   "position": [
+    -2672,
+    528,
+    840
+   ]
+  },
+  {
+   "id": 7720147,
+   "name": "Forget About Freeman - HEV Charger",
+   "chapter": "forget_about_freeman",
+   "map": "hl_c12",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c12",
+    "classname": "func_recharge",
+    "model": "*153"
+   },
+   "position": [
+    -3244,
+    -2004,
+    -184
+   ]
+  },
+  {
+   "id": 7720023,
+   "name": "Lambda Core - Part 1 Reached",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c13_a1"
+   }
+  },
+  {
+   "id": 7720148,
+   "name": "Lambda Core - Health Charger 1 (Part 1)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a1",
+    "classname": "func_healthcharger",
+    "model": "*7"
+   },
+   "position": [
+    832,
+    -68,
+    -200
+   ]
+  },
+  {
+   "id": 7720150,
+   "name": "Lambda Core - Health Charger 2 (Part 1)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a1",
+    "classname": "func_healthcharger",
+    "model": "*96"
+   },
+   "position": [
+    -2544,
+    -364,
+    -200
+   ]
+  },
+  {
+   "id": 7720149,
+   "name": "Lambda Core - Health Charger 3 (Part 1)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a1",
+    "classname": "func_healthcharger",
+    "model": "*22"
+   },
+   "position": [
+    780,
+    1664,
+    -72
+   ]
+  },
+  {
+   "id": 7720151,
+   "name": "Lambda Core - HEV Charger 1 (Part 1)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a1",
+    "classname": "func_recharge",
+    "model": "*8"
+   },
+   "position": [
+    896,
+    -68,
+    -200
+   ]
+  },
+  {
+   "id": 7720152,
+   "name": "Lambda Core - HEV Charger 2 (Part 1)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a1",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a1",
+    "classname": "func_recharge",
+    "model": "*97"
+   },
+   "position": [
+    -2480,
+    -364,
+    -200
+   ]
+  },
+  {
+   "id": 7720024,
+   "name": "Lambda Core - Part 2 Reached",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c13_a2"
+   }
+  },
+  {
+   "id": 7720153,
+   "name": "Lambda Core - Health Charger (Part 2)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a2",
+    "classname": "func_healthcharger",
+    "model": "*121"
+   },
+   "position": [
+    -1604,
+    1776,
+    -968
+   ]
+  },
+  {
+   "id": 7720155,
+   "name": "Lambda Core - HEV Charger 1 (Part 2)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a2",
+    "classname": "func_recharge",
+    "model": "*122"
+   },
+   "position": [
+    -1604,
+    1712,
+    -968
+   ]
+  },
+  {
+   "id": 7720154,
+   "name": "Lambda Core - HEV Charger 2 (Part 2)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a2",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a2",
+    "classname": "func_recharge",
+    "model": "*35"
+   },
+   "position": [
+    1322,
+    1968,
+    -584
+   ]
+  },
+  {
+   "id": 7720025,
+   "name": "Lambda Core - Part 3 Reached",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a3",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c13_a3"
+   }
+  },
+  {
+   "id": 7720156,
+   "name": "Lambda Core - Health Charger (Part 3)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a3",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a3",
+    "classname": "func_healthcharger",
+    "model": "*115"
+   },
+   "position": [
+    224,
+    348,
+    440
+   ]
+  },
+  {
+   "id": 7720157,
+   "name": "Lambda Core - HEV Charger (Part 3)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a3",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a3",
+    "classname": "func_recharge",
+    "model": "*150"
+   },
+   "position": [
+    -2998,
+    32,
+    56
+   ]
+  },
+  {
+   "id": 7720026,
+   "name": "Lambda Core - Part 4 Reached",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a4",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c13_a4"
+   }
+  },
+  {
+   "id": 7720158,
+   "name": "Lambda Core - Health Charger (Part 4)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a4",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a4",
+    "classname": "func_healthcharger",
+    "model": "*70"
+   },
+   "position": [
+    1700,
+    124,
+    -200
+   ]
+  },
+  {
+   "id": 7720159,
+   "name": "Lambda Core - HEV Charger (Part 4)",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a4",
+   "trigger": {
+    "type": "charger",
+    "map": "hl_c13_a4",
+    "classname": "func_recharge",
+    "model": "*69"
+   },
+   "position": [
+    1636,
+    124,
+    -200
+   ]
+  },
+  {
+   "id": 7720027,
+   "name": "Xen - Reached",
+   "chapter": "xen",
+   "map": "hl_c14",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c14"
+   }
+  },
+  {
+   "id": 7720028,
+   "name": "Gonarch's Lair - Reached",
+   "chapter": "gonarchs_lair",
+   "map": "hl_c15",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c15"
+   }
+  },
+  {
+   "id": 7720029,
+   "name": "Interloper - Part 1 Reached",
+   "chapter": "interloper",
+   "map": "hl_c16_a1",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c16_a1"
+   }
+  },
+  {
+   "id": 7720030,
+   "name": "Interloper - Part 2 Reached",
+   "chapter": "interloper",
+   "map": "hl_c16_a2",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c16_a2"
+   }
+  },
+  {
+   "id": 7720031,
+   "name": "Interloper - Part 3 Reached",
+   "chapter": "interloper",
+   "map": "hl_c16_a3",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c16_a3"
+   }
+  },
+  {
+   "id": 7720032,
+   "name": "Interloper - Part 4 Reached",
+   "chapter": "interloper",
+   "map": "hl_c16_a4",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c16_a4"
+   }
+  },
+  {
+   "id": 7720033,
+   "name": "Nihilanth - Part 1 Reached",
+   "chapter": "nihilanth",
+   "map": "hl_c17",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c17"
+   }
+  },
+  {
+   "id": 7720034,
+   "name": "Nihilanth - Part 2 Reached",
+   "chapter": "nihilanth",
+   "map": "hl_c18",
+   "trigger": {
+    "type": "map_reached",
+    "map": "hl_c18"
+   }
+  },
+  {
+   "id": 7720160,
+   "name": "First Glock",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c02_a1",
+    "classnames": [
+     "weapon_glock",
+     "weapon_9mmhandgun"
+    ]
+   },
+   "position": [
+    2221,
+    1976,
+    914
+   ]
+  },
+  {
+   "id": 7720161,
+   "name": "First .357 Magnum",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a3",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c05_a3",
+    "classnames": [
+     "weapon_357"
+    ]
+   },
+   "position": [
+    -1439,
+    255,
+    -1034
+   ]
+  },
+  {
+   "id": 7720162,
+   "name": "First MP5",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c04",
+    "classnames": [
+     "weapon_9mmAR",
+     "weapon_m16"
+    ]
+   },
+   "position": [
+    -888,
+    -1080,
+    64
+   ]
+  },
+  {
+   "id": 7720163,
+   "name": "First Shotgun",
+   "chapter": "office_complex",
+   "map": "hl_c03",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c03",
+    "classnames": [
+     "weapon_shotgun"
+    ]
+   },
+   "position": [
+    1690,
+    -742,
+    255
+   ]
+  },
+  {
+   "id": 7720164,
+   "name": "First Crossbow",
+   "chapter": "apprehension",
+   "map": "hl_c08_a1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c08_a1",
+    "classnames": [
+     "weapon_crossbow"
+    ]
+   },
+   "position": [
+    1420,
+    288,
+    -588
+   ]
+  },
+  {
+   "id": 7720165,
+   "name": "First RPG",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a2",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c11_a2",
+    "classnames": [
+     "weapon_rpg"
+    ]
+   },
+   "position": [
+    -2888,
+    -5008,
+    -1256
+   ]
+  },
+  {
+   "id": 7720166,
+   "name": "First Tau Cannon",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c10",
+    "classnames": [
+     "weapon_gauss"
+    ]
+   },
+   "position": [
+    -1184,
+    432,
+    464
+   ]
+  },
+  {
+   "id": 7720167,
+   "name": "First Gluon Gun",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c13_a1",
+    "classnames": [
+     "weapon_egon"
+    ]
+   },
+   "position": [
+    -2534,
+    310,
+    -80
+   ]
+  },
+  {
+   "id": 7720168,
+   "name": "First Hivehand",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a3",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c11_a3",
+    "classnames": [
+     "weapon_hornetgun"
+    ]
+   },
+   "position": [
+    96,
+    320,
+    -1117
+   ]
+  },
+  {
+   "id": 7720169,
+   "name": "First Satchel Charge",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c07_a1",
+    "classnames": [
+     "weapon_satchel"
+    ]
+   },
+   "position": [
+    1384,
+    -2300,
+    -860
+   ]
+  },
+  {
+   "id": 7720170,
+   "name": "First Tripmine",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c07_a1",
+    "classnames": [
+     "weapon_tripmine"
+    ]
+   },
+   "position": [
+    3060,
+    -1896,
+    -1780
+   ]
+  },
+  {
+   "id": 7720171,
+   "name": "First Snarks",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c10",
+    "classnames": [
+     "weapon_snark"
+    ]
+   },
+   "position": [
+    -608,
+    144,
+    256
+   ]
+  },
+  {
+   "id": 7720172,
+   "name": "First Hand Grenade",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a2",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c02_a2",
+    "classnames": [
+     "weapon_handgrenade"
+    ]
+   },
+   "position": [
+    -1815,
+    -2875,
+    1509
+   ]
+  },
+  {
+   "id": 7720429,
+   "name": "First HEV Suit",
+   "chapter": "anomalous_materials",
+   "map": "hl_c01_a1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c01_a1",
+    "classnames": [
+     "item_suit"
+    ]
+   },
+   "position": [
+    -3665,
+    926,
+    -280
+   ]
+  },
+  {
+   "id": 7720430,
+   "name": "First Long Jump Module",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a4",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c13_a4",
+    "classnames": [
+     "item_longjump"
+    ]
+   },
+   "position": [
+    1855,
+    -297,
+    -244
+   ]
+  },
+  {
+   "id": 7720173,
+   "name": "First Crowbar",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c02_a1",
+    "classnames": [
+     "weapon_crowbar"
+    ]
+   },
+   "position": [
+    1678,
+    1943,
+    -129
+   ]
+  },
+  {
+   "id": 7720035,
+   "name": "Black Mesa Inbound - Complete",
+   "chapter": "black_mesa_inbound",
+   "map": "hl_c00",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "black_mesa_inbound",
+    "map": "hl_c00"
+   }
+  },
+  {
+   "id": 7720036,
+   "name": "Anomalous Materials - Complete",
+   "chapter": "anomalous_materials",
+   "map": "hl_c01_a2",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "anomalous_materials",
+    "map": "hl_c01_a2"
+   }
+  },
+  {
+   "id": 7720037,
+   "name": "Unforeseen Consequences - Complete",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a2",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "unforeseen_consequences",
+    "map": "hl_c02_a2"
+   }
+  },
+  {
+   "id": 7720038,
+   "name": "Office Complex - Complete",
+   "chapter": "office_complex",
+   "map": "hl_c03",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "office_complex",
+    "map": "hl_c03"
+   }
+  },
+  {
+   "id": 7720039,
+   "name": "We've Got Hostiles - Complete",
+   "chapter": "weve_got_hostiles",
+   "map": "hl_c04",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "weve_got_hostiles",
+    "map": "hl_c04"
+   }
+  },
+  {
+   "id": 7720040,
+   "name": "Blast Pit - Complete",
+   "chapter": "blast_pit",
+   "map": "hl_c05_a3",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "blast_pit",
+    "map": "hl_c05_a3"
+   }
+  },
+  {
+   "id": 7720041,
+   "name": "Power Up - Complete",
+   "chapter": "power_up",
+   "map": "hl_c06",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "power_up",
+    "map": "hl_c06"
+   }
+  },
+  {
+   "id": 7720042,
+   "name": "On A Rail - Complete",
+   "chapter": "on_a_rail",
+   "map": "hl_c07_a2",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "on_a_rail",
+    "map": "hl_c07_a2"
+   }
+  },
+  {
+   "id": 7720043,
+   "name": "Apprehension - Complete",
+   "chapter": "apprehension",
+   "map": "hl_c08_a2",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "apprehension",
+    "map": "hl_c08_a2"
+   }
+  },
+  {
+   "id": 7720044,
+   "name": "Residue Processing - Complete",
+   "chapter": "residue_processing",
+   "map": "hl_c09",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "residue_processing",
+    "map": "hl_c09"
+   }
+  },
+  {
+   "id": 7720045,
+   "name": "Questionable Ethics - Complete",
+   "chapter": "questionable_ethics",
+   "map": "hl_c10",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "questionable_ethics",
+    "map": "hl_c10"
+   }
+  },
+  {
+   "id": 7720046,
+   "name": "Surface Tension - Complete",
+   "chapter": "surface_tension",
+   "map": "hl_c11_a5",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "surface_tension",
+    "map": "hl_c11_a5"
+   }
+  },
+  {
+   "id": 7720047,
+   "name": "Forget About Freeman - Complete",
+   "chapter": "forget_about_freeman",
+   "map": "hl_c12",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "forget_about_freeman",
+    "map": "hl_c12"
+   }
+  },
+  {
+   "id": 7720048,
+   "name": "Lambda Core - Complete",
+   "chapter": "lambda_core",
+   "map": "hl_c13_a4",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "lambda_core",
+    "map": "hl_c13_a4"
+   }
+  },
+  {
+   "id": 7720049,
+   "name": "Xen - Complete",
+   "chapter": "xen",
+   "map": "hl_c14",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "xen",
+    "map": "hl_c14"
+   }
+  },
+  {
+   "id": 7720050,
+   "name": "Gonarch's Lair - Complete",
+   "chapter": "gonarchs_lair",
+   "map": "hl_c15",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "gonarchs_lair",
+    "map": "hl_c15"
+   }
+  },
+  {
+   "id": 7720051,
+   "name": "Interloper - Complete",
+   "chapter": "interloper",
+   "map": "hl_c16_a4",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "interloper",
+    "map": "hl_c16_a4"
+   }
+  },
+  {
+   "id": 7720052,
+   "name": "Nihilanth - Complete",
+   "chapter": "nihilanth",
+   "map": "hl_c18",
+   "trigger": {
+    "type": "chapter_complete",
+    "chapter": "nihilanth",
+    "map": "hl_c18"
+   }
+  }
+ ],
+ "restricted_classnames": {}
+}

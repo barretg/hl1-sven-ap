@@ -19,7 +19,10 @@ sys.path.insert(0, str(REPO / "tools"))
 
 from build_campaign_data import IdRegistry, location_key  # noqa: E402
 
-CAMPAIGN_PATH = REPO / "apworld" / "half_life_sven" / "data" / "campaign.json"
+sys.path.insert(0, str(REPO / "apworld" / "half_life_sven"))
+
+from data import load_campaign  # noqa: E402
+
 IDS_PATH = REPO / "apworld" / "half_life_sven" / "data" / "ids.json"
 CHECKDATA_PATH = (
     REPO / "apworld" / "half_life_sven" / "plugin"
@@ -29,7 +32,7 @@ CHECKDATA_PATH = (
 
 @pytest.fixture(scope="module")
 def campaign() -> dict:
-    return json.loads(CAMPAIGN_PATH.read_text(encoding="utf-8"))
+    return load_campaign()
 
 
 @pytest.fixture(scope="module")
