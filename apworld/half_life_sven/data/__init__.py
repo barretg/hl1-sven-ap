@@ -19,10 +19,11 @@ from typing import Any
 
 INDEX_FILE = "index.json"
 
-# The kind of data file a campaign entry holds. Only real campaigns exist today;
-# the key is here because what the hub fronts and what a standalone map offers
-# are not the same shape, and the loader has to be able to tell them apart.
+# The kind of data file an entry holds. A campaign is a run of missions behind
+# the hub; an arcade map is one standalone map with its own idea of progress, and
+# the two are not the same shape at all.
 KIND_CAMPAIGN = "campaign"
+KIND_ARCADE = "arcade"
 
 
 def _read(name: str) -> dict[str, Any]:
@@ -48,6 +49,7 @@ def load_campaign() -> dict[str, Any]:
     index = _read(INDEX_FILE)
 
     campaigns: list[dict[str, Any]] = []
+    arcades: list[dict[str, Any]] = []
     chapters: list[dict[str, Any]] = []
     items: list[dict[str, Any]] = []
     locations: list[dict[str, Any]] = []
@@ -55,21 +57,31 @@ def load_campaign() -> dict[str, Any]:
 
     for file_name in index["files"]:
         part = _read(file_name)
-        if part.get("kind", KIND_CAMPAIGN) != KIND_CAMPAIGN:
-            raise ValueError(f"{file_name}: unsupported data kind {part.get('kind')!r}")
-        campaigns.append(part["campaign"])
-        chapters.extend(part["chapters"])
+        kind = part.get("kind", KIND_CAMPAIGN)
+        if kind == KIND_CAMPAIGN:
+            campaigns.append(part["campaign"])
+            chapters.extend(part["chapters"])
+            for classname, keys in part.get("restricted_classnames", {}).items():
+                # Union rather than overwrite: nothing shares a restricted
+                # classname today, but two campaigns shipping the same custom
+                # weapon would.
+                merged = restricted.setdefault(classname, [])
+                merged.extend(key for key in keys if key not in merged)
+        elif kind == KIND_ARCADE:
+            # No chapters and no campaign record: an arcade map is not a run of
+            # missions and must never reach `missions_required`, the hub console
+            # table or the campaign fallback.
+            arcades.append(part["arcade"])
+        else:
+            raise ValueError(f"{file_name}: unsupported data kind {kind!r}")
+
         items.extend(part.get("items", ()))
         locations.extend(part["locations"])
-        for classname, keys in part.get("restricted_classnames", {}).items():
-            # Union rather than overwrite: nothing shares a restricted classname
-            # today, but two campaigns shipping the same custom weapon would.
-            merged = restricted.setdefault(classname, [])
-            merged.extend(key for key in keys if key not in merged)
 
     return {
         "data_version": index["data_version"],
         "campaigns": campaigns,
+        "arcades": arcades,
         "chapters": chapters,
         # Campaign-owned items first, in campaign order, then the shared pool.
         "items": items + index["items"],
@@ -277,8 +289,47 @@ def chapter_cleared_event(chapter_key: str) -> str:
     return f"{CHAPTERS_BY_KEY[chapter_key]['name']} {CLEARED}"
 
 
+# --- Arcade maps ----------------------------------------------------------
+#
+# Standalone maps that are not part of any campaign and have no hub console.
+# Suspension is the only one: eight sections of a wave defence along a bridge,
+# eight classes, a difficulty the lobby votes for and a medal scored on deaths.
+#
+# It shares the item pool and the location id space with the campaigns and
+# nothing else. Its own goal is independent, its locations are filtered by its
+# own options, and none of it counts toward `missions_required`.
+
+ARCADES: list[dict[str, Any]] = CAMPAIGN.get("arcades", [])
+ARCADES_BY_KEY: dict[str, dict[str, Any]] = {a["key"]: a for a in ARCADES}
+
+SUSPENSION_KEY = "suspension"
+
+# Trigger types, matching `tools/build_campaign_data.py`.
+SUSPENSION_SECTION = "suspension_section"
+SUSPENSION_CLEAR = "suspension_clear"
+SUSPENSION_AWARD = "suspension_award"
+SUSPENSION_TRIGGERS = frozenset(
+    {SUSPENSION_SECTION, SUSPENSION_CLEAR, SUSPENSION_AWARD}
+)
+
+
+def arcade(key: str) -> dict[str, Any]:
+    return ARCADES_BY_KEY[key]
+
+
+def suspension() -> dict[str, Any] | None:
+    """The Suspension record, or None in data built before it existed."""
+    return ARCADES_BY_KEY.get(SUSPENSION_KEY)
+
+
+def suspension_victory_event() -> str:
+    """Clearing a run as the Juggernaut, at the hardest tier the YAML allows."""
+    return f"{VICTORY} (Suspension)"
+
+
 EVENT_ITEM_NAMES: frozenset[str] = frozenset(
     [mission_complete_event(c["key"]) for c in CAMPAIGNS]
     + [victory_event(c["key"]) for c in CAMPAIGNS]
     + [chapter_cleared_event(key) for key in GOAL_PREREQUISITES.values()]
+    + [suspension_victory_event()]
 )

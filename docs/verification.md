@@ -6,6 +6,9 @@
 | --- | --- | --- |
 | Bridge protocol | `pytest tests/test_bridge.py` | passing |
 | Data consistency (`data/` ↔ `checkdata.txt`) | `pytest tests/test_campaign_data.py` | passing |
+| Suspension data and its checkdata records | `pytest tests/test_suspension_data.py` | passing |
+| Suspension generation | `ArchipelagoGenerate` at the easy cap and at the insane cap with classanity, platinum and priority medals | passing |
+| Suspension in-game | — | **not yet run in-game**, see below |
 | World generation, AP 0.6.7 | `ArchipelagoGenerate` on real seeds | passing |
 | Option matrix | `missions_required` 1 / 8 / 17, strict + loose, suit and long jump on and off, 3-slot multiworld | passing |
 | Campaign matrix | all four enabled, Opposing Force alone, They Hunger alone, every campaign switched off, and a pre-campaign YAML | passing |
@@ -362,3 +365,36 @@ Generate with `trap_percentage: 100` for a seed that is nothing but traps.
 Set `missions_required: 1` for a short test seed. Confirm Nihilanth stays sealed
 until one mission is complete, then opens, and that killing Nihilanth sends
 `GOAL` and the client reports the goal to the server.
+
+### 7. Suspension
+
+None of this has been run in game. Generate with `suspension: true`,
+`suspension_max_difficulty: hard`, `suspension_classanity: false` and warp with
+`!warp suspension`. Four things carry real assumptions, in the order they would
+bite:
+
+1. **The counters.** The plugin creates `trigger_changevalue` entities answering
+   to names the map already fires (`s3_events`, `win_red_tickets`,
+   `start_events`, `end_script`) and reads its own `info_target` counters. If a
+   plugin-created entity is *not* fired by the map's own multi_managers, nothing
+   about a round is observed and no Suspension check ever sends. Symptom: the
+   round plays normally and the log never says "suspension: tier voted". This is
+   the load-bearing assumption of the whole module.
+2. **Section boundaries.** Confirm each section credit lands as that section
+   falls, not one early or one late. `s6` hangs off `s6_captured_text` rather
+   than `s7_apc_start`, because the latter is delayed twenty seconds.
+3. **The vote buttons.** With one Progressive Suspension Difficulty item held,
+   easy and medium should press and hard and insane should refuse with a message.
+   The mapping is `vote_button4` easy through `vote_button1` insane — backwards
+   from the tier order, so an off-by-one here locks the wrong buttons.
+4. **The Juggernaut.** Below insane the booth is believed to be inert, so the
+   plugin watches the portal box and grants the class itself. Confirm the portal
+   grants it once the item is held, that a second player is refused, that the
+   restock stations still work for the granted class (they filter on
+   `targetname`), and that the model change takes — `g_EntityFuncs.SetModel` on a
+   player is the least certain call in the module, and if it does nothing the
+   class is still mechanically correct and merely looks wrong.
+
+Then clear a run and confirm the medal matches the team's death count, that
+lesser medals arrive with it, and that a run cleared as the Juggernaut at the
+capped tier sends `GOAL|suspension`.

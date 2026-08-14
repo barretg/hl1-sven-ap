@@ -167,6 +167,9 @@ def test_every_chapter_has_a_completion_location(campaign: dict) -> None:
 
 def test_every_location_belongs_to_a_map_of_its_chapter(campaign: dict) -> None:
     maps_by_chapter = {c["key"]: set(c["maps"]) for c in campaign["chapters"]}
+    # An arcade map is its own chapter and its own map, so it stands in for both.
+    for arcade in campaign.get("arcades", ()):
+        maps_by_chapter[arcade["key"]] = {arcade["map"]}
     for entry in campaign["locations"]:
         assert entry["map"] in maps_by_chapter[entry["chapter"]], entry["name"]
 

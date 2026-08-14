@@ -146,3 +146,48 @@ def location_rule(
     if world.options.logic_difficulty.value != LogicDifficulty.option_strict:
         return None  # loose logic drops soft weapon gates
     return any_of(world, [requirement])
+
+
+def suspension_rule(
+    world: "HalfLifeSvenWorld", entry: dict
+) -> Callable[[CollectionState], bool] | None:
+    """What a Suspension check needs: the tier, and the class it names.
+
+    Two requirements, both item counts:
+
+    - the difficulty, as that many Progressive Suspension Difficulty items. Easy
+      is the tier everyone starts on and needs none.
+    - the class, where the check names one. The Juggernaut needs every other
+      class as well, because it opens only once a run has been cleared with each
+      of them -- the plugin enforces the clears, and logic enforces the items,
+      which is what stops the generator expecting a Juggernaut run from a player
+      who cannot field the seven runs that unlock it.
+    """
+    player = world.player
+    trigger = entry["trigger"]
+    conditions: list[Callable[[CollectionState], bool]] = []
+
+    tier = world.suspension_tier_index.get(trigger["difficulty"])
+    if tier is None:
+        return None
+    if tier > 0 and world.suspension_difficulty_item:
+        conditions.append(
+            lambda state, name=world.suspension_difficulty_item, count=tier:
+            state.has(name, player, count)
+        )
+
+    required_classes = world.suspension_classes_required(trigger.get("class", ""))
+    if required_classes:
+        conditions.append(
+            lambda state, names=required_classes: state.has_all(names, player)
+        )
+
+    if not conditions:
+        return None
+    if len(conditions) == 1:
+        return conditions[0]
+
+    def rule(state: CollectionState) -> bool:
+        return all(condition(state) for condition in conditions)
+
+    return rule

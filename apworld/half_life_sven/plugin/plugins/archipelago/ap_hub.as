@@ -1266,8 +1266,11 @@ HookReturnCode PlayerUse( CBasePlayer@ pPlayer, uint& out uiFlags )
 	if( pPlayer is null )
 		return HOOK_CONTINUE;
 
-	// Nothing on this map is worth a trace on every +use tick.
-	if( g_szCurrentMap != HUB_MAP && g_MapChargers.length() == 0 )
+	// Nothing on this map is worth a trace on every +use tick. The arcade map is
+	// the exception: its difficulty vote is a row of buttons, and a locked tier
+	// has to be refused at the button.
+	if( g_szCurrentMap != HUB_MAP && g_MapChargers.length() == 0
+	 && !SuspensionManaged() )
 		return HOOK_CONTINUE;
 
 	Math.MakeVectors( pPlayer.pev.v_angle );
@@ -1283,6 +1286,15 @@ HookReturnCode PlayerUse( CBasePlayer@ pPlayer, uint& out uiFlags )
 	CBaseEntity@ pHit = g_EntityFuncs.Instance( tr.pHit );
 	if( pHit is null )
 		return HOOK_CONTINUE;
+
+	if( SuspensionManaged() )
+	{
+		// HOOK_HANDLED so the button is never pressed at all, rather than
+		// pressed and undone: the vote it would cast is what we are refusing.
+		if( SuspensionBlockUse( pPlayer, pHit ) )
+			return HOOK_HANDLED;
+		return HOOK_CONTINUE;
+	}
 
 	if( g_szCurrentMap != HUB_MAP )
 	{

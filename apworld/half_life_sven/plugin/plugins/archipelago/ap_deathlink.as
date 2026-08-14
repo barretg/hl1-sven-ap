@@ -136,6 +136,11 @@ HookReturnCode PlayerKilled( CBasePlayer@ pPlayer, CBaseEntity@ pAttacker, int i
 	if( pPlayer is null )
 		return HOOK_CONTINUE;
 
+	// The arcade map scores its medal on the team's total deaths, so every one
+	// of them counts here -- including the ones DeathLink immunity swallows,
+	// since the medal is about the round rather than about the multiworld.
+	SuspensionCountDeath();
+
 	// Either we caused this death, or another death is already being processed.
 	if( DeathLinkImmune() )
 		return HOOK_CONTINUE;

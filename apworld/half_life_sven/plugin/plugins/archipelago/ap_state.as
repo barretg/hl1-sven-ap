@@ -417,6 +417,13 @@ void LoadCheckData()
 	g_CampaignNames.deleteAll();
 	g_PortalConsoles.deleteAll();
 	g_RestrictedClassnames.deleteAll();
+	@g_pArcade = null;
+	g_SusTiers.resize( 0 );
+	g_SusSections.resize( 0 );
+	g_SusClasses.resize( 0 );
+	g_SusAwards.resize( 0 );
+	g_SusVolumes.deleteAll();
+	g_SusSeal.deleteAll();
 
 	File@ pFile = g_FileSystem.OpenFile( AP_CHECKDATA, OpenFile::READ );
 
@@ -504,6 +511,71 @@ void LoadCheckData()
 		else if( parts[0] == "D" )
 		{
 			g_szDataVersion = parts[1];
+		}
+		// The arcade maps. Absent from an older data file, in which case every
+		// list below stays empty and Suspension is simply an unmanaged map.
+		else if( parts[0] == "X" && parts.length() >= 7 )
+		{
+			APArcade arcade;
+			arcade.key = parts[1];
+			arcade.name = parts[2];
+			arcade.map = parts[3];
+			arcade.goalClass = parts[4];
+			arcade.startSignal = parts[5];
+			arcade.endSignal = parts[6];
+			@g_pArcade = @arcade;
+		}
+		else if( parts[0] == "Y" && parts.length() >= 7 )
+		{
+			APTier tier;
+			tier.key = parts[2];
+			tier.name = parts[3];
+			tier.tickets = atoi( parts[4] );
+			tier.voteButton = parts[5];
+			tier.ticketSignal = parts[6];
+			g_SusTiers.insertLast( @tier );
+		}
+		else if( parts[0] == "Z" && parts.length() >= 6 )
+		{
+			APSection section;
+			section.key = parts[2];
+			section.index = atoi( parts[3] );
+			section.name = parts[4];
+			section.signal = parts[5];
+			g_SusSections.insertLast( @section );
+		}
+		else if( parts[0] == "W" && parts.length() >= 7 )
+		{
+			APClass entry;
+			entry.key = parts[2];
+			entry.name = parts[3];
+			entry.targetname = parts[4];
+			entry.signal = parts[5];
+			entry.mapGated = parts[6] == "1";
+			g_SusClasses.insertLast( @entry );
+		}
+		else if( parts[0] == "A" && parts.length() >= 5 )
+		{
+			APAward award;
+			award.key = parts[2];
+			award.name = parts[3];
+			award.deaths = atoi( parts[4] );
+			g_SusAwards.insertLast( @award );
+		}
+		else if( parts[0] == "J" && parts.length() >= 5 )
+		{
+			APBox box;
+			box.mins = APVectorFromString( parts[3] );
+			box.maxs = APVectorFromString( parts[4] );
+			g_SusVolumes[ parts[2] ] = @box;
+		}
+		else if( parts[0] == "G" && parts.length() >= 5 )
+		{
+			g_SusSeal[ parts[2] ] = parts[3] + "|" + parts[4];
+		}
+		else if( parts[0] == "E" && parts.length() >= 5 )
+		{
+			ApplyGrantRecord( parts[2], parts[3], parts[4] );
 		}
 	}
 

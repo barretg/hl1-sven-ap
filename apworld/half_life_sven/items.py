@@ -29,6 +29,14 @@ chapter_unlock_items: list[str] = [e["name"] for e in ITEMS if e.get("group") ==
 weapon_items: list[str] = [e["name"] for e in ITEMS if e.get("group") == "weapon"]
 optional_items: list[str] = [e["name"] for e in ITEMS if e.get("group") == "optional"]
 
+# Suspension's own items: one per class, and the tier unlock.
+suspension_class_items: dict[str, str] = {
+    entry["class"]: entry["name"] for entry in ITEMS if entry.get("group") == "suspension_class"
+}
+suspension_difficulty_item: str = next(
+    (e["name"] for e in ITEMS if e.get("group") == "suspension_difficulty"), ""
+)
+
 # Chapter key -> the item that unlocks it.
 #
 # Missions sealed behind their campaign's count are left out: they are opened by
@@ -64,6 +72,8 @@ item_name_groups: dict[str, set[str]] = {
     "Equipment": set(optional_items),
     "Filler": set(filler_items),
     "Traps": set(trap_items),
+    "Suspension": set(suspension_class_items.values())
+    | ({suspension_difficulty_item} if suspension_difficulty_item else set()),
 }
 
 # Events carry no id -- they exist only to express logic. There is a pair per

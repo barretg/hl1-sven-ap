@@ -34,7 +34,12 @@ from .data import (
     INTRO_CHAPTERS,
     OPTIONAL_ITEM_NAMES,
     STARTING_WEAPONS,
+    SUSPENSION_AWARD,
+    SUSPENSION_CLEAR,
+    SUSPENSION_SECTION,
     melee_starters_for,
+    suspension,
+    suspension_victory_event,
     victory_event,
 )
 from .items import (
@@ -47,6 +52,8 @@ from .items import (
     item_name_groups,
     item_name_to_id,
     optional_items,
+    suspension_class_items,
+    suspension_difficulty_item,
     trap_items,
     trap_weights,
     unlock_item_for_chapter,
@@ -148,6 +155,22 @@ class HalfLifeSvenWorld(World):
         # The item name of that melee weapon, when it has one. It leaves the pool:
         # you cannot be sent a wrench you are already holding.
         self.starting_melee_item: str = ""
+
+        # -- Suspension, the arcade map. All inert while it is switched off.
+        self.suspension_enabled: bool = False
+        # Its record from the data, or None in data built before it existed.
+        self.suspension: dict[str, Any] | None = suspension()
+        # Difficulty key -> how many Progressive Suspension Difficulty items it
+        # takes. Easy is 0: everyone can already play it.
+        self.suspension_tier_index: dict[str, int] = {}
+        # Medal keys this seed makes checks of, easiest first.
+        self.suspension_awards: list[str] = []
+        # The hardest medal on each tier, when the YAML asks for those to be
+        # priority locations.
+        self.suspension_priority_awards: set[str] = set()
+        # The class the seed starts holding. Never the Juggernaut.
+        self.suspension_starting_class: str = ""
+        self.suspension_difficulty_item: str = suspension_difficulty_item
 
     # -- generation ------------------------------------------------------
 
@@ -271,6 +294,10 @@ class HalfLifeSvenWorld(World):
                 self.create_item(unlock_item_for_chapter[starting["key"]])
             )
 
+        # The arcade map, which shares the item pool and nothing else. Done after
+        # the campaign items so its own additions cannot disturb them.
+        self.setup_suspension(passthrough)
+
         # Each campaign's own setting, clamped to the missions it actually has in
         # this seed: excluding Black Mesa Inbound leaves Half-Life one short, and
         # asking for more than exist would seal a finale permanently.
@@ -293,6 +320,128 @@ class HalfLifeSvenWorld(World):
                 and chapter["key"] not in GOAL_COMPANIONS
             ])
             self.missions_required_for[campaign_key] = min(option.value, available)
+
+    # -- Suspension ------------------------------------------------------
+
+    def setup_suspension(self, passthrough: dict[str, Any] | None) -> None:
+        """Decide which tiers, medals and classes this seed's arcade map has.
+
+        Left entirely alone when the map is switched off, or when the data
+        predates it: no region, no locations, no items, no goal.
+        """
+        self.suspension_enabled = bool(self.options.suspension) and self.suspension is not None
+        if passthrough is not None and "suspension" in passthrough:
+            self.suspension_enabled = bool(passthrough["suspension"])
+        if not self.suspension_enabled:
+            return
+
+        arcade = self.suspension
+        assert arcade is not None
+
+        # Tiers up to the cap. Everything above it leaves the seed entirely, so
+        # a hard-capped seed never places a check nobody can reach.
+        cap = self.options.suspension_max_difficulty.value
+        self.suspension_tier_index = {
+            entry["key"]: index
+            for index, entry in enumerate(arcade["difficulties"])
+            if index <= cap
+        }
+
+        # Medals are ordered hardest first, and the option picks how far up the
+        # ladder goes, so the tiers a seed contains are the easiest N of them.
+        wanted = self.options.suspension_required_award.value + 1
+        ladder = [entry["key"] for entry in arcade["awards"]]
+        self.suspension_awards = ladder[-wanted:]
+
+        if self.options.suspension_max_awards_are_priority:
+            # The hardest one, which is the first of them in the data's order.
+            hardest = self.suspension_awards[0]
+            self.suspension_priority_awards = {
+                entry["name"]
+                for entry in self.suspension_locations
+                if entry["trigger"]["type"] == SUSPENSION_AWARD
+                and entry["trigger"]["award"] == hardest
+                and entry["trigger"]["difficulty"] in self.suspension_tier_index
+            }
+
+        # The starting class, which is never the Juggernaut: that one opens per
+        # tier by clearing a run with each of the other seven.
+        startable = [
+            entry["key"] for entry in arcade["classes"]
+            if entry["key"] != arcade["goal_class"]
+        ]
+        chosen = self.options.suspension_starting_class.current_key
+        if passthrough and passthrough.get("suspension_starting_class"):
+            chosen = passthrough["suspension_starting_class"]
+        self.suspension_starting_class = (
+            chosen if chosen in startable else self.random.choice(startable)
+        )
+
+        self.available_item_names.update(suspension_class_items.values())
+        if self.suspension_difficulty_item and len(self.suspension_tier_index) > 1:
+            self.available_item_names.add(self.suspension_difficulty_item)
+
+        self.multiworld.push_precollected(
+            self.create_item(suspension_class_items[self.suspension_starting_class])
+        )
+
+    @property
+    def suspension_locations(self) -> list[dict[str, Any]]:
+        arcade = self.suspension
+        if arcade is None:
+            return []
+        from .locations import locations_by_map
+
+        return locations_by_map.get(arcade["map"], [])
+
+    def suspension_includes(self, entry: dict[str, Any]) -> bool:
+        """Is this Suspension check part of the seed?"""
+        trigger = entry["trigger"]
+        if trigger["difficulty"] not in self.suspension_tier_index:
+            return False
+
+        kind = trigger["type"]
+        if kind == SUSPENSION_AWARD:
+            return trigger["award"] in self.suspension_awards
+        if kind == SUSPENSION_SECTION:
+            # Classanity decides which half of the section checks a seed uses:
+            # the per-class ones or the single classless one. Never both, or the
+            # same section clear would pay out twice.
+            per_class = bool(trigger["class"])
+            return per_class == bool(self.options.suspension_classanity)
+        if kind == SUSPENSION_CLEAR:
+            # Both halves, always. The classless one is "a run was finished at
+            # this tier"; the per-class ones are what the Juggernaut waits on,
+            # and it waits on them whether or not classanity is on.
+            return True
+        return False
+
+    def suspension_classes_required(self, class_key: str) -> list[str]:
+        """Class items a check naming this class needs."""
+        arcade = self.suspension
+        if not class_key or arcade is None:
+            return []
+        if class_key != arcade["goal_class"]:
+            return [suspension_class_items[class_key]]
+        # The Juggernaut opens only after a run has been cleared with each of the
+        # others, so in logic it stands behind all of them.
+        return sorted(suspension_class_items.values())
+
+    def suspension_goal_rule(self):
+        """A cleared run as the Juggernaut, at the hardest tier this seed has."""
+        player = self.player
+        names = self.suspension_classes_required(self.suspension["goal_class"])
+        tier = max(self.suspension_tier_index.values(), default=0)
+        difficulty_item = self.suspension_difficulty_item
+
+        def rule(state) -> bool:
+            if not state.has_all(names, player):
+                return False
+            if tier and difficulty_item:
+                return state.has(difficulty_item, player, tier)
+            return True
+
+        return rule
 
     def choose_starting_weapons(self) -> None:
         """Decide what the run opens with.
@@ -359,10 +508,25 @@ class HalfLifeSvenWorld(World):
         starting_unlocks = {
             unlock_item_for_chapter[key] for key in self.starting_chapters
         }
+        if self.suspension_enabled and self.suspension_starting_class:
+            starting_unlocks.add(
+                suspension_class_items[self.suspension_starting_class]
+            )
+
         for name in sorted(self.available_item_names):
             if name in starting_unlocks:
                 continue  # already in the starting inventory
+            if name == self.suspension_difficulty_item:
+                continue  # progressive: several copies, added below
             pool.append(self.create_item(name))
+
+        # One fewer than the number of tiers, since Easy needs none. Progressive,
+        # so the nth copy opens the nth tier and the order is never in doubt.
+        if self.suspension_enabled and self.suspension_difficulty_item:
+            pool += [
+                self.create_item(self.suspension_difficulty_item)
+                for _ in range(max(len(self.suspension_tier_index) - 1, 0))
+            ]
 
         remaining = len(self.multiworld.get_unfilled_locations(self.player)) - len(pool)
         if remaining < 0:
@@ -394,6 +558,10 @@ class HalfLifeSvenWorld(World):
         # name held four times, any finale would end the run.
         player = self.player
         victories = [victory_event(c["campaign"]) for c in self.goal_chapters]
+        # Suspension is a goal of its own when it is in the seed: a run cleared
+        # as the Juggernaut, at the hardest tier the YAML allows.
+        if self.suspension_enabled:
+            victories.append(suspension_victory_event())
         self.multiworld.completion_condition[player] = (
             lambda state, names=victories: all(state.has(name, player) for name in names)
         )
@@ -436,4 +604,13 @@ class HalfLifeSvenWorld(World):
             "death_link_amnesty": self.options.death_link_amnesty.value,
             "shuffle_hev_suit": bool(self.options.shuffle_hev_suit),
             "shuffle_longjump": bool(self.options.shuffle_longjump),
+            # The arcade map. A client older than it sees `suspension: false` and
+            # behaves exactly as it did; the plugin needs the rest to know which
+            # tiers exist, which medals are checks, and how to score a run.
+            "suspension": self.suspension_enabled,
+            "suspension_classanity": bool(self.options.suspension_classanity),
+            "suspension_difficulties": list(self.suspension_tier_index),
+            "suspension_awards": list(self.suspension_awards),
+            "suspension_rolldown": bool(self.options.suspension_difficulty_rolldown),
+            "suspension_starting_class": self.suspension_starting_class,
         }

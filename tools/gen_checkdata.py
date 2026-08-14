@@ -34,9 +34,105 @@ OUT_PATH = (
 
 # 2 added the campaign records, the console table, and a seventh field on `C`.
 # 3 added the eighth and ninth: the mission a finale is paired with, and whether
-# finishing waits for the map to end. All of it is additive: a plugin reading the
-# older format ignores what it does not recognise and behaves exactly as it did.
-FORMAT_VERSION = 3
+# finishing waits for the map to end.
+# 4 added the arcade map records -- X, Y, Z, W, A, J, G, E -- and a new spelling
+# of the `arg` field on `L` for its three trigger types. All of it is additive: a
+# plugin reading the older format ignores what it does not recognise and behaves
+# exactly as it did.
+FORMAT_VERSION = 4
+
+
+def arcade_records(arcades) -> list[str]:
+    """The standalone maps: their tiers, sections, classes and medals.
+
+    The plugin cannot derive any of this. It has to know which button belongs to
+    which tier to refuse a locked one, which entity name means a section fell,
+    and what a class does to a player -- the last because a booth that does
+    nothing on the tier being played leaves the plugin to grant it.
+    """
+    lines: list[str] = []
+    for arcade in arcades:
+        key = arcade["key"]
+        lines.append(
+            "X|{key}|{name}|{map}|{goal}|{start}|{end}".format(
+                key=key,
+                name=arcade["name"],
+                map=arcade["map"],
+                goal=arcade["goal_class"],
+                start=arcade["start_signal"],
+                end=arcade["end_signal"],
+            )
+        )
+        for entry in arcade["difficulties"]:
+            lines.append(
+                "Y|{arcade}|{key}|{name}|{tickets}|{button}|{signal}".format(
+                    arcade=key,
+                    key=entry["key"],
+                    name=entry["name"],
+                    tickets=entry["tickets"],
+                    button=entry["vote_button"],
+                    signal=entry["ticket_signal"],
+                )
+            )
+        for entry in arcade["sections"]:
+            lines.append(
+                "Z|{arcade}|{key}|{index}|{name}|{signal}".format(
+                    arcade=key,
+                    key=entry["key"],
+                    index=entry["index"],
+                    name=entry["name"],
+                    signal=entry["signal"],
+                )
+            )
+        for entry in arcade["classes"]:
+            lines.append(
+                "W|{arcade}|{key}|{name}|{targetname}|{signal}|{gated}".format(
+                    arcade=key,
+                    key=entry["key"],
+                    name=entry["name"],
+                    targetname=entry["targetname"],
+                    signal=entry["signal"],
+                    gated=1 if entry["map_gated"] else 0,
+                )
+            )
+        for entry in arcade["awards"]:
+            lines.append(
+                f"A|{key}|{entry['key']}|{entry['name']}|{entry['deaths']}"
+            )
+        for name, box in sorted(arcade.get("jugger_volumes", {}).items()):
+            mins = " ".join(str(v) for v in box["mins"])
+            maxs = " ".join(str(v) for v in box["maxs"])
+            lines.append(f"J|{key}|{name}|{mins}|{maxs}")
+        for part, value in sorted(arcade.get("jugger_seal", {}).items()):
+            if isinstance(value, dict):
+                lines.append(
+                    f"G|{key}|{part}|{value['targetname']}|{value['classname']}"
+                )
+            else:
+                lines.append(f"G|{key}|{part}|{value}|")
+        for entry in arcade["classes"]:
+            lines.extend(grant_records(key, entry))
+    return lines
+
+
+def grant_records(arcade_key: str, entry: dict) -> list[str]:
+    """`E` records: everything a class does to the player who takes it."""
+    grant = entry.get("grant") or {}
+    lines: list[str] = []
+    for field in ("health", "max_health", "armorvalue", "armortype", "model"):
+        if field in grant:
+            lines.append(f"E|{arcade_key}|{entry['key']}|{field}|{grant[field]}")
+    if grant.get("weapons"):
+        lines.append(
+            f"E|{arcade_key}|{entry['key']}|weapons|{','.join(grant['weapons'])}"
+        )
+    if grant.get("ammo"):
+        pairs = ",".join(f"{name}:{count}" for name, count in sorted(grant["ammo"].items()))
+        lines.append(f"E|{arcade_key}|{entry['key']}|ammo|{pairs}")
+    if grant.get("teleport"):
+        where = " ".join(str(v) for v in grant["teleport"])
+        lines.append(f"E|{arcade_key}|{entry['key']}|teleport|{where}")
+    return lines
 
 
 def render(campaign: dict) -> str:
@@ -53,6 +149,15 @@ def render(campaign: dict) -> str:
         "#   S|<classname>                  always granted, never randomised",
         "#   R|<classname>|<campaign,...>   grantable only on those campaigns' maps",
         "#   D|<data version>               must match the client's, or ids differ",
+        "# Arcade maps (Suspension), all scoped by the arcade key:",
+        "#   X|<key>|<name>|<map>|<goal class>|<start signal>|<end signal>",
+        "#   Y|<arcade>|<key>|<name>|<tickets>|<vote button>|<ticket signal>",
+        "#   Z|<arcade>|<key>|<index>|<name>|<clear signal>",
+        "#   W|<arcade>|<key>|<name>|<player targetname>|<booth signal>|<map gated>",
+        "#   A|<arcade>|<key>|<name>|<max deaths>",
+        "#   J|<arcade>|<volume>|<mins>|<maxs>   a box the plugin watches",
+        "#   G|<arcade>|<part>|<targetname>|<classname>   the Juggernaut seal",
+        "#   E|<arcade>|<class>|<field>|<value>  how to grant a class without its booth",
         f"V|{FORMAT_VERSION}",
         f"D|{campaign['data_version']}",
     ]
@@ -99,6 +204,12 @@ def render(campaign: dict) -> str:
             arg = str(trigger["count"])
         elif kind == "chapter_complete":
             arg = trigger["chapter"]
+        elif kind == "suspension_section":
+            arg = f"{trigger['section']}:{trigger['class']}:{trigger['difficulty']}"
+        elif kind == "suspension_clear":
+            arg = f"{trigger['class']}:{trigger['difficulty']}"
+        elif kind == "suspension_award":
+            arg = f"{trigger['award']}:{trigger['difficulty']}"
         elif kind == "charger":
             # `<classname>:<brush model>`, which is what the plugin matches the
             # entity a player pressed +use on against. Gains `@<origin>` only
@@ -123,6 +234,8 @@ def render(campaign: dict) -> str:
         if position:
             record += "|" + " ".join(str(value) for value in position)
         lines.append(record)
+
+    lines.extend(arcade_records(campaign.get("arcades", ())))
 
     # Every classname the plugin must refuse until the matching item arrives.
     for classname, item in sorted(CLASSNAME_TO_ITEM.items()):

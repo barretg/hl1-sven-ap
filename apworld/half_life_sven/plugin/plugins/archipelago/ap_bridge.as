@@ -277,6 +277,23 @@ void BridgePoll()
 			iAmnesty = atoi( szValue );
 		else if( szKey == "event" )
 			events.insertLast( szValue );
+		// The arcade map. Absent from a seed that has none, and from a client too
+		// old to know about it, in which case every one of these keeps its
+		// default and Suspension behaves as an ordinary unmanaged map.
+		else if( szKey == "sus_on" )
+			g_Suspension.enabled = szValue == "1";
+		else if( szKey == "sus_classanity" )
+			g_Suspension.classanity = szValue == "1";
+		else if( szKey == "sus_rolldown" )
+			g_Suspension.rolldown = szValue == "1";
+		else if( szKey == "sus_open" )
+			g_Suspension.tiersOpen = atoi( szValue );
+		else if( szKey == "sus_tiers" )
+			g_Suspension.tiers = SplitNonEmpty( szValue, "," );
+		else if( szKey == "sus_awards" )
+			g_Suspension.awards = SplitNonEmpty( szValue, "," );
+		else if( szKey == "sus_classes" )
+			g_Suspension.SetHeldClasses( SplitNonEmpty( szValue, "," ) );
 	}
 
 	// A restarted client numbers its events from 1 again. Without this, every

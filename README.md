@@ -34,7 +34,34 @@ did. Each enabled campaign opens with one of its own missions, has its own
 independent `missions_required`, and contributes its finale as a goal: the seed is
 won when every one of them is cleared. Weapons pool across campaigns.
 
-The hub already has consoles for all four, so none of this needed a map edit. It
+## Suspension
+
+`suspension`, off by default, adds the arcade map Sven Co-op ships alongside the
+campaigns: a class-based squad pushing along a suspension bridge in eight
+sections, at a difficulty the lobby votes for, scored on the team's total deaths.
+It is not a campaign and has no hub console, so you reach it with `!warp
+suspension`.
+
+| Piece | What it is |
+| --- | --- |
+| Tiers | Easy 50 tickets, Medium 25, Hard 10, Insane 1. `suspension_max_difficulty` caps it; `Progressive Suspension Difficulty` opens them in order |
+| Sections | 8, each a check per tier — or a check per class per tier with `suspension_classanity` |
+| Classes | 8 items. One is your starting class; the Juggernaut is earned |
+| Medals | Platinum 0 deaths through N00b, capped by `suspension_required_award`, always rolling down |
+| Goal | A run cleared as the Juggernaut at your capped tier |
+
+The Juggernaut opens per tier once a run has been cleared with each of the other
+seven, which is why it is both the last class and the goal.
+
+The plugin observes the round by answering to names the map already fires:
+`s3_events` when section 2 falls, `win_red_tickets` when Easy wins the vote,
+`end_script` when the medal is shown. It creates its own counter entities under
+those names at map start, so the map's own multi_managers drive them and no map
+edit or position guessing is involved.
+
+## The hub
+
+The hub already has consoles for all four campaigns, so none of that needed a map edit. It
 numbers them inconsistently, though, and does not have one for every mission:
 Half-Life's are unpadded and start at `hl_ch1` because the tram ride has no panel,
 Opposing Force's are padded and skip `of_ch06`, and three of its missions have no
@@ -54,12 +81,12 @@ at [Half-Life Updated AP](https://github.com/randomcodegen/halflife-updated_ap).
 ```
 apworld/half_life_sven/     the Archipelago world
   data/index.json           generated: data version, weapon pool, logic groups
-  data/campaigns/*.json     generated: one file per campaign, its chapters and locations
+  data/campaigns/*.json     generated: one file per campaign, plus suspension.json
   client/                   the AP client and the file bridge
   plugin/                   the Sven Co-op server plugin, plus its installer
     plugins/                mirrors svencoop/scripts/
       archipelago/          ap_main, ap_bridge, ap_items, ap_locations, ap_hub,
-                            ap_deathlink, ap_traps
+                            ap_deathlink, ap_traps, ap_suspension
       store/archipelago/checkdata.txt   generated
   docs/                     setup guide and game page
 tools/                      generators, packaging, installer CLI

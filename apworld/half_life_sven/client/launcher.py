@@ -43,6 +43,11 @@ from .bridge import Bridge, find_store_dir, is_game_dir
 GAME_NAME = "Half-Life (Sven Co-op)"
 POLL_INTERVAL = 0.2
 
+# What the plugin calls Suspension's goal when it reports one. Not a chapter key:
+# the arcade map has no missions, and its goal is a run cleared as the Juggernaut
+# at the hardest tier the seed allows.
+SUSPENSION_GOAL_KEY = "suspension"
+
 # The chosen install path is remembered in host.yaml (see client/settings.py), so
 # the folder picker only ever appears once.
 
@@ -293,6 +298,17 @@ class HalfLifeSvenContext(SuperContext):
         # Deaths the lobby is forgiven before one is reported to the multiworld.
         # The plugin owns the countdown; this is only the allowance it counts from.
         self.death_link_amnesty = 4
+        # -- Suspension, the arcade map. All of it inert unless slot data says
+        # the seed contains it, and absent from the snapshot entirely if not.
+        self.suspension_enabled = False
+        self.suspension_classanity = False
+        self.suspension_rolldown = False
+        self.suspension_tiers: list[str] = []
+        self.suspension_awards: list[str] = []
+        # Class keys whose item has arrived, and how many Progressive Suspension
+        # Difficulty items have. The starting class arrives as a normal item.
+        self.suspension_classes: set[str] = set()
+        self.suspension_open = 0
         self.goal_sent = False
         self.chat_relay = True
         self.bridge_failures = 0
@@ -464,6 +480,13 @@ class HalfLifeSvenContext(SuperContext):
             self.starting_weapons = list(
                 slot_data.get("starting_weapons", self.starting_weapons)
             )
+            # The arcade map. Every one of these is absent from a seed generated
+            # before it existed, which reads as "no Suspension" and is right.
+            self.suspension_enabled = bool(slot_data.get("suspension", False))
+            self.suspension_classanity = bool(slot_data.get("suspension_classanity", False))
+            self.suspension_rolldown = bool(slot_data.get("suspension_rolldown", False))
+            self.suspension_tiers = list(slot_data.get("suspension_difficulties", ()))
+            self.suspension_awards = list(slot_data.get("suspension_awards", ()))
             self.death_link_enabled = bool(slot_data.get("death_link", False))
             self.death_link_amnesty = int(
                 slot_data.get("death_link_amnesty", self.death_link_amnesty)
@@ -543,6 +566,9 @@ class HalfLifeSvenContext(SuperContext):
             # Full resync. Rebuild unlock state from scratch.
             self.unlocked_chapters.clear()
             self.unlocked_items.clear()
+            self.suspension_classes.clear()
+            # Recounted from the batch, or a reconnect would open every tier.
+            self.suspension_open = 0
 
         for offset, item in enumerate(items):
             # Only genuinely new items earn a filler delivery.
@@ -564,6 +590,12 @@ class HalfLifeSvenContext(SuperContext):
         group = entry.get("group")
         if group == "chapter":
             self.unlocked_chapters.add(entry["chapter"])
+        elif group == "suspension_class":
+            self.suspension_classes.add(entry["class"])
+        elif group == "suspension_difficulty":
+            # Counted rather than collected: the nth copy opens the nth tier, and
+            # a set of names could not say how many arrived.
+            self.suspension_open += 1
         elif group in ("weapon", "optional"):
             self.unlocked_items.add(entry["name"])
         elif group == "filler" and deliver_filler and self.bridge:
@@ -601,6 +633,21 @@ class HalfLifeSvenContext(SuperContext):
         and shadowing it with a read-only property breaks its constructor.
         """
         return self.unlocked_items | self.always_unlocked
+
+    @property
+    def suspension_state(self) -> dict | None:
+        """What the game needs to run the arcade map, or None if it has none."""
+        if not self.suspension_enabled:
+            return None
+        return {
+            "enabled": True,
+            "classanity": self.suspension_classanity,
+            "rolldown": self.suspension_rolldown,
+            "tiers": list(self.suspension_tiers),
+            "awards": list(self.suspension_awards),
+            "open": self.suspension_open,
+            "classes": sorted(self.suspension_classes),
+        }
 
     def completed_in(self, campaign_key: str) -> int:
         """Missions of one campaign that are finished, its own finale aside."""
@@ -680,8 +727,16 @@ class HalfLifeSvenContext(SuperContext):
 
     @property
     def run_complete(self) -> bool:
-        """Every campaign in the seed finished. This is what wins the slot."""
+        """Every goal in the seed finished. This is what wins the slot.
+
+        One per campaign, plus Suspension's own when the seed has it: a run
+        cleared as the Juggernaut at the hardest tier the YAML allows. The plugin
+        reports each as it falls and knows nothing about the others, so the
+        decision is made here.
+        """
         wanted = self.goal_chapters - self.excluded_chapters
+        if self.suspension_enabled:
+            wanted = wanted | {SUSPENSION_GOAL_KEY}
         return bool(wanted) and wanted <= self.completed_missions
 
     @staticmethod
@@ -909,6 +964,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
                 checked=sorted(ctx.checked_locations),
                 missing=sorted(ctx.missing_locations),
                 data_version=ctx.data_version,
+                suspension=ctx.suspension_state,
                 force=True,
             )
 
@@ -945,6 +1001,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
         checked=sorted(ctx.checked_locations),
         missing=sorted(ctx.missing_locations),
         data_version=ctx.data_version,
+        suspension=ctx.suspension_state,
     )
 
 

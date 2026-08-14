@@ -19,6 +19,7 @@
 #include "ap_locations"
 #include "ap_deathlink"
 #include "ap_traps"
+#include "ap_suspension"
 #include "ap_hub"
 
 // How often to look for a new snapshot from the client. Fast enough that an item
@@ -179,7 +180,10 @@ void MapInit()
 void MapStart()
 {
 	// The map script has run by now; take survival back off if it enabled it.
-	ForceSurvivalOff();
+	// Not on the arcade map: survival is how its ticket pool ends a lost round,
+	// and forcing it off would leave a failed run with no way to fail.
+	if( !SuspensionMap() )
+		ForceSurvivalOff();
 
 	BridgeHello();
 
@@ -197,6 +201,16 @@ void MapStart()
 			g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[AP] Returning to the hub...\n" );
 			g_Scheduler.SetTimeout( "ReturnToHub", 3.0f );
 		}
+		return;
+	}
+
+	// The arcade map is not a mission and has no chapter, but its checks are
+	// real, and SendCheck refuses to fire while nothing is active. It is the one
+	// map outside the campaigns we are ever meant to be playing.
+	if( SuspensionMap() )
+	{
+		g_bMissionActive = true;
+		SuspensionMapStart();
 		return;
 	}
 

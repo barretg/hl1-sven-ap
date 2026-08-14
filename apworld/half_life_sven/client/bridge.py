@@ -186,6 +186,7 @@ class Bridge:
         missing: list[int] | None = None,
         death_link_amnesty: int = 0,
         data_version: str = "",
+        suspension: dict | None = None,
         force: bool = False,
     ) -> bool:
         """Rewrite ap_in.txt. Returns True if anything was written.
@@ -234,6 +235,28 @@ class Bridge:
             "checked=" + ",".join(str(i) for i in checked or ()),
             "missing=" + ",".join(str(i) for i in missing or ()),
         ]
+
+        # The arcade map, when the seed has one. Absent entirely otherwise, so a
+        # plugin that predates it sees exactly the snapshot it always did.
+        #
+        # Its own lines rather than more `items=`: what the game needs is a
+        # *count* of Progressive Suspension Difficulty, and `items` is a set of
+        # names, which cannot say how many of one thing arrived.
+        if suspension:
+            lines += [
+                f"sus_on={1 if suspension.get('enabled') else 0}",
+                f"sus_classanity={1 if suspension.get('classanity') else 0}",
+                f"sus_rolldown={1 if suspension.get('rolldown') else 0}",
+                # Tiers this seed contains, easiest first.
+                "sus_tiers=" + ",".join(suspension.get("tiers") or ()),
+                # Medals that are checks, hardest first.
+                "sus_awards=" + ",".join(suspension.get("awards") or ()),
+                # How many Progressive Suspension Difficulty items have arrived,
+                # which is the index of the hardest tier that may be voted for.
+                f"sus_open={int(suspension.get('open', 0))}",
+                # Class keys whose item is held, the starting class included.
+                "sus_classes=" + ",".join(sorted(suspension.get("classes") or ())),
+            ]
         body = "\n".join(lines)
         pending = tuple(sorted(self._pending))
 

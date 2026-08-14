@@ -190,6 +190,13 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		return;
 	}
 
+	// The arcade map hands out class loadouts of its own and is not part of the
+	// weapon randomiser at all. Stripping them would leave a Medic with no
+	// medkit and a Sniper with no rifle, and there is nothing to find there
+	// anyway: its checks are sections, clears and medals.
+	if( SuspensionManaged() )
+		return;
+
 	EnsureSuit( pPlayer );
 	StripDisallowed( pPlayer );
 	EnforceArmour( pPlayer );

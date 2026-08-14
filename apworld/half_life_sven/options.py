@@ -324,6 +324,140 @@ class TrapPercentage(Range):
     default = 15
 
 
+# --- Suspension -----------------------------------------------------------
+#
+# The arcade map. Off by default, and every one of these does nothing at all
+# while `suspension` is false.
+
+
+class IncludeSuspension(Toggle):
+    """Include Suspension, the arcade map, in the seed.
+
+    Not a campaign: one map, shipped with Sven Co-op, where a class-based squad
+    fights along a suspension bridge in eight sections at a difficulty the lobby
+    votes for. It has no hub console, so you reach it with `!warp suspension`.
+
+    It adds its own items — one per class, plus Progressive Suspension Difficulty
+    — and its own goal, a completed run as the Juggernaut. Everything else in the
+    seed is unaffected.
+    """
+
+    display_name = "Include Suspension"
+
+
+class SuspensionClassanity(Toggle):
+    """Every section is a separate check for every class that clears it.
+
+    Off, each section is one check per difficulty: 8 per tier, whoever plays
+    whatever. On, it is one check per section per class per difficulty, and any
+    player in the lobby holding that class when the section falls sends it.
+
+    On, with an Insane cap, that is 256 checks. Suspension then dwarfs the four
+    campaigns put together, and is meant for a full lobby: eight players on eight
+    different classes clear eight classes' worth of checks in one run, where a
+    solo player needs eight runs.
+    """
+
+    display_name = "Suspension Classanity"
+
+
+class SuspensionMaxDifficulty(Choice):
+    """Hardest Suspension tier in logic.
+
+    Difficulty is the team's shared ticket pool, voted for in the lobby. Fewer
+    tickets is harder; when they run out the round becomes survival and the next
+    wipe loses it:
+
+      easy     50 tickets
+      medium   25 tickets
+      hard     10 tickets
+      insane    1 ticket
+
+    Tiers above this are excluded entirely — no checks, and no Progressive
+    Suspension Difficulty item for them. The number of those items in the pool is
+    one fewer than the number of tiers, because Easy is always open.
+    """
+
+    display_name = "Suspension Max Difficulty"
+    option_easy = 0
+    option_medium = 1
+    option_hard = 2
+    option_insane = 3
+    default = 2
+
+
+class SuspensionRequiredAward(Choice):
+    """Hardest medal that is a check, on every tier.
+
+    The medal is scored on the team's *total* deaths for a won run:
+
+      platinum   0 deaths
+      gold       up to 5
+      silver     up to 10
+      bronze     up to 20
+      stone      up to 30
+      noob       more than 30
+
+    Medals roll down: earning one sends every easier one on that tier too, so
+    nobody has to throw a run to collect the bad ones. This setting only decides
+    how far up the ladder goes — pick platinum and a flawless run is a check.
+    """
+
+    display_name = "Suspension Required Award"
+    option_noob = 0
+    option_stone = 1
+    option_bronze = 2
+    option_silver = 3
+    option_gold = 4
+    option_platinum = 5
+    default = 2
+
+
+class SuspensionMaxAwardsArePriority(Toggle):
+    """Make the hardest medal a priority location on every tier.
+
+    With `suspension_required_award` at gold and a hard cap, that is the gold
+    medal on easy, medium and hard: three locations the generator is told to put
+    progression behind. Lesser medals are never priority.
+    """
+
+    display_name = "Suspension Max Awards Are Priority"
+
+
+class SuspensionDifficultyRolldown(Toggle):
+    """Clearing a section also sends that section's easier tiers.
+
+    Off, a section check belongs to the tier you actually played, and the eight
+    sections have to be cleared once per tier. On, clearing section 3 on Hard
+    also sends section 3 on Medium and Easy for the same class.
+
+    Medals always roll down regardless of this setting. This is only about
+    sections and clears.
+    """
+
+    display_name = "Suspension Difficulty Rolldown"
+
+
+class SuspensionStartingClass(Choice):
+    """The Suspension class you start the seed holding.
+
+    The other seven are items. The Juggernaut is never the starting class: it
+    unlocks per tier by clearing a run with each of the other seven, and a run
+    cleared as the Juggernaut at your capped difficulty is the goal.
+    """
+
+    display_name = "Suspension Starting Class"
+    option_random_class = 0
+    option_soldier = 1
+    option_gl_soldier = 2
+    option_shotty = 3
+    option_saw = 4
+    option_sniper = 5
+    option_medic = 6
+    option_engineer = 7
+    default = 0
+
+
 @dataclass
 class HalfLifeSvenOptions(PerGameCommonOptions):
     include_half_life: IncludeHalfLife
@@ -343,6 +477,13 @@ class HalfLifeSvenOptions(PerGameCommonOptions):
     shuffle_hev_suit: ShuffleHevSuit
     shuffle_longjump: ShuffleLongJump
     trap_percentage: TrapPercentage
+    suspension: IncludeSuspension
+    suspension_classanity: SuspensionClassanity
+    suspension_max_difficulty: SuspensionMaxDifficulty
+    suspension_required_award: SuspensionRequiredAward
+    suspension_max_awards_are_priority: SuspensionMaxAwardsArePriority
+    suspension_difficulty_rolldown: SuspensionDifficultyRolldown
+    suspension_starting_class: SuspensionStartingClass
     start_inventory_from_pool: StartInventoryPool
     death_link: DeathLink
     death_link_amnesty: DeathLinkAmnesty

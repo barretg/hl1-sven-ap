@@ -1,10 +1,11 @@
 {
- "data_version": "1ecd59a83722",
+ "data_version": "242c67b18cc8",
  "files": [
   "campaigns/half_life.json",
   "campaigns/opposing_force.json",
   "campaigns/blue_shift.json",
-  "campaigns/they_hunger.json"
+  "campaigns/they_hunger.json",
+  "campaigns/suspension.json"
  ],
  "items": [
   {

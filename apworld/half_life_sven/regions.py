@@ -12,22 +12,25 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from BaseClasses import Region
+from BaseClasses import LocationProgressType, Region
 
 from .data import (
     GOAL_PREREQUISITES,
+    SUSPENSION_AWARD,
     chapter_cleared_event,
     mission_complete_event,
+    suspension_victory_event,
     victory_event,
 )
 from .locations import HalfLifeSvenLocation, locations_by_map
-from .rules import chapter_entry_rule, location_rule
+from .rules import chapter_entry_rule, location_rule, suspension_rule
 
 if TYPE_CHECKING:
     from . import HalfLifeSvenWorld
 
 MENU = "Menu"
 HUB = "Hub"
+SUSPENSION = "Suspension"
 
 
 def create_regions(world: "HalfLifeSvenWorld") -> None:
@@ -75,6 +78,52 @@ def create_regions(world: "HalfLifeSvenWorld") -> None:
 
         assert previous is not None
         add_event(world, previous, chapter)
+
+    if world.suspension_enabled:
+        add_suspension(world, hub)
+
+
+def add_suspension(world: "HalfLifeSvenWorld", hub: Region) -> None:
+    """One region for the whole arcade map.
+
+    Suspension is a single map with no sub-levels, so there is nothing to chain:
+    every check on it is reachable the moment you can warp there, and what gates
+    them is the tier and the class rather than where you are standing. It hangs
+    off the Hub for the same reason a mission does -- you leave the portal for it
+    and come back -- even though it has no console of its own.
+    """
+    region = Region(SUSPENSION, world.player, world.multiworld)
+    world.multiworld.regions.append(region)
+    hub.connect(region, f"Enter {SUSPENSION}")
+
+    arcade = world.suspension
+    assert arcade is not None
+
+    for entry in locations_by_map.get(arcade["map"], []):
+        if not world.suspension_includes(entry):
+            continue
+
+        location = HalfLifeSvenLocation(world.player, entry["name"], entry["id"], region)
+        rule = suspension_rule(world, entry)
+        if rule is not None:
+            location.access_rule = rule
+        if (
+            entry["trigger"]["type"] == SUSPENSION_AWARD
+            and world.suspension_priority_awards
+            and entry["name"] in world.suspension_priority_awards
+        ):
+            location.progress_type = LocationProgressType.PRIORITY
+        region.locations.append(location)
+
+    # The goal. A separate event rather than the Juggernaut clear location
+    # itself, so that the check can hold an ordinary item like any other while
+    # the win condition still has one name to ask for.
+    victory = HalfLifeSvenLocation(
+        world.player, f"{SUSPENSION} - Cleared As Juggernaut", None, region
+    )
+    victory.access_rule = world.suspension_goal_rule()
+    victory.place_locked_item(world.create_item(suspension_victory_event()))
+    region.locations.append(victory)
 
 
 def add_event(world: "HalfLifeSvenWorld", region: Region, chapter: dict) -> None:

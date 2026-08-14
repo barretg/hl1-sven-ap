@@ -24,6 +24,7 @@ import math
 from collections.abc import Iterable
 from pathlib import Path
 
+import suspension_layout as sus
 from bsp_entities import brush_model_centres, load_map
 from campaign_layout import (
     CAMPAIGNS,
@@ -59,6 +60,12 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = REPO_ROOT / "apworld" / "half_life_sven" / "data"
 INDEX_NAME = "index.json"
 CAMPAIGN_SUBDIR = "campaigns"
+
+# Trigger types for the arcade maps. Named like the campaign ones because the
+# world filters both the same way, by trigger type.
+SUSPENSION_SECTION = "suspension_section"
+SUSPENSION_CLEAR = "suspension_clear"
+SUSPENSION_AWARD = "suspension_award"
 
 # Append-only registry of every id ever handed out.
 #
@@ -196,6 +203,14 @@ class IdRegistry:
         return hashlib.sha1(payload).hexdigest()[:12]
 
 
+def live_ids(locations: Iterable[dict], items: Iterable[dict]) -> list[str]:
+    """The ids a build actually ships, as the fingerprint's input."""
+    return (
+        [f"L{location['id']}" for location in locations]
+        + [f"I{item['id']}" for item in items]
+    )
+
+
 def location_key(chapter_key: str, map_name: str, trigger: dict) -> str:
     """Identity of a location, independent of its wording or list position."""
     kind = trigger["type"]
@@ -226,6 +241,19 @@ def location_key(chapter_key: str, map_name: str, trigger: dict) -> str:
         if campaign == DEFAULT_CAMPAIGN:
             return f"*|*|{kind}|{weapon}"
         return f"{campaign}|*|{kind}|{weapon}"
+    elif kind in (SUSPENSION_SECTION, SUSPENSION_CLEAR, SUSPENSION_AWARD):
+        # Scoped by tier rather than by map: an arcade map is one map, and what
+        # makes two of its checks different is the tier, the section and the
+        # class. `*` is the classless variant, which a seed without classanity
+        # uses in place of the eight per-class ones.
+        difficulty = trigger["difficulty"]
+        if kind == SUSPENSION_SECTION:
+            arg = f"section|{trigger['section']}:{trigger['class'] or '*'}"
+        elif kind == SUSPENSION_CLEAR:
+            arg = f"clear|{trigger['class'] or '*'}"
+        else:
+            arg = f"award|{trigger['award']}"
+        return f"{chapter_key}|{difficulty}|{arg}"
     else:
         arg = ""
     return f"{chapter_key}|{map_name}|{kind}|{arg}"
@@ -604,11 +632,10 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
     items = build_items(chapters, entities, registry)
 
     # What this build actually ships, so that dropping a location moves the
-    # version even though the append-only registry keeps its id forever.
-    live = (
-        [f"L{location['id']}" for location in builder.locations]
-        + [f"I{item['id']}" for item in items]
-    )
+    # version even though the append-only registry keeps its id forever. The
+    # arcade maps are built separately and folded into the same digest by
+    # `main`, since one version has to cover everything the seed can contain.
+    live = live_ids(builder.locations, items)
 
     return {
         "data_version": registry.fingerprint(live),
@@ -729,13 +756,151 @@ def build_items(
     return items
 
 
-def split(data: dict) -> dict[str, dict]:
+def build_suspension(registry: IdRegistry) -> dict:
+    """The Suspension data file.
+
+    Nothing here is read out of a BSP: the map's facts live in
+    `suspension_layout.py`, and what this builds from them is the combinatorial
+    part -- one location per section per class per difficulty, the clears, and
+    the medals.
+
+    Every combination is emitted whether or not a seed uses it, exactly as the
+    campaigns emit chargers a `chargesanity: false` seed leaves out. Options pick
+    a subset at generation time; ids are assigned here once and never move.
+    """
+    locations: list[dict] = []
+
+    def add(name: str, trigger: dict) -> None:
+        key = location_key(sus.KEY, sus.MAP, trigger)
+        locations.append({
+            "id": registry.get("locations", key, LOCATION_ID_BASE),
+            "name": name,
+            # Everything on this map is one region, so the map is the anchor the
+            # region builder groups by, the way a chapter's maps are.
+            "chapter": sus.KEY,
+            "map": sus.MAP,
+            "trigger": trigger,
+        })
+
+    # `""` is the classless variant, which is what a seed without classanity
+    # uses: the section, cleared by anyone, at that difficulty.
+    class_keys = [""] + [entry.key for entry in sus.CLASSES]
+
+    for difficulty in sus.DIFFICULTIES:
+        for section in sus.SECTIONS:
+            for class_key in class_keys:
+                add(
+                    sus.section_location_name(section, difficulty, class_key),
+                    {
+                        "type": SUSPENSION_SECTION,
+                        "map": sus.MAP,
+                        "section": section.key,
+                        "difficulty": difficulty.key,
+                        "class": class_key,
+                    },
+                )
+
+    for difficulty in sus.DIFFICULTIES:
+        for class_key in class_keys:
+            add(
+                sus.clear_location_name(difficulty, class_key),
+                {
+                    "type": SUSPENSION_CLEAR,
+                    "map": sus.MAP,
+                    "difficulty": difficulty.key,
+                    "class": class_key,
+                },
+            )
+
+    for difficulty in sus.DIFFICULTIES:
+        for award in sus.AWARDS:
+            add(
+                sus.award_location_name(difficulty, award),
+                {
+                    "type": SUSPENSION_AWARD,
+                    "map": sus.MAP,
+                    "difficulty": difficulty.key,
+                    "award": award.key,
+                },
+            )
+
+    items: list[dict] = [
+        {
+            "id": registry.get("items", sus.class_item_name(entry), ITEM_ID_BASE),
+            "name": sus.class_item_name(entry),
+            "classification": "progression",
+            "group": "suspension_class",
+            "arcade": sus.KEY,
+            "class": entry.key,
+        }
+        for entry in sus.CLASSES
+    ]
+    items.append({
+        "id": registry.get("items", sus.PROGRESSIVE_DIFFICULTY_ITEM, ITEM_ID_BASE),
+        "name": sus.PROGRESSIVE_DIFFICULTY_ITEM,
+        "classification": "progression",
+        "group": "suspension_difficulty",
+        "arcade": sus.KEY,
+    })
+
+    return {
+        "kind": "arcade",
+        "arcade": {
+            "key": sus.KEY,
+            "name": sus.NAME,
+            "map": sus.MAP,
+            "option": sus.OPTION,
+            "goal_class": sus.GOAL_CLASS,
+            "start_signal": sus.START_SIGNAL,
+            "end_signal": sus.END_SIGNAL,
+            "jugger_volumes": sus.JUGGER_VOLUMES,
+            "jugger_seal": sus.JUGGER_SEAL,
+            "difficulties": [
+                {
+                    "key": d.key,
+                    "name": d.name,
+                    "tickets": d.tickets,
+                    "colour": d.colour,
+                    "vote_button": d.vote_button,
+                    "ticket_signal": d.ticket_signal,
+                }
+                for d in sus.DIFFICULTIES
+            ],
+            "sections": [
+                {"key": s.key, "index": s.index, "name": s.name, "signal": s.signal}
+                for s in sus.SECTIONS
+            ],
+            "classes": [
+                {
+                    "key": c.key,
+                    "name": c.name,
+                    "targetname": c.targetname,
+                    "signal": c.signal,
+                    "map_gated": c.map_gated,
+                    "grant": c.grant,
+                }
+                for c in sus.CLASSES
+            ],
+            "awards": [
+                {"key": a.key, "name": a.name, "deaths": a.deaths} for a in sus.AWARDS
+            ],
+        },
+        "items": items,
+        "locations": locations,
+    }
+
+
+def split(data: dict, extras: dict[str, dict] | None = None) -> dict[str, dict]:
     """Partition the built data into the files that get committed.
 
     Keyed by path relative to `data/`. Everything a single campaign owns goes in
     its own file; the rest is shared and stays in the index. Each partition keeps
     the relative order `build` produced, which is what lets the loader rebuild
     the chapter, campaign and item lists exactly as they were.
+
+    `extras` are already-built files of another kind -- the arcade maps -- which
+    are listed in the index after the campaigns so that a campaign is still what
+    a seed falls back on.
     """
     campaign_of_chapter = {c["key"]: c["campaign"] for c in data["chapters"]}
     files: dict[str, dict] = {}
@@ -764,11 +929,16 @@ def split(data: dict) -> dict[str, dict]:
             },
         }
 
+    files.update(extras or {})
+
     files[INDEX_NAME] = {
         "data_version": data["data_version"],
         # Order is load-bearing: chapters[0] is the intro mission and
         # campaigns[0] is the fallback campaign.
-        "files": [f"{CAMPAIGN_SUBDIR}/{c['key']}.json" for c in data["campaigns"]],
+        "files": (
+            [f"{CAMPAIGN_SUBDIR}/{c['key']}.json" for c in data["campaigns"]]
+            + sorted(extras or ())
+        ),
         "items": [i for i in data["items"] if i.get("group") != "chapter"],
         "requirement_groups": data["requirement_groups"],
         "starting_weapons": data["starting_weapons"],
@@ -792,9 +962,21 @@ def main(argv: list[str] | None = None) -> int:
     known = len(registry.data["locations"])
 
     data = build(args.maps, registry)
+
+    # Built after the campaigns so their ids keep the numbers they already have,
+    # and folded into the one data version, which has to cover everything a seed
+    # can contain or the plugin would accept data the client disagrees with.
+    arcade = {f"{CAMPAIGN_SUBDIR}/{sus.KEY}.json": build_suspension(registry)}
+    data["data_version"] = registry.fingerprint(
+        live_ids(data["locations"], data["items"])
+        + live_ids(
+            [l for part in arcade.values() for l in part["locations"]],
+            [i for part in arcade.values() for i in part["items"]],
+        )
+    )
     registry.save()
 
-    files = split(data)
+    files = split(data, arcade)
     for name, payload in files.items():
         path = args.out / name
         path.parent.mkdir(parents=True, exist_ok=True)

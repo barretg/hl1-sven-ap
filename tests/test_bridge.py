@@ -97,6 +97,40 @@ def test_snapshot_carries_excluded_missions(bridge: Bridge) -> None:
     assert "excluded=black_mesa_inbound" in bridge.in_path.read_text(encoding="utf-8")
 
 
+def test_snapshot_omits_suspension_when_the_seed_has_none(bridge: Bridge) -> None:
+    """A seed without the arcade map writes the snapshot it always did, so a
+    plugin that predates it sees nothing new."""
+    snapshot(bridge)
+    text = bridge.in_path.read_text(encoding="utf-8")
+    assert "sus_" not in text
+
+
+def test_snapshot_carries_suspension_state(bridge: Bridge) -> None:
+    """The tier count especially: `items` is a set of names and cannot say how
+    many Progressive Suspension Difficulty items have arrived."""
+    assert snapshot(
+        bridge,
+        suspension={
+            "enabled": True,
+            "classanity": True,
+            "rolldown": False,
+            "tiers": ["easy", "medium", "hard"],
+            "awards": ["bronze", "stone", "noob"],
+            "open": 2,
+            "classes": ["sniper", "medic"],
+        },
+    ) is True
+    text = bridge.in_path.read_text(encoding="utf-8")
+
+    assert "sus_on=1" in text
+    assert "sus_classanity=1" in text
+    assert "sus_rolldown=0" in text
+    assert "sus_tiers=easy,medium,hard" in text
+    assert "sus_awards=bronze,stone,noob" in text
+    assert "sus_open=2" in text
+    assert "sus_classes=medic,sniper" in text
+
+
 def test_snapshot_carries_the_starting_weapons(bridge: Bridge) -> None:
     """Per seed since `random_starting_weapon`, so the file's list is a default."""
     snapshot(bridge)

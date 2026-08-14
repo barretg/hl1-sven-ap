@@ -1,0 +1,4791 @@
+{
+ "kind": "arcade",
+ "arcade": {
+  "key": "suspension",
+  "name": "Suspension",
+  "map": "suspension",
+  "option": "suspension",
+  "goal_class": "jugger",
+  "start_signal": "start_events",
+  "end_signal": "end_script",
+  "jugger_volumes": {
+   "portal": {
+    "mins": [
+     6256,
+     -6064,
+     144
+    ],
+    "maxs": [
+     6260,
+     -6000,
+     208
+    ]
+   },
+   "pad": {
+    "mins": [
+     6224,
+     -6912,
+     88
+    ],
+    "maxs": [
+     6288,
+     -6848,
+     96
+    ]
+   }
+  },
+  "jugger_seal": {
+   "wall": {
+    "targetname": "jugger",
+    "classname": "func_wall_toggle"
+   },
+   "hurt": {
+    "targetname": "jugger",
+    "classname": "trigger_hurt"
+   },
+   "reveal": "display_jugger_rdr"
+  },
+  "difficulties": [
+   {
+    "key": "easy",
+    "name": "Easy",
+    "tickets": 50,
+    "colour": "red",
+    "vote_button": "vote_button4",
+    "ticket_signal": "win_red_tickets"
+   },
+   {
+    "key": "medium",
+    "name": "Medium",
+    "tickets": 25,
+    "colour": "blue",
+    "vote_button": "vote_button3",
+    "ticket_signal": "win_blue_tickets"
+   },
+   {
+    "key": "hard",
+    "name": "Hard",
+    "tickets": 10,
+    "colour": "yellow",
+    "vote_button": "vote_button2",
+    "ticket_signal": "win_yellow_tickets"
+   },
+   {
+    "key": "insane",
+    "name": "Insane",
+    "tickets": 1,
+    "colour": "white",
+    "vote_button": "vote_button1",
+    "ticket_signal": "win_white_tickets"
+   }
+  ],
+  "sections": [
+   {
+    "key": "s1",
+    "index": 1,
+    "name": "Section 1: The Approach",
+    "signal": "s2_events"
+   },
+   {
+    "key": "s2",
+    "index": 2,
+    "name": "Section 2: The APC",
+    "signal": "s3_events"
+   },
+   {
+    "key": "s3",
+    "index": 3,
+    "name": "Section 3: The Helipad",
+    "signal": "s4_events"
+   },
+   {
+    "key": "s4",
+    "index": 4,
+    "name": "Section 4: The Tank",
+    "signal": "s5_events"
+   },
+   {
+    "key": "s5",
+    "index": 5,
+    "name": "Section 5: The Apache",
+    "signal": "s6_events"
+   },
+   {
+    "key": "s6",
+    "index": 6,
+    "name": "Section 6: The Flag",
+    "signal": "s6_captured_text"
+   },
+   {
+    "key": "s7",
+    "index": 7,
+    "name": "Section 7: The Counterattack",
+    "signal": "s8_events"
+   },
+   {
+    "key": "s8",
+    "index": 8,
+    "name": "Section 8: The Assassin",
+    "signal": ""
+   }
+  ],
+  "classes": [
+   {
+    "key": "soldier",
+    "name": "Soldier",
+    "targetname": "class_soldier",
+    "signal": "soldier",
+    "map_gated": false,
+    "grant": {}
+   },
+   {
+    "key": "gl_soldier",
+    "name": "GL Soldier",
+    "targetname": "class_GL_soldier",
+    "signal": "GL_soldier",
+    "map_gated": false,
+    "grant": {}
+   },
+   {
+    "key": "shotty",
+    "name": "Shotgunner",
+    "targetname": "class_shotty",
+    "signal": "shotty",
+    "map_gated": false,
+    "grant": {}
+   },
+   {
+    "key": "saw",
+    "name": "SAW Gunner",
+    "targetname": "class_saw",
+    "signal": "saw",
+    "map_gated": false,
+    "grant": {}
+   },
+   {
+    "key": "sniper",
+    "name": "Sniper",
+    "targetname": "class_sniper",
+    "signal": "sniper",
+    "map_gated": false,
+    "grant": {}
+   },
+   {
+    "key": "medic",
+    "name": "Medic",
+    "targetname": "class_medic",
+    "signal": "medic",
+    "map_gated": false,
+    "grant": {}
+   },
+   {
+    "key": "engineer",
+    "name": "Engineer",
+    "targetname": "class_engineer",
+    "signal": "engineer",
+    "map_gated": false,
+    "grant": {}
+   },
+   {
+    "key": "jugger",
+    "name": "Juggernaut",
+    "targetname": "class_jugger",
+    "signal": "jugger",
+    "map_gated": true,
+    "grant": {
+     "health": 200,
+     "max_health": 200,
+     "armorvalue": 200,
+     "armortype": 200,
+     "model": "models/player/OP4_Heavy/OP4_Heavy.mdl",
+     "weapons": [
+      "weapon_crowbar",
+      "weapon_uziakimbo",
+      "weapon_eagle"
+     ],
+     "ammo": {
+      "ammo_556": 1,
+      "ammo_9mmbox": 1,
+      "ammo_357": 3
+     },
+     "teleport": [
+      6256,
+      -6880,
+      96
+     ]
+    }
+   }
+  ],
+  "awards": [
+   {
+    "key": "platinum",
+    "name": "Platinum",
+    "deaths": 0
+   },
+   {
+    "key": "gold",
+    "name": "Gold",
+    "deaths": 5
+   },
+   {
+    "key": "silver",
+    "name": "Silver",
+    "deaths": 10
+   },
+   {
+    "key": "bronze",
+    "name": "Bronze",
+    "deaths": 20
+   },
+   {
+    "key": "stone",
+    "name": "Stone",
+    "deaths": 30
+   },
+   {
+    "key": "noob",
+    "name": "N00b",
+    "deaths": 40
+   }
+  ]
+ },
+ "items": [
+  {
+   "id": 7710079,
+   "name": "Suspension: Soldier",
+   "classification": "progression",
+   "group": "suspension_class",
+   "arcade": "suspension",
+   "class": "soldier"
+  },
+  {
+   "id": 7710080,
+   "name": "Suspension: GL Soldier",
+   "classification": "progression",
+   "group": "suspension_class",
+   "arcade": "suspension",
+   "class": "gl_soldier"
+  },
+  {
+   "id": 7710081,
+   "name": "Suspension: Shotgunner",
+   "classification": "progression",
+   "group": "suspension_class",
+   "arcade": "suspension",
+   "class": "shotty"
+  },
+  {
+   "id": 7710082,
+   "name": "Suspension: SAW Gunner",
+   "classification": "progression",
+   "group": "suspension_class",
+   "arcade": "suspension",
+   "class": "saw"
+  },
+  {
+   "id": 7710083,
+   "name": "Suspension: Sniper",
+   "classification": "progression",
+   "group": "suspension_class",
+   "arcade": "suspension",
+   "class": "sniper"
+  },
+  {
+   "id": 7710084,
+   "name": "Suspension: Medic",
+   "classification": "progression",
+   "group": "suspension_class",
+   "arcade": "suspension",
+   "class": "medic"
+  },
+  {
+   "id": 7710085,
+   "name": "Suspension: Engineer",
+   "classification": "progression",
+   "group": "suspension_class",
+   "arcade": "suspension",
+   "class": "engineer"
+  },
+  {
+   "id": 7710086,
+   "name": "Suspension: Juggernaut",
+   "classification": "progression",
+   "group": "suspension_class",
+   "arcade": "suspension",
+   "class": "jugger"
+  },
+  {
+   "id": 7710087,
+   "name": "Progressive Suspension Difficulty",
+   "classification": "progression",
+   "group": "suspension_difficulty",
+   "arcade": "suspension"
+  }
+ ],
+ "locations": [
+  {
+   "id": 7720437,
+   "name": "Suspension: Easy - Section 1: The Approach",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "easy",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720438,
+   "name": "Suspension: Easy - Section 1: The Approach (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "easy",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720439,
+   "name": "Suspension: Easy - Section 1: The Approach (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "easy",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720440,
+   "name": "Suspension: Easy - Section 1: The Approach (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "easy",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720441,
+   "name": "Suspension: Easy - Section 1: The Approach (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "easy",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720442,
+   "name": "Suspension: Easy - Section 1: The Approach (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "easy",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720443,
+   "name": "Suspension: Easy - Section 1: The Approach (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "easy",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720444,
+   "name": "Suspension: Easy - Section 1: The Approach (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "easy",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720445,
+   "name": "Suspension: Easy - Section 1: The Approach (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "easy",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720446,
+   "name": "Suspension: Easy - Section 2: The APC",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "easy",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720447,
+   "name": "Suspension: Easy - Section 2: The APC (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "easy",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720448,
+   "name": "Suspension: Easy - Section 2: The APC (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "easy",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720449,
+   "name": "Suspension: Easy - Section 2: The APC (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "easy",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720450,
+   "name": "Suspension: Easy - Section 2: The APC (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "easy",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720451,
+   "name": "Suspension: Easy - Section 2: The APC (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "easy",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720452,
+   "name": "Suspension: Easy - Section 2: The APC (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "easy",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720453,
+   "name": "Suspension: Easy - Section 2: The APC (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "easy",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720454,
+   "name": "Suspension: Easy - Section 2: The APC (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "easy",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720455,
+   "name": "Suspension: Easy - Section 3: The Helipad",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "easy",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720456,
+   "name": "Suspension: Easy - Section 3: The Helipad (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "easy",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720457,
+   "name": "Suspension: Easy - Section 3: The Helipad (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "easy",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720458,
+   "name": "Suspension: Easy - Section 3: The Helipad (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "easy",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720459,
+   "name": "Suspension: Easy - Section 3: The Helipad (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "easy",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720460,
+   "name": "Suspension: Easy - Section 3: The Helipad (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "easy",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720461,
+   "name": "Suspension: Easy - Section 3: The Helipad (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "easy",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720462,
+   "name": "Suspension: Easy - Section 3: The Helipad (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "easy",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720463,
+   "name": "Suspension: Easy - Section 3: The Helipad (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "easy",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720464,
+   "name": "Suspension: Easy - Section 4: The Tank",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "easy",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720465,
+   "name": "Suspension: Easy - Section 4: The Tank (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "easy",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720466,
+   "name": "Suspension: Easy - Section 4: The Tank (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "easy",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720467,
+   "name": "Suspension: Easy - Section 4: The Tank (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "easy",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720468,
+   "name": "Suspension: Easy - Section 4: The Tank (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "easy",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720469,
+   "name": "Suspension: Easy - Section 4: The Tank (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "easy",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720470,
+   "name": "Suspension: Easy - Section 4: The Tank (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "easy",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720471,
+   "name": "Suspension: Easy - Section 4: The Tank (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "easy",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720472,
+   "name": "Suspension: Easy - Section 4: The Tank (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "easy",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720473,
+   "name": "Suspension: Easy - Section 5: The Apache",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "easy",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720474,
+   "name": "Suspension: Easy - Section 5: The Apache (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "easy",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720475,
+   "name": "Suspension: Easy - Section 5: The Apache (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "easy",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720476,
+   "name": "Suspension: Easy - Section 5: The Apache (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "easy",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720477,
+   "name": "Suspension: Easy - Section 5: The Apache (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "easy",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720478,
+   "name": "Suspension: Easy - Section 5: The Apache (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "easy",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720479,
+   "name": "Suspension: Easy - Section 5: The Apache (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "easy",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720480,
+   "name": "Suspension: Easy - Section 5: The Apache (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "easy",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720481,
+   "name": "Suspension: Easy - Section 5: The Apache (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "easy",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720482,
+   "name": "Suspension: Easy - Section 6: The Flag",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "easy",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720483,
+   "name": "Suspension: Easy - Section 6: The Flag (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "easy",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720484,
+   "name": "Suspension: Easy - Section 6: The Flag (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "easy",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720485,
+   "name": "Suspension: Easy - Section 6: The Flag (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "easy",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720486,
+   "name": "Suspension: Easy - Section 6: The Flag (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "easy",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720487,
+   "name": "Suspension: Easy - Section 6: The Flag (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "easy",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720488,
+   "name": "Suspension: Easy - Section 6: The Flag (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "easy",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720489,
+   "name": "Suspension: Easy - Section 6: The Flag (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "easy",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720490,
+   "name": "Suspension: Easy - Section 6: The Flag (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "easy",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720491,
+   "name": "Suspension: Easy - Section 7: The Counterattack",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "easy",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720492,
+   "name": "Suspension: Easy - Section 7: The Counterattack (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "easy",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720493,
+   "name": "Suspension: Easy - Section 7: The Counterattack (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "easy",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720494,
+   "name": "Suspension: Easy - Section 7: The Counterattack (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "easy",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720495,
+   "name": "Suspension: Easy - Section 7: The Counterattack (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "easy",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720496,
+   "name": "Suspension: Easy - Section 7: The Counterattack (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "easy",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720497,
+   "name": "Suspension: Easy - Section 7: The Counterattack (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "easy",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720498,
+   "name": "Suspension: Easy - Section 7: The Counterattack (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "easy",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720499,
+   "name": "Suspension: Easy - Section 7: The Counterattack (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "easy",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720500,
+   "name": "Suspension: Easy - Section 8: The Assassin",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "easy",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720501,
+   "name": "Suspension: Easy - Section 8: The Assassin (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "easy",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720502,
+   "name": "Suspension: Easy - Section 8: The Assassin (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "easy",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720503,
+   "name": "Suspension: Easy - Section 8: The Assassin (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "easy",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720504,
+   "name": "Suspension: Easy - Section 8: The Assassin (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "easy",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720505,
+   "name": "Suspension: Easy - Section 8: The Assassin (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "easy",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720506,
+   "name": "Suspension: Easy - Section 8: The Assassin (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "easy",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720507,
+   "name": "Suspension: Easy - Section 8: The Assassin (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "easy",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720508,
+   "name": "Suspension: Easy - Section 8: The Assassin (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "easy",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720509,
+   "name": "Suspension: Medium - Section 1: The Approach",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "medium",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720510,
+   "name": "Suspension: Medium - Section 1: The Approach (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "medium",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720511,
+   "name": "Suspension: Medium - Section 1: The Approach (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "medium",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720512,
+   "name": "Suspension: Medium - Section 1: The Approach (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "medium",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720513,
+   "name": "Suspension: Medium - Section 1: The Approach (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "medium",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720514,
+   "name": "Suspension: Medium - Section 1: The Approach (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "medium",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720515,
+   "name": "Suspension: Medium - Section 1: The Approach (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "medium",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720516,
+   "name": "Suspension: Medium - Section 1: The Approach (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "medium",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720517,
+   "name": "Suspension: Medium - Section 1: The Approach (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "medium",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720518,
+   "name": "Suspension: Medium - Section 2: The APC",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "medium",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720519,
+   "name": "Suspension: Medium - Section 2: The APC (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "medium",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720520,
+   "name": "Suspension: Medium - Section 2: The APC (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "medium",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720521,
+   "name": "Suspension: Medium - Section 2: The APC (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "medium",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720522,
+   "name": "Suspension: Medium - Section 2: The APC (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "medium",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720523,
+   "name": "Suspension: Medium - Section 2: The APC (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "medium",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720524,
+   "name": "Suspension: Medium - Section 2: The APC (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "medium",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720525,
+   "name": "Suspension: Medium - Section 2: The APC (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "medium",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720526,
+   "name": "Suspension: Medium - Section 2: The APC (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "medium",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720527,
+   "name": "Suspension: Medium - Section 3: The Helipad",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "medium",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720528,
+   "name": "Suspension: Medium - Section 3: The Helipad (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "medium",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720529,
+   "name": "Suspension: Medium - Section 3: The Helipad (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "medium",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720530,
+   "name": "Suspension: Medium - Section 3: The Helipad (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "medium",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720531,
+   "name": "Suspension: Medium - Section 3: The Helipad (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "medium",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720532,
+   "name": "Suspension: Medium - Section 3: The Helipad (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "medium",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720533,
+   "name": "Suspension: Medium - Section 3: The Helipad (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "medium",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720534,
+   "name": "Suspension: Medium - Section 3: The Helipad (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "medium",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720535,
+   "name": "Suspension: Medium - Section 3: The Helipad (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "medium",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720536,
+   "name": "Suspension: Medium - Section 4: The Tank",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "medium",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720537,
+   "name": "Suspension: Medium - Section 4: The Tank (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "medium",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720538,
+   "name": "Suspension: Medium - Section 4: The Tank (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "medium",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720539,
+   "name": "Suspension: Medium - Section 4: The Tank (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "medium",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720540,
+   "name": "Suspension: Medium - Section 4: The Tank (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "medium",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720541,
+   "name": "Suspension: Medium - Section 4: The Tank (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "medium",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720542,
+   "name": "Suspension: Medium - Section 4: The Tank (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "medium",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720543,
+   "name": "Suspension: Medium - Section 4: The Tank (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "medium",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720544,
+   "name": "Suspension: Medium - Section 4: The Tank (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "medium",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720545,
+   "name": "Suspension: Medium - Section 5: The Apache",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "medium",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720546,
+   "name": "Suspension: Medium - Section 5: The Apache (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "medium",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720547,
+   "name": "Suspension: Medium - Section 5: The Apache (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "medium",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720548,
+   "name": "Suspension: Medium - Section 5: The Apache (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "medium",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720549,
+   "name": "Suspension: Medium - Section 5: The Apache (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "medium",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720550,
+   "name": "Suspension: Medium - Section 5: The Apache (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "medium",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720551,
+   "name": "Suspension: Medium - Section 5: The Apache (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "medium",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720552,
+   "name": "Suspension: Medium - Section 5: The Apache (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "medium",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720553,
+   "name": "Suspension: Medium - Section 5: The Apache (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "medium",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720554,
+   "name": "Suspension: Medium - Section 6: The Flag",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "medium",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720555,
+   "name": "Suspension: Medium - Section 6: The Flag (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "medium",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720556,
+   "name": "Suspension: Medium - Section 6: The Flag (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "medium",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720557,
+   "name": "Suspension: Medium - Section 6: The Flag (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "medium",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720558,
+   "name": "Suspension: Medium - Section 6: The Flag (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "medium",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720559,
+   "name": "Suspension: Medium - Section 6: The Flag (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "medium",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720560,
+   "name": "Suspension: Medium - Section 6: The Flag (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "medium",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720561,
+   "name": "Suspension: Medium - Section 6: The Flag (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "medium",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720562,
+   "name": "Suspension: Medium - Section 6: The Flag (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "medium",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720563,
+   "name": "Suspension: Medium - Section 7: The Counterattack",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "medium",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720564,
+   "name": "Suspension: Medium - Section 7: The Counterattack (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "medium",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720565,
+   "name": "Suspension: Medium - Section 7: The Counterattack (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "medium",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720566,
+   "name": "Suspension: Medium - Section 7: The Counterattack (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "medium",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720567,
+   "name": "Suspension: Medium - Section 7: The Counterattack (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "medium",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720568,
+   "name": "Suspension: Medium - Section 7: The Counterattack (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "medium",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720569,
+   "name": "Suspension: Medium - Section 7: The Counterattack (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "medium",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720570,
+   "name": "Suspension: Medium - Section 7: The Counterattack (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "medium",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720571,
+   "name": "Suspension: Medium - Section 7: The Counterattack (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "medium",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720572,
+   "name": "Suspension: Medium - Section 8: The Assassin",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "medium",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720573,
+   "name": "Suspension: Medium - Section 8: The Assassin (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "medium",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720574,
+   "name": "Suspension: Medium - Section 8: The Assassin (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "medium",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720575,
+   "name": "Suspension: Medium - Section 8: The Assassin (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "medium",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720576,
+   "name": "Suspension: Medium - Section 8: The Assassin (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "medium",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720577,
+   "name": "Suspension: Medium - Section 8: The Assassin (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "medium",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720578,
+   "name": "Suspension: Medium - Section 8: The Assassin (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "medium",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720579,
+   "name": "Suspension: Medium - Section 8: The Assassin (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "medium",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720580,
+   "name": "Suspension: Medium - Section 8: The Assassin (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "medium",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720581,
+   "name": "Suspension: Hard - Section 1: The Approach",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "hard",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720582,
+   "name": "Suspension: Hard - Section 1: The Approach (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "hard",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720583,
+   "name": "Suspension: Hard - Section 1: The Approach (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "hard",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720584,
+   "name": "Suspension: Hard - Section 1: The Approach (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "hard",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720585,
+   "name": "Suspension: Hard - Section 1: The Approach (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "hard",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720586,
+   "name": "Suspension: Hard - Section 1: The Approach (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "hard",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720587,
+   "name": "Suspension: Hard - Section 1: The Approach (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "hard",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720588,
+   "name": "Suspension: Hard - Section 1: The Approach (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "hard",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720589,
+   "name": "Suspension: Hard - Section 1: The Approach (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "hard",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720590,
+   "name": "Suspension: Hard - Section 2: The APC",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "hard",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720591,
+   "name": "Suspension: Hard - Section 2: The APC (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "hard",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720592,
+   "name": "Suspension: Hard - Section 2: The APC (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "hard",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720593,
+   "name": "Suspension: Hard - Section 2: The APC (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "hard",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720594,
+   "name": "Suspension: Hard - Section 2: The APC (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "hard",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720595,
+   "name": "Suspension: Hard - Section 2: The APC (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "hard",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720596,
+   "name": "Suspension: Hard - Section 2: The APC (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "hard",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720597,
+   "name": "Suspension: Hard - Section 2: The APC (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "hard",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720598,
+   "name": "Suspension: Hard - Section 2: The APC (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "hard",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720599,
+   "name": "Suspension: Hard - Section 3: The Helipad",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "hard",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720600,
+   "name": "Suspension: Hard - Section 3: The Helipad (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "hard",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720601,
+   "name": "Suspension: Hard - Section 3: The Helipad (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "hard",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720602,
+   "name": "Suspension: Hard - Section 3: The Helipad (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "hard",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720603,
+   "name": "Suspension: Hard - Section 3: The Helipad (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "hard",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720604,
+   "name": "Suspension: Hard - Section 3: The Helipad (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "hard",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720605,
+   "name": "Suspension: Hard - Section 3: The Helipad (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "hard",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720606,
+   "name": "Suspension: Hard - Section 3: The Helipad (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "hard",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720607,
+   "name": "Suspension: Hard - Section 3: The Helipad (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "hard",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720608,
+   "name": "Suspension: Hard - Section 4: The Tank",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "hard",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720609,
+   "name": "Suspension: Hard - Section 4: The Tank (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "hard",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720610,
+   "name": "Suspension: Hard - Section 4: The Tank (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "hard",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720611,
+   "name": "Suspension: Hard - Section 4: The Tank (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "hard",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720612,
+   "name": "Suspension: Hard - Section 4: The Tank (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "hard",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720613,
+   "name": "Suspension: Hard - Section 4: The Tank (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "hard",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720614,
+   "name": "Suspension: Hard - Section 4: The Tank (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "hard",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720615,
+   "name": "Suspension: Hard - Section 4: The Tank (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "hard",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720616,
+   "name": "Suspension: Hard - Section 4: The Tank (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "hard",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720617,
+   "name": "Suspension: Hard - Section 5: The Apache",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "hard",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720618,
+   "name": "Suspension: Hard - Section 5: The Apache (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "hard",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720619,
+   "name": "Suspension: Hard - Section 5: The Apache (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "hard",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720620,
+   "name": "Suspension: Hard - Section 5: The Apache (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "hard",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720621,
+   "name": "Suspension: Hard - Section 5: The Apache (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "hard",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720622,
+   "name": "Suspension: Hard - Section 5: The Apache (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "hard",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720623,
+   "name": "Suspension: Hard - Section 5: The Apache (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "hard",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720624,
+   "name": "Suspension: Hard - Section 5: The Apache (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "hard",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720625,
+   "name": "Suspension: Hard - Section 5: The Apache (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "hard",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720626,
+   "name": "Suspension: Hard - Section 6: The Flag",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "hard",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720627,
+   "name": "Suspension: Hard - Section 6: The Flag (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "hard",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720628,
+   "name": "Suspension: Hard - Section 6: The Flag (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "hard",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720629,
+   "name": "Suspension: Hard - Section 6: The Flag (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "hard",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720630,
+   "name": "Suspension: Hard - Section 6: The Flag (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "hard",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720631,
+   "name": "Suspension: Hard - Section 6: The Flag (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "hard",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720632,
+   "name": "Suspension: Hard - Section 6: The Flag (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "hard",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720633,
+   "name": "Suspension: Hard - Section 6: The Flag (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "hard",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720634,
+   "name": "Suspension: Hard - Section 6: The Flag (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "hard",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720635,
+   "name": "Suspension: Hard - Section 7: The Counterattack",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "hard",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720636,
+   "name": "Suspension: Hard - Section 7: The Counterattack (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "hard",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720637,
+   "name": "Suspension: Hard - Section 7: The Counterattack (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "hard",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720638,
+   "name": "Suspension: Hard - Section 7: The Counterattack (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "hard",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720639,
+   "name": "Suspension: Hard - Section 7: The Counterattack (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "hard",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720640,
+   "name": "Suspension: Hard - Section 7: The Counterattack (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "hard",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720641,
+   "name": "Suspension: Hard - Section 7: The Counterattack (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "hard",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720642,
+   "name": "Suspension: Hard - Section 7: The Counterattack (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "hard",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720643,
+   "name": "Suspension: Hard - Section 7: The Counterattack (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "hard",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720644,
+   "name": "Suspension: Hard - Section 8: The Assassin",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "hard",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720645,
+   "name": "Suspension: Hard - Section 8: The Assassin (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "hard",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720646,
+   "name": "Suspension: Hard - Section 8: The Assassin (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "hard",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720647,
+   "name": "Suspension: Hard - Section 8: The Assassin (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "hard",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720648,
+   "name": "Suspension: Hard - Section 8: The Assassin (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "hard",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720649,
+   "name": "Suspension: Hard - Section 8: The Assassin (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "hard",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720650,
+   "name": "Suspension: Hard - Section 8: The Assassin (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "hard",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720651,
+   "name": "Suspension: Hard - Section 8: The Assassin (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "hard",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720652,
+   "name": "Suspension: Hard - Section 8: The Assassin (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "hard",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720653,
+   "name": "Suspension: Insane - Section 1: The Approach",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "insane",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720654,
+   "name": "Suspension: Insane - Section 1: The Approach (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "insane",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720655,
+   "name": "Suspension: Insane - Section 1: The Approach (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "insane",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720656,
+   "name": "Suspension: Insane - Section 1: The Approach (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "insane",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720657,
+   "name": "Suspension: Insane - Section 1: The Approach (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "insane",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720658,
+   "name": "Suspension: Insane - Section 1: The Approach (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "insane",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720659,
+   "name": "Suspension: Insane - Section 1: The Approach (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "insane",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720660,
+   "name": "Suspension: Insane - Section 1: The Approach (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "insane",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720661,
+   "name": "Suspension: Insane - Section 1: The Approach (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s1",
+    "difficulty": "insane",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720662,
+   "name": "Suspension: Insane - Section 2: The APC",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "insane",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720663,
+   "name": "Suspension: Insane - Section 2: The APC (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "insane",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720664,
+   "name": "Suspension: Insane - Section 2: The APC (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "insane",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720665,
+   "name": "Suspension: Insane - Section 2: The APC (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "insane",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720666,
+   "name": "Suspension: Insane - Section 2: The APC (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "insane",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720667,
+   "name": "Suspension: Insane - Section 2: The APC (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "insane",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720668,
+   "name": "Suspension: Insane - Section 2: The APC (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "insane",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720669,
+   "name": "Suspension: Insane - Section 2: The APC (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "insane",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720670,
+   "name": "Suspension: Insane - Section 2: The APC (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s2",
+    "difficulty": "insane",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720671,
+   "name": "Suspension: Insane - Section 3: The Helipad",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "insane",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720672,
+   "name": "Suspension: Insane - Section 3: The Helipad (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "insane",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720673,
+   "name": "Suspension: Insane - Section 3: The Helipad (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "insane",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720674,
+   "name": "Suspension: Insane - Section 3: The Helipad (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "insane",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720675,
+   "name": "Suspension: Insane - Section 3: The Helipad (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "insane",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720676,
+   "name": "Suspension: Insane - Section 3: The Helipad (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "insane",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720677,
+   "name": "Suspension: Insane - Section 3: The Helipad (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "insane",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720678,
+   "name": "Suspension: Insane - Section 3: The Helipad (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "insane",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720679,
+   "name": "Suspension: Insane - Section 3: The Helipad (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s3",
+    "difficulty": "insane",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720680,
+   "name": "Suspension: Insane - Section 4: The Tank",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "insane",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720681,
+   "name": "Suspension: Insane - Section 4: The Tank (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "insane",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720682,
+   "name": "Suspension: Insane - Section 4: The Tank (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "insane",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720683,
+   "name": "Suspension: Insane - Section 4: The Tank (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "insane",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720684,
+   "name": "Suspension: Insane - Section 4: The Tank (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "insane",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720685,
+   "name": "Suspension: Insane - Section 4: The Tank (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "insane",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720686,
+   "name": "Suspension: Insane - Section 4: The Tank (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "insane",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720687,
+   "name": "Suspension: Insane - Section 4: The Tank (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "insane",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720688,
+   "name": "Suspension: Insane - Section 4: The Tank (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s4",
+    "difficulty": "insane",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720689,
+   "name": "Suspension: Insane - Section 5: The Apache",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "insane",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720690,
+   "name": "Suspension: Insane - Section 5: The Apache (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "insane",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720691,
+   "name": "Suspension: Insane - Section 5: The Apache (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "insane",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720692,
+   "name": "Suspension: Insane - Section 5: The Apache (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "insane",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720693,
+   "name": "Suspension: Insane - Section 5: The Apache (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "insane",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720694,
+   "name": "Suspension: Insane - Section 5: The Apache (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "insane",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720695,
+   "name": "Suspension: Insane - Section 5: The Apache (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "insane",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720696,
+   "name": "Suspension: Insane - Section 5: The Apache (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "insane",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720697,
+   "name": "Suspension: Insane - Section 5: The Apache (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s5",
+    "difficulty": "insane",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720698,
+   "name": "Suspension: Insane - Section 6: The Flag",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "insane",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720699,
+   "name": "Suspension: Insane - Section 6: The Flag (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "insane",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720700,
+   "name": "Suspension: Insane - Section 6: The Flag (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "insane",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720701,
+   "name": "Suspension: Insane - Section 6: The Flag (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "insane",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720702,
+   "name": "Suspension: Insane - Section 6: The Flag (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "insane",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720703,
+   "name": "Suspension: Insane - Section 6: The Flag (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "insane",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720704,
+   "name": "Suspension: Insane - Section 6: The Flag (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "insane",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720705,
+   "name": "Suspension: Insane - Section 6: The Flag (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "insane",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720706,
+   "name": "Suspension: Insane - Section 6: The Flag (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s6",
+    "difficulty": "insane",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720707,
+   "name": "Suspension: Insane - Section 7: The Counterattack",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "insane",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720708,
+   "name": "Suspension: Insane - Section 7: The Counterattack (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "insane",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720709,
+   "name": "Suspension: Insane - Section 7: The Counterattack (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "insane",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720710,
+   "name": "Suspension: Insane - Section 7: The Counterattack (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "insane",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720711,
+   "name": "Suspension: Insane - Section 7: The Counterattack (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "insane",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720712,
+   "name": "Suspension: Insane - Section 7: The Counterattack (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "insane",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720713,
+   "name": "Suspension: Insane - Section 7: The Counterattack (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "insane",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720714,
+   "name": "Suspension: Insane - Section 7: The Counterattack (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "insane",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720715,
+   "name": "Suspension: Insane - Section 7: The Counterattack (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s7",
+    "difficulty": "insane",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720716,
+   "name": "Suspension: Insane - Section 8: The Assassin",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "insane",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720717,
+   "name": "Suspension: Insane - Section 8: The Assassin (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "insane",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720718,
+   "name": "Suspension: Insane - Section 8: The Assassin (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "insane",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720719,
+   "name": "Suspension: Insane - Section 8: The Assassin (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "insane",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720720,
+   "name": "Suspension: Insane - Section 8: The Assassin (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "insane",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720721,
+   "name": "Suspension: Insane - Section 8: The Assassin (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "insane",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720722,
+   "name": "Suspension: Insane - Section 8: The Assassin (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "insane",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720723,
+   "name": "Suspension: Insane - Section 8: The Assassin (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "insane",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720724,
+   "name": "Suspension: Insane - Section 8: The Assassin (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_section",
+    "map": "suspension",
+    "section": "s8",
+    "difficulty": "insane",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720725,
+   "name": "Suspension: Easy - Bridge Retaken",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "easy",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720726,
+   "name": "Suspension: Easy - Bridge Retaken (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "easy",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720727,
+   "name": "Suspension: Easy - Bridge Retaken (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "easy",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720728,
+   "name": "Suspension: Easy - Bridge Retaken (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "easy",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720729,
+   "name": "Suspension: Easy - Bridge Retaken (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "easy",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720730,
+   "name": "Suspension: Easy - Bridge Retaken (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "easy",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720731,
+   "name": "Suspension: Easy - Bridge Retaken (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "easy",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720732,
+   "name": "Suspension: Easy - Bridge Retaken (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "easy",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720733,
+   "name": "Suspension: Easy - Bridge Retaken (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "easy",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720734,
+   "name": "Suspension: Medium - Bridge Retaken",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "medium",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720735,
+   "name": "Suspension: Medium - Bridge Retaken (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "medium",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720736,
+   "name": "Suspension: Medium - Bridge Retaken (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "medium",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720737,
+   "name": "Suspension: Medium - Bridge Retaken (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "medium",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720738,
+   "name": "Suspension: Medium - Bridge Retaken (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "medium",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720739,
+   "name": "Suspension: Medium - Bridge Retaken (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "medium",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720740,
+   "name": "Suspension: Medium - Bridge Retaken (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "medium",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720741,
+   "name": "Suspension: Medium - Bridge Retaken (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "medium",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720742,
+   "name": "Suspension: Medium - Bridge Retaken (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "medium",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720743,
+   "name": "Suspension: Hard - Bridge Retaken",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "hard",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720744,
+   "name": "Suspension: Hard - Bridge Retaken (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "hard",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720745,
+   "name": "Suspension: Hard - Bridge Retaken (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "hard",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720746,
+   "name": "Suspension: Hard - Bridge Retaken (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "hard",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720747,
+   "name": "Suspension: Hard - Bridge Retaken (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "hard",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720748,
+   "name": "Suspension: Hard - Bridge Retaken (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "hard",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720749,
+   "name": "Suspension: Hard - Bridge Retaken (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "hard",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720750,
+   "name": "Suspension: Hard - Bridge Retaken (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "hard",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720751,
+   "name": "Suspension: Hard - Bridge Retaken (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "hard",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720752,
+   "name": "Suspension: Insane - Bridge Retaken",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "insane",
+    "class": ""
+   }
+  },
+  {
+   "id": 7720753,
+   "name": "Suspension: Insane - Bridge Retaken (Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "insane",
+    "class": "soldier"
+   }
+  },
+  {
+   "id": 7720754,
+   "name": "Suspension: Insane - Bridge Retaken (GL Soldier)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "insane",
+    "class": "gl_soldier"
+   }
+  },
+  {
+   "id": 7720755,
+   "name": "Suspension: Insane - Bridge Retaken (Shotgunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "insane",
+    "class": "shotty"
+   }
+  },
+  {
+   "id": 7720756,
+   "name": "Suspension: Insane - Bridge Retaken (SAW Gunner)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "insane",
+    "class": "saw"
+   }
+  },
+  {
+   "id": 7720757,
+   "name": "Suspension: Insane - Bridge Retaken (Sniper)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "insane",
+    "class": "sniper"
+   }
+  },
+  {
+   "id": 7720758,
+   "name": "Suspension: Insane - Bridge Retaken (Medic)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "insane",
+    "class": "medic"
+   }
+  },
+  {
+   "id": 7720759,
+   "name": "Suspension: Insane - Bridge Retaken (Engineer)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "insane",
+    "class": "engineer"
+   }
+  },
+  {
+   "id": 7720760,
+   "name": "Suspension: Insane - Bridge Retaken (Juggernaut)",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_clear",
+    "map": "suspension",
+    "difficulty": "insane",
+    "class": "jugger"
+   }
+  },
+  {
+   "id": 7720761,
+   "name": "Suspension: Easy - Platinum Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "easy",
+    "award": "platinum"
+   }
+  },
+  {
+   "id": 7720762,
+   "name": "Suspension: Easy - Gold Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "easy",
+    "award": "gold"
+   }
+  },
+  {
+   "id": 7720763,
+   "name": "Suspension: Easy - Silver Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "easy",
+    "award": "silver"
+   }
+  },
+  {
+   "id": 7720764,
+   "name": "Suspension: Easy - Bronze Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "easy",
+    "award": "bronze"
+   }
+  },
+  {
+   "id": 7720765,
+   "name": "Suspension: Easy - Stone Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "easy",
+    "award": "stone"
+   }
+  },
+  {
+   "id": 7720766,
+   "name": "Suspension: Easy - N00b Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "easy",
+    "award": "noob"
+   }
+  },
+  {
+   "id": 7720767,
+   "name": "Suspension: Medium - Platinum Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "medium",
+    "award": "platinum"
+   }
+  },
+  {
+   "id": 7720768,
+   "name": "Suspension: Medium - Gold Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "medium",
+    "award": "gold"
+   }
+  },
+  {
+   "id": 7720769,
+   "name": "Suspension: Medium - Silver Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "medium",
+    "award": "silver"
+   }
+  },
+  {
+   "id": 7720770,
+   "name": "Suspension: Medium - Bronze Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "medium",
+    "award": "bronze"
+   }
+  },
+  {
+   "id": 7720771,
+   "name": "Suspension: Medium - Stone Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "medium",
+    "award": "stone"
+   }
+  },
+  {
+   "id": 7720772,
+   "name": "Suspension: Medium - N00b Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "medium",
+    "award": "noob"
+   }
+  },
+  {
+   "id": 7720773,
+   "name": "Suspension: Hard - Platinum Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "hard",
+    "award": "platinum"
+   }
+  },
+  {
+   "id": 7720774,
+   "name": "Suspension: Hard - Gold Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "hard",
+    "award": "gold"
+   }
+  },
+  {
+   "id": 7720775,
+   "name": "Suspension: Hard - Silver Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "hard",
+    "award": "silver"
+   }
+  },
+  {
+   "id": 7720776,
+   "name": "Suspension: Hard - Bronze Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "hard",
+    "award": "bronze"
+   }
+  },
+  {
+   "id": 7720777,
+   "name": "Suspension: Hard - Stone Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "hard",
+    "award": "stone"
+   }
+  },
+  {
+   "id": 7720778,
+   "name": "Suspension: Hard - N00b Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "hard",
+    "award": "noob"
+   }
+  },
+  {
+   "id": 7720779,
+   "name": "Suspension: Insane - Platinum Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "insane",
+    "award": "platinum"
+   }
+  },
+  {
+   "id": 7720780,
+   "name": "Suspension: Insane - Gold Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "insane",
+    "award": "gold"
+   }
+  },
+  {
+   "id": 7720781,
+   "name": "Suspension: Insane - Silver Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "insane",
+    "award": "silver"
+   }
+  },
+  {
+   "id": 7720782,
+   "name": "Suspension: Insane - Bronze Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "insane",
+    "award": "bronze"
+   }
+  },
+  {
+   "id": 7720783,
+   "name": "Suspension: Insane - Stone Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "insane",
+    "award": "stone"
+   }
+  },
+  {
+   "id": 7720784,
+   "name": "Suspension: Insane - N00b Award",
+   "chapter": "suspension",
+   "map": "suspension",
+   "trigger": {
+    "type": "suspension_award",
+    "map": "suspension",
+    "difficulty": "insane",
+    "award": "noob"
+   }
+  }
+ ]
+}

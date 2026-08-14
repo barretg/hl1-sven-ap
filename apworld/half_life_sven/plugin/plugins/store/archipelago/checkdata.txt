@@ -9,8 +9,17 @@
 #   S|<classname>                  always granted, never randomised
 #   R|<classname>|<campaign,...>   grantable only on those campaigns' maps
 #   D|<data version>               must match the client's, or ids differ
-V|3
-D|1ecd59a83722
+# Arcade maps (Suspension), all scoped by the arcade key:
+#   X|<key>|<name>|<map>|<goal class>|<start signal>|<end signal>
+#   Y|<arcade>|<key>|<name>|<tickets>|<vote button>|<ticket signal>
+#   Z|<arcade>|<key>|<index>|<name>|<clear signal>
+#   W|<arcade>|<key>|<name>|<player targetname>|<booth signal>|<map gated>
+#   A|<arcade>|<key>|<name>|<max deaths>
+#   J|<arcade>|<volume>|<mins>|<maxs>   a box the plugin watches
+#   G|<arcade>|<part>|<targetname>|<classname>   the Juggernaut seal
+#   E|<arcade>|<class>|<field>|<value>  how to grant a class without its booth
+V|4
+D|242c67b18cc8
 M|half_life|Half-Life|nihilanth
 M|opposing_force|Opposing Force|of_worlds_collide
 M|blue_shift|Blue Shift|bs_leap_of_faith
@@ -449,6 +458,394 @@ L|7720433|ba_outro|map_reached||A Leap Of Faith - Reached
 L|7720434|ba_power2|chapter_complete|bs_power_struggle|Power Struggle - Complete
 L|7720435|ba_outro|chapter_complete|bs_leap_of_faith|A Leap Of Faith - Complete
 L|7720436|of6a4b|chapter_complete|of_worlds_collide|Worlds Collide - Complete
+L|7720437|suspension|suspension_section|s1::easy|Suspension: Easy - Section 1: The Approach
+L|7720438|suspension|suspension_section|s1:soldier:easy|Suspension: Easy - Section 1: The Approach (Soldier)
+L|7720439|suspension|suspension_section|s1:gl_soldier:easy|Suspension: Easy - Section 1: The Approach (GL Soldier)
+L|7720440|suspension|suspension_section|s1:shotty:easy|Suspension: Easy - Section 1: The Approach (Shotgunner)
+L|7720441|suspension|suspension_section|s1:saw:easy|Suspension: Easy - Section 1: The Approach (SAW Gunner)
+L|7720442|suspension|suspension_section|s1:sniper:easy|Suspension: Easy - Section 1: The Approach (Sniper)
+L|7720443|suspension|suspension_section|s1:medic:easy|Suspension: Easy - Section 1: The Approach (Medic)
+L|7720444|suspension|suspension_section|s1:engineer:easy|Suspension: Easy - Section 1: The Approach (Engineer)
+L|7720445|suspension|suspension_section|s1:jugger:easy|Suspension: Easy - Section 1: The Approach (Juggernaut)
+L|7720446|suspension|suspension_section|s2::easy|Suspension: Easy - Section 2: The APC
+L|7720447|suspension|suspension_section|s2:soldier:easy|Suspension: Easy - Section 2: The APC (Soldier)
+L|7720448|suspension|suspension_section|s2:gl_soldier:easy|Suspension: Easy - Section 2: The APC (GL Soldier)
+L|7720449|suspension|suspension_section|s2:shotty:easy|Suspension: Easy - Section 2: The APC (Shotgunner)
+L|7720450|suspension|suspension_section|s2:saw:easy|Suspension: Easy - Section 2: The APC (SAW Gunner)
+L|7720451|suspension|suspension_section|s2:sniper:easy|Suspension: Easy - Section 2: The APC (Sniper)
+L|7720452|suspension|suspension_section|s2:medic:easy|Suspension: Easy - Section 2: The APC (Medic)
+L|7720453|suspension|suspension_section|s2:engineer:easy|Suspension: Easy - Section 2: The APC (Engineer)
+L|7720454|suspension|suspension_section|s2:jugger:easy|Suspension: Easy - Section 2: The APC (Juggernaut)
+L|7720455|suspension|suspension_section|s3::easy|Suspension: Easy - Section 3: The Helipad
+L|7720456|suspension|suspension_section|s3:soldier:easy|Suspension: Easy - Section 3: The Helipad (Soldier)
+L|7720457|suspension|suspension_section|s3:gl_soldier:easy|Suspension: Easy - Section 3: The Helipad (GL Soldier)
+L|7720458|suspension|suspension_section|s3:shotty:easy|Suspension: Easy - Section 3: The Helipad (Shotgunner)
+L|7720459|suspension|suspension_section|s3:saw:easy|Suspension: Easy - Section 3: The Helipad (SAW Gunner)
+L|7720460|suspension|suspension_section|s3:sniper:easy|Suspension: Easy - Section 3: The Helipad (Sniper)
+L|7720461|suspension|suspension_section|s3:medic:easy|Suspension: Easy - Section 3: The Helipad (Medic)
+L|7720462|suspension|suspension_section|s3:engineer:easy|Suspension: Easy - Section 3: The Helipad (Engineer)
+L|7720463|suspension|suspension_section|s3:jugger:easy|Suspension: Easy - Section 3: The Helipad (Juggernaut)
+L|7720464|suspension|suspension_section|s4::easy|Suspension: Easy - Section 4: The Tank
+L|7720465|suspension|suspension_section|s4:soldier:easy|Suspension: Easy - Section 4: The Tank (Soldier)
+L|7720466|suspension|suspension_section|s4:gl_soldier:easy|Suspension: Easy - Section 4: The Tank (GL Soldier)
+L|7720467|suspension|suspension_section|s4:shotty:easy|Suspension: Easy - Section 4: The Tank (Shotgunner)
+L|7720468|suspension|suspension_section|s4:saw:easy|Suspension: Easy - Section 4: The Tank (SAW Gunner)
+L|7720469|suspension|suspension_section|s4:sniper:easy|Suspension: Easy - Section 4: The Tank (Sniper)
+L|7720470|suspension|suspension_section|s4:medic:easy|Suspension: Easy - Section 4: The Tank (Medic)
+L|7720471|suspension|suspension_section|s4:engineer:easy|Suspension: Easy - Section 4: The Tank (Engineer)
+L|7720472|suspension|suspension_section|s4:jugger:easy|Suspension: Easy - Section 4: The Tank (Juggernaut)
+L|7720473|suspension|suspension_section|s5::easy|Suspension: Easy - Section 5: The Apache
+L|7720474|suspension|suspension_section|s5:soldier:easy|Suspension: Easy - Section 5: The Apache (Soldier)
+L|7720475|suspension|suspension_section|s5:gl_soldier:easy|Suspension: Easy - Section 5: The Apache (GL Soldier)
+L|7720476|suspension|suspension_section|s5:shotty:easy|Suspension: Easy - Section 5: The Apache (Shotgunner)
+L|7720477|suspension|suspension_section|s5:saw:easy|Suspension: Easy - Section 5: The Apache (SAW Gunner)
+L|7720478|suspension|suspension_section|s5:sniper:easy|Suspension: Easy - Section 5: The Apache (Sniper)
+L|7720479|suspension|suspension_section|s5:medic:easy|Suspension: Easy - Section 5: The Apache (Medic)
+L|7720480|suspension|suspension_section|s5:engineer:easy|Suspension: Easy - Section 5: The Apache (Engineer)
+L|7720481|suspension|suspension_section|s5:jugger:easy|Suspension: Easy - Section 5: The Apache (Juggernaut)
+L|7720482|suspension|suspension_section|s6::easy|Suspension: Easy - Section 6: The Flag
+L|7720483|suspension|suspension_section|s6:soldier:easy|Suspension: Easy - Section 6: The Flag (Soldier)
+L|7720484|suspension|suspension_section|s6:gl_soldier:easy|Suspension: Easy - Section 6: The Flag (GL Soldier)
+L|7720485|suspension|suspension_section|s6:shotty:easy|Suspension: Easy - Section 6: The Flag (Shotgunner)
+L|7720486|suspension|suspension_section|s6:saw:easy|Suspension: Easy - Section 6: The Flag (SAW Gunner)
+L|7720487|suspension|suspension_section|s6:sniper:easy|Suspension: Easy - Section 6: The Flag (Sniper)
+L|7720488|suspension|suspension_section|s6:medic:easy|Suspension: Easy - Section 6: The Flag (Medic)
+L|7720489|suspension|suspension_section|s6:engineer:easy|Suspension: Easy - Section 6: The Flag (Engineer)
+L|7720490|suspension|suspension_section|s6:jugger:easy|Suspension: Easy - Section 6: The Flag (Juggernaut)
+L|7720491|suspension|suspension_section|s7::easy|Suspension: Easy - Section 7: The Counterattack
+L|7720492|suspension|suspension_section|s7:soldier:easy|Suspension: Easy - Section 7: The Counterattack (Soldier)
+L|7720493|suspension|suspension_section|s7:gl_soldier:easy|Suspension: Easy - Section 7: The Counterattack (GL Soldier)
+L|7720494|suspension|suspension_section|s7:shotty:easy|Suspension: Easy - Section 7: The Counterattack (Shotgunner)
+L|7720495|suspension|suspension_section|s7:saw:easy|Suspension: Easy - Section 7: The Counterattack (SAW Gunner)
+L|7720496|suspension|suspension_section|s7:sniper:easy|Suspension: Easy - Section 7: The Counterattack (Sniper)
+L|7720497|suspension|suspension_section|s7:medic:easy|Suspension: Easy - Section 7: The Counterattack (Medic)
+L|7720498|suspension|suspension_section|s7:engineer:easy|Suspension: Easy - Section 7: The Counterattack (Engineer)
+L|7720499|suspension|suspension_section|s7:jugger:easy|Suspension: Easy - Section 7: The Counterattack (Juggernaut)
+L|7720500|suspension|suspension_section|s8::easy|Suspension: Easy - Section 8: The Assassin
+L|7720501|suspension|suspension_section|s8:soldier:easy|Suspension: Easy - Section 8: The Assassin (Soldier)
+L|7720502|suspension|suspension_section|s8:gl_soldier:easy|Suspension: Easy - Section 8: The Assassin (GL Soldier)
+L|7720503|suspension|suspension_section|s8:shotty:easy|Suspension: Easy - Section 8: The Assassin (Shotgunner)
+L|7720504|suspension|suspension_section|s8:saw:easy|Suspension: Easy - Section 8: The Assassin (SAW Gunner)
+L|7720505|suspension|suspension_section|s8:sniper:easy|Suspension: Easy - Section 8: The Assassin (Sniper)
+L|7720506|suspension|suspension_section|s8:medic:easy|Suspension: Easy - Section 8: The Assassin (Medic)
+L|7720507|suspension|suspension_section|s8:engineer:easy|Suspension: Easy - Section 8: The Assassin (Engineer)
+L|7720508|suspension|suspension_section|s8:jugger:easy|Suspension: Easy - Section 8: The Assassin (Juggernaut)
+L|7720509|suspension|suspension_section|s1::medium|Suspension: Medium - Section 1: The Approach
+L|7720510|suspension|suspension_section|s1:soldier:medium|Suspension: Medium - Section 1: The Approach (Soldier)
+L|7720511|suspension|suspension_section|s1:gl_soldier:medium|Suspension: Medium - Section 1: The Approach (GL Soldier)
+L|7720512|suspension|suspension_section|s1:shotty:medium|Suspension: Medium - Section 1: The Approach (Shotgunner)
+L|7720513|suspension|suspension_section|s1:saw:medium|Suspension: Medium - Section 1: The Approach (SAW Gunner)
+L|7720514|suspension|suspension_section|s1:sniper:medium|Suspension: Medium - Section 1: The Approach (Sniper)
+L|7720515|suspension|suspension_section|s1:medic:medium|Suspension: Medium - Section 1: The Approach (Medic)
+L|7720516|suspension|suspension_section|s1:engineer:medium|Suspension: Medium - Section 1: The Approach (Engineer)
+L|7720517|suspension|suspension_section|s1:jugger:medium|Suspension: Medium - Section 1: The Approach (Juggernaut)
+L|7720518|suspension|suspension_section|s2::medium|Suspension: Medium - Section 2: The APC
+L|7720519|suspension|suspension_section|s2:soldier:medium|Suspension: Medium - Section 2: The APC (Soldier)
+L|7720520|suspension|suspension_section|s2:gl_soldier:medium|Suspension: Medium - Section 2: The APC (GL Soldier)
+L|7720521|suspension|suspension_section|s2:shotty:medium|Suspension: Medium - Section 2: The APC (Shotgunner)
+L|7720522|suspension|suspension_section|s2:saw:medium|Suspension: Medium - Section 2: The APC (SAW Gunner)
+L|7720523|suspension|suspension_section|s2:sniper:medium|Suspension: Medium - Section 2: The APC (Sniper)
+L|7720524|suspension|suspension_section|s2:medic:medium|Suspension: Medium - Section 2: The APC (Medic)
+L|7720525|suspension|suspension_section|s2:engineer:medium|Suspension: Medium - Section 2: The APC (Engineer)
+L|7720526|suspension|suspension_section|s2:jugger:medium|Suspension: Medium - Section 2: The APC (Juggernaut)
+L|7720527|suspension|suspension_section|s3::medium|Suspension: Medium - Section 3: The Helipad
+L|7720528|suspension|suspension_section|s3:soldier:medium|Suspension: Medium - Section 3: The Helipad (Soldier)
+L|7720529|suspension|suspension_section|s3:gl_soldier:medium|Suspension: Medium - Section 3: The Helipad (GL Soldier)
+L|7720530|suspension|suspension_section|s3:shotty:medium|Suspension: Medium - Section 3: The Helipad (Shotgunner)
+L|7720531|suspension|suspension_section|s3:saw:medium|Suspension: Medium - Section 3: The Helipad (SAW Gunner)
+L|7720532|suspension|suspension_section|s3:sniper:medium|Suspension: Medium - Section 3: The Helipad (Sniper)
+L|7720533|suspension|suspension_section|s3:medic:medium|Suspension: Medium - Section 3: The Helipad (Medic)
+L|7720534|suspension|suspension_section|s3:engineer:medium|Suspension: Medium - Section 3: The Helipad (Engineer)
+L|7720535|suspension|suspension_section|s3:jugger:medium|Suspension: Medium - Section 3: The Helipad (Juggernaut)
+L|7720536|suspension|suspension_section|s4::medium|Suspension: Medium - Section 4: The Tank
+L|7720537|suspension|suspension_section|s4:soldier:medium|Suspension: Medium - Section 4: The Tank (Soldier)
+L|7720538|suspension|suspension_section|s4:gl_soldier:medium|Suspension: Medium - Section 4: The Tank (GL Soldier)
+L|7720539|suspension|suspension_section|s4:shotty:medium|Suspension: Medium - Section 4: The Tank (Shotgunner)
+L|7720540|suspension|suspension_section|s4:saw:medium|Suspension: Medium - Section 4: The Tank (SAW Gunner)
+L|7720541|suspension|suspension_section|s4:sniper:medium|Suspension: Medium - Section 4: The Tank (Sniper)
+L|7720542|suspension|suspension_section|s4:medic:medium|Suspension: Medium - Section 4: The Tank (Medic)
+L|7720543|suspension|suspension_section|s4:engineer:medium|Suspension: Medium - Section 4: The Tank (Engineer)
+L|7720544|suspension|suspension_section|s4:jugger:medium|Suspension: Medium - Section 4: The Tank (Juggernaut)
+L|7720545|suspension|suspension_section|s5::medium|Suspension: Medium - Section 5: The Apache
+L|7720546|suspension|suspension_section|s5:soldier:medium|Suspension: Medium - Section 5: The Apache (Soldier)
+L|7720547|suspension|suspension_section|s5:gl_soldier:medium|Suspension: Medium - Section 5: The Apache (GL Soldier)
+L|7720548|suspension|suspension_section|s5:shotty:medium|Suspension: Medium - Section 5: The Apache (Shotgunner)
+L|7720549|suspension|suspension_section|s5:saw:medium|Suspension: Medium - Section 5: The Apache (SAW Gunner)
+L|7720550|suspension|suspension_section|s5:sniper:medium|Suspension: Medium - Section 5: The Apache (Sniper)
+L|7720551|suspension|suspension_section|s5:medic:medium|Suspension: Medium - Section 5: The Apache (Medic)
+L|7720552|suspension|suspension_section|s5:engineer:medium|Suspension: Medium - Section 5: The Apache (Engineer)
+L|7720553|suspension|suspension_section|s5:jugger:medium|Suspension: Medium - Section 5: The Apache (Juggernaut)
+L|7720554|suspension|suspension_section|s6::medium|Suspension: Medium - Section 6: The Flag
+L|7720555|suspension|suspension_section|s6:soldier:medium|Suspension: Medium - Section 6: The Flag (Soldier)
+L|7720556|suspension|suspension_section|s6:gl_soldier:medium|Suspension: Medium - Section 6: The Flag (GL Soldier)
+L|7720557|suspension|suspension_section|s6:shotty:medium|Suspension: Medium - Section 6: The Flag (Shotgunner)
+L|7720558|suspension|suspension_section|s6:saw:medium|Suspension: Medium - Section 6: The Flag (SAW Gunner)
+L|7720559|suspension|suspension_section|s6:sniper:medium|Suspension: Medium - Section 6: The Flag (Sniper)
+L|7720560|suspension|suspension_section|s6:medic:medium|Suspension: Medium - Section 6: The Flag (Medic)
+L|7720561|suspension|suspension_section|s6:engineer:medium|Suspension: Medium - Section 6: The Flag (Engineer)
+L|7720562|suspension|suspension_section|s6:jugger:medium|Suspension: Medium - Section 6: The Flag (Juggernaut)
+L|7720563|suspension|suspension_section|s7::medium|Suspension: Medium - Section 7: The Counterattack
+L|7720564|suspension|suspension_section|s7:soldier:medium|Suspension: Medium - Section 7: The Counterattack (Soldier)
+L|7720565|suspension|suspension_section|s7:gl_soldier:medium|Suspension: Medium - Section 7: The Counterattack (GL Soldier)
+L|7720566|suspension|suspension_section|s7:shotty:medium|Suspension: Medium - Section 7: The Counterattack (Shotgunner)
+L|7720567|suspension|suspension_section|s7:saw:medium|Suspension: Medium - Section 7: The Counterattack (SAW Gunner)
+L|7720568|suspension|suspension_section|s7:sniper:medium|Suspension: Medium - Section 7: The Counterattack (Sniper)
+L|7720569|suspension|suspension_section|s7:medic:medium|Suspension: Medium - Section 7: The Counterattack (Medic)
+L|7720570|suspension|suspension_section|s7:engineer:medium|Suspension: Medium - Section 7: The Counterattack (Engineer)
+L|7720571|suspension|suspension_section|s7:jugger:medium|Suspension: Medium - Section 7: The Counterattack (Juggernaut)
+L|7720572|suspension|suspension_section|s8::medium|Suspension: Medium - Section 8: The Assassin
+L|7720573|suspension|suspension_section|s8:soldier:medium|Suspension: Medium - Section 8: The Assassin (Soldier)
+L|7720574|suspension|suspension_section|s8:gl_soldier:medium|Suspension: Medium - Section 8: The Assassin (GL Soldier)
+L|7720575|suspension|suspension_section|s8:shotty:medium|Suspension: Medium - Section 8: The Assassin (Shotgunner)
+L|7720576|suspension|suspension_section|s8:saw:medium|Suspension: Medium - Section 8: The Assassin (SAW Gunner)
+L|7720577|suspension|suspension_section|s8:sniper:medium|Suspension: Medium - Section 8: The Assassin (Sniper)
+L|7720578|suspension|suspension_section|s8:medic:medium|Suspension: Medium - Section 8: The Assassin (Medic)
+L|7720579|suspension|suspension_section|s8:engineer:medium|Suspension: Medium - Section 8: The Assassin (Engineer)
+L|7720580|suspension|suspension_section|s8:jugger:medium|Suspension: Medium - Section 8: The Assassin (Juggernaut)
+L|7720581|suspension|suspension_section|s1::hard|Suspension: Hard - Section 1: The Approach
+L|7720582|suspension|suspension_section|s1:soldier:hard|Suspension: Hard - Section 1: The Approach (Soldier)
+L|7720583|suspension|suspension_section|s1:gl_soldier:hard|Suspension: Hard - Section 1: The Approach (GL Soldier)
+L|7720584|suspension|suspension_section|s1:shotty:hard|Suspension: Hard - Section 1: The Approach (Shotgunner)
+L|7720585|suspension|suspension_section|s1:saw:hard|Suspension: Hard - Section 1: The Approach (SAW Gunner)
+L|7720586|suspension|suspension_section|s1:sniper:hard|Suspension: Hard - Section 1: The Approach (Sniper)
+L|7720587|suspension|suspension_section|s1:medic:hard|Suspension: Hard - Section 1: The Approach (Medic)
+L|7720588|suspension|suspension_section|s1:engineer:hard|Suspension: Hard - Section 1: The Approach (Engineer)
+L|7720589|suspension|suspension_section|s1:jugger:hard|Suspension: Hard - Section 1: The Approach (Juggernaut)
+L|7720590|suspension|suspension_section|s2::hard|Suspension: Hard - Section 2: The APC
+L|7720591|suspension|suspension_section|s2:soldier:hard|Suspension: Hard - Section 2: The APC (Soldier)
+L|7720592|suspension|suspension_section|s2:gl_soldier:hard|Suspension: Hard - Section 2: The APC (GL Soldier)
+L|7720593|suspension|suspension_section|s2:shotty:hard|Suspension: Hard - Section 2: The APC (Shotgunner)
+L|7720594|suspension|suspension_section|s2:saw:hard|Suspension: Hard - Section 2: The APC (SAW Gunner)
+L|7720595|suspension|suspension_section|s2:sniper:hard|Suspension: Hard - Section 2: The APC (Sniper)
+L|7720596|suspension|suspension_section|s2:medic:hard|Suspension: Hard - Section 2: The APC (Medic)
+L|7720597|suspension|suspension_section|s2:engineer:hard|Suspension: Hard - Section 2: The APC (Engineer)
+L|7720598|suspension|suspension_section|s2:jugger:hard|Suspension: Hard - Section 2: The APC (Juggernaut)
+L|7720599|suspension|suspension_section|s3::hard|Suspension: Hard - Section 3: The Helipad
+L|7720600|suspension|suspension_section|s3:soldier:hard|Suspension: Hard - Section 3: The Helipad (Soldier)
+L|7720601|suspension|suspension_section|s3:gl_soldier:hard|Suspension: Hard - Section 3: The Helipad (GL Soldier)
+L|7720602|suspension|suspension_section|s3:shotty:hard|Suspension: Hard - Section 3: The Helipad (Shotgunner)
+L|7720603|suspension|suspension_section|s3:saw:hard|Suspension: Hard - Section 3: The Helipad (SAW Gunner)
+L|7720604|suspension|suspension_section|s3:sniper:hard|Suspension: Hard - Section 3: The Helipad (Sniper)
+L|7720605|suspension|suspension_section|s3:medic:hard|Suspension: Hard - Section 3: The Helipad (Medic)
+L|7720606|suspension|suspension_section|s3:engineer:hard|Suspension: Hard - Section 3: The Helipad (Engineer)
+L|7720607|suspension|suspension_section|s3:jugger:hard|Suspension: Hard - Section 3: The Helipad (Juggernaut)
+L|7720608|suspension|suspension_section|s4::hard|Suspension: Hard - Section 4: The Tank
+L|7720609|suspension|suspension_section|s4:soldier:hard|Suspension: Hard - Section 4: The Tank (Soldier)
+L|7720610|suspension|suspension_section|s4:gl_soldier:hard|Suspension: Hard - Section 4: The Tank (GL Soldier)
+L|7720611|suspension|suspension_section|s4:shotty:hard|Suspension: Hard - Section 4: The Tank (Shotgunner)
+L|7720612|suspension|suspension_section|s4:saw:hard|Suspension: Hard - Section 4: The Tank (SAW Gunner)
+L|7720613|suspension|suspension_section|s4:sniper:hard|Suspension: Hard - Section 4: The Tank (Sniper)
+L|7720614|suspension|suspension_section|s4:medic:hard|Suspension: Hard - Section 4: The Tank (Medic)
+L|7720615|suspension|suspension_section|s4:engineer:hard|Suspension: Hard - Section 4: The Tank (Engineer)
+L|7720616|suspension|suspension_section|s4:jugger:hard|Suspension: Hard - Section 4: The Tank (Juggernaut)
+L|7720617|suspension|suspension_section|s5::hard|Suspension: Hard - Section 5: The Apache
+L|7720618|suspension|suspension_section|s5:soldier:hard|Suspension: Hard - Section 5: The Apache (Soldier)
+L|7720619|suspension|suspension_section|s5:gl_soldier:hard|Suspension: Hard - Section 5: The Apache (GL Soldier)
+L|7720620|suspension|suspension_section|s5:shotty:hard|Suspension: Hard - Section 5: The Apache (Shotgunner)
+L|7720621|suspension|suspension_section|s5:saw:hard|Suspension: Hard - Section 5: The Apache (SAW Gunner)
+L|7720622|suspension|suspension_section|s5:sniper:hard|Suspension: Hard - Section 5: The Apache (Sniper)
+L|7720623|suspension|suspension_section|s5:medic:hard|Suspension: Hard - Section 5: The Apache (Medic)
+L|7720624|suspension|suspension_section|s5:engineer:hard|Suspension: Hard - Section 5: The Apache (Engineer)
+L|7720625|suspension|suspension_section|s5:jugger:hard|Suspension: Hard - Section 5: The Apache (Juggernaut)
+L|7720626|suspension|suspension_section|s6::hard|Suspension: Hard - Section 6: The Flag
+L|7720627|suspension|suspension_section|s6:soldier:hard|Suspension: Hard - Section 6: The Flag (Soldier)
+L|7720628|suspension|suspension_section|s6:gl_soldier:hard|Suspension: Hard - Section 6: The Flag (GL Soldier)
+L|7720629|suspension|suspension_section|s6:shotty:hard|Suspension: Hard - Section 6: The Flag (Shotgunner)
+L|7720630|suspension|suspension_section|s6:saw:hard|Suspension: Hard - Section 6: The Flag (SAW Gunner)
+L|7720631|suspension|suspension_section|s6:sniper:hard|Suspension: Hard - Section 6: The Flag (Sniper)
+L|7720632|suspension|suspension_section|s6:medic:hard|Suspension: Hard - Section 6: The Flag (Medic)
+L|7720633|suspension|suspension_section|s6:engineer:hard|Suspension: Hard - Section 6: The Flag (Engineer)
+L|7720634|suspension|suspension_section|s6:jugger:hard|Suspension: Hard - Section 6: The Flag (Juggernaut)
+L|7720635|suspension|suspension_section|s7::hard|Suspension: Hard - Section 7: The Counterattack
+L|7720636|suspension|suspension_section|s7:soldier:hard|Suspension: Hard - Section 7: The Counterattack (Soldier)
+L|7720637|suspension|suspension_section|s7:gl_soldier:hard|Suspension: Hard - Section 7: The Counterattack (GL Soldier)
+L|7720638|suspension|suspension_section|s7:shotty:hard|Suspension: Hard - Section 7: The Counterattack (Shotgunner)
+L|7720639|suspension|suspension_section|s7:saw:hard|Suspension: Hard - Section 7: The Counterattack (SAW Gunner)
+L|7720640|suspension|suspension_section|s7:sniper:hard|Suspension: Hard - Section 7: The Counterattack (Sniper)
+L|7720641|suspension|suspension_section|s7:medic:hard|Suspension: Hard - Section 7: The Counterattack (Medic)
+L|7720642|suspension|suspension_section|s7:engineer:hard|Suspension: Hard - Section 7: The Counterattack (Engineer)
+L|7720643|suspension|suspension_section|s7:jugger:hard|Suspension: Hard - Section 7: The Counterattack (Juggernaut)
+L|7720644|suspension|suspension_section|s8::hard|Suspension: Hard - Section 8: The Assassin
+L|7720645|suspension|suspension_section|s8:soldier:hard|Suspension: Hard - Section 8: The Assassin (Soldier)
+L|7720646|suspension|suspension_section|s8:gl_soldier:hard|Suspension: Hard - Section 8: The Assassin (GL Soldier)
+L|7720647|suspension|suspension_section|s8:shotty:hard|Suspension: Hard - Section 8: The Assassin (Shotgunner)
+L|7720648|suspension|suspension_section|s8:saw:hard|Suspension: Hard - Section 8: The Assassin (SAW Gunner)
+L|7720649|suspension|suspension_section|s8:sniper:hard|Suspension: Hard - Section 8: The Assassin (Sniper)
+L|7720650|suspension|suspension_section|s8:medic:hard|Suspension: Hard - Section 8: The Assassin (Medic)
+L|7720651|suspension|suspension_section|s8:engineer:hard|Suspension: Hard - Section 8: The Assassin (Engineer)
+L|7720652|suspension|suspension_section|s8:jugger:hard|Suspension: Hard - Section 8: The Assassin (Juggernaut)
+L|7720653|suspension|suspension_section|s1::insane|Suspension: Insane - Section 1: The Approach
+L|7720654|suspension|suspension_section|s1:soldier:insane|Suspension: Insane - Section 1: The Approach (Soldier)
+L|7720655|suspension|suspension_section|s1:gl_soldier:insane|Suspension: Insane - Section 1: The Approach (GL Soldier)
+L|7720656|suspension|suspension_section|s1:shotty:insane|Suspension: Insane - Section 1: The Approach (Shotgunner)
+L|7720657|suspension|suspension_section|s1:saw:insane|Suspension: Insane - Section 1: The Approach (SAW Gunner)
+L|7720658|suspension|suspension_section|s1:sniper:insane|Suspension: Insane - Section 1: The Approach (Sniper)
+L|7720659|suspension|suspension_section|s1:medic:insane|Suspension: Insane - Section 1: The Approach (Medic)
+L|7720660|suspension|suspension_section|s1:engineer:insane|Suspension: Insane - Section 1: The Approach (Engineer)
+L|7720661|suspension|suspension_section|s1:jugger:insane|Suspension: Insane - Section 1: The Approach (Juggernaut)
+L|7720662|suspension|suspension_section|s2::insane|Suspension: Insane - Section 2: The APC
+L|7720663|suspension|suspension_section|s2:soldier:insane|Suspension: Insane - Section 2: The APC (Soldier)
+L|7720664|suspension|suspension_section|s2:gl_soldier:insane|Suspension: Insane - Section 2: The APC (GL Soldier)
+L|7720665|suspension|suspension_section|s2:shotty:insane|Suspension: Insane - Section 2: The APC (Shotgunner)
+L|7720666|suspension|suspension_section|s2:saw:insane|Suspension: Insane - Section 2: The APC (SAW Gunner)
+L|7720667|suspension|suspension_section|s2:sniper:insane|Suspension: Insane - Section 2: The APC (Sniper)
+L|7720668|suspension|suspension_section|s2:medic:insane|Suspension: Insane - Section 2: The APC (Medic)
+L|7720669|suspension|suspension_section|s2:engineer:insane|Suspension: Insane - Section 2: The APC (Engineer)
+L|7720670|suspension|suspension_section|s2:jugger:insane|Suspension: Insane - Section 2: The APC (Juggernaut)
+L|7720671|suspension|suspension_section|s3::insane|Suspension: Insane - Section 3: The Helipad
+L|7720672|suspension|suspension_section|s3:soldier:insane|Suspension: Insane - Section 3: The Helipad (Soldier)
+L|7720673|suspension|suspension_section|s3:gl_soldier:insane|Suspension: Insane - Section 3: The Helipad (GL Soldier)
+L|7720674|suspension|suspension_section|s3:shotty:insane|Suspension: Insane - Section 3: The Helipad (Shotgunner)
+L|7720675|suspension|suspension_section|s3:saw:insane|Suspension: Insane - Section 3: The Helipad (SAW Gunner)
+L|7720676|suspension|suspension_section|s3:sniper:insane|Suspension: Insane - Section 3: The Helipad (Sniper)
+L|7720677|suspension|suspension_section|s3:medic:insane|Suspension: Insane - Section 3: The Helipad (Medic)
+L|7720678|suspension|suspension_section|s3:engineer:insane|Suspension: Insane - Section 3: The Helipad (Engineer)
+L|7720679|suspension|suspension_section|s3:jugger:insane|Suspension: Insane - Section 3: The Helipad (Juggernaut)
+L|7720680|suspension|suspension_section|s4::insane|Suspension: Insane - Section 4: The Tank
+L|7720681|suspension|suspension_section|s4:soldier:insane|Suspension: Insane - Section 4: The Tank (Soldier)
+L|7720682|suspension|suspension_section|s4:gl_soldier:insane|Suspension: Insane - Section 4: The Tank (GL Soldier)
+L|7720683|suspension|suspension_section|s4:shotty:insane|Suspension: Insane - Section 4: The Tank (Shotgunner)
+L|7720684|suspension|suspension_section|s4:saw:insane|Suspension: Insane - Section 4: The Tank (SAW Gunner)
+L|7720685|suspension|suspension_section|s4:sniper:insane|Suspension: Insane - Section 4: The Tank (Sniper)
+L|7720686|suspension|suspension_section|s4:medic:insane|Suspension: Insane - Section 4: The Tank (Medic)
+L|7720687|suspension|suspension_section|s4:engineer:insane|Suspension: Insane - Section 4: The Tank (Engineer)
+L|7720688|suspension|suspension_section|s4:jugger:insane|Suspension: Insane - Section 4: The Tank (Juggernaut)
+L|7720689|suspension|suspension_section|s5::insane|Suspension: Insane - Section 5: The Apache
+L|7720690|suspension|suspension_section|s5:soldier:insane|Suspension: Insane - Section 5: The Apache (Soldier)
+L|7720691|suspension|suspension_section|s5:gl_soldier:insane|Suspension: Insane - Section 5: The Apache (GL Soldier)
+L|7720692|suspension|suspension_section|s5:shotty:insane|Suspension: Insane - Section 5: The Apache (Shotgunner)
+L|7720693|suspension|suspension_section|s5:saw:insane|Suspension: Insane - Section 5: The Apache (SAW Gunner)
+L|7720694|suspension|suspension_section|s5:sniper:insane|Suspension: Insane - Section 5: The Apache (Sniper)
+L|7720695|suspension|suspension_section|s5:medic:insane|Suspension: Insane - Section 5: The Apache (Medic)
+L|7720696|suspension|suspension_section|s5:engineer:insane|Suspension: Insane - Section 5: The Apache (Engineer)
+L|7720697|suspension|suspension_section|s5:jugger:insane|Suspension: Insane - Section 5: The Apache (Juggernaut)
+L|7720698|suspension|suspension_section|s6::insane|Suspension: Insane - Section 6: The Flag
+L|7720699|suspension|suspension_section|s6:soldier:insane|Suspension: Insane - Section 6: The Flag (Soldier)
+L|7720700|suspension|suspension_section|s6:gl_soldier:insane|Suspension: Insane - Section 6: The Flag (GL Soldier)
+L|7720701|suspension|suspension_section|s6:shotty:insane|Suspension: Insane - Section 6: The Flag (Shotgunner)
+L|7720702|suspension|suspension_section|s6:saw:insane|Suspension: Insane - Section 6: The Flag (SAW Gunner)
+L|7720703|suspension|suspension_section|s6:sniper:insane|Suspension: Insane - Section 6: The Flag (Sniper)
+L|7720704|suspension|suspension_section|s6:medic:insane|Suspension: Insane - Section 6: The Flag (Medic)
+L|7720705|suspension|suspension_section|s6:engineer:insane|Suspension: Insane - Section 6: The Flag (Engineer)
+L|7720706|suspension|suspension_section|s6:jugger:insane|Suspension: Insane - Section 6: The Flag (Juggernaut)
+L|7720707|suspension|suspension_section|s7::insane|Suspension: Insane - Section 7: The Counterattack
+L|7720708|suspension|suspension_section|s7:soldier:insane|Suspension: Insane - Section 7: The Counterattack (Soldier)
+L|7720709|suspension|suspension_section|s7:gl_soldier:insane|Suspension: Insane - Section 7: The Counterattack (GL Soldier)
+L|7720710|suspension|suspension_section|s7:shotty:insane|Suspension: Insane - Section 7: The Counterattack (Shotgunner)
+L|7720711|suspension|suspension_section|s7:saw:insane|Suspension: Insane - Section 7: The Counterattack (SAW Gunner)
+L|7720712|suspension|suspension_section|s7:sniper:insane|Suspension: Insane - Section 7: The Counterattack (Sniper)
+L|7720713|suspension|suspension_section|s7:medic:insane|Suspension: Insane - Section 7: The Counterattack (Medic)
+L|7720714|suspension|suspension_section|s7:engineer:insane|Suspension: Insane - Section 7: The Counterattack (Engineer)
+L|7720715|suspension|suspension_section|s7:jugger:insane|Suspension: Insane - Section 7: The Counterattack (Juggernaut)
+L|7720716|suspension|suspension_section|s8::insane|Suspension: Insane - Section 8: The Assassin
+L|7720717|suspension|suspension_section|s8:soldier:insane|Suspension: Insane - Section 8: The Assassin (Soldier)
+L|7720718|suspension|suspension_section|s8:gl_soldier:insane|Suspension: Insane - Section 8: The Assassin (GL Soldier)
+L|7720719|suspension|suspension_section|s8:shotty:insane|Suspension: Insane - Section 8: The Assassin (Shotgunner)
+L|7720720|suspension|suspension_section|s8:saw:insane|Suspension: Insane - Section 8: The Assassin (SAW Gunner)
+L|7720721|suspension|suspension_section|s8:sniper:insane|Suspension: Insane - Section 8: The Assassin (Sniper)
+L|7720722|suspension|suspension_section|s8:medic:insane|Suspension: Insane - Section 8: The Assassin (Medic)
+L|7720723|suspension|suspension_section|s8:engineer:insane|Suspension: Insane - Section 8: The Assassin (Engineer)
+L|7720724|suspension|suspension_section|s8:jugger:insane|Suspension: Insane - Section 8: The Assassin (Juggernaut)
+L|7720725|suspension|suspension_clear|:easy|Suspension: Easy - Bridge Retaken
+L|7720726|suspension|suspension_clear|soldier:easy|Suspension: Easy - Bridge Retaken (Soldier)
+L|7720727|suspension|suspension_clear|gl_soldier:easy|Suspension: Easy - Bridge Retaken (GL Soldier)
+L|7720728|suspension|suspension_clear|shotty:easy|Suspension: Easy - Bridge Retaken (Shotgunner)
+L|7720729|suspension|suspension_clear|saw:easy|Suspension: Easy - Bridge Retaken (SAW Gunner)
+L|7720730|suspension|suspension_clear|sniper:easy|Suspension: Easy - Bridge Retaken (Sniper)
+L|7720731|suspension|suspension_clear|medic:easy|Suspension: Easy - Bridge Retaken (Medic)
+L|7720732|suspension|suspension_clear|engineer:easy|Suspension: Easy - Bridge Retaken (Engineer)
+L|7720733|suspension|suspension_clear|jugger:easy|Suspension: Easy - Bridge Retaken (Juggernaut)
+L|7720734|suspension|suspension_clear|:medium|Suspension: Medium - Bridge Retaken
+L|7720735|suspension|suspension_clear|soldier:medium|Suspension: Medium - Bridge Retaken (Soldier)
+L|7720736|suspension|suspension_clear|gl_soldier:medium|Suspension: Medium - Bridge Retaken (GL Soldier)
+L|7720737|suspension|suspension_clear|shotty:medium|Suspension: Medium - Bridge Retaken (Shotgunner)
+L|7720738|suspension|suspension_clear|saw:medium|Suspension: Medium - Bridge Retaken (SAW Gunner)
+L|7720739|suspension|suspension_clear|sniper:medium|Suspension: Medium - Bridge Retaken (Sniper)
+L|7720740|suspension|suspension_clear|medic:medium|Suspension: Medium - Bridge Retaken (Medic)
+L|7720741|suspension|suspension_clear|engineer:medium|Suspension: Medium - Bridge Retaken (Engineer)
+L|7720742|suspension|suspension_clear|jugger:medium|Suspension: Medium - Bridge Retaken (Juggernaut)
+L|7720743|suspension|suspension_clear|:hard|Suspension: Hard - Bridge Retaken
+L|7720744|suspension|suspension_clear|soldier:hard|Suspension: Hard - Bridge Retaken (Soldier)
+L|7720745|suspension|suspension_clear|gl_soldier:hard|Suspension: Hard - Bridge Retaken (GL Soldier)
+L|7720746|suspension|suspension_clear|shotty:hard|Suspension: Hard - Bridge Retaken (Shotgunner)
+L|7720747|suspension|suspension_clear|saw:hard|Suspension: Hard - Bridge Retaken (SAW Gunner)
+L|7720748|suspension|suspension_clear|sniper:hard|Suspension: Hard - Bridge Retaken (Sniper)
+L|7720749|suspension|suspension_clear|medic:hard|Suspension: Hard - Bridge Retaken (Medic)
+L|7720750|suspension|suspension_clear|engineer:hard|Suspension: Hard - Bridge Retaken (Engineer)
+L|7720751|suspension|suspension_clear|jugger:hard|Suspension: Hard - Bridge Retaken (Juggernaut)
+L|7720752|suspension|suspension_clear|:insane|Suspension: Insane - Bridge Retaken
+L|7720753|suspension|suspension_clear|soldier:insane|Suspension: Insane - Bridge Retaken (Soldier)
+L|7720754|suspension|suspension_clear|gl_soldier:insane|Suspension: Insane - Bridge Retaken (GL Soldier)
+L|7720755|suspension|suspension_clear|shotty:insane|Suspension: Insane - Bridge Retaken (Shotgunner)
+L|7720756|suspension|suspension_clear|saw:insane|Suspension: Insane - Bridge Retaken (SAW Gunner)
+L|7720757|suspension|suspension_clear|sniper:insane|Suspension: Insane - Bridge Retaken (Sniper)
+L|7720758|suspension|suspension_clear|medic:insane|Suspension: Insane - Bridge Retaken (Medic)
+L|7720759|suspension|suspension_clear|engineer:insane|Suspension: Insane - Bridge Retaken (Engineer)
+L|7720760|suspension|suspension_clear|jugger:insane|Suspension: Insane - Bridge Retaken (Juggernaut)
+L|7720761|suspension|suspension_award|platinum:easy|Suspension: Easy - Platinum Award
+L|7720762|suspension|suspension_award|gold:easy|Suspension: Easy - Gold Award
+L|7720763|suspension|suspension_award|silver:easy|Suspension: Easy - Silver Award
+L|7720764|suspension|suspension_award|bronze:easy|Suspension: Easy - Bronze Award
+L|7720765|suspension|suspension_award|stone:easy|Suspension: Easy - Stone Award
+L|7720766|suspension|suspension_award|noob:easy|Suspension: Easy - N00b Award
+L|7720767|suspension|suspension_award|platinum:medium|Suspension: Medium - Platinum Award
+L|7720768|suspension|suspension_award|gold:medium|Suspension: Medium - Gold Award
+L|7720769|suspension|suspension_award|silver:medium|Suspension: Medium - Silver Award
+L|7720770|suspension|suspension_award|bronze:medium|Suspension: Medium - Bronze Award
+L|7720771|suspension|suspension_award|stone:medium|Suspension: Medium - Stone Award
+L|7720772|suspension|suspension_award|noob:medium|Suspension: Medium - N00b Award
+L|7720773|suspension|suspension_award|platinum:hard|Suspension: Hard - Platinum Award
+L|7720774|suspension|suspension_award|gold:hard|Suspension: Hard - Gold Award
+L|7720775|suspension|suspension_award|silver:hard|Suspension: Hard - Silver Award
+L|7720776|suspension|suspension_award|bronze:hard|Suspension: Hard - Bronze Award
+L|7720777|suspension|suspension_award|stone:hard|Suspension: Hard - Stone Award
+L|7720778|suspension|suspension_award|noob:hard|Suspension: Hard - N00b Award
+L|7720779|suspension|suspension_award|platinum:insane|Suspension: Insane - Platinum Award
+L|7720780|suspension|suspension_award|gold:insane|Suspension: Insane - Gold Award
+L|7720781|suspension|suspension_award|silver:insane|Suspension: Insane - Silver Award
+L|7720782|suspension|suspension_award|bronze:insane|Suspension: Insane - Bronze Award
+L|7720783|suspension|suspension_award|stone:insane|Suspension: Insane - Stone Award
+L|7720784|suspension|suspension_award|noob:insane|Suspension: Insane - N00b Award
+X|suspension|Suspension|suspension|jugger|start_events|end_script
+Y|suspension|easy|Easy|50|vote_button4|win_red_tickets
+Y|suspension|medium|Medium|25|vote_button3|win_blue_tickets
+Y|suspension|hard|Hard|10|vote_button2|win_yellow_tickets
+Y|suspension|insane|Insane|1|vote_button1|win_white_tickets
+Z|suspension|s1|1|Section 1: The Approach|s2_events
+Z|suspension|s2|2|Section 2: The APC|s3_events
+Z|suspension|s3|3|Section 3: The Helipad|s4_events
+Z|suspension|s4|4|Section 4: The Tank|s5_events
+Z|suspension|s5|5|Section 5: The Apache|s6_events
+Z|suspension|s6|6|Section 6: The Flag|s6_captured_text
+Z|suspension|s7|7|Section 7: The Counterattack|s8_events
+Z|suspension|s8|8|Section 8: The Assassin|
+W|suspension|soldier|Soldier|class_soldier|soldier|0
+W|suspension|gl_soldier|GL Soldier|class_GL_soldier|GL_soldier|0
+W|suspension|shotty|Shotgunner|class_shotty|shotty|0
+W|suspension|saw|SAW Gunner|class_saw|saw|0
+W|suspension|sniper|Sniper|class_sniper|sniper|0
+W|suspension|medic|Medic|class_medic|medic|0
+W|suspension|engineer|Engineer|class_engineer|engineer|0
+W|suspension|jugger|Juggernaut|class_jugger|jugger|1
+A|suspension|platinum|Platinum|0
+A|suspension|gold|Gold|5
+A|suspension|silver|Silver|10
+A|suspension|bronze|Bronze|20
+A|suspension|stone|Stone|30
+A|suspension|noob|N00b|40
+J|suspension|pad|6224 -6912 88|6288 -6848 96
+J|suspension|portal|6256 -6064 144|6260 -6000 208
+G|suspension|hurt|jugger|trigger_hurt
+G|suspension|reveal|display_jugger_rdr|
+G|suspension|wall|jugger|func_wall_toggle
+E|suspension|jugger|health|200
+E|suspension|jugger|max_health|200
+E|suspension|jugger|armorvalue|200
+E|suspension|jugger|armortype|200
+E|suspension|jugger|model|models/player/OP4_Heavy/OP4_Heavy.mdl
+E|suspension|jugger|weapons|weapon_crowbar,weapon_uziakimbo,weapon_eagle
+E|suspension|jugger|ammo|ammo_357:3,ammo_556:1,ammo_9mmbox:1
+E|suspension|jugger|teleport|6256 -6880 96
 K|item_longjump|Long Jump Module
 K|item_suit|HEV Suit
 K|weapon_357|.357 Magnum

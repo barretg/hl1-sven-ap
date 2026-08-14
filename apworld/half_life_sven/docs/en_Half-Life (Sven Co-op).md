@@ -35,6 +35,33 @@ finale" setting, and the seed is won only when every campaign's finale is done.
 Their weapons go into one pool, so Opposing Force's displacer and They Hunger's
 tommy gun turn up in Black Mesa and the Tau cannon turns up in theirs.
 
+## What is Suspension?
+
+An arcade map Sven Co-op ships alongside the campaigns, and an optional extra in
+a seed: `suspension: true`. It is one map rather than a campaign — a class-based
+squad retaking a suspension bridge in eight sections, against waves that scale
+with how many players are in the lobby.
+
+Three things become checks. Each of the eight sections, per difficulty. Clearing
+a run, credited to whichever class you spent most of it as. And the medal at the
+end, scored on the team's total deaths: platinum for a flawless run down to n00b,
+with `suspension_required_award` deciding how far up the ladder goes. Medals
+always roll down, so a platinum run sends every lesser medal too and nobody has
+to die on purpose.
+
+Difficulty is the lobby's shared ticket pool — 50 on easy down to a single ticket
+on insane — and `Progressive Suspension Difficulty` items open the tiers in
+order, so a fresh seed can only vote easy. Seven of the eight classes are items;
+the eighth, the Juggernaut, opens per tier once a run has been cleared with each
+of the others, and a run cleared as the Juggernaut at your capped tier is a goal
+in its own right.
+
+`suspension_classanity` turns each section into a check *per class*, which is
+lobby-scale: eight players on eight different classes clear eight classes' worth
+in one run, where a solo player would need eight runs.
+
+There is no hub console for it. Type `!warp suspension`.
+
 ## What does randomization do to this game?
 
 The Sven Co-op campaign portal becomes a hub. Every mission is sealed until its
@@ -139,3 +166,7 @@ campaign has always given it to you.
 
 Kill Nihilanth. Its mission only opens once you have completed enough of the
 others, so the run is a tour of Black Mesa rather than a beeline.
+
+With several campaigns enabled it is every one of their finales, each behind its
+own count. With Suspension enabled it is those plus one more: a run of the bridge
+cleared as the Juggernaut, at the hardest tier your YAML allows.

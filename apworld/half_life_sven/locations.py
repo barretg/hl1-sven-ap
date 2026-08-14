@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from BaseClasses import Location
 
-from .data import CHAPTERS, LOCATIONS
+from .data import CHAPTERS, LOCATIONS, SUSPENSION_TRIGGERS
 
 location_table: dict[str, dict] = {entry["name"]: entry for entry in LOCATIONS}
 location_name_to_id: dict[str, int] = {entry["name"]: entry["id"] for entry in LOCATIONS}
@@ -27,6 +27,9 @@ location_name_groups["Chargers"] = {
 }
 location_name_groups["Kills"] = { # Unused for now
     e["name"] for e in LOCATIONS if e["trigger"]["type"] in ("kill", "kill_count")
+}
+location_name_groups["Suspension"] = {
+    e["name"] for e in LOCATIONS if e["trigger"]["type"] in SUSPENSION_TRIGGERS
 }
 
 

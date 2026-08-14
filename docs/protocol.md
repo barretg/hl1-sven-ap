@@ -67,7 +67,7 @@ If the file shrinks, the client treats it as a new game session and rewinds.
 | `HELLO\|<map>` | plugin started on this map; client replies with a forced snapshot |
 | `CHECK\|<location id>` | a location was collected |
 | `COMPLETE\|<chapter key>` | a mission was finished |
-| `GOAL\|<chapter key>` | Nihilanth is dead; client sends `StatusUpdate: CLIENT_GOAL` |
+| `GOAL\|<chapter key>` | a finale fell, or `suspension` for a run cleared as the Juggernaut at the capped tier; the client sends `StatusUpdate: CLIENT_GOAL` once every goal in the seed has had one |
 | `DEATH\|<player>\|<cause>\|<forgiven>` | a player died; sent unconditionally. `forgiven` is `1` when DeathLink amnesty absorbed it, so the client does not report it onward |
 | `CHAT\|<player>\|<message>` | in-game chat, for relaying to multiworld chat |
 | `ACK\|<seq>` | event consumed; client may drop it |
@@ -107,6 +107,26 @@ event=5|DEATHLINK|PlayerTwo~a gargantua|1786000001
 
 `chapters` and `excluded` are comma separated; `items` and `ungated` are
 semicolon separated because item names may legitimately contain commas.
+
+A seed containing Suspension adds seven more lines, and a seed without it adds
+none at all:
+
+```
+sus_on=1
+sus_classanity=0
+sus_rolldown=0
+sus_tiers=easy,medium,hard
+sus_awards=bronze,stone,noob
+sus_open=1
+sus_classes=medic,sniper
+```
+
+`sus_open` is a *count* — how many `Progressive Suspension Difficulty` items have
+arrived, and so the index of the hardest tier the lobby may vote for. It cannot
+ride in `items`, which is a set of names and can only say whether one arrived at
+all. `sus_tiers` is easiest first and `sus_awards` hardest first, and both are
+already narrowed to what the YAML asked for: a tier or a medal missing from these
+lists has no checks in this seed.
 
 `excluded` is the missions the seed left out. It is not the same as "locked": no
 item will ever unlock them, so the game reports "not in this seed" rather than
@@ -189,12 +209,37 @@ Pipe-delimited so AngelScript can parse it with a single `string.Split("|")`.
 
 | Record | Fields |
 | --- | --- |
-| `V` | format version (2 since campaigns; `M`, `P` and `C`'s last field are the additions, and all three are ignored harmlessly by an older plugin) |
+| `V` | format version (4 since the arcade map; every addition so far is ignored harmlessly by an older plugin) |
 | `M` | campaign key, name, goal chapter |
 | `C` | index, key, name, comma-separated maps, is_goal, campaign key |
 | `P` | hub console targetname, the chapter its button enters |
 | `L` | id, map, trigger type, trigger arg, name |
 | | `map_reached` has no arg; `chapter_complete` carries the chapter key; `charger` carries `<classname>:<brush model>`, e.g. `func_recharge:*79`, plus `@<origin>` when one brush carries two units; `weapon_pickup` carries the comma-separated classnames |
+| | `suspension_section` carries `<section>:<class>:<tier>`, `suspension_clear` carries `<class>:<tier>` and `suspension_award` carries `<medal>:<tier>`. An empty class is the classless variant a seed without classanity uses |
+| `K` | classname, item name — pickup refused until that item is held |
+| `S` | classname always granted (the crowbar and the medkit), the default a snapshot's `starting` may override |
+| `R` | classname, comma-separated campaigns whose maps it may be granted on |
+
+The arcade map adds its own records, all scoped by its key so a second one would
+not collide:
+
+| Record | Fields |
+| --- | --- |
+| `X` | key, name, map, goal class, start signal, end signal |
+| `Y` | arcade, tier key, name, tickets, vote button, ticket signal |
+| `Z` | arcade, section key, index, name, clear signal |
+| `W` | arcade, class key, name, the targetname the map gives the player, booth signal, map-gated |
+| `A` | arcade, medal key, name, most deaths that still earns it |
+| `J` | arcade, volume name, mins, maxs — a box the plugin watches |
+| `G` | arcade, part, targetname, classname — the Juggernaut seal |
+| `E` | arcade, class, field, value — how to grant a class without its booth |
+
+The signals on `Y`, `Z` and `X` are names the map already fires. The plugin
+creates its own `trigger_changevalue` entities answering to them at map start, so
+the map's own multi_managers advance the plugin's counters as a side effect of
+running normally. That is why none of this needs a hook the API does not have:
+a multi_manager fires targets by name, and `trigger_script` would resolve its
+function against the map's script rather than the plugin's.
 
 The optional seventh field on `L` is `x y z`, and it is what `!find` points at.
 Only the kinds that are a *place* carry one: a charger's brush-model centre
@@ -214,9 +259,6 @@ health chargers from `*196`, 80 units apart, and both can be drunk from. The
 offset one is keyed `func_healthcharger:*196@0 80 0`. Only shifted copies carry
 the suffix, so the plugin tries the offset form first and falls back to the plain
 one, and every charger id that existed before is untouched.
-| `K` | classname, item name — pickup refused until that item is held |
-| `S` | classname always granted (the crowbar and the medkit), the default a snapshot's `starting` may override |
-| `R` | classname, comma-separated campaigns whose maps it may be granted on |
 
 `R` exists because They Hunger's weapons are not weapons Sven Co-op ships. Its
 spanner, tommy gun, tesla gun and the rest are custom entities registered by
