@@ -118,13 +118,15 @@ void ShowStatus( CBasePlayer@ pPlayer )
 	// The arcade map is not a mission and has no number, so it is listed apart
 	// from them rather than being squeezed into the numbering. It has no hub
 	// console either, which makes `!warp` the only way in and worth saying here.
-	if( g_pArcade !is null )
+	//
+	// Left out entirely when the seed does not contain it, heading and all, for
+	// the same reason the excluded missions above are: a list of things that are
+	// not in this seed is not a list anybody wants.
+	if( g_pArcade !is null && g_Suspension.enabled )
 	{
-		string szArcade = g_Suspension.enabled ? "open" : "not in this seed";
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE, "-- Arcade\n" );
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
-			"-- Arcade\n" );
-		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
-			"  " + g_pArcade.name + "  [" + szArcade + "]  !warp " + g_pArcade.map + "\n" );
+			"  " + g_pArcade.name + "  [open]  !warp " + g_pArcade.map + "\n" );
 	}
 
 	// One line per call: the print buffer is 128 bytes and silently truncates.

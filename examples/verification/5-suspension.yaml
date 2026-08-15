@@ -1,9 +1,10 @@
-# Verification seed 5 of 5 — Suspension, none of which has run in game
+# Verification seed 5 of 5 — Suspension, second pass
 #
-# Covers every unchecked item in section 7:
-#   The counters, the section boundaries, the vote buttons, the Juggernaut,
-#   the medal, the lesser medals rolling down, per-class section checks,
-#   the majority-class clear, and GOAL|suspension.
+# The first pass found nearly all of this broken and stopped early. Everything
+# below has been changed since; none of it has passed yet. It covers all
+# thirteen open items in section 7, plus one from the retest list:
+#
+#   retest: Suspension is a seed of its own
 #
 # Capped at medium, so exactly one Progressive Suspension Difficulty item
 # exists and the lobby starts able to vote easy and nothing else. Every class is
@@ -12,29 +13,47 @@
 # that earn it are a logic rule, and waiting for them would mean seven full runs
 # before any of this could be tested at all.
 #
-# Order to work through, after !warp suspension:
+# Order to work through:
 #
-#   1. Vote buttons. Press all four in the lobby. Easy presses; medium, hard and
-#      insane all refuse with a message. Hard and insane are not in this seed at
-#      all, and must refuse for that reason rather than open.
-#   2. Start an easy round. The server console should show
+#   1. `!ap`. Suspension is listed under an Arcade heading with `!warp
+#      suspension` beside it, and there are no missions in the list at all --
+#      every campaign is off, so this seed is the bridge and nothing else.
+#   2. `!warp suspension`. This did not exist on the first pass.
+#   3. On arrival, chat names the difficulties and classes that are open.
+#      Everything is open here except medium, which is the one gated tier.
+#   4. Vote buttons. Easy is pressable. Medium, hard and insane are not there at
+#      all -- non-solid rather than refusing on use, because refusing printed the
+#      message and let the vote through underneath it.
+#   5. The lobby display. The Juggernaut icon replaces the "?" placeholder
+#      rather than drawing on top of it.
+#   6. Class booths. Every class is held in this seed, so all eight portals work.
+#      Take the Sniper: you keep the rifle. Nothing on this map is gated, so no
+#      weapon is stripped and no Half-Life weapon check fires from a class
+#      loadout.
+#   7. Start an easy round. The server console should show
 #         suspension: tier voted easy
-#      If it never does, the counters are not being driven and nothing else in
-#      this section can pass. That is the one assumption everything rests on.
-#   3. Watch each section fall and confirm the check lands with it, not one
-#      section early or late.
-#   4. Switch class between sections, at least once. Each section check must name
-#      the class you were holding for *that* section.
-#   5. Walk the Juggernaut portal. It should grant the class on the spot even on
-#      easy, seal behind you, and refuse a second player. Check the restock
-#      stations still resupply you.
-#   6. Finish the round. The medal must match the team's death count, every
-#      lesser medal must arrive with it, and your clear must be credited to
-#      whichever class you spent most of the run as.
-#   7. From the Archipelago server console:  /send Ver5Suspension Progressive Suspension Difficulty
-#      Medium now votes.
-#   8. Clear a medium round as the Juggernaut. That is the capped tier, so it
+#      If it never does, the counters are not being driven and nothing else here
+#      can pass. That is the one assumption everything rests on.
+#   8. Watch each section fall and confirm the check lands with it, not one
+#      section early or late, and that it names the class you were holding for
+#      *that* section. The names are the lobby's: Assault, Grenadier, Pointman,
+#      Support, Sniper, Medic, Engineer, Juggernaut.
+#   9. Switch class between sections at least once. The section checks follow
+#      what you were holding at the time; nothing is credited retroactively.
+#  10. Walk the Juggernaut portal. It grants the class on the spot even on easy,
+#      seals behind you, and refuses a second player. The restock stations must
+#      still resupply you.
+#  11. Finish the round. The medal matches the team's death count, every lesser
+#      medal arrives with it, and your clear is credited to whichever class you
+#      spent most of the run as.
+#  12. From the Archipelago server console:
+#         /send Ver5Suspension Progressive Suspension Difficulty
+#      The medium button appears without a map reload.
+#  13. Clear a medium round as the Juggernaut. That is the capped tier, so it
 #      must send GOAL|suspension.
+#
+# Also worth a glance while you are here: dying must not gib the rest of the
+# lobby, since this seed has DeathLink off.
 #
 # Every campaign is off. A seed normally falls back to Half-Life when nothing is
 # enabled, but Suspension counts as content in its own right, so this is a seed

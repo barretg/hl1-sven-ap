@@ -7,6 +7,7 @@
 | Bridge protocol | `pytest tests/test_bridge.py` | passing |
 | Data consistency (`data/` ↔ `checkdata.txt`) | `pytest tests/test_campaign_data.py` | passing |
 | Suspension data and its checkdata records | `pytest tests/test_suspension_data.py` | passing |
+| AngelScript source rules (API calls, record guards, exemptions that regressed) | `pytest tests/test_plugin_source.py` | passing |
 | Suspension generation | `ArchipelagoGenerate` at the easy cap and at the insane cap with classanity, platinum and priority medals | passing |
 | Suspension in-game | — | first pass 08/14/26 found it broken; fixed and awaiting a retest |
 | World generation, AP 0.6.7 | `ArchipelagoGenerate` on real seeds | passing |
@@ -434,6 +435,8 @@ Fixed and awaiting a retest, in the order they were found:
   the server started on it.
 - Both pending-state writes now log loudly when they fail. A silent failure of
   the hub-return write is what a phantom check looks like from the outside.
+- A death wiped the lobby even with DeathLink switched off. The wipe *is* the
+  DeathLink; only the report to the client was ever meant to be unconditional.
 
 ### 0. Campaigns, first
 
@@ -459,6 +462,9 @@ Fixed and awaiting a retest, in the order they were found:
 ### 5. DeathLink
 
 - [ ] Kill four players with one explosion → still exactly one DeathLink.
+- [ ] **With `death_link: false`, dying takes nobody with you.** The death is
+  still reported to the client, which is what lets it decide, but the lobby wipe
+  is the DeathLink and a seed without one must not have it.
 
 ### Fixed since the first pass, needs a retest
 
@@ -467,6 +473,16 @@ Fixed and awaiting a retest, in the order they were found:
   Walk over the copy lying in the world: it sends.
 - [ ] **Loadout ammo arrives in one step**, at half of each weapon's maximum, and
   a respawn is one pickup sound per weapon rather than a long crawl.
+- [ ] **Standing still costs nothing.** Fire a few shots, then stand about for a
+  minute, then reload. No ammo arrives. Two separate faults did this:
+  the loadout topped up every weapon held rather than the ones it had just
+  granted, and it asked whether a player held a gun by one classname when the
+  gun has two — so the Glock, MP5 and SAW were handed over again every sweep,
+  each grant bringing a clip with it. The glock's tell was 17 rounds at a time
+  up to its 250 cap, and a refill the moment it was fired.
+  A burst of ammo out of nowhere is now either a run of `Ammo Cache` filler
+  draining from the event backlog, which is what that item does, or one of
+  these regressing.
 - [ ] **Missions the seed left out are absent from `!ap`**, campaign headings and
   all, rather than listed as "not in this seed".
 - [ ] **Releasing a mission's completion from the server console applies in
@@ -501,7 +517,9 @@ Fixed and awaiting a retest, in the order they were found:
    than `s7_apc_start`, because the latter is delayed twenty seconds.
 - [ ] **You can get there at all.** `!ap` lists Suspension under an Arcade
   heading with `!warp suspension` beside it, and that warp works from the hub.
-  It is not a mission and has no console, so this is the only way in.
+  It is not a mission and has no console, so this is the only way in. On a seed
+  without it the heading is absent entirely — `!warp suspension` is the one place
+  that still answers "not in this seed", because there it is a direct question.
 - [ ] **The class names match the lobby signs.** Assault, Grenadier, Pointman,
   Support, Sniper, Medic, Engineer, Juggernaut. The map's entities are named
   differently (`shotty` is Pointman) and the checks must read as the signs do.

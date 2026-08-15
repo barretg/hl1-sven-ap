@@ -1,15 +1,20 @@
 /*
 * DeathLink.
 *
-* The rule is the same regardless of where the death came from: any death is
-* everyone's death. A player dying locally gibs the rest of the lobby and sends
-* one DeathLink out; a DeathLink arriving from the multiworld gibs the lobby.
+* In a seed with DeathLink on, the rule is the same regardless of where the death
+* came from: any death is everyone's death. A player dying locally gibs the rest
+* of the lobby and sends one DeathLink out; a DeathLink arriving from the
+* multiworld gibs the lobby.
 *
-* The only thing standing between that and an infinite cascade is
+* With DeathLink off, none of that happens. The death is still reported to the
+* client -- that is how the client decides anything at all -- but the wipe is the
+* DeathLink, and a seed without one must not have it.
+*
+* The only thing standing between the wipe and an infinite cascade is
 * g_flDeathLinkImmuneUntil, which is always set *before* the wipe runs.
 *
 * Amnesty (see ForgiveDeath) can hold a local death back from the multiworld. It
-* never holds back the wipe.
+* never holds back a wipe that is going to happen anyway.
 */
 
 // Long enough to cover the gibs we cause and a co-op wipe from one explosion,
@@ -155,6 +160,18 @@ HookReturnCode PlayerKilled( CBasePlayer@ pPlayer, CBaseEntity@ pAttacker, int i
 	// swallows deaths, with nothing in either log to say why. The amnesty flag is
 	// advice the client applies on top of that.
 	BridgeSend( "DEATH|" + szName + "|" + szCause + "|" + ( bForgiven ? "1" : "0" ) );
+
+	// Taking the lobby with them is the DeathLink itself, and a seed without
+	// DeathLink must not have one. Reporting the death is unconditional because
+	// the client decides what it means; wiping the lobby is a local effect and
+	// there is nothing for it to mean when the option is off.
+	//
+	// Gating on our cached copy of the flag is right here where it is wrong for
+	// the report above: a stale `true` costs one wipe that should not have
+	// happened, where a stale `false` on the report would silently swallow a
+	// death for good.
+	if( !g_State.deathLink )
+		return HOOK_CONTINUE;
 
 	string szReason = szName + " died (" + szCause + ") and took everyone along.";
 	if( bForgiven )

@@ -1,8 +1,14 @@
 # Verification seed 4 of 5 — DeathLink, two slots
 #
-# Covers these unchecked items in docs/verification.md:
+# From "Still open — 08/14/26":
+#
 #   5. One explosion killing several players still sends exactly one DeathLink
-#   5. /amnesty 0 in the client makes the very next death go straight out
+#
+# The other open DeathLink item -- that with `death_link: false` a death takes
+# nobody with it -- cannot be tested here, because both slots below have it on.
+# Every other seed in this folder has it off, so it is checked there: die on
+# seed 1, 2, 3 or 5 and nobody else in the lobby should be gibbed. The wipe was
+# happening regardless of the option, which is the bug that item guards.
 #
 # Two documents, so one generation gives two slots on DeathLink. Both start with
 # an RPG and a mission to stand around in, because the test is a single explosion
@@ -18,6 +24,8 @@
 # The checklist says four players; two is enough to prove the same thing, since
 # what is being tested is one report per event rather than per corpse. Add more
 # players to the lobby if you have them.
+#
+# Steps 1 to 3 have already passed; step 4 is the one still open.
 
 name: Ver4DeathA
 description: DeathLink slot A

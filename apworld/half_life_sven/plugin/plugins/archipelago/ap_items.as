@@ -138,6 +138,40 @@ bool HasItem( CBasePlayer@ pPlayer, const string& in szClassname )
 	return false;
 }
 
+/*
+* Does the player already hold this weapon under any of its names?
+*
+* Three items are one gun with two classnames -- Glock is `weapon_9mmhandgun`
+* and `weapon_glock`, MP5 is `weapon_9mmAR` and `weapon_m16`, SAW is
+* `weapon_m249` and `weapon_saw`. A player carrying one of the pair does not
+* have the other by name, so asking `HasItem` about it answered no and the
+* loadout handed the same gun over again on every sweep. No second weapon
+* appeared -- the engine will not stack one -- but each grant brought a clip of
+* ammo with it, so a glock climbed seventeen rounds a second to its cap and
+* refilled itself the moment it was fired.
+*/
+bool HasWeaponUnderAnyName( CBasePlayer@ pPlayer, const string& in szClassname )
+{
+	if( HasItem( pPlayer, szClassname ) )
+		return true;
+
+	string szItem;
+	if( !g_LockedClassnames.get( szClassname, szItem ) )
+		return false;
+
+	array<string>@ classnames = g_LockedClassnames.getKeys();
+	for( uint i = 0; i < classnames.length(); ++i )
+	{
+		string szOther;
+		if( !g_LockedClassnames.get( classnames[i], szOther ) || szOther != szItem )
+			continue;
+		if( HasItem( pPlayer, classnames[i] ) )
+			return true;
+	}
+
+	return false;
+}
+
 /* Take away anything the multiworld has not granted, and nothing else. */
 void StripDisallowed( CBasePlayer@ pPlayer )
 {
@@ -207,6 +241,10 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 	if( !ClassnameUngated( LONGJUMP_CLASSNAME ) )
 		SetLongJump( pPlayer, ClassnameAllowed( LONGJUMP_CLASSNAME ) );
 
+	// What this call actually handed over, which is the only thing whose ammo is
+	// ours to set.
+	array<string> granted;
+
 	array<string> allowed = AllowedClassnames();
 	for( uint i = 0; i < allowed.length(); ++i )
 	{
@@ -231,26 +269,44 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		if( WeaponWithheld( pPlayer, szClassname ) )
 			continue;
 
-		if( !HasItem( pPlayer, szClassname ) )
-			pPlayer.GiveNamedItem( szClassname );
+		// Under *any* of its names. One gun with two classnames was being handed
+		// over once a second, a clip of ammo at a time.
+		if( HasWeaponUnderAnyName( pPlayer, szClassname ) )
+			continue;
+
+		pPlayer.GiveNamedItem( szClassname );
+		granted.insertLast( szClassname );
 	}
 
-	SetLoadoutAmmo( pPlayer );
+	// Only for what was just handed over. This runs from the one-second sweep as
+	// well as from a spawn, so topping up everything held would refill a weapon
+	// the player had been firing, every second, for the whole run -- infinite
+	// ammo with a pickup sound attached.
+	if( granted.length() > 0 )
+		SetLoadoutAmmo( pPlayer, granted );
 }
 
 /*
-* Bring every held weapon up to half its maximum ammo, once.
+* Bring weapons this call just handed over up to half their maximum ammo.
 *
 * `GiveNamedItem` hands over a weapon's default ammo along with the weapon, and
 * the defaults are wildly uneven -- a glock arrives near full, a revolver with
-* six. Worse, each grant is its own pickup, so a player respawning with ten
-* weapons hears ten pickups and watches the counters crawl up one grant at a
-* time.
+* six. Half of maximum is the loadout's own rule, applied in one step.
 *
-* Half of maximum is the loadout's own rule, applied in one step per weapon and
-* only upward: a player who has been husbanding ammo keeps what they have.
+* `granted` is what makes it a loadout rule rather than a refill. ApplyLoadout
+* runs on a one-second sweep, so anything that tops up every weapon held would
+* be handing back the ammo a player had just fired, once a second, for as long
+* as they stood there.
 */
-void SetLoadoutAmmo( CBasePlayer@ pPlayer )
+bool ListHas( const array<string>& in list, const string& in szValue )
+{
+	for( uint i = 0; i < list.length(); ++i )
+		if( list[i] == szValue )
+			return true;
+	return false;
+}
+
+void SetLoadoutAmmo( CBasePlayer@ pPlayer, const array<string>& in granted )
 {
 	for( size_t iSlot = 0; iSlot < MAX_ITEM_TYPES; ++iSlot )
 	{
@@ -259,14 +315,19 @@ void SetLoadoutAmmo( CBasePlayer@ pPlayer )
 		while( pItem !is null )
 		{
 			CBasePlayerWeapon@ pWeapon = pItem.GetWeaponPtr();
-			if( pWeapon !is null )
+			if( pWeapon !is null && ListHas( granted, pItem.GetClassname() ) )
 			{
 				string szAmmo = pWeapon.pszAmmo1();
 				int iMax = pWeapon.iMaxAmmo1();
-				if( szAmmo.Length() > 0 && iMax > 0 )
+				// The weapon already knows where its ammo lives: m_iPrimaryAmmoType
+				// is the index into the player's m_rgAmmo. There is no name-to-index
+				// lookup on CBasePlayer to reach for instead.
+				int iType = pWeapon.m_iPrimaryAmmoType;
+
+				if( szAmmo.Length() > 0 && iMax > 0 && iType >= 0 )
 				{
 					int iWanted = iMax / 2;
-					int iHeld = pPlayer.m_rgAmmo( pPlayer.GetAmmoIndex( szAmmo ) );
+					int iHeld = pPlayer.m_rgAmmo( iType );
 					if( iHeld < iWanted )
 						pPlayer.GiveAmmo( iWanted - iHeld, szAmmo, iMax );
 				}

@@ -132,7 +132,7 @@ class APSuspensionState
 	array<string> awards;
 	dictionary heldClasses;
 
-	void SetHeldClasses( array<string>@ keys )
+	void SetHeldClasses( const array<string>& in keys )
 	{
 		heldClasses.deleteAll();
 		for( uint i = 0; i < keys.length(); ++i )
@@ -208,7 +208,7 @@ CScheduledFunction@ g_pSusTimer = null;
 
 // --- Helpers --------------------------------------------------------------
 
-array<string>@ SplitNonEmpty( const string& in szValue, const string& in szSeparator )
+array<string> SplitNonEmpty( const string& in szValue, const string& in szSeparator )
 {
 	array<string> result;
 	array<string>@ parts = szValue.Split( szSeparator );
@@ -223,7 +223,7 @@ array<string>@ SplitNonEmpty( const string& in szValue, const string& in szSepar
 
 Vector APVectorFromString( const string& in szValue )
 {
-	array<string>@ parts = SplitNonEmpty( szValue, " " );
+	array<string> parts = SplitNonEmpty( szValue, " " );
 	if( parts.length() < 3 )
 		return Vector( 0, 0, 0 );
 	return Vector( atof( parts[0] ), atof( parts[1] ), atof( parts[2] ) );
@@ -255,7 +255,7 @@ void ApplyGrantRecord( const string& in szClass, const string& in szField, const
 		pClass.weapons = SplitNonEmpty( szValue, "," );
 	else if( szField == "ammo" )
 	{
-		array<string>@ pairs = SplitNonEmpty( szValue, "," );
+		array<string> pairs = SplitNonEmpty( szValue, "," );
 		for( uint i = 0; i < pairs.length(); ++i )
 		{
 			array<string>@ pair = pairs[i].Split( ":" );
@@ -687,8 +687,10 @@ void SuspensionWatchJuggernaut()
 
 		for( uint j = 0; j < names.length(); ++j )
 		{
-			APBox@ pBox = cast<APBox@>( g_SusVolumes[ names[j] ] );
-			if( pBox is null )
+			// `get` rather than indexing: indexing a dictionary yields a
+			// dictionaryValue, which is not something a handle cast can take.
+			APBox@ pBox = null;
+			if( !g_SusVolumes.get( names[j], @pBox ) || pBox is null )
 				continue;
 			if( pBox.Contains( pPlayer.pev.origin, SUS_PORTAL_PAD ) )
 			{
@@ -707,7 +709,7 @@ void SuspensionWatchJuggernaut()
 * Medals ignore the setting and always roll down -- nobody should have to throw
 * a run to collect the bad ones -- so they call this with bAlways.
 */
-array<string>@ SuspensionTiersFor( const string& in szTier, bool bAlways )
+array<string> SuspensionTiersFor( const string& in szTier, bool bAlways )
 {
 	array<string> result;
 	int iPlayed = g_Suspension.TierIndex( szTier );
@@ -754,7 +756,7 @@ void SuspensionSendSection( int iSection, const string& in szClass, const string
 	if( pSection is null )
 		return;
 
-	array<string>@ tiers = SuspensionTiersFor( szTier, false );
+	array<string> tiers = SuspensionTiersFor( szTier, false );
 	for( uint i = 0; i < tiers.length(); ++i )
 		SuspensionSend( TRIGGER_SUS_SECTION,
 			pSection.key + ":" + szClass + ":" + tiers[i] );
@@ -762,14 +764,14 @@ void SuspensionSendSection( int iSection, const string& in szClass, const string
 
 void SuspensionSendClear( const string& in szClass, const string& in szTier )
 {
-	array<string>@ tiers = SuspensionTiersFor( szTier, false );
+	array<string> tiers = SuspensionTiersFor( szTier, false );
 	for( uint i = 0; i < tiers.length(); ++i )
 		SuspensionSend( TRIGGER_SUS_CLEAR, szClass + ":" + tiers[i] );
 }
 
 void SuspensionSendAward( const string& in szAward, const string& in szTier )
 {
-	array<string>@ tiers = SuspensionTiersFor( szTier, true );
+	array<string> tiers = SuspensionTiersFor( szTier, true );
 	for( uint i = 0; i < tiers.length(); ++i )
 		SuspensionSend( TRIGGER_SUS_AWARD, szAward + ":" + tiers[i] );
 }

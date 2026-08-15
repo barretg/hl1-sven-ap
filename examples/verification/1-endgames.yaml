@@ -1,30 +1,49 @@
-# Verification seed 1 of 5 — endgame credit, separate counts, chargesanity off
+# Verification seed 1 of 5 — endgame credit, pass-through, and the reconnect
 #
-# Covers these unchecked items in docs/verification.md:
-#   0. A Leap Of Faith is credited when it ends
-#   0. Worlds Collide is credited when it ends
-#   0. The counts stay separate
-#   0. Charger lines absent on a chargesanity:false seed, and for a campaign left out
-#   4. !hub from a one-map mission credits nothing
-#   4. A mission you are carried through credits nothing, even unlocked
-#   4b. ungated=item_longjump is ABSENT with shuffle_longjump: true
-#   5a. With chargesanity:false, charger presses send nothing
+# This one carries most of what is still open. From "Still open — 08/14/26":
+#
+#   0.  A Leap Of Faith is credited when it ends, not when it loads
+#   0.  Worlds Collide is credited when it ends too
+#   4.  A carried-through mission sends nothing, even unlocked
+#   retest: a finale is not credited on arrival
+#   retest: a carried-through mission sends nothing, unlocked or not
+#   retest: holding a weapon does not send its check
+#   retest: loadout ammo arrives in one step at half of maximum
+#   retest: missions the seed left out are absent from !ap
+#   retest: releasing a mission's completion from the server applies in game
+#   retest: reconnecting is safe
+#   5.  with death_link off, dying takes nobody with you (this seed has it off)
 #
 # Three campaigns, each sealed one or two missions from its finale, and the
 # unlocks handed over up front so every ending is a short trip rather than a run.
-# They Hunger is deliberately left out: the tracker must show none of its
-# locations at all, which is the other half of the chargesanity test.
+# They Hunger is left out on purpose: it must not appear in `!ap` at all.
 #
-# Suggested order once connected:
-#   1. !tracker            — no charger lines anywhere, no They Hunger lines
-#   2. !warp Office Complex, then !hub          — nothing sent (one-map mission)
-#   3. Clear Unforeseen Consequences            — Office Complex must stay silent
-#                                                 even though it is unlocked
-#   4. !ap  — Nihilanth now open, Worlds Collide still sealed (counts separate)
-#   5. Clear Welcome To Black Mesa and Crush Depth, then Worlds Collide:
-#      press the button in of6a4b and watch the credit land after the map ends
-#   6. Clear Insecurity, then Power Struggle, then A Leap Of Faith:
-#      nothing on arrival, everything after the credits
+# Order to work through:
+#
+#   1. `!ap`  — no They Hunger, and no "not in this seed" lines anywhere. Its
+#      heading should be missing too, not empty.
+#   2. Spawn and listen. The eight weapons below arrive at half their maximum
+#      ammo in one step per weapon, not a long crawl of pickup sounds. Die and
+#      respawn: the same, and nobody else in the lobby is gibbed.
+#   3. Stand in Office Complex holding the shotgun. Nothing sends — the check
+#      belongs to the copy on the floor, not the one in your hands. Walk over
+#      that copy: it sends.
+#   4. Clear Unforeseen Consequences. Office Complex must stay silent as the
+#      campaign carries you through it, though it is unlocked, and you should be
+#      bounced back to the hub. If it does send, the console says why: look for
+#      `carried into ... ; not playing it` or `FATAL: could not queue the hub
+#      return`.
+#   5. From the Archipelago server console, release Crush Depth's "- Complete"
+#      location. `!ap` must count it toward Worlds Collide's seal without the
+#      mission having been played.
+#   6. `!warp` into of6a4b, then leave with `!hub`. Nothing is credited. Go back,
+#      press the button by the guard, and the credit lands after the map ends.
+#   7. Same shape for Blue Shift: clear Insecurity, then Power Struggle, then
+#      warp into A Leap Of Faith and leave — nothing. Play it to the credits and
+#      everything lands after the map's game_end.
+#   8. Disconnect the client and connect a different slot. The lobby returns to
+#      the hub, and the new slot's first checks send rather than being swallowed
+#      as ones this session had already sent.
 
 name: Ver1Endgames
 description: endgame credit, separate counts, no chargers

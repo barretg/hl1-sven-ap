@@ -1,23 +1,37 @@
 # Verification seed 3 of 5 — the HEV suit, the long jump module, and chargers
 #
-# Covers these unchecked items in docs/verification.md:
-#   4b. The suit pickup in Anomalous Materials is refused before the item arrives
-#   4b. Receiving the suit announces it once, and armour starts working
-#   4b. Crossing a map boundary does not announce it again
-#   4b. No long jump from Anomalous Materials through Surface Tension
-#   4b. Xen (hl_c14) onward: the module works, from the map's own .cfg
-#   4b. ungated=item_longjump IS present with shuffle_longjump: false
-#   5b. ba_canal1's two health chargers, built from one brush
-#   5b. Each charger sends its own check once, and only once
-#   5b. An empty charger still sends
-#   5b. Re-entering a mission does not resend its chargers
-#   5b. Ordinary buttons and doors send nothing
+# Every item this seed was written for has passed. It is kept as the regression
+# seed for the equipment split and the charger checks, both of which have a long
+# history of subtle breakage, and it is the natural place to re-run one open
+# item alongside them:
+#
+#   retest: holding a weapon does not send its check
+#
+# Stand in Anomalous Materials carrying the shotgun below. Nothing should send.
+# The sweep used to match the weapon in your own inventory, whose origin is your
+# origin, so simply being in the mission a check is anchored to sent it.
+#
+# One note from the first pass: the suit had to be re-sent on the second map
+# before armour would charge, then worked on every map after. If that recurs,
+# say so -- it looked like a timing fluke and was not reproduced.
+#
+# Already passed, and what would break if it regressed:
+#
+#   * The suit pickup is refused before the item arrives, and armour stays at 0
+#     from batteries, chargers and filler alike.
+#   * Receiving it announces once, and crossing a map boundary does not announce
+#     it again.
+#   * No long jump before Lambda Core; from Xen (hl_c14) onward the module works
+#     from the map's own .cfg with nothing from us. `ungated=item_longjump` is
+#     present in ap_in.txt with shuffle_longjump off.
+#   * ba_canal1's two health chargers share one brush, and each sends its own
+#     check and only its own.
 #
 # The suit is shuffled and the module is not, which is the split that matters:
 # the suit has to be granted by an item or armour never works, while the module
 # is left to the campaign to hand out on its own schedule.
 #
-# Do the no-suit half first, before you send yourself the item:
+# To re-run the regression pass, do the no-suit half first:
 #   1. !warp Anomalous Materials, walk over the suit    — refused
 #   2. Pick up a battery, hold use on an HEV panel      — armour stays 0
 #   3. Then, from the Archipelago server console:  /send Ver3Suit HEV Suit
