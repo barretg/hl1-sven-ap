@@ -274,7 +274,14 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		if( HasWeaponUnderAnyName( pPlayer, szClassname ) )
 			continue;
 
+		// GiveNamedItem builds the weapon and touches the player with it inside
+		// the same call, so the pickup hook fires for something we handed over.
+		// Being given the Shotgun the multiworld already sent us, while standing
+		// in Office Complex, sent First Shotgun.
+		g_bHandingOver = true;
 		pPlayer.GiveNamedItem( szClassname );
+		g_bHandingOver = false;
+
 		granted.insertLast( szClassname );
 	}
 
@@ -518,6 +525,36 @@ void GiveAmmoForHeldWeapons( CBasePlayer@ pPlayer )
 	}
 }
 
+/*
+* Set while the loadout is handing a weapon over.
+*
+* `GiveNamedItem` creates the entity and calls the player's touch on it before
+* it returns, so our own grant arrives at PickupCanCollect looking exactly like
+* a weapon found on the floor. AngelScript runs on one thread and the touch is
+* synchronous, so a flag either side of the call is enough.
+*/
+bool g_bHandingOver = false;
+
+// A handed-over weapon is built at the player's own origin. Anything lying in
+// the world is a bounding box away at least, so a couple of units is generous.
+const float HANDOVER_EPSILON = 2.0f;
+
+/*
+* Was this pickup put in the player's hands rather than found lying about?
+*
+* Covers the routes that are not ours: a map's `.cfg` loadout and
+* `game_player_equip` both go through `GiveNamedItem` too, which places the
+* entity at the player's own origin before touching them with it. Walking over
+* a weapon puts the player next to it, never inside it.
+*/
+bool PickupWasHandedOver( CBaseEntity@ pPickup, CBasePlayer@ pPlayer )
+{
+	if( g_bHandingOver )
+		return true;
+
+	return ( pPickup.pev.origin - pPlayer.pev.origin ).Length() <= HANDOVER_EPSILON;
+}
+
 /* Refuse to hand over a weapon the multiworld has not granted yet. */
 HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool& out bResult )
 {
@@ -541,8 +578,11 @@ HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool
 	string szClassname = pPickup.GetClassname();
 
 	// Walking over the weapon is what sends the check, whether or not the player
-	// is allowed to keep it -- that is the whole point of the randomiser.
-	RegisterPickupCheck( szClassname );
+	// is allowed to keep it -- that is the whole point of the randomiser. A
+	// weapon put into your hands is not walked over, though: the check belongs
+	// to the copy lying in the map, the same rule the proximity sweep follows.
+	if( !PickupWasHandedOver( pPickup, pPlayer ) )
+		RegisterPickupCheck( szClassname );
 
 	// Butterfingers just threw this out of their hands and they are standing on
 	// it. Without a moment's grace they collect it again the same tick.

@@ -186,6 +186,7 @@ class Bridge:
         missing: list[int] | None = None,
         death_link_amnesty: int = 0,
         data_version: str = "",
+        slot: str = "",
         suspension: dict | None = None,
         force: bool = False,
     ) -> bool:
@@ -199,6 +200,12 @@ class Bridge:
         lines = [
             "# Written by the Half-Life (Sven Co-op) Archipelago client.",
             f"session={self.session}",
+            # Which slot of which seed, which is what the plugin resets its run
+            # state on. `session` is a fresh id per client launch and says
+            # nothing about the slot: it fires on a reconnect that changed
+            # nothing and is silent on the slot change that changes everything.
+            # Empty while disconnected, which the plugin reads as "no news".
+            f"slot={slot}",
             # The plugin refuses to send checks if this disagrees with its own
             # copy, since the two would be numbering locations differently.
             f"data_version={data_version}",

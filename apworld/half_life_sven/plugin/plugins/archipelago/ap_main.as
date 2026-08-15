@@ -192,9 +192,17 @@ void MapStart()
 	// this map has a chance to arm it again.
 	ConsumePendingFinale();
 
+	// Is this the map we asked the engine for? Answered here, before the bounce,
+	// because it outranks one: a warp or a console button is a decision, and a
+	// queued return is the campaign's momentum. A pending flag that outlived
+	// what armed it -- a plugin reload, a write from a map we have since left --
+	// must not swallow the mission the player just chose.
+	bool bDeliberate = g_szIntendedMap == g_szCurrentMap;
+
 	// A mission finished on the way here and the campaign carried us into the
-	// next one. Nothing on this map counts; go back to the hub.
-	if( ConsumePendingHubReturn() )
+	// next one. Nothing on this map counts; go back to the hub. Consumed either
+	// way: a stale flag is spent here rather than left to fire at the next map.
+	if( ConsumePendingHubReturn() && !bDeliberate )
 	{
 		if( g_szCurrentMap != HUB_MAP )
 		{
@@ -235,7 +243,8 @@ void MapStart()
 		// unlocked it happens to be. That last part is what was missing: the
 		// only guard was the locked test below, so an unlocked mission counted
 		// as played and sent its "Reached" on the way through.
-		bool bDeliberate = g_szIntendedMap == g_szCurrentMap;
+		//
+		// `bDeliberate` is worked out above, before the pending return is spent.
 		bool bSameMission = g_szLastChapterKey == g_CurrentChapter.key;
 		bool bFirstMap = g_szLastChapterKey.Length() == 0;
 		g_szIntendedMap = "";

@@ -49,6 +49,16 @@ class APTier
 	int tickets = 0;
 	string voteButton;
 	string ticketSignal;
+	// What the vote button fires when it is pressed, and what it collides as,
+	// both read off the map the first time we see it. A locked button has its
+	// target taken away and given back, which is what makes the lock hold
+	// whatever manages to press it.
+	//
+	// Nothing about the button's solidity is touched: it stays where the map put
+	// it so the use trace has something to land on, and the refusal is a message
+	// rather than an absence.
+	string voteTarget;
+	bool voteTargetKnown = false;
 }
 
 class APSection
@@ -68,10 +78,17 @@ class APClass
 	// What the map sets the player's own targetname to.
 	string targetname;
 	string signal;
-	// The teleport destination this class's lobby portal sends a player to.
-	// Locking a class means finding that portal and making it non-solid.
+	// The teleport destination this class's lobby portal sends a player to, which
+	// is also the only thing identifying the portal: the trigger has no name of
+	// its own. A locked portal is pointed somewhere else instead, so once we have
+	// found one we stamp a name on it and keep a handle, rather than looking for
+	// a target that is no longer there.
 	string portal;
 	bool mapGated = false;
+	EHandle hPortal;
+	// Our own wall across the doorway while the class is locked, built from the
+	// portal's brush. Removed the moment the item arrives.
+	EHandle hBlock;
 
 	// Only the map-gated class carries these: what to do to a player to grant it
 	// without the booth, for the tiers where the booth does nothing.
@@ -375,11 +392,32 @@ void SuspensionResetRound()
 	g_iSusDeaths = 0;
 	g_SusClassSections.deleteAll();
 	g_szSusJuggerHolder = "";
+	// A map load starts the engine's clock again, so a deadline left over from
+	// the last one would sit in the future forever and the locks would never be
+	// reasserted. Zero means "at the next think".
+	g_flSusNextLockSync = 0.0f;
 }
 
 void SuspensionMapStart()
 {
 	SuspensionResetRound();
+
+	// The entities here are this map's own, freshly spawned as the map made
+	// them, whatever we did to the last copy of them. Forgotten only here: a
+	// locked button is one we have already blanked, so forgetting at any other
+	// moment would lose the only record of what to put back.
+	for( uint i = 0; i < g_SusTiers.length(); ++i )
+	{
+		g_SusTiers[i].voteTarget = "";
+		g_SusTiers[i].voteTargetKnown = false;
+	}
+	// Both handles point at the last map's entities, and our walls went with it.
+	for( uint i = 0; i < g_SusClasses.length(); ++i )
+	{
+		g_SusClasses[i].hPortal = EHandle();
+		g_SusClasses[i].hBlock = EHandle();
+	}
+	g_flSusBoothWarned.deleteAll();
 
 	if( !SuspensionManaged() )
 		return;
@@ -430,19 +468,68 @@ void SuspensionEnsureScheduled()
 // printed and the vote went through anyway, because the button had already been
 // used by the time our trace agreed it was the thing being looked at.
 //
-// A non-solid brush cannot be traced against, touched or used, so a locked tier
-// or class is simply not there. Both are restored the moment the item arrives,
-// which is why nothing is ever removed.
+// Solidity turned out to be the wrong tool for both of them, in opposite
+// directions. A vote button is left exactly as the map built it and has its
+// wiring cut instead, so a press is answered with a sentence and fires nothing.
+// A class booth cannot be answered that way -- there is nothing to press, only a
+// doorway to walk through -- so a wall of ours goes in front of it, and walking
+// up to that wall is what prints the sentence.
+//
+// The map's own entities are never made solid by hand. `SOLID_BSP` is legal
+// only on a pusher, the engine checks that pair every time it links an entity,
+// and getting it wrong is fatal rather than cosmetic.
 
-void SuspensionSetSolid( CBaseEntity@ pEntity, bool bSolid, int iSolidType )
+/*
+* First sight of a vote button: whatever it points at is what the map wired it
+* to.
+*
+* Only ever taken from a button we have not touched, which is why the target is
+* only believed while it is non-empty -- a blanked one is our own work, and
+* believing it would lose the wiring for good.
+*/
+void SuspensionRememberVoteButton( CBaseEntity@ pButton, APTier@ pTier )
 {
-	if( pEntity is null )
+	if( pButton is null || pTier is null )
 		return;
-	pEntity.pev.solid = bSolid ? iSolidType : SOLID_NOT;
-	if( bSolid )
-		pEntity.pev.effects &= ~EF_NODRAW;
-	else
-		pEntity.pev.effects |= EF_NODRAW;
+
+	string szTarget = string( pButton.pev.target );
+	if( !pTier.voteTargetKnown && szTarget.Length() > 0 )
+	{
+		pTier.voteTarget = szTarget;
+		pTier.voteTargetKnown = true;
+	}
+}
+
+/*
+* Take the wiring out of a vote button, and put it back.
+*
+* Going non-solid should be enough on its own -- a brush the engine will not
+* trace against is a brush nobody can press -- and in game it was not: the vote
+* still went through. Rather than work out which of the engine's routes to a
+* button survives that, this cuts the wire as well. A `func_button` with nothing
+* in `target` fires nothing when it is pressed, however it came to be pressed,
+* so a locked tier cannot be voted for by any route at all.
+*
+* The target is read off the map rather than carried in the data file, so it
+* stays right if the map is rebuilt, and it is remembered per tier so that
+* unlocking can put back exactly what was there.
+*/
+void SuspensionSetVoteLive( CBaseEntity@ pButton, APTier@ pTier, bool bLive )
+{
+	if( pButton is null || pTier is null )
+		return;
+
+	string szTarget = string( pButton.pev.target );
+
+	if( bLive )
+	{
+		if( pTier.voteTargetKnown && szTarget.Length() == 0 )
+			pButton.pev.target = pTier.voteTarget;
+	}
+	else if( szTarget.Length() > 0 )
+	{
+		pButton.pev.target = "";
+	}
 }
 
 /*
@@ -458,12 +545,21 @@ CBaseEntity@ SuspensionPortalOf( APClass@ pClass )
 	if( pClass is null || pClass.portal.Length() == 0 )
 		return null;
 
+	// Found once and held, because a locked portal has been pointed away from
+	// `pick_<class>` and would no longer answer to the search below.
+	CBaseEntity@ pHeld = pClass.hPortal.GetEntity();
+	if( pHeld !is null )
+		return pHeld;
+
 	CBaseEntity@ pEntity = null;
 	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname(
 		pEntity, "trigger_teleport" ) ) !is null )
 	{
 		if( string( pEntity.pev.target ) == pClass.portal )
+		{
+			pClass.hPortal = EHandle( pEntity );
 			return pEntity;
+		}
 	}
 	return null;
 }
@@ -483,8 +579,14 @@ void SuspensionSyncLocks()
 	{
 		APTier@ pTier = g_SusTiers[i];
 		CBaseEntity@ pButton = g_EntityFuncs.FindEntityByTargetname( null, pTier.voteButton );
-		// func_button is a brush entity, so SOLID_BSP is what it goes back to.
-		SuspensionSetSolid( pButton, g_Suspension.TierOpen( pTier.key ), SOLID_BSP );
+		bool bOpen = g_Suspension.TierOpen( pTier.key );
+		SuspensionRememberVoteButton( pButton, pTier );
+		// Solid and visible either way. A button that vanishes refuses silently,
+		// and a locked tier deserves the same sentence a locked weapon gets --
+		// which needs something for the use trace to land on. Cutting the wire is
+		// what makes the refusal safe: the press is answered, and nothing behind
+		// it fires whether or not the press itself can be stopped.
+		SuspensionSetVoteLive( pButton, pTier, bOpen );
 	}
 
 	for( uint i = 0; i < g_SusClasses.length(); ++i )
@@ -498,13 +600,82 @@ void SuspensionSyncLocks()
 			bOpen = bOpen && g_szSusJuggerHolder.Length() == 0;
 			SuspensionSealJuggernaut( !bOpen );
 		}
-		SuspensionSetSolid( SuspensionPortalOf( pClass ), bOpen, SOLID_TRIGGER );
+		SuspensionSetPortalOpen( pClass, bOpen );
 	}
 }
 
 /*
-* Say what is open, since a locked booth is now simply absent and a player
-* standing in front of a gap deserves to be told why.
+* Open or close a class booth.
+*
+* The portals are 64x64 slabs four units thick standing in the booth doorways,
+* and walking into one is what teleports a player to the class pad behind it. A
+* player is never *in* a booth, which is why switching the teleport off did not
+* close one: it opened a room whose only way out was the teleport that had just
+* been disabled, and players walked in and were stuck. Sending them somewhere
+* else instead needed a destination, and the lobby's first spawn point turned
+* out to be inside a wall.
+*
+* So the map's own portal is left exactly as the map built it -- live, solid,
+* invisible -- and a wall of ours goes across the doorway in front of it, built
+* from the portal's own brush so it is the same 64x64 slab. The engine builds it
+* as a `func_wall`, which is a pusher and legally SOLID_BSP; setting that by
+* hand on the trigger is what printed `SOLID_BSP WITHOUT MOVE_PUSH`.
+*
+* Removed, not disabled, when the item arrives: an entity that is not there
+* cannot be left in a state that outlives the lock.
+*/
+void SuspensionSetPortalOpen( APClass@ pClass, bool bOpen )
+{
+	CBaseEntity@ pBlock = pClass.hBlock.GetEntity();
+
+	if( bOpen )
+	{
+		if( pBlock !is null )
+		{
+			g_EntityFuncs.Remove( pBlock );
+			pClass.hBlock = EHandle();
+		}
+		return;
+	}
+
+	if( pBlock !is null )
+		return;  // already walled off
+
+	CBaseEntity@ pPortal = SuspensionPortalOf( pClass );
+	if( pPortal is null )
+		return;
+
+	// Brush models are named "*<index>". Anything else is not something a wall
+	// can be built from, and an unearned class is better than a broken lobby.
+	string szModel = string( pPortal.pev.model );
+	if( szModel.Length() < 2 || szModel.SubString( 0, 1 ) != "*" )
+	{
+		APLog( "suspension: " + pClass.key + "'s portal has no brush to wall off; "
+		     + "the class stays enterable" );
+		return;
+	}
+
+	dictionary keys;
+	keys[ "targetname" ] = "ap_sus_block_" + pClass.key;
+	keys[ "model" ] = szModel;
+	CBaseEntity@ pNew = g_EntityFuncs.CreateEntity( "func_wall", keys, true );
+
+	if( pNew is null )
+	{
+		APLog( "suspension: could not wall off " + pClass.key
+		     + "; the class stays enterable" );
+		return;
+	}
+
+	// Invisible, because the brush is a trigger's and wears a trigger's texture.
+	// What tells a player the booth is shut is the message, not a slab.
+	pNew.pev.effects |= EF_NODRAW;
+	pClass.hBlock = EHandle( pNew );
+}
+
+/*
+* Say what is open, on arrival. The per-booth message below covers walking into
+* one; this is what a player gets before they have walked anywhere.
 */
 void SuspensionAnnounce()
 {
@@ -577,6 +748,24 @@ void SuspensionSealJuggernaut( bool bSealed )
 	}
 }
 
+/*
+* What this entity may legally be switched on as.
+*
+* SOLID_BSP is only ever legal on a pusher: the engine checks the pair every
+* time it links an entity, and `SOLID_BSP without MOVETYPE_PUSH` is a fatal
+* error rather than a warning. The Juggernaut's seal is two entities, a
+* `func_wall_toggle` and a `trigger_hurt`, and giving both of them SOLID_BSP
+* took the server down the next time the trigger was linked -- on a respawn in
+* the lobby, long after the seal was set. Switching a trigger on means
+* SOLID_TRIGGER; only the wall is a wall.
+*/
+int SuspensionSolidFor( CBaseEntity@ pEntity )
+{
+	if( pEntity !is null && pEntity.pev.movetype == MOVETYPE_PUSH )
+		return SOLID_BSP;
+	return SOLID_TRIGGER;
+}
+
 void SuspensionSetSealPart( const string& in szPart, bool bSealed )
 {
 	string szSpec;
@@ -592,7 +781,7 @@ void SuspensionSetSealPart( const string& in szPart, bool bSealed )
 	{
 		if( pEntity.GetClassname() != parts[1] )
 			continue;
-		pEntity.pev.solid = bSealed ? SOLID_BSP : SOLID_NOT;
+		pEntity.pev.solid = bSealed ? SuspensionSolidFor( pEntity ) : SOLID_NOT;
 		if( bSealed )
 			pEntity.pev.effects &= ~EF_NODRAW;
 		else
@@ -967,6 +1156,72 @@ void SuspensionCountDeath()
 		++g_iSusDeaths;
 }
 
+// When the locks are next reasserted. The map is free to spawn, respawn and
+// reset its own entities -- `kill_vote_button` alone removes all four buttons by
+// wildcard -- and a lock applied once at map start is only as good as whatever
+// the map does next. Reasserting is idempotent and costs a handful of entity
+// lookups, so it runs on its own slow beat rather than every think.
+float g_flSusNextLockSync = 0.0f;
+const float SUS_LOCK_SYNC_INTERVAL = 1.0f;
+
+// Close enough to a booth's doorway to have meant to walk into it.
+const float SUS_BOOTH_WARN_RANGE = 80.0f;
+// And how long before the same player is told the same thing again.
+const float SUS_BOOTH_WARN_INTERVAL = 4.0f;
+
+dictionary g_flSusBoothWarned;
+
+/*
+* Tell a player why the booth they are standing at will not let them in.
+*
+* A locked booth is a wall with nothing written on it, and a wall that refuses
+* silently reads as a broken map. This is the same sentence a locked weapon
+* gives, in the same place on the screen, for the same reason: the centre print
+* is where this game says "you cannot have that yet".
+*
+* Proximity rather than a touch, because the wall is what they reach first and a
+* wall has nothing to touch. Rate-limited per player and class, since standing
+* in front of one is a normal thing to do for a few seconds.
+*/
+void SuspensionWarnLockedBooths()
+{
+	for( uint i = 0; i < g_SusClasses.length(); ++i )
+	{
+		APClass@ pClass = g_SusClasses[i];
+
+		// Only ones we have actually walled off. A class the seed left open, or
+		// one whose wall could not be built, has nothing to explain.
+		if( pClass.hBlock.GetEntity() is null )
+			continue;
+
+		CBaseEntity@ pPortal = SuspensionPortalOf( pClass );
+		if( pPortal is null )
+			continue;
+
+		Vector vecDoor = ( pPortal.pev.absmin + pPortal.pev.absmax ) * 0.5f;
+
+		for( int iPlayer = 1; iPlayer <= g_Engine.maxClients; ++iPlayer )
+		{
+			CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( iPlayer );
+			if( pPlayer is null || !pPlayer.IsConnected() || !pPlayer.IsAlive() )
+				continue;
+
+			if( ( pPlayer.pev.origin - vecDoor ).Length() > SUS_BOOTH_WARN_RANGE )
+				continue;
+
+			string szKey = SuspensionPlayerKey( pPlayer ) + "|" + pClass.key;
+			float flLast = 0.0f;
+			if( g_flSusBoothWarned.get( szKey, flLast )
+			    && g_Engine.time - flLast < SUS_BOOTH_WARN_INTERVAL )
+				continue;
+
+			g_flSusBoothWarned[ szKey ] = g_Engine.time;
+			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCENTER,
+				"You have not found the " + pClass.name + " yet.\n" );
+		}
+	}
+}
+
 /*
 * The think loop. Reads our own counters, which the map advanced for us.
 */
@@ -974,6 +1229,14 @@ void SuspensionThink()
 {
 	if( !SuspensionManaged() )
 		return;
+
+	if( g_Engine.time >= g_flSusNextLockSync )
+	{
+		g_flSusNextLockSync = g_Engine.time + SUS_LOCK_SYNC_INTERVAL;
+		SuspensionSyncLocks();
+	}
+
+	SuspensionWarnLockedBooths();
 
 	int iTier = SuspensionCounter( SUS_COUNTER_TIER );
 	if( iTier > 0 && iTier <= int( g_SusTiers.length() ) )

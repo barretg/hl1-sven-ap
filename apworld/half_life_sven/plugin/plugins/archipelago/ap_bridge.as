@@ -24,6 +24,16 @@ string g_szLastInput;
 // restarted and its event sequence numbers have restarted with it.
 string g_szSession;
 
+// Which slot of which seed the client is playing, "<seed>:<slot>". This is what
+// says the run has changed underneath us, and it is a different question from
+// the session above: a client restarted onto the same slot is a blip and must
+// change nothing, while a different slot connected from the same client changes
+// everything the plugin remembers.
+//
+// Only ever set from a snapshot that names one. A disconnected client sends it
+// empty, which is no news rather than a new slot.
+string g_szSlot;
+
 // The client's wall-clock time when it last wrote the snapshot. Event freshness
 // is judged against this, so the two sides never have to agree on a clock.
 float g_flSnapshotNow = 0.0f;
@@ -166,6 +176,11 @@ void BridgePoll()
 	array<string> events;
 
 	string szSession;
+	string szSlot;
+	// Absent entirely from a client too old to send it, which is not the same as
+	// a client saying it has no slot: without the field the session is the only
+	// signal there is, and the old behaviour is the best available.
+	bool bHasSlot = false;
 
 	for( uint iLine = 0; iLine < inputLines.length(); ++iLine )
 	{
@@ -265,6 +280,11 @@ void BridgePoll()
 			g_flSnapshotNow = atof( szValue );
 		else if( szKey == "session" )
 			szSession = szValue;
+		else if( szKey == "slot" )
+		{
+			szSlot = szValue;
+			bHasSlot = true;
+		}
 		else if( szKey == "data_version" )
 			CheckDataVersion( szValue );
 		else if( szKey == "goal_open" )
@@ -298,22 +318,45 @@ void BridgePoll()
 
 	// A restarted client numbers its events from 1 again. Without this, every
 	// new event would look like one we had already applied and be ACKed away.
-	//
-	// It is also the only signal that the slot may have changed underneath us. A
-	// player who disconnects and connects a different slot is playing a different
-	// seed, and everything the plugin remembers about the last one -- which
-	// checks it has already sent, which mission it thinks is being played -- is
-	// now wrong. Reconnecting has to be a safe thing to do, so the whole run
-	// state goes and the lobby goes back to the hub.
+	// That is all the session id is good for.
+	bool bNewSession = szSession != g_szSession && g_szSession.Length() > 0;
 	if( szSession != g_szSession )
 	{
-		bool bWasSession = g_szSession.Length() > 0;
-		if( bWasSession )
-			APLog( "client session changed; resetting run state" );
 		g_szSession = szSession;
 		g_State.lastEventSeq = 0;
-		if( bWasSession )
-			ResetRunState();
+	}
+
+	// A player who connects a different slot is playing a different seed, and
+	// everything the plugin remembers about the last one -- which checks it has
+	// already sent, which mission it thinks is being played -- is now wrong.
+	// Reconnecting has to be a safe thing to do, so the whole run state goes and
+	// the lobby goes back to the hub.
+	//
+	// The session id used to stand in for this and was wrong both ways round: it
+	// changes when the same slot reconnects from a restarted client, which is a
+	// blip and should move nobody, and it does *not* change when a different
+	// slot is connected from the client already running, which is the case that
+	// matters. An empty slot is a disconnected client rather than a new run, so
+	// the last one we were told about stands.
+	if( bHasSlot )
+	{
+		if( szSlot.Length() > 0 && szSlot != g_szSlot )
+		{
+			bool bWasSlot = g_szSlot.Length() > 0;
+			g_szSlot = szSlot;
+			if( bWasSlot )
+			{
+				APLog( "client slot changed; resetting run state" );
+				ResetRunState();
+			}
+		}
+	}
+	// No slot field at all: an older client, where the session is the only
+	// signal there is.
+	else if( bNewSession )
+	{
+		APLog( "client session changed; resetting run state" );
+		ResetRunState();
 	}
 
 	bool bWasConnected = g_State.connected;

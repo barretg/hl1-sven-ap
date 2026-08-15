@@ -195,6 +195,23 @@ def test_sessions_differ_between_client_runs(tmp_path: Path) -> None:
     assert Bridge(tmp_path).session != Bridge(tmp_path).session
 
 
+def test_snapshot_carries_the_slot(bridge: Bridge) -> None:
+    """What the plugin resets its run state on.
+
+    The session id cannot do that job: it is minted per client launch, so
+    reconnecting the same slot from a restarted client changes it while
+    connecting a different slot from the running client does not.
+    """
+    snapshot(bridge, slot="Seed1234:3")
+    assert "slot=Seed1234:3" in bridge.in_path.read_text(encoding="utf-8")
+
+
+def test_snapshot_slot_is_empty_while_disconnected(bridge: Bridge) -> None:
+    """The plugin reads an empty slot as no news, not as a new run."""
+    snapshot(bridge, connected=False)
+    assert "slot=\n" in bridge.in_path.read_text(encoding="utf-8")
+
+
 def test_equal_length_changes_are_still_written(bridge: Bridge) -> None:
     """A flag flip does not change the snapshot's length.
 

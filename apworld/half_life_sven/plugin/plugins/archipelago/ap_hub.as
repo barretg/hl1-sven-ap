@@ -70,7 +70,7 @@ void ShowStatus( CBasePlayer@ pPlayer )
 		// emptied it, and the list is read to find where there is still something
 		// left. A mission with nothing left in it is done with whether or not its
 		// own door is still open.
-		else if( ChapterAllFound( pChapter ) )
+		else if( ChapterFinished( pChapter ) )
 			szStatus = "complete";
 		else if( pChapter.isGoal )
 		{
@@ -330,6 +330,46 @@ bool ChapterAllFound( APChapter@ pChapter )
 	}
 
 	return uiInSeed > 0;
+}
+
+/*
+* Has this mission's own completion check been sent?
+*
+* The completion is a location like any other, so it can arrive from the server
+* without the game having played a second of the mission: released, collected,
+* or sent by hand from the console. It is also the location the seal counts, so
+* the list must agree with what the finale is waiting on.
+*
+* Found by the mission key it carries rather than by map: the record names both,
+* but the key is what says which mission it completes.
+*/
+bool ChapterCompletionFound( APChapter@ pChapter )
+{
+	if( pChapter is null )
+		return false;
+
+	for( uint i = 0; i < g_Locations.length(); ++i )
+	{
+		APLocation@ pLocation = g_Locations[i];
+
+		if( pLocation.kind == TRIGGER_CHAPTER_COMPLETE && pLocation.arg == pChapter.key )
+			return LocationFound( pLocation );
+	}
+
+	return false;
+}
+
+/*
+* Is there anything left to do in this mission?
+*
+* Either answer alone is incomplete. A mission can be emptied of everything the
+* seed put in it without its completion ever being sent -- `missions_required`
+* is off, so nothing was ever waiting on it -- and a completion can arrive from
+* the server with every weapon and charger in the mission still unfound.
+*/
+bool ChapterFinished( APChapter@ pChapter )
+{
+	return ChapterCompletionFound( pChapter ) || ChapterAllFound( pChapter );
 }
 
 /*
@@ -799,21 +839,15 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 
 	szWanted.ToLowercase();
 
-	// The arcade map, which is not a chapter and so is not in the list below.
-	// It has no hub console either, which makes this the only way in.
+	// The arcade map, named exactly. It is not a chapter and so is not in the
+	// list below, and it has no hub console either, which makes this the only way
+	// in. Naming it exactly is also the one query a seed without it answers with
+	// "not in this seed", because there the question was asked directly.
 	string szArcadeName = g_pArcade !is null ? g_pArcade.name : "";
 	szArcadeName.ToLowercase();
 	if( g_pArcade !is null && ( szWanted == g_pArcade.map || szWanted == szArcadeName ) )
 	{
-		if( !g_Suspension.enabled )
-		{
-			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-				"[AP] " + g_pArcade.name + " is not in this seed.\n" );
-			return;
-		}
-		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
-			"[AP] Travelling to " + g_pArcade.name + "...\n" );
-		ChangeLevel( g_pArcade.map );
+		WarpToArcade( pPlayer );
 		return;
 	}
 
@@ -864,6 +898,17 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 		}
 	}
 
+	// The arcade is not a chapter, so it was never in `matches` -- but it answers
+	// to a part of its name like everything else does. `!warp susp` had to be
+	// spelled out in full because the only test it ever got was equality.
+	bool bArcade = ArcadeMatchesQuery( szWanted );
+
+	if( bArcade && matches.length() == 0 )
+	{
+		WarpToArcade( pPlayer );
+		return;
+	}
+
 	if( matches.length() == 0 )
 	{
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
@@ -871,7 +916,7 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 		return;
 	}
 
-	if( matches.length() == 1 )
+	if( matches.length() == 1 && !bArcade )
 	{
 		APChapter@ pChapter = g_Chapters[matches[0]];
 
@@ -893,8 +938,17 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 		return;
 	}
 
+	uint uiTotal = matches.length() + ( bArcade ? 1 : 0 );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-		"[AP] " + matches.length() + " missions match; be more specific:\n" );
+		"[AP] " + uiTotal + " matches; be more specific:\n" );
+
+	// Listed first and by name rather than by number, since it has none: the
+	// arcade is not in the mission numbering at all.
+	if( bArcade )
+	{
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+			"[AP]   " + g_pArcade.name + " (!warp " + g_pArcade.map + ")\n" );
+	}
 
 	for( uint i = 0; i < matches.length() && i < 4; ++i )
 	{
@@ -902,6 +956,56 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 			"[AP]   " + matches[i] + ". " + pChapter.name + "\n" );
 	}
+}
+
+/*
+* Does this query name the arcade map without spelling it out?
+*
+* The same substring rule the missions get, against its name and its map name
+* alike, so `!warp susp` lands where `!warp suspension` does.
+*
+* Only while the seed contains it. A seed without the arcade answers a query
+* that names it exactly with "not in this seed" -- a direct answer to a direct
+* question -- and half a word is not that question.
+*/
+bool ArcadeMatchesQuery( const string& in szWanted )
+{
+	if( g_pArcade is null || !g_Suspension.enabled || szWanted.Length() == 0 )
+		return false;
+
+	string szName = g_pArcade.name;
+	szName.ToLowercase();
+	string szMap = g_pArcade.map;
+	szMap.ToLowercase();
+
+	// Find returns String::INVALID_INDEX, unsigned; as an int a miss is negative.
+	int iAtName = szName.Find( szWanted );
+	int iAtMap = szMap.Find( szWanted );
+	return iAtName >= 0 || iAtMap >= 0;
+}
+
+/*
+* Travel to the arcade map, or say why not.
+*
+* Its own function because two spellings reach it: the exact name, which a seed
+* without it answers rather than ignores, and a partial one alongside the
+* missions.
+*/
+void WarpToArcade( CBasePlayer@ pPlayer )
+{
+	if( g_pArcade is null )
+		return;
+
+	if( !g_Suspension.enabled )
+	{
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+			"[AP] " + g_pArcade.name + " is not in this seed.\n" );
+		return;
+	}
+
+	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+		"[AP] Travelling to " + g_pArcade.name + "...\n" );
+	ChangeLevel( g_pArcade.map );
 }
 
 /*
@@ -1018,8 +1122,8 @@ void ReturnToHub()
 /*
 * Forget everything about the run in progress.
 *
-* Called when the client's session changes, which is the only thing that can
-* mean "a different slot, possibly a different seed". Every one of these is
+* Called when the slot the client is playing changes, which is the one thing
+* that means "a different run, possibly a different seed". Every one of these is
 * derived from the client and will be rebuilt from the next snapshot; what must
 * not survive is anything that would let the old seed's answers leak into the
 * new one -- above all `g_SentChecks`, which is what stops a check being sent
@@ -1046,7 +1150,7 @@ void ResetRunState()
 	SuspensionResetRound();
 
 	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
-		"[AP] New client session: returning to the hub.\n" );
+		"[AP] New slot connected: returning to the hub.\n" );
 
 	if( g_szCurrentMap != HUB_MAP )
 		g_Scheduler.SetTimeout( "ReturnToHub", 2.0f );
@@ -1303,7 +1407,13 @@ HookReturnCode MapChange( const string& in szNextMap )
 
 		// The campaign wants to run straight on into the next chapter. Let it
 		// load, then bounce back to the hub from there.
-		if( szNextMap != HUB_MAP )
+		//
+		// Only when the transition is the campaign's. `!warp` and a console
+		// button leave one mission for another on purpose, and arming the bounce
+		// for those sent a player who asked for Crush Depth to the hub the
+		// moment they arrived. The distinction is the same one the completion
+		// above makes: g_bSelfChange is a change we issued.
+		if( szNextMap != HUB_MAP && !g_bSelfChange )
 			SetPendingHubReturn( true );
 	}
 

@@ -647,6 +647,24 @@ class HalfLifeSvenContext(SuperContext):
         return False
 
     @property
+    def slot_identity(self) -> str:
+        """Which run of which seed this is, for the plugin to compare against.
+
+        The client's `session` id cannot answer this. It is minted once per
+        launch, so it changes when the same slot reconnects after a client
+        restart -- a blip, nothing to react to -- and stays put when a player
+        connects a *different* slot from the same client, which is the case that
+        makes everything the game remembers wrong.
+
+        Empty until a slot is connected. That is not "a new slot": a disconnect
+        empties it, and the plugin keeps the last one it was told about rather
+        than treating the gap as a change.
+        """
+        if self.slot is None:
+            return ""
+        return f"{self.seed_name or ''}:{self.slot}"
+
+    @property
     def held_item_names(self) -> set[str]:
         """Everything the game should treat as held, received or not.
 
@@ -985,6 +1003,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
                 checked=sorted(ctx.checked_locations),
                 missing=sorted(ctx.missing_locations),
                 data_version=ctx.data_version,
+                slot=ctx.slot_identity,
                 suspension=ctx.suspension_state,
                 force=True,
             )
@@ -1022,6 +1041,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
         checked=sorted(ctx.checked_locations),
         missing=sorted(ctx.missing_locations),
         data_version=ctx.data_version,
+        slot=ctx.slot_identity,
         suspension=ctx.suspension_state,
     )
 

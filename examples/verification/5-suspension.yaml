@@ -86,15 +86,3 @@ Half-Life (Sven Co-op):
   suspension_difficulty_rolldown: false
   suspension_max_awards_are_priority: false
   suspension_starting_class: assault
-
-  start_inventory:
-    # Every class, so switching mid-run is possible and the Juggernaut is
-    # available without first clearing seven runs.
-    "Suspension: Assault": 1
-    "Suspension: Grenadier": 1
-    "Suspension: Pointman": 1
-    "Suspension: Support": 1
-    "Suspension: Sniper": 1
-    "Suspension: Medic": 1
-    "Suspension: Engineer": 1
-    "Suspension: Juggernaut": 1

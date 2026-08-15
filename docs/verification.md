@@ -9,11 +9,11 @@
 | Suspension data and its checkdata records | `pytest tests/test_suspension_data.py` | passing |
 | AngelScript source rules (API calls, record guards, exemptions that regressed) | `pytest tests/test_plugin_source.py` | passing |
 | Suspension generation | `ArchipelagoGenerate` at the easy cap and at the insane cap with classanity, platinum and priority medals | passing |
-| Suspension in-game | — | first pass 08/14/26 found it broken; fixed and awaiting a retest |
+| Suspension in-game | — | reaching it and reading a round pass; the locks, the medals and the clear are still open |
 | World generation, AP 0.6.7 | `ArchipelagoGenerate` on real seeds | passing |
 | Option matrix | `missions_required` 1 / 8 / 17, strict + loose, suit and long jump on and off, 3-slot multiworld | passing |
 | Campaign matrix | all four enabled, Opposing Force alone, They Hunger alone, every campaign switched off, and a pre-campaign YAML | passing |
-| AngelScript plugin | in-game checklist below | most of section 0 done; endgame credit, chargers, the suit and Suspension still open |
+| AngelScript plugin | in-game checklist below | passing except the boxes under "Still open" |
 
 Ready-made YAMLs for the remaining items are in
 [examples/verification/](../examples/verification/) — five seeds, each one
@@ -81,12 +81,29 @@ that have never run in-game at all.
 - [x] **The counts stay separate.** With `missions_required: 1` and
   `opposing_force_missions_required: 9`, one Half-Life mission opens Nihilanth
   and does nothing at all for Worlds Collide.
-- [x] **A campaign left out of the seed** shows every one of its missions as "not in
-  this seed" in `!ap`, and its consoles refuse with that message.
+- [x] **A campaign left out of the seed** is absent from `!ap` entirely, campaign
+  heading and all, rather than listed as "not in this seed". Its consoles still
+  refuse with that message, since there the question was asked directly.
 - [x] **Shared weapons still arrive without Half-Life.** On an Opposing Force only
   seed, receive the Shotgun and confirm you can pick one up. Attributing shared
   weapons to whichever campaign declared them left this seed with shotguns and no
   shotgun item, so every one of them was refused for the whole run.
+- [x] **A Leap Of Faith is credited when it ends, not when it loads.** Warp in and
+  confirm nothing is sent on arrival -- the campaign used to be won by
+  connecting, because the outro is one map and arriving on a finale's last map
+  is normally the only moment there is. Watch it through to the credits: the
+  completion, the goal and the trip back to the hub should all land after the
+  map's `game_end`, from the next map load if the server cycled somewhere else.
+  Leaving early with `!hub` or `!warp` must credit nothing.
+- [x] **Worlds Collide is credited when it ends too.** This port never plays
+  `of6a5`: `of6a4b` ends the campaign itself, at the button by the guard before
+  the descent, with "Sven Co-op Opposing Force: thanks for playing!" and a
+  `game_end` five seconds later. Arriving on `of6a4b` must send its "Part 2
+  Reached" and nothing more; press the button and the completion, the goal and
+  the return to the hub should all land after the map ends.
+- [x] **A finale is not credited on arrival.** Warp into A Leap Of Faith or
+  Worlds Collide's last map, then leave with `!hub`: nothing is credited. Play
+  it out instead and the credit lands after the map ends.
 
 With `random_starting_weapon: true` and Opposing Force or They Hunger enabled:
 
@@ -251,6 +268,14 @@ first:
   what happened. Everything acts from `MapStart` on the far side of the
   transition, and `ChangeLevel` queues the command rather than calling
   `ServerExecute` to run it synchronously.
+- [x] **A carried-through mission sends nothing, unlocked or not.** Finish
+  Unforeseen Consequences with Office Complex already unlocked: no "Reached", no
+  weapon checks, and a bounce back to the hub. The only guard used to be the
+  locked test, so an unlocked mission counted as played. The console now says
+  `carried into <mission> from <mission>; not playing it` when it bounces, and
+  `FATAL: could not queue the hub return` if the older file-based guard fails.
+- [x] Repeat with the next mission **unlocked**. Still nothing: you were carried
+  through it, not playing it.
 
 ### 5. DeathLink
 
@@ -273,6 +298,10 @@ With `death_link_amnesty: 2`:
   it was. It lives in `ap_amnesty.txt`, not in a global.
 - [x] An inbound DeathLink must not spend amnesty; only local deaths do.
 - [x] `/amnesty 0` in the client → the very next death goes straight out.
+- [x] Kill four players with one explosion → still exactly one DeathLink.
+- [x] **With `death_link: false`, dying takes nobody with you.** The death is
+  still reported to the client, which is what lets it decide, but the lobby wipe
+  is the DeathLink and a seed without one must not have it.
 
 ### 4b. HEV suit
 
@@ -322,6 +351,26 @@ the campaign rather than granted, so on a seed with it off:
   never collectable. Stand next to Half-Life's crowbar and wait a second.
 - [x] With `chargesanity: false`, charger presses send nothing and the client logs no
   rejected checks.
+- [x] **Holding a weapon does not send its check.** Stand anywhere in the mission
+  a weapon's check is anchored to while carrying that weapon: nothing sends.
+  Walk over the copy lying in the world: it sends.
+- [x] **Being given a weapon does not send its check either.** Warp into Office
+  Complex with the Shotgun in the starting inventory (seed 1): nothing sends on
+  spawn. Then walk over the map's own shotgun and First Shotgun lands. Same test
+  with the item arriving mid-map from `/send`: the grant is silent, the copy on
+  the floor is not.
+- [x] **Loadout ammo arrives in one step**, at half of each weapon's maximum, and
+  a respawn is one pickup sound per weapon rather than a long crawl.
+- [x] **Standing still costs nothing.** Fire a few shots, then stand about for a
+  minute, then reload. No ammo arrives. Two separate faults did this:
+  the loadout topped up every weapon held rather than the ones it had just
+  granted, and it asked whether a player held a gun by one classname when the
+  gun has two — so the Glock, MP5 and SAW were handed over again every sweep,
+  each grant bringing a clip with it. The glock's tell was 17 rounds at a time
+  up to its 250 cap, and a refill the moment it was fired.
+  A burst of ammo out of nowhere is now either a run of `Ammo Cache` filler
+  draining from the event backlog, which is what that item does, or one of
+  these regressing.
 
 ### 5b. Chargers
 
@@ -386,23 +435,44 @@ On a short test seed with `missions_required: 1`:
 
 ### 7. Suspension
 
-Nothing here has passed yet; the whole section is below the divider.
+- [x] **Suspension is a seed of its own.** With every campaign off and
+  `suspension: true`, the seed contains the bridge and nothing else.
+- [x] **You can get there at all.** `!ap` lists Suspension under an Arcade
+  heading with `!warp suspension` beside it, and that warp works from the hub.
+  It is not a mission and has no console, so this is the only way in. On a seed
+  without it the heading is absent entirely — `!warp suspension` is the one place
+  that still answers "not in this seed", because there it is a direct question.
+- [x] **The counters.** The plugin creates `trigger_changevalue` entities answering
+  to names the map already fires (`s3_events`, `win_red_tickets`,
+  `start_events`, `end_script`) and reads its own `info_target` counters. If a
+  plugin-created entity is *not* fired by the map's own multi_managers, nothing
+  about a round is observed and no Suspension check ever sends. Symptom: the
+  round plays normally and the log never says "suspension: tier voted". This is
+  the load-bearing assumption of the whole module.
+- [x] **The class names match the lobby signs.** Assault, Grenadier, Pointman,
+  Support, Sniper, Medic, Engineer, Juggernaut. The map's entities are named
+  differently (`shotty` is Pointman) and the checks must read as the signs do.
+
+The rest of the arcade map is below the divider.
 
 ---
 
 ## Still open — 08/14/26
 
-Everything above has been run in game and passed. What follows has not, or
-failed when it was tried and has been changed since. Each item keeps the heading
-it belongs to.
+Everything above has been run in game and passed. Everything below has not, or
+failed when it was tried and has been changed since. An item moves up the moment
+it passes, so this section only ever shrinks, and each one keeps the heading it
+belongs to.
 
 Use [examples/verification/](../examples/verification/) — five seeds, each
 covering a group of these, with the unlocks and weapons already in the starting
 inventory. Suspension is seed 5, which now contains nothing but the bridge.
 
-### What changed after the first pass
+### What changed since the first pass
 
-Fixed and awaiting a retest, in the order they were found:
+Every fault found so far and what was done about it, in the order they were
+found. Most have since been retested and their boxes are above; the ones that
+have not are the boxes below.
 
 - Class names were invented from entity names and are now the lobby's own:
   Assault, Grenadier, Pointman, Support.
@@ -410,6 +480,48 @@ Fixed and awaiting a retest, in the order they were found:
 - No class booth or vote button was ever locked. Both lock now by going
   non-solid, because refusing at PlayerUse printed the message and let the press
   through underneath it.
+- Non-solid was not enough either, found on the second pass: the difficulty vote
+  still went through. A locked button now has its `target` blanked as well, which
+  leaves it firing nothing however it is pressed, restored from what the map had
+  when the item arrives. The whole set of locks is also reasserted once a second,
+  because the map kills all four buttons by wildcard (`kill_vote_button`) and a
+  lock applied once at map load is only as good as whatever the map does next.
+- Making them vanish also meant they refused in silence, and the fix for that
+  was to stop touching their solidity at all. A locked button is left where the
+  map put it, so the use trace lands on it and PlayerUse answers the press with
+  a sentence; the cut wire is what makes answering it safe.
+- **`SOLID_BSP WITHOUT MOVE_PUSH` — twice, from two different causes.** The
+  engine checks `solid` against `movetype` every time it links an entity, and
+  the pair being wrong is fatal rather than cosmetic. First it was a relink of
+  our own (`SetOrigin` to the origin the entity already had) revalidating a
+  button; that is gone, and no map entity is ever relinked now. Then it turned
+  out the Juggernaut's seal had been wrong all along: the seal is a
+  `func_wall_toggle` **and** a `trigger_hurt`, and sealing set SOLID_BSP on both
+  — legal for the wall, fatal for the trigger the next time anything linked it,
+  which is why it landed on a respawn in the lobby rather than at the moment the
+  seal was set. Switching an entity on now asks what it is: a pusher gets
+  SOLID_BSP, everything else SOLID_TRIGGER.
+- Locked class booths, three wrong answers deep. The portals are 64x64 slabs four
+  units thick standing in the booth doorways, so a player is never *in* a booth:
+  walking into one teleports them past it. Switching the teleport off did not
+  close the booth, it opened a room whose only way out was the teleport that had
+  just been disabled, and players stuck. Pointing the teleport at an
+  `info_target` on the map's first spawn point instead teleported them inside a
+  wall. Making the slab itself solid is the fatal pair above, since a trigger is
+  no pusher. What is there now is a `func_wall` of ours across the doorway, built
+  by the engine from the portal's own brush so it is spawned legally and is the
+  right size by construction, and removed rather than disabled when the item
+  arrives. The map's own portal is not touched at all.
+- Neither lock said anything. A locked booth is a wall and a wall cannot be
+  pressed, so the refusal is on proximity: walk up to one and the centre of the
+  screen reads "You have not found the Sniper yet", the same sentence in the
+  same place as a weapon that has not been granted, repeated no more than once
+  every four seconds.
+- `!warp` matched a mission on any part of its name but the arcade map only on
+  the whole of it, so `!warp susp` found nothing and Suspension was the one
+  place in the command that had to be typed out. It now takes a fragment like
+  everything else, and appears in the "be more specific" list when a fragment
+  matches it and a mission both.
 - The Juggernaut icon drew on top of the placeholder instead of replacing it.
 - Weapons and equipment were still being gated on the arcade map through
   `PickupCanCollect` and the weapon sweep, which also meant a class loadout's
@@ -420,11 +532,32 @@ Fixed and awaiting a retest, in the order they were found:
   still an entity of that classname and its origin is your origin, so holding a
   shotgun anywhere in the map its check is anchored to sent that check. Only
   copies lying in the world count now.
+- The other half of the same fault, found on the second pass: being *handed* a
+  weapon sent its check too. `GiveNamedItem` builds the weapon and touches the
+  player with it before it returns, so the loadout's own grant reached the
+  pickup hook indistinguishable from walking over one — arriving in Office
+  Complex with the Shotgun already received sent First Shotgun on spawn. Our
+  grants now raise a flag the hook reads, and anything else built at the
+  player's own origin (a map `.cfg` loadout, `game_player_equip`) is refused a
+  check by where it is.
 - Missions the seed left out are no longer listed at all.
 - Releasing a mission's completion from the server did nothing in game. The
   client now rebuilds finished missions from the server's checked locations.
+- The other half of that, found on the second pass: the seal counted a released
+  completion but `!ap` did not show it. The list decided a mission was complete
+  by asking whether every location in it had been found, which a released
+  completion does not make true, so the mission read "unlocked" while the finale
+  behind it had already counted it. `!ap` now reads the mission's own completion
+  check as well as the all-found sum.
 - Reconnecting kept the previous slot's state. A changed client session now
   clears everything and returns the lobby to the hub.
+- Except the session was the wrong thing to watch, found on the second pass: it
+  is minted once per client launch, so it fired when the same slot reconnected
+  from a restarted client and stayed put when a different slot was connected
+  from the client already running — which is the one that matters, and the one
+  that did nothing. The snapshot now carries `slot=<seed>:<slot number>` and the
+  reset hangs off that. An empty slot is a disconnected client, not a new run,
+  so a dropped connection on its own moves nobody.
 - A finale could be credited on arrival, because the armed-but-unplayed flag
   carried no record of which map armed it and a second `MapStart` on the same
   load consumed what the first had set.
@@ -433,107 +566,80 @@ Fixed and awaiting a retest, in the order they were found:
   locked ones and nothing caught the rest. It now asks whether we meant to be
   there at all: we asked for the map, it is another part of the same mission, or
   the server started on it.
+- That guard then overreached, found on the second pass: warping from inside one
+  mission to another arrived and bounced straight to the hub. The return was
+  armed by *any* transition that left a mission for a map outside it, ours
+  included, so `!warp` and the console buttons queued their own undoing. It is
+  armed only for the campaign's own transitions now, and a map we asked for
+  outranks a pending return that outlived whatever set it.
 - Both pending-state writes now log loudly when they fail. A silent failure of
   the hub-return write is what a phantom check looks like from the outside.
 - A death wiped the lobby even with DeathLink switched off. The wipe *is* the
   DeathLink; only the report to the client was ever meant to be unconditional.
 
-### 0. Campaigns, first
+### 2. The bridge round-trips
 
-- [ ] **A Leap Of Faith is credited when it ends, not when it loads.** Warp in and
-  confirm nothing is sent on arrival -- the campaign used to be won by
-  connecting, because the outro is one map and arriving on a finale's last map
-  is normally the only moment there is. Watch it through to the credits: the
-  completion, the goal and the trip back to the hub should all land after the
-  map's `game_end`, from the next map load if the server cycled somewhere else.
-  Leaving early with `!hub` or `!warp` must credit nothing.
-- [ ] **Worlds Collide is credited when it ends too.** This port never plays
-  `of6a5`: `of6a4b` ends the campaign itself, at the button by the guard before
-  the descent, with "Sven Co-op Opposing Force: thanks for playing!" and a
-  `game_end` five seconds later. Arriving on `of6a4b` must send its "Part 2
-  Reached" and nothing more; press the button and the completion, the goal and
-  the return to the hub should all land after the map ends.
+- [x] **Releasing a mission's completion from the server console applies in
+  game.** `/send` its "- Complete" location and the mission counts toward the
+  seal without the game having played it, **and** `!ap` reads it as `complete`
+  straight away, with the rest of its locations still unfound.
+- [x] **Reconnecting is safe.** Disconnect, connect a different slot **from the
+  same running client**: the lobby returns to the hub, previously sent checks
+  are forgotten, and the new slot's first checks send rather than being
+  swallowed as duplicates. The server console says `client slot changed`.
+- [x] **The same slot never moves you.** Disconnect and reconnect the same slot,
+  and restart the client entirely and connect the same slot again: no hub
+  return, nothing forgotten, and you stay in whatever mission you were playing.
+  A momentary drop is not a new run.
 
 ### 4. Mission gating and completion
 
-- [ ] Repeat with the next mission **unlocked**. Still nothing: you were carried
-  through it, not playing it.
-
-### 5. DeathLink
-
-- [ ] Kill four players with one explosion → still exactly one DeathLink.
-- [ ] **With `death_link: false`, dying takes nobody with you.** The death is
-  still reported to the client, which is what lets it decide, but the lobby wipe
-  is the DeathLink and a seed without one must not have it.
-
-### Fixed since the first pass, needs a retest
-
-- [ ] **Holding a weapon does not send its check.** Stand anywhere in the mission
-  a weapon's check is anchored to while carrying that weapon: nothing sends.
-  Walk over the copy lying in the world: it sends.
-- [ ] **Loadout ammo arrives in one step**, at half of each weapon's maximum, and
-  a respawn is one pickup sound per weapon rather than a long crawl.
-- [ ] **Standing still costs nothing.** Fire a few shots, then stand about for a
-  minute, then reload. No ammo arrives. Two separate faults did this:
-  the loadout topped up every weapon held rather than the ones it had just
-  granted, and it asked whether a player held a gun by one classname when the
-  gun has two — so the Glock, MP5 and SAW were handed over again every sweep,
-  each grant bringing a clip with it. The glock's tell was 17 rounds at a time
-  up to its 250 cap, and a refill the moment it was fired.
-  A burst of ammo out of nowhere is now either a run of `Ammo Cache` filler
-  draining from the event backlog, which is what that item does, or one of
-  these regressing.
-- [ ] **Missions the seed left out are absent from `!ap`**, campaign headings and
-  all, rather than listed as "not in this seed".
-- [ ] **Releasing a mission's completion from the server console applies in
-  game.** `/send` its "- Complete" location and the mission counts toward the
-  seal without the game having played it.
-- [ ] **Reconnecting is safe.** Disconnect, connect a different slot: the lobby
-  returns to the hub, previously sent checks are forgotten, and the new slot's
-  first checks send rather than being swallowed as duplicates.
-- [ ] **A finale is not credited on arrival.** Warp into A Leap Of Faith or
-  Worlds Collide's last map, then leave with `!hub`: nothing is credited. Play
-  it out instead and the credit lands after the map ends.
-- [ ] **A carried-through mission sends nothing, unlocked or not.** Finish
-  Unforeseen Consequences with Office Complex already unlocked: no "Reached", no
-  weapon checks, and a bounce back to the hub. The only guard used to be the
-  locked test, so an unlocked mission counted as played. The console now says
-  `carried into <mission> from <mission>; not playing it` when it bounces, and
-  `FATAL: could not queue the hub return` if the older file-based guard fails.
-- [ ] **Suspension is a seed of its own.** With every campaign off and
-  `suspension: true`, the seed contains the bridge and nothing else.
+- [x] **Warping mission to mission stays put.** `!warp` from the middle of one
+  mission straight into another, and from a mission's last map into another:
+  you arrive and stay, with no "Returning to the hub". Same by console button.
+  The bounce belongs to a mission the campaign carried you into, and that case
+  has already passed, so this must not have cost it.
 
 ### 7. Suspension
 
-- [ ] **The counters.** The plugin creates `trigger_changevalue` entities answering
-   to names the map already fires (`s3_events`, `win_red_tickets`,
-   `start_events`, `end_script`) and reads its own `info_target` counters. If a
-   plugin-created entity is *not* fired by the map's own multi_managers, nothing
-   about a round is observed and no Suspension check ever sends. Symptom: the
-   round plays normally and the log never says "suspension: tier voted". This is
-   the load-bearing assumption of the whole module.
-- [ ] **Section boundaries.** Confirm each section credit lands as that section
-   falls, not one early or one late. `s6` hangs off `s6_captured_text` rather
-   than `s7_apc_start`, because the latter is delayed twenty seconds.
-- [ ] **You can get there at all.** `!ap` lists Suspension under an Arcade
-  heading with `!warp suspension` beside it, and that warp works from the hub.
-  It is not a mission and has no console, so this is the only way in. On a seed
-  without it the heading is absent entirely — `!warp suspension` is the one place
-  that still answers "not in this seed", because there it is a direct question.
-- [ ] **The class names match the lobby signs.** Assault, Grenadier, Pointman,
-  Support, Sniper, Medic, Engineer, Juggernaut. The map's entities are named
-  differently (`shotty` is Pointman) and the checks must read as the signs do.
-- [ ] **Locked classes have no portal.** A class whose item has not arrived is
-  simply not enterable: the portal is non-solid rather than refusing on use.
-  Chat lists what is open on arrival.
-- [ ] **The Juggernaut icon replaces the placeholder** rather than drawing on
-  top of it.
+Seed 5. Getting there and reading the round is confirmed; nothing past that is.
+
+- [ ] **`!warp susp` gets there**, and so does any other part of "Suspension" or
+  of the map name. The arcade was only ever compared for equality while every
+  mission matched on a fragment, so it alone had to be typed out in full. A
+  fragment that matches the arcade *and* a mission now lists both rather than
+  guessing.
 - [ ] **The vote buttons.** With one Progressive Suspension Difficulty item held,
    easy and medium should be pressable and hard and insane should not be there
-   at all. A locked button is made non-solid rather than refused on use:
-   refusing at PlayerUse printed the message and let the vote through anyway.
-   The mapping is `vote_button4` easy through `vote_button1` insane — backwards
-   from the tier order, so an off-by-one here locks the wrong buttons.
+   at all. The mapping is `vote_button4` easy through `vote_button1` insane —
+   backwards from the tier order, so an off-by-one here locks the wrong buttons.
+
+   A locked button is **there, pressable, and refuses out loud**: chat says
+   "Hard is locked. Find Progressive Suspension Difficulty." and no vote is
+   cast. Making them vanish worked as a lock and was wrong as an answer — a
+   button that is not there cannot be pressed, so nothing could be said about
+   it, and the tier order made a silent gap easy to mistake for a bug.
+
+   What holds the lock is that the button's `target` is cut while it is locked,
+   so the press fires nothing whatever route reached it. Solidity is left
+   exactly as the map built it, which is what gives the use trace something to
+   land on and the refusal something to answer.
+- [ ] **A locked class booth is a wall that says why.** Walk up to one whose item
+  has not arrived: you cannot get in, and the centre of the screen reads "You
+  have not found the Sniper yet" — the same sentence, in the same place, as a
+  weapon you have not been granted. Then receive the class and walk in.
+
+  Three versions of this have been wrong. Switching the teleport off opened a
+  room whose only way out was the teleport, and players stuck inside it; sending
+  them to a spawn point instead teleported them into a wall; making the trigger
+  itself solid is the crash below. The block is now a `func_wall` of ours built
+  from the portal's own brush, which the engine spawns legally, and which is
+  removed rather than disabled when the item lands.
+- [ ] **The Juggernaut icon replaces the placeholder** rather than drawing on
+  top of it.
+- [ ] **Section boundaries.** Confirm each section credit lands as that section
+  falls, not one early or one late. `s6` hangs off `s6_captured_text` rather
+  than `s7_apc_start`, because the latter is delayed twenty seconds.
 - [ ] **The Juggernaut.** Below insane the booth is believed to be inert, so the
    plugin watches the portal box and grants the class itself. Confirm the portal
    grants it once the item is held, that a second player is refused, that the
