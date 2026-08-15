@@ -190,9 +190,14 @@ CLASSES: list[Class] = [
     ),
 ]
 
-# The class every other one has to be cleared with before it opens, per tier, and
-# the one a completed run with is the seed's Suspension goal.
-GOAL_CLASS = "jugger"
+# The one class the *map* gates rather than the seed: it opens once a run has
+# been cleared with each of the other seven, and it is not an item.
+#
+# Called the goal class once, which it no longer is and never quite was. The goal
+# is a run cleared with each class in `suspension_goal_classes`, which is all
+# eight by default -- this one among them, and last, because the map will not
+# open it any sooner.
+GATED_CLASS = "jugger"
 
 # Volumes the plugin watches so it can grant the Juggernaut itself: the lobby
 # portal, and the pad it teleports onto. Watched rather than hooked because a
@@ -203,6 +208,14 @@ JUGGER_VOLUMES = {
     "portal": {"mins": [6256, -6064, 144], "maxs": [6260, -6000, 208]},
     "pad": {"mins": [6224, -6912, 88], "maxs": [6288, -6848, 96]},
 }
+
+# The eight portals are the eight faces of an octagon standing in the middle of
+# the lobby -- four axis-aligned slabs four units thick, four diagonal ones the
+# compiler records as squares -- and the booths are what they enclose. That is
+# why the plugin is given the ring as one volume rather than a box per doorway:
+# reasoning outward from a single face points into the room, and the room is
+# where everybody is standing. See `suspension_booth_volumes` in
+# tools/build_campaign_data.py, which measures all of it from the BSP.
 
 # The barrier that seals the Juggernaut portal, and the lethal volume behind it.
 # Both share the class name, so the plugin finds them by name *and* classname.

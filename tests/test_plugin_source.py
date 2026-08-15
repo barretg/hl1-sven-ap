@@ -450,40 +450,66 @@ def test_solid_bsp_is_only_ever_given_to_a_pusher(sources: dict[str, str]) -> No
     assert "SOLID_TRIGGER" in guard, "a non-pusher has nothing safe to be switched on as"
 
 
-def test_nothing_is_built_to_lock_a_class_booth(sources: dict[str, str]) -> None:
-    """Four versions of this have been wrong, and the last one was the worst.
+def test_a_locked_class_booth_is_walled_shut(sources: dict[str, str]) -> None:
+    """A locked doorway has to be *shut*, not switched off.
 
-    Switching the teleport off opened a room whose only way out was the
-    teleport, and players stuck; pointing it at a spawn instead teleported them
-    into a wall; making the trigger itself solid is the fatal solid/movetype
-    pair. Then a `func_wall` of ours built from the portal's brush outlived the
-    class being earned -- the handle to it came back null while the brush stood
-    -- and a `restart` with one standing crashed the game outright.
+    Every version that disabled the portal instead trapped somebody: walking a
+    switched-off doorway leads into a room whose only way out was the teleport
+    that was switched off. Sending them to a spawn point teleported them into a
+    wall; watching for them needed the geometry, and the geometry is an octagon
+    in the middle of the lobby, so getting it wrong bounced players off thin air
+    halfway along the bridge.
 
-    So the lock creates nothing and makes nothing of the map's solid. The portal
-    is switched off, and the booth behind it is watched.
+    The barrier is built from the portal's own brush, which is exactly the right
+    shape in exactly the right place with nothing derived, and the engine spawns
+    it as a `func_wall` -- a pusher, and so legally SOLID_BSP, which the trigger
+    is not.
     """
     text = sources["ap_suspension.as"]
     body = function_body(text, "SuspensionSetPortalOpen")
 
-    assert "CreateEntity(" not in body, "the booth lock builds an entity again"
-    assert "SOLID_BSP" not in body, "a trigger made SOLID_BSP is the crash, not the fix"
-    assert "SOLID_NOT" in body, "a locked portal is no longer switched off"
+    assert '"func_wall"' in body, "the barrier is no longer an entity the engine builds"
+    assert "pev.model" in body, "the barrier is not built from the portal's own brush"
+    assert "SOLID_" not in body, (
+        "the map's own solidity is not ours to set; that is the fatal pair"
+    )
+
+    # Found by name, never by a handle. A handle to it came back null while the
+    # brush was still standing, so unlocking removed nothing and the booth stayed
+    # shut with nothing to say until the map reloaded.
+    assert "FindEntityByTargetname(" in body, "the barrier is held by handle again"
+    assert "hBlock" not in text, "the stale handle is back"
 
 
-def test_a_locked_booth_puts_you_back_and_says_why(sources: dict[str, str]) -> None:
-    """A switched-off portal is a doorway onto a room with no exit, so anybody
-    who walks one has to be put back where they were -- with the same sentence
-    and the same centre print a locked weapon gets."""
-    body = function_body(sources["ap_suspension.as"], "SuspensionGuardLockedBooths")
+def test_the_barriers_never_outlive_the_map(sources: dict[str, str]) -> None:
+    """They are the only entities the plugin creates that the engine did not ask
+    for, and a `restart` with one standing took the game down once with no error
+    line. The removal has to come before MapChange's restart early-out, because
+    a restart is exactly the case that crashed."""
+    change = function_body(sources["ap_hub.as"], "MapChange")
+    remove = change.find("SuspensionRemoveBlocks()")
+    early = change.find("szNextMap == g_szCurrentMap")
+
+    assert remove >= 0, "nothing takes the barriers down on the way out"
+    assert early >= 0, "MapChange no longer has a restart case"
+    assert remove < early, "a restart leaves the barriers standing"
+
+
+def test_a_locked_booth_says_why_without_moving_anybody(
+    sources: dict[str, str],
+) -> None:
+    """The barrier is what stops them; this is only the sentence that goes with
+    the bump, in the same place and words a locked weapon uses. Two attempts at
+    moving people instead both went wrong, so the worst a wrong box can now do is
+    name the wrong class."""
+    body = function_body(sources["ap_suspension.as"], "SuspensionWarnLockedBooths")
 
     assert "HUD_PRINTCENTER" in body, "the booth refusal is not where the weapon one is"
     assert "have not found the" in body, "the wording drifted from the weapon refusal"
     assert "SUS_REFUSAL_INTERVAL" in body, "the message repeats every think"
-    assert "SetOrigin(" in body, "nobody is put back out of the booth"
-    assert "g_szSusSafeSpot" in body, (
-        "put back to where, exactly? the player's own last position outside is "
-        "the only spot that needs nothing known about the map"
+    assert "SetOrigin(" not in body, "the message moves players again"
+    assert 'g_SusVolumes.get( "face_' in body, (
+        "the doorways come from the generated data, not from the engine's bounds"
     )
 
 
@@ -506,3 +532,11 @@ def test_the_arcade_answers_to_part_of_its_name(sources: dict[str, str]) -> None
     assert "g_Suspension.enabled" in match, (
         "a seed without the arcade offers it anyway"
     )
+
+
+def test_the_arcade_never_reads_the_engines_bounds(sources: dict[str, str]) -> None:
+    """`absmin`/`absmax` belong to the engine's link state, and the entities this
+    module cares about are ones it has deliberately left unlinked. Reading them
+    is what put a guard box in the middle of the bridge."""
+    text = sources["ap_suspension.as"]
+    assert "absmin" not in text and "absmax" not in text

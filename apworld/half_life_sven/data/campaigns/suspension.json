@@ -5,7 +5,7 @@
   "name": "Suspension",
   "map": "suspension",
   "option": "suspension",
-  "goal_class": "jugger",
+  "gated_class": "jugger",
   "explosive_classes": [
    "gl_soldier",
    "shotty",
@@ -37,6 +37,116 @@
      6288,
      -6848,
      96
+    ]
+   }
+  },
+  "booth_volumes": {
+   "face_soldier": {
+    "mins": [
+     6128,
+     -5936,
+     144
+    ],
+    "maxs": [
+     6192,
+     -5932,
+     208
+    ]
+   },
+   "face_gl_soldier": {
+    "mins": [
+     6128,
+     -6132,
+     144
+    ],
+    "maxs": [
+     6192,
+     -6128,
+     208
+    ]
+   },
+   "face_shotty": {
+    "mins": [
+     6204,
+     -5988,
+     144
+    ],
+    "maxs": [
+     6252,
+     -5940,
+     208
+    ]
+   },
+   "face_saw": {
+    "mins": [
+     6068,
+     -6124,
+     144
+    ],
+    "maxs": [
+     6116,
+     -6076,
+     208
+    ]
+   },
+   "face_sniper": {
+    "mins": [
+     6060,
+     -6064,
+     144
+    ],
+    "maxs": [
+     6064,
+     -6000,
+     208
+    ]
+   },
+   "face_medic": {
+    "mins": [
+     6204,
+     -6124,
+     144
+    ],
+    "maxs": [
+     6252,
+     -6076,
+     208
+    ]
+   },
+   "face_engineer": {
+    "mins": [
+     6068,
+     -5988,
+     144
+    ],
+    "maxs": [
+     6116,
+     -5940,
+     208
+    ]
+   },
+   "face_jugger": {
+    "mins": [
+     6256,
+     -6064,
+     144
+    ],
+    "maxs": [
+     6260,
+     -6000,
+     208
+    ]
+   },
+   "booths": {
+    "mins": [
+     6060,
+     -6132,
+     144
+    ],
+    "maxs": [
+     6260,
+     -5932,
+     208
     ]
    }
   },

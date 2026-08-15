@@ -43,9 +43,10 @@ from .bridge import Bridge, find_store_dir, is_game_dir
 GAME_NAME = "Half-Life (Sven Co-op)"
 POLL_INTERVAL = 0.2
 
-# What the plugin calls Suspension's goal when it reports one. Not a chapter key:
-# the arcade map has no missions, and its goal is a run cleared as the Juggernaut
-# at the hardest tier the seed allows.
+# Suspension's own goal, alongside each campaign's finale. Not a chapter key: the
+# arcade map has no missions. Nothing in the game reports it either -- winning it
+# is a run cleared with each class the YAML names, at the capped tier, which is a
+# set of checks rather than an event -- so the client is what decides it.
 SUSPENSION_GOAL_KEY = "suspension"
 
 # The chosen install path is remembered in host.yaml (see client/settings.py), so
@@ -314,7 +315,7 @@ class HalfLifeSvenContext(SuperContext):
         # seven. All three arrive with the slot data.
         self.suspension_goal_requires_award = False
         self.suspension_goal_classes: list[str] = []
-        self.suspension_goal_class = ""
+        self.suspension_gated_class = ""
         # "on", "non_arcade" or "off": whether one player's death takes the rest
         # of the lobby with it, and where. Off whenever DeathLink itself is off.
         self.lobby_death_link = "on"
@@ -495,10 +496,22 @@ class HalfLifeSvenContext(SuperContext):
             # which missions those finales are. A seed generated before campaigns
             # existed carries none of this, so it falls back to the single goal
             # and single number it does carry.
-            self.goal_chapters = set(
-                slot_data.get("goal_chapters", ())
-                or ({slot_data["goal_chapter"]} if "goal_chapter" in slot_data else set())
-            ) or self.goal_chapters
+            # Empty entries are dropped rather than believed. A seed with no
+            # campaigns in it still carries the older single-goal field, as `""`,
+            # and taking that for a chapter key put a goal in the set that
+            # nothing could ever complete: Suspension was finished, the arcade
+            # was marked done, and the slot sat one phantom mission short of won
+            # for ever. Its tell is the connect line reading "?: 1 missions
+            # needed to open its final mission".
+            #
+            # An empty list is respected as an empty list, which is what a seed
+            # of nothing but the arcade map means. Only a seed that mentions
+            # neither key -- one generated before campaigns existed -- falls back
+            # to the finales the data itself declares.
+            if "goal_chapters" in slot_data:
+                self.goal_chapters = {key for key in slot_data["goal_chapters"] if key}
+            elif slot_data.get("goal_chapter"):
+                self.goal_chapters = {slot_data["goal_chapter"]}
             self.missions_required_for = {
                 key: int(value)
                 for key, value in slot_data.get("campaign_missions_required", {}).items()
@@ -530,8 +543,12 @@ class HalfLifeSvenContext(SuperContext):
             self.suspension_goal_requires_award = bool(
                 slot_data.get("suspension_goal_requires_award", False)
             )
-            self.suspension_goal_class = str(
-                slot_data.get("suspension_goal_class", "")
+            # The class the *map* gates, which is not the goal's and never was
+            # named well: `suspension_goal_class` is the old spelling, from when
+            # the goal was a run cleared as the Juggernaut.
+            self.suspension_gated_class = str(
+                slot_data.get("suspension_gated_class")
+                or slot_data.get("suspension_goal_class", "")
             )
             self.suspension_goal_classes = list(
                 slot_data.get("suspension_goal_classes", ())
@@ -744,11 +761,11 @@ class HalfLifeSvenContext(SuperContext):
         item: the client works it out and tells the game, so the booth opens the
         moment the seventh clear lands rather than at the next map load.
         """
-        if not self.suspension_enabled or not self.suspension_goal_class:
+        if not self.suspension_enabled or not self.suspension_gated_class:
             return False
         others = [
             key for key in self.suspension_class_keys
-            if key != self.suspension_goal_class
+            if key != self.suspension_gated_class
         ]
         if not others:
             return False
@@ -810,7 +827,7 @@ class HalfLifeSvenContext(SuperContext):
             # have each cleared a run, which is the map's own rule for it.
             "classes": sorted(
                 self.suspension_classes
-                | ({self.suspension_goal_class} if self.suspension_juggernaut_open else set())
+                | ({self.suspension_gated_class} if self.suspension_juggernaut_open else set())
             ),
         }
 

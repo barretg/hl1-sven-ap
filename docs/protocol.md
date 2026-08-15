@@ -88,11 +88,37 @@ at 1 each launch, so when the session changes the plugin resets its
 high-water mark; otherwise every event from a restarted client would look
 already-applied and be ACKed away without running.
 
+`slot` is `<seed name>:<slot number>`, and it is the *only* thing the plugin
+resets its run state on: which checks it has sent, which mission it thinks is
+being played, where the lobby is. The session cannot do that job and was wrong
+both ways round when it tried — it changes when the same slot reconnects from a
+restarted client, which should move nobody, and does not change when a different
+slot is connected from the client already running, which is the case that makes
+everything remembered wrong. An empty `slot` is a disconnected client rather
+than a new run, so the last one named stands.
+
+`data_version` is the generator's fingerprint of the id registry and of the ids
+this build actually ships. The plugin refuses to send checks while it disagrees
+with its own copy in `checkdata.txt`, because two halves numbering locations
+differently is worse than a bridge that visibly does nothing.
+
+`lobby_death_link` is `on`, `non_arcade` or `off`: whether one player's death
+takes the rest of the lobby with it, and where. It is separate from `death_link`,
+which is only about the multiworld — a seed can report deaths without gibbing
+seven other people, or spare the arcade map alone, where a run is long and a
+death is already counted against the medal. The client resolves the interaction
+before the plugin sees it and sends `off` whenever `death_link` is off, rather
+than leaving the game to reason about two flags. An older client sends no line
+at all, which reads as `on`: the only behaviour there has ever been.
+
 ```
 session=9f3c1ab2
+slot=Seed1234:3
+data_version=3386abff3877
 connected=1
 goal_open=0
 death_link=1
+lobby_death_link=non_arcade
 death_link_amnesty=4
 chapters=blast_pit,office_complex
 goals_open=nihilanth
@@ -127,6 +153,20 @@ ride in `items`, which is a set of names and can only say whether one arrived at
 all. `sus_tiers` is easiest first and `sus_awards` hardest first, and both are
 already narrowed to what the YAML asked for: a tier or a medal missing from these
 lists has no checks in this seed.
+
+`sus_classes` is the classes the lobby may enter, and seven of the eight get
+there by an item arriving. The eighth is the Juggernaut, which has no item: the
+map opens it once a run has been cleared with each of the others, so the client
+works that out from the seven clears it has seen checked and adds the class to
+this list itself. Nothing about it is sent as an item, and the plugin is told the
+same way it is told about everything else.
+
+Suspension's goal is not in this file at all. Winning the arcade is a set of
+checks — one clear per class in `suspension_goal_classes` at the capped tier, and
+the medal too where the YAML asks for it — rather than an event the game could
+report, so the client decides it from the server's checked locations. That is
+also why releasing those clears from the server console counts. The plugin sends
+`GOAL|<chapter key>` for campaign finales and nothing at all for the arcade.
 
 `excluded` is the missions the seed left out. It is not the same as "locked": no
 item will ever unlock them, so the game reports "not in this seed" rather than
@@ -228,11 +268,33 @@ not collide:
 | `X` | key, name, map, goal class, start signal, end signal |
 | `Y` | arcade, tier key, name, tickets, vote button, ticket signal |
 | `Z` | arcade, section key, index, name, clear signal |
-| `W` | arcade, class key, name, the targetname the map gives the player, booth signal, map-gated |
+| `W` | arcade, class key, name, the targetname the map gives the player, booth signal, map-gated, and the teleport destination its lobby portal sends to |
 | `A` | arcade, medal key, name, most deaths that still earns it |
 | `J` | arcade, volume name, mins, maxs — a box the plugin watches |
 | `G` | arcade, part, targetname, classname — the Juggernaut seal |
 | `E` | arcade, class, field, value — how to grant a class without its booth |
+
+There are four kinds of `J`, all measured out of `suspension.bsp` by the
+generator:
+
+| Volume | What it is |
+| --- | --- |
+| `portal` | the Juggernaut's doorway, which the plugin watches so it can grant that class itself on the tiers where the map's own booth is inert |
+| `pad` | where that booth would have teleported them, watched for the same reason |
+| `booths` | the ring of eight class portals, which is the region a player has to be put back out of while their class is locked |
+| `face_<class>` | one portal of that ring, which is how the plugin tells whose booth somebody walked into |
+
+Measured at build time rather than asked of the engine, because the engine
+cannot be asked: `absmin`/`absmax` belong to its link state and a locked portal
+is deliberately not linked, so the numbers are whatever they last were. Nor can
+a booth be reasoned about from one face. The eight portals are the eight faces of
+an octagon standing in the middle of the lobby — four axis-aligned slabs four
+units thick and four diagonal ones the compiler records as squares — so the
+booths are what the ring *encloses*, and the far side of any one face is the room
+everybody is walking through. Both mistakes shipped, and between them they
+bounced players off thin air in the middle of the bridge. The plugin tests the
+ring's inscribed circle rather than its bounding box, since an octagon's corners
+are room and not booth.
 
 The signals on `Y`, `Z` and `X` are names the map already fires. The plugin
 creates its own `trigger_changevalue` entities answering to them at map start, so

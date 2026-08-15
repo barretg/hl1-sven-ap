@@ -109,7 +109,7 @@ def test_location_ids_are_unique_and_beyond_the_campaigns(campaign: dict) -> Non
 
 def test_the_goal_class_is_never_the_starting_class(arcade: dict) -> None:
     """The Juggernaut is earned, so it cannot be what a seed opens with."""
-    goal = arcade["goal_class"]
+    goal = arcade["gated_class"]
     startable = [c["key"] for c in arcade["classes"] if c["key"] != goal]
     assert goal not in startable
     assert len(startable) == len(arcade["classes"]) - 1
@@ -117,13 +117,13 @@ def test_the_goal_class_is_never_the_starting_class(arcade: dict) -> None:
 
 def test_only_the_goal_class_is_map_gated(arcade: dict) -> None:
     gated = [c["key"] for c in arcade["classes"] if c["map_gated"]]
-    assert gated == [arcade["goal_class"]]
+    assert gated == [arcade["gated_class"]]
 
 
 def test_the_map_gated_class_can_be_granted_without_its_booth(arcade: dict) -> None:
     """Its booth does nothing below the map's own tier, so the plugin needs
     everything required to hand the class over itself."""
-    entry = next(c for c in arcade["classes"] if c["key"] == arcade["goal_class"])
+    entry = next(c for c in arcade["classes"] if c["key"] == arcade["gated_class"])
     grant = entry["grant"]
     for field in ("health", "max_health", "armorvalue", "armortype", "weapons", "teleport"):
         assert grant.get(field), field
@@ -184,8 +184,12 @@ def test_checkdata_describes_the_arcade(records: list[list[str]], arcade: dict) 
     assert len([r for r in records if r[0] == "Z"]) == len(arcade["sections"])
     assert len([r for r in records if r[0] == "W"]) == len(arcade["classes"])
     assert len([r for r in records if r[0] == "A"]) == len(arcade["awards"])
-    # The portal and the pad the plugin watches, and the seal it drives.
-    assert {r[2] for r in records if r[0] == "J"} == {"portal", "pad"}
+    # Every box the plugin watches: the Juggernaut's portal and pad, the ring of
+    # class booths, and one face of that ring per class.
+    assert {r[2] for r in records if r[0] == "J"} == (
+        {"portal", "pad", "booths"}
+        | {f"face_{entry['key']}" for entry in arcade["classes"]}
+    )
     assert {r[2] for r in records if r[0] == "G"} == {"wall", "hurt", "reveal"}
 
 
@@ -237,7 +241,7 @@ def test_the_explosives_gate_names_real_classes_and_a_real_section(
 
     assert explosive, "the gate is empty, so it gates nothing"
     assert set(explosive) <= keys, f"unknown class in {explosive}"
-    assert arcade["goal_class"] not in explosive, (
+    assert arcade["gated_class"] not in explosive, (
         "the Juggernaut stands behind every other class already; counting it "
         "here would let the gate be satisfied by the one item that needs it"
     )
@@ -260,3 +264,35 @@ def test_only_the_first_section_is_outside_the_explosives_gate(arcade: dict) -> 
 
     ungated = [e["key"] for e in arcade["sections"] if e["index"] < first]
     assert ungated == ["s1"]
+
+
+def test_the_booth_ring_encloses_every_face(arcade: dict) -> None:
+    """The portals are the eight faces of an octagon in the middle of the lobby,
+    and the booths are what it encloses.
+
+    Reasoning outward from one face is what went wrong in game: the far side of
+    a face is the room everybody is standing in, so players were bounced off
+    thin air halfway along the bridge. The ring is the only thing worth testing
+    a position against, and every face has to be part of it.
+    """
+    volumes = arcade["booth_volumes"]
+    ring = volumes["booths"]
+
+    faces = [
+        volumes[f"face_{entry['key']}"] for entry in arcade["classes"]
+    ]
+    assert len(faces) == 8, "an octagon has eight faces"
+
+    for face in faces:
+        for axis in range(3):
+            assert ring["mins"][axis] <= face["mins"][axis]
+            assert ring["maxs"][axis] >= face["maxs"][axis]
+
+    # Square in plan, since the faces ring a centre. The plugin rounds it to the
+    # inscribed circle, and a lopsided ring would make that the wrong shape.
+    width = ring["maxs"][0] - ring["mins"][0]
+    depth = ring["maxs"][1] - ring["mins"][1]
+    assert abs(width - depth) <= 8, f"ring is {width} by {depth}, not a ring"
+
+    # And it is the octagon rather than half the lobby: eight booths' worth.
+    assert width < 400

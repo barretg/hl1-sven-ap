@@ -571,7 +571,7 @@ void LoadCheckData()
 			arcade.key = parts[1];
 			arcade.name = parts[2];
 			arcade.map = parts[3];
-			arcade.goalClass = parts[4];
+			arcade.gatedClass = parts[4];
 			arcade.startSignal = parts[5];
 			arcade.endSignal = parts[6];
 			@g_pArcade = @arcade;

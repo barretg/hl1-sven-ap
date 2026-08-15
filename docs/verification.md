@@ -528,7 +528,20 @@ have not are the boxes below.
   locked button from across the lobby was enough to answer it over and over. It
   now waits for `IN_USE`, and both refusals repeat at most once every four
   seconds per player.
-- The booth wall was the worst of the four attempts. A `func_wall` of ours, built
+- And the guard that replaced the wall bounced players off thin air on the
+  bridge, twice: it worked out where a booth was at runtime, from the portal's
+  `absmin`/`absmax` — which belong to the engine's link state, and the portal was
+  deliberately not linked — and from the assumption that a booth is on the far
+  side of its face from the lobby. The portals are the eight faces of an octagon
+  in the middle of the lobby, so that far side is the room.
+
+  **The lesson, written down because it cost four rounds:** the wall was
+  working. Its two defects were a stale handle and an entity outliving the map,
+  both small and both fixable in place; replacing the mechanism instead threw
+  away the working part and reintroduced the trap it had solved. The barrier is
+  back, found by name and removed on the way out of the map, and the geometry
+  the generator now measures is used only to decide what to *say*.
+- The booth wall was the worst of the four attempts, at the time. A `func_wall` of ours, built
   from the portal's brush, stayed standing after its class had been earned: the
   `EHandle` to it came back null while the entity did not, so unlocking removed
   nothing and the guard that explains a shut booth skipped it for the same
@@ -727,9 +740,22 @@ report wins.
   shut with nothing to say and nothing to remove — and a `restart` with one
   standing crashed the game with no error at all.
 
-  Nothing is built now and nothing of the map's is made solid. The portal is
-  switched off, and a player who crosses a switched-off doorway is put back at
-  their own last position outside it, which needs nothing known about the map.
+  The fifth and sixth were the same mistake as the first: disable the portal and
+  cope with the trap. Watching for anybody who fell in needs to know where a
+  booth *is*, and the answer was wrong twice — `absmin`/`absmax` belong to the
+  engine's link state and a disabled portal is not linked, and the eight portals
+  are the eight faces of an octagon in the middle of the lobby, so "the far side
+  of this face from the lobby" points into the room everybody is walking
+  through. That bounced players off thin air in the middle of the bridge.
+
+  What is there now is the barrier again, which is the version that worked, with
+  its two actual defects fixed rather than the whole mechanism replaced: it is
+  found by name instead of by a handle that went stale while the brush stood,
+  and it is taken down on the way out of the map, before MapChange's restart
+  case returns, so nothing of ours is ever standing across a transition. The
+  map's own portal is not touched at all. Nobody is moved, and the message is
+  proximity to a doorway measured from the BSP (`J` records `face_<class>`), so
+  the worst a wrong box can do is name the wrong class.
 - [x] **`restart` on the arcade map does not crash.** With a class locked, with
   one just unlocked, and mid-round. The crash had no error line, so the only
   evidence either way is whether it happens again.
@@ -738,7 +764,7 @@ report wins.
   lock sweep, and firing the reveal is not idempotent — a multi_manager fire
   every second made the placeholder blink over the icon for as long as anyone
   watched. It is applied only when the answer changes now.
-- [ ] **One clear line per clear.** Finishing a run said "cleared on easy" and
+- [x] **One clear line per clear.** Finishing a run said "cleared on easy" and
   "easy underway" alternately, several times a second, for the rest of the map.
   Our counters latch — the map sets a signal once and it stands — so reading the
   end signal without spending it meant the round ended, restarted on the start

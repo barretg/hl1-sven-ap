@@ -833,6 +833,15 @@ A|suspension|silver|Silver|10
 A|suspension|bronze|Bronze|20
 A|suspension|stone|Stone|30
 A|suspension|noob|N00b|40
+J|suspension|booths|6060 -6132 144|6260 -5932 208
+J|suspension|face_engineer|6068 -5988 144|6116 -5940 208
+J|suspension|face_gl_soldier|6128 -6132 144|6192 -6128 208
+J|suspension|face_jugger|6256 -6064 144|6260 -6000 208
+J|suspension|face_medic|6204 -6124 144|6252 -6076 208
+J|suspension|face_saw|6068 -6124 144|6116 -6076 208
+J|suspension|face_shotty|6204 -5988 144|6252 -5940 208
+J|suspension|face_sniper|6060 -6064 144|6064 -6000 208
+J|suspension|face_soldier|6128 -5936 144|6192 -5932 208
 J|suspension|pad|6224 -6912 88|6288 -6848 96
 J|suspension|portal|6256 -6064 144|6260 -6000 208
 G|suspension|hurt|jugger|trigger_hurt

@@ -58,7 +58,7 @@ def arcade_records(arcades) -> list[str]:
                 key=key,
                 name=arcade["name"],
                 map=arcade["map"],
-                goal=arcade["goal_class"],
+                goal=arcade["gated_class"],
                 start=arcade["start_signal"],
                 end=arcade["end_signal"],
             )
@@ -100,7 +100,11 @@ def arcade_records(arcades) -> list[str]:
             lines.append(
                 f"A|{key}|{entry['key']}|{entry['name']}|{entry['deaths']}"
             )
-        for name, box in sorted(arcade.get("jugger_volumes", {}).items()):
+        # Every named box the plugin watches: the Juggernaut's portal and pad,
+        # and the space behind each class booth's doorway.
+        boxes = dict(arcade.get("jugger_volumes", {}))
+        boxes.update(arcade.get("booth_volumes", {}))
+        for name, box in sorted(boxes.items()):
             mins = " ".join(str(v) for v in box["mins"])
             maxs = " ".join(str(v) for v in box["maxs"])
             lines.append(f"J|{key}|{name}|{mins}|{maxs}")

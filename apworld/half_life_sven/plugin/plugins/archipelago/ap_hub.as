@@ -1380,6 +1380,13 @@ bool ConsumePendingHubReturn()
 */
 HookReturnCode MapChange( const string& in szNextMap )
 {
+	// Before anything else, and before the restart case below returns: take down
+	// the barriers the arcade map put across its locked booths. They are the only
+	// entities the plugin creates that the engine did not ask for, and a
+	// `restart` with one standing took the game down once with no error to say
+	// why. The next map builds its own.
+	SuspensionRemoveBlocks();
+
 	// `restart` and friends re-enter the map we are already on. That is not a
 	// transition, and treating it as one both credited the mission and left us
 	// fighting the engine over a changelevel it was already performing.

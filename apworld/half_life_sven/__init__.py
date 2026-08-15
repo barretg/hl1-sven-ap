@@ -374,7 +374,7 @@ class HalfLifeSvenWorld(World):
         # tier by clearing a run with each of the other seven.
         startable = [
             entry["key"] for entry in arcade["classes"]
-            if entry["key"] != arcade["goal_class"]
+            if entry["key"] != arcade["gated_class"]
         ]
         # The option is spelled for the lobby sign; the data is keyed by the map's
         # entity name, and the two disagree -- the booth that hands out a shotgun
@@ -500,7 +500,7 @@ class HalfLifeSvenWorld(World):
         return sorted(
             suspension_class_items[entry["key"]]
             for entry in arcade["classes"]
-            if entry["key"] != arcade["goal_class"]
+            if entry["key"] != arcade["gated_class"]
             and entry["key"] in suspension_class_items
         )
 
@@ -509,7 +509,7 @@ class HalfLifeSvenWorld(World):
         arcade = self.suspension
         if not class_key or arcade is None:
             return []
-        if class_key != arcade["goal_class"]:
+        if class_key != arcade["gated_class"]:
             return [suspension_class_items[class_key]]
         # The Juggernaut has no item. It opens once a run has been cleared with
         # each of the other seven, so in logic it stands behind all seven of
@@ -718,8 +718,16 @@ class HalfLifeSvenWorld(World):
             "suspension_goal_requires_award": bool(
                 self.options.suspension_goal_requires_award
             ),
+            # The class the *map* gates, not the goal's. It is what the client
+            # watches the seven other clears for, since that class has no item
+            # and opens itself. Named `suspension_goal_class` once, back when the
+            # goal was a run cleared as the Juggernaut, and the old spelling is
+            # still sent for a client that reads it.
+            "suspension_gated_class": (
+                self.suspension["gated_class"] if self.suspension_enabled else ""
+            ),
             "suspension_goal_class": (
-                self.suspension["goal_class"] if self.suspension_enabled else ""
+                self.suspension["gated_class"] if self.suspension_enabled else ""
             ),
             "suspension_goal_classes": list(self.suspension_goal_classes),
             # Whether a death takes the rest of the lobby with it, and where.

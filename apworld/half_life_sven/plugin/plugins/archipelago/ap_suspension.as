@@ -37,7 +37,7 @@ class APArcade
 	string key;
 	string name;
 	string map;
-	string goalClass;
+	string gatedClass;
 	string startSignal;
 	string endSignal;
 }
@@ -428,7 +428,8 @@ void SuspensionMapStart()
 		g_SusTiers[i].voteTarget = "";
 		g_SusTiers[i].voteTargetKnown = false;
 	}
-	// The handles point at the last map's entities.
+	// The handles point at the last map's entities, and the barriers went with
+	// it: this map's own are built from scratch by the first lock sweep.
 	for( uint i = 0; i < g_SusClasses.length(); ++i )
 	{
 		g_SusClasses[i].hPortal = EHandle();
@@ -436,8 +437,6 @@ void SuspensionMapStart()
 	}
 	g_flSusBoothWarned.deleteAll();
 	g_flSusVoteRefused.deleteAll();
-	// Positions on a map we have left are nowhere to put anybody back to.
-	g_szSusSafeSpot.deleteAll();
 	// This map's seal is whatever the map spawned it as, not what we left the
 	// last one in.
 	g_iSusSealApplied = -1;
@@ -445,9 +444,6 @@ void SuspensionMapStart()
 	if( !SuspensionManaged() )
 		return;
 
-	// Before the locks, since the booth guard cannot tell inside from outside
-	// without it.
-	SuspensionFindLobby();
 
 	SuspensionCreateCounter( SUS_COUNTER_SECTION );
 	SuspensionCreateCounter( SUS_COUNTER_TIER );
@@ -631,38 +627,108 @@ void SuspensionSyncLocks()
 	}
 }
 
+// The name our own barrier answers to, one per class. Looked up by name every
+// time rather than held: a handle to it came back null while the brush was still
+// standing, so unlocking removed nothing and the class stayed shut until the map
+// reloaded. A name the engine resolves cannot go stale that way.
+string SuspensionBlockName( APClass@ pClass )
+{
+	return "ap_sus_block_" + pClass.key;
+}
+
 /*
 * Open or close a class booth.
 *
-* The portals are 64x64 slabs four units thick standing in the booth doorways,
-* and walking into one is what teleports a player to the class pad behind it. A
-* player is never *in* a booth, which is why switching the teleport off did not
-* close one: it opened a room whose only way out was the teleport that had just
-* been disabled, and players walked in and were stuck. Sending them somewhere
-* else instead needed a destination, and the lobby's first spawn point turned
-* out to be inside a wall.
+* Walking a portal is what teleports a player to the class pad behind it, so the
+* doorway has to be *shut* rather than switched off. Switching the teleport off
+* leaves the doorway open onto a room whose only way out was the teleport, and
+* players walk in and are stuck -- which is the fault this has come back to
+* twice, first by disabling the portal and then by disabling it and trying to
+* watch for anybody who fell for it. Watching needs the geometry, the geometry is
+* an octagon in the middle of the lobby, and getting it wrong bounced players off
+* thin air halfway along the bridge.
 *
-* A wall of our own across the doorway went wrong too, and worse: an entity we
-* built from the portal's brush stood there after its class had been earned --
-* the handle to it came back null while the brush did not -- and a `restart` with
-* one standing took the game down without so much as an error line.
+* A wall of our own is none of that. It is built from the portal's own brush, so
+* it is exactly the right shape in exactly the right place with nothing derived
+* or assumed, and the engine spawns it as a `func_wall`, which is a pusher and
+* legally SOLID_BSP -- setting that by hand on the trigger is what printed
+* `SOLID_BSP WITHOUT MOVE_PUSH`.
 *
-* So nothing is built and nothing of the map's is made solid. The portal is
-* switched off, which locks the class perfectly well, and the booth it opens
-* onto is watched instead: a player who crosses a locked doorway is put back
-* where they were standing a moment before. See SuspensionGuardLockedBooths.
+* Removed rather than disabled when the class is earned, and removed again on
+* the way out of the map: nothing of ours is left standing across a transition.
 */
 void SuspensionSetPortalOpen( APClass@ pClass, bool bOpen )
 {
 	pClass.blocked = !bOpen;
 
+	CBaseEntity@ pBlock = g_EntityFuncs.FindEntityByTargetname(
+		null, SuspensionBlockName( pClass ) );
+
+	if( bOpen )
+	{
+		if( pBlock !is null )
+			g_EntityFuncs.Remove( pBlock );
+		return;
+	}
+
+	if( pBlock !is null )
+		return;  // already walled off
+
 	CBaseEntity@ pPortal = SuspensionPortalOf( pClass );
 	if( pPortal is null )
 		return;
 
-	// The map's own value either way: a trigger it built is SOLID_TRIGGER, and
-	// SOLID_NOT is the engine's own "ignore this entirely".
-	pPortal.pev.solid = bOpen ? SOLID_TRIGGER : SOLID_NOT;
+	// Brush models are named "*<index>". Anything else is not something a wall
+	// can be built from, and an unearned class is better than a broken lobby.
+	string szModel = string( pPortal.pev.model );
+	if( szModel.Length() < 2 || szModel.SubString( 0, 1 ) != "*" )
+	{
+		APLog( "suspension: " + pClass.key + "'s portal has no brush to wall off; "
+		     + "the class stays enterable" );
+		return;
+	}
+
+	dictionary keys;
+	keys[ "targetname" ] = SuspensionBlockName( pClass );
+	keys[ "model" ] = szModel;
+	CBaseEntity@ pNew = g_EntityFuncs.CreateEntity( "func_wall", keys, true );
+
+	if( pNew is null )
+	{
+		APLog( "suspension: could not wall off " + pClass.key
+		     + "; the class stays enterable" );
+		return;
+	}
+
+	// Invisible, because the brush is a trigger's and wears a trigger's texture.
+	// What tells a player the booth is shut is the message, not a slab.
+	pNew.pev.effects |= EF_NODRAW;
+
+	// One line per class per map. If this ever repeats, the barrier is not
+	// answering to its own name and the lock sweep is building a new one every
+	// second, which is worth seeing in the console rather than in the framerate.
+	APLog( "suspension: " + pClass.key + "'s booth is shut (" + szModel + ")" );
+}
+
+/*
+* Take every barrier down.
+*
+* Called on the way out of the map. A `restart` with one of ours standing took
+* the game down once, with no error line to say why; whether or not that was the
+* cause, an entity we created has no business outliving the map we created it
+* on, and the next map builds its own.
+*/
+void SuspensionRemoveBlocks()
+{
+	for( uint i = 0; i < g_SusClasses.length(); ++i )
+	{
+		CBaseEntity@ pBlock = g_EntityFuncs.FindEntityByTargetname(
+			null, SuspensionBlockName( g_SusClasses[i] ) );
+		if( pBlock !is null )
+			g_EntityFuncs.Remove( pBlock );
+
+		g_SusClasses[i].blocked = false;
+	}
 }
 
 /*
@@ -712,7 +778,7 @@ bool SuspensionJuggernautAllowed()
 {
 	if( g_pArcade is null )
 		return false;
-	return g_Suspension.enabled && g_Suspension.HoldsClass( g_pArcade.goalClass );
+	return g_Suspension.enabled && g_Suspension.HoldsClass( g_pArcade.gatedClass );
 }
 
 /*
@@ -802,7 +868,7 @@ void SuspensionSetSealPart( const string& in szPart, bool bSealed )
 */
 void SuspensionGrantJuggernaut( CBasePlayer@ pPlayer )
 {
-	APClass@ pClass = SuspensionClassByKey( g_pArcade.goalClass );
+	APClass@ pClass = SuspensionClassByKey( g_pArcade.gatedClass );
 	if( pClass is null || pPlayer is null || !pPlayer.IsAlive() )
 		return;
 
@@ -874,7 +940,7 @@ void SuspensionWatchJuggernaut()
 
 		// Already holding it, so there is nothing to grant.
 		APClass@ pHeld = SuspensionClassOf( pPlayer );
-		if( pHeld !is null && pHeld.key == g_pArcade.goalClass )
+		if( pHeld !is null && pHeld.key == g_pArcade.gatedClass )
 			continue;
 
 		for( uint j = 0; j < names.length(); ++j )
@@ -1253,157 +1319,57 @@ const float SUS_REFUSAL_INTERVAL = 4.0f;
 dictionary g_flSusBoothWarned;
 dictionary g_flSusVoteRefused;
 
-// Where each player last stood clear of every locked doorway, "x y z" by userid.
-// Kept as text because that is what a dictionary certainly holds.
-dictionary g_szSusSafeSpot;
-
-// The middle of the lobby, worked out from the map's own spawn points. Which
-// side of a booth's doorway is the booth is the side facing away from here.
-Vector g_vecSusLobby;
-bool g_bSusLobbyKnown = false;
+// Close enough to a shut doorway to have been trying to walk through it.
+const float SUS_BOOTH_WARN_RANGE = 72.0f;
 
 /*
-* Where the lobby is, for telling the inside of a booth from the outside.
+* Tell a player why the booth in front of them will not open.
 *
-* The booths line the outer wall and everybody spawns in the middle, so the
-* average spawn point is a good enough "outside" for a doorway four units thick.
+* Only ever a message. Nobody is moved and nothing is created here: what stops
+* them walking in is the barrier across the doorway, and this is the sentence
+* that goes with the bump. Two attempts at moving people instead of walling them
+* out both went wrong -- one teleported them into a wall, the other bounced them
+* off thin air halfway along the bridge -- so the worst this can now do is say
+* the wrong class's name.
+*
+* The doorways come from `face_<class>` in checkdata.txt, measured out of the BSP
+* by the generator. Older data has none, in which case the barrier still works
+* and this simply says nothing.
 */
-void SuspensionFindLobby()
+void SuspensionWarnLockedBooths()
 {
-	g_bSusLobbyKnown = false;
-	g_vecSusLobby = Vector( 0, 0, 0 );
-
-	int iFound = 0;
-	CBaseEntity@ pSpawn = null;
-	while( ( @pSpawn = g_EntityFuncs.FindEntityByClassname(
-		pSpawn, "info_player_deathmatch" ) ) !is null )
-	{
-		g_vecSusLobby = g_vecSusLobby + pSpawn.pev.origin;
-		++iFound;
-	}
-
-	if( iFound == 0 )
-	{
-		APLog( "suspension: no spawn points, so locked booths are not watched" );
-		return;
-	}
-
-	g_vecSusLobby = g_vecSusLobby * ( 1.0f / float( iFound ) );
-	g_bSusLobbyKnown = true;
-}
-
-// How far past a locked doorway still counts as being in the booth. A player
-// crosses a four-unit slab well inside one think, so the far side has to be
-// watched rather than the slab itself.
-const float SUS_BOOTH_DEPTH = 112.0f;
-
-/*
-* Keep players out of booths they have not earned, and say why.
-*
-* The portal is switched off rather than walled up, so walking a locked doorway
-* leads into a room whose only way out is the teleport that is switched off. A
-* player who ends up in there is put back where they were standing a moment
-* before -- their own last position outside every locked doorway, which needs
-* nothing to be known about the map and creates nothing to go wrong later.
-*
-* The message rides along with it, which is better than proximity: it lands when
-* they actually tried to go in, in the same place and words a locked weapon uses.
-*/
-void SuspensionGuardLockedBooths()
-{
-	for( int iPlayer = 1; iPlayer <= g_Engine.maxClients; ++iPlayer )
-	{
-		CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( iPlayer );
-		if( pPlayer is null || !pPlayer.IsConnected() || !pPlayer.IsAlive() )
-			continue;
-
-		string szPlayer = SuspensionPlayerKey( pPlayer );
-		APClass@ pInside = SuspensionBoothAround( pPlayer.pev.origin );
-
-		if( pInside is null )
-		{
-			// Clear of every locked booth, so this is somewhere safe to be put
-			// back to.
-			Vector vecAt = pPlayer.pev.origin;
-			g_szSusSafeSpot[ szPlayer ] = "" + int( vecAt.x ) + " "
-			                                 + int( vecAt.y ) + " "
-			                                 + int( vecAt.z );
-			continue;
-		}
-
-		string szKey = szPlayer + "|" + pInside.key;
-		float flLast = 0.0f;
-		if( !g_flSusBoothWarned.get( szKey, flLast )
-		    || g_Engine.time - flLast >= SUS_REFUSAL_INTERVAL )
-		{
-			g_flSusBoothWarned[ szKey ] = g_Engine.time;
-			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCENTER,
-				"You have not found the " + pInside.name + " yet.\n" );
-		}
-
-		string szSpot;
-		if( g_szSusSafeSpot.get( szPlayer, szSpot ) && szSpot.Length() > 0 )
-			g_EntityFuncs.SetOrigin( pPlayer, APVectorFromString( szSpot ) );
-	}
-}
-
-/*
-* The locked booth this point is inside, if any.
-*
-* Measured from the doorway rather than from the room: the slab is the only part
-* of a booth whose position we know, so "inside" is the box it fills pushed back
-* into the booth, which is whichever side of it faces away from the lobby.
-*/
-APClass@ SuspensionBoothAround( const Vector& in vecPoint )
-{
-	if( !g_bSusLobbyKnown )
-		return null;
-
 	for( uint i = 0; i < g_SusClasses.length(); ++i )
 	{
 		APClass@ pClass = g_SusClasses[i];
 		if( !pClass.blocked )
 			continue;
 
-		CBaseEntity@ pPortal = SuspensionPortalOf( pClass );
-		if( pPortal is null )
+		APBox@ pFace = null;
+		if( !g_SusVolumes.get( "face_" + pClass.key, @pFace ) || pFace is null )
 			continue;
 
-		Vector vecMins = pPortal.pev.absmin;
-		Vector vecMaxs = pPortal.pev.absmax;
-		Vector vecDoor = ( vecMins + vecMaxs ) * 0.5f;
+		Vector vecFace = ( pFace.mins + pFace.maxs ) * 0.5f;
 
-		// Grow the slab into the booth along whichever axis it is thin on, which
-		// is the one a player crosses it by.
-		if( vecMaxs.x - vecMins.x <= vecMaxs.y - vecMins.y )
+		for( int iPlayer = 1; iPlayer <= g_Engine.maxClients; ++iPlayer )
 		{
-			if( vecDoor.x >= g_vecSusLobby.x )
-				vecMaxs.x = vecMaxs.x + SUS_BOOTH_DEPTH;
-			else
-				vecMins.x = vecMins.x - SUS_BOOTH_DEPTH;
-		}
-		else
-		{
-			if( vecDoor.y >= g_vecSusLobby.y )
-				vecMaxs.y = vecMaxs.y + SUS_BOOTH_DEPTH;
-			else
-				vecMins.y = vecMins.y - SUS_BOOTH_DEPTH;
-		}
+			CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( iPlayer );
+			if( pPlayer is null || !pPlayer.IsConnected() || !pPlayer.IsAlive() )
+				continue;
 
-		// A player's own half-width either side, and their whole height below:
-		// the origin sits at their middle and the slab starts at the floor.
-		if( vecPoint.x < vecMins.x - SUS_PORTAL_PAD
-		 || vecPoint.x > vecMaxs.x + SUS_PORTAL_PAD
-		 || vecPoint.y < vecMins.y - SUS_PORTAL_PAD
-		 || vecPoint.y > vecMaxs.y + SUS_PORTAL_PAD
-		 || vecPoint.z < vecMins.z - SUS_PORTAL_PAD
-		 || vecPoint.z > vecMaxs.z + SUS_PORTAL_PAD )
-			continue;
+			if( ( pPlayer.pev.origin - vecFace ).Length() > SUS_BOOTH_WARN_RANGE )
+				continue;
 
-		return pClass;
+			string szKey = SuspensionPlayerKey( pPlayer ) + "|" + pClass.key;
+			float flLast = 0.0f;
+			if( g_flSusBoothWarned.get( szKey, flLast )
+			    && g_Engine.time - flLast < SUS_REFUSAL_INTERVAL )
+				continue;
+
+			g_flSusBoothWarned[ szKey ] = g_Engine.time;
+			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCENTER,
+				"You have not found the " + pClass.name + " yet.\n" );
+		}
 	}
-
-	return null;
 }
 
 /*
@@ -1420,7 +1386,7 @@ void SuspensionThink()
 		SuspensionSyncLocks();
 	}
 
-	SuspensionGuardLockedBooths();
+	SuspensionWarnLockedBooths();
 
 	int iTier = SuspensionCounter( SUS_COUNTER_TIER );
 	if( iTier > 0 && iTier <= int( g_SusTiers.length() ) )

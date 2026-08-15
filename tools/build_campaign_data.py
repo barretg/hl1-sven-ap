@@ -25,7 +25,7 @@ from collections.abc import Iterable
 from pathlib import Path
 
 import suspension_layout as sus
-from bsp_entities import brush_model_centres, load_map
+from bsp_entities import brush_model_bounds, brush_model_centres, load_map
 from campaign_layout import (
     CAMPAIGNS,
     CAMPAIGN_OF_CHAPTER,
@@ -756,7 +756,71 @@ def build_items(
     return items
 
 
-def build_suspension(registry: IdRegistry) -> dict:
+def suspension_booth_volumes(maps_dir: Path) -> dict[str, dict[str, list[int]]]:
+    """The class booths, read out of the BSP.
+
+    The eight portals are the eight faces of an octagon standing in the middle of
+    the lobby: four axis-aligned slabs four units thick and four diagonal ones,
+    which the compiler records as squares. Walking into a face is what teleports
+    a player to that class's pad, so with a portal switched off its face is a way
+    into the octagon and no way out again. The plugin watches for that.
+
+    Two kinds of box come out of this. `booths` is the octagon itself, every face
+    included, which is the region a player has to be put back out of. `face_<key>`
+    is one portal, which is how the plugin tells whose booth somebody walked into
+    and therefore what to say to them.
+
+    Measured here rather than in the game because the game's answer cannot be
+    trusted: `absmin`/`absmax` belong to the engine's link state and the portal is
+    deliberately not linked. It also cannot be reasoned about from a single face,
+    which is the mistake that bounced players around the middle of the bridge:
+    the booths are *inside* the ring, not on the far side of each face from the
+    lobby.
+    """
+    bsp = maps_dir / f"{sus.MAP}.bsp"
+    if not bsp.exists():
+        raise SystemExit(f"missing map: {bsp}")
+
+    entities = load_map(bsp)
+    bounds = brush_model_bounds(bsp)
+
+    portals = {
+        entity.get("target", ""): entity.get("model", "")
+        for entity in entities
+        if entity.get("classname") == "trigger_teleport"
+    }
+
+    volumes: dict[str, dict[str, list[int]]] = {}
+    faces: list[tuple[tuple[float, ...], tuple[float, ...]]] = []
+
+    for entry in sus.CLASSES:
+        model = portals.get(entry.portal, "")
+        if model not in bounds:
+            raise SystemExit(
+                f"{bsp.name}: no trigger_teleport for {entry.key} ({entry.portal})"
+            )
+
+        mins, maxs = bounds[model]
+        faces.append((mins, maxs))
+        volumes[f"face_{entry.key}"] = {
+            "mins": [int(math.floor(value)) for value in mins],
+            "maxs": [int(math.ceil(value)) for value in maxs],
+        }
+
+    # The octagon is exactly what its faces enclose.
+    volumes["booths"] = {
+        "mins": [
+            int(math.floor(min(face[0][axis] for face in faces))) for axis in range(3)
+        ],
+        "maxs": [
+            int(math.ceil(max(face[1][axis] for face in faces))) for axis in range(3)
+        ],
+    }
+
+    return volumes
+
+
+def build_suspension(maps_dir: Path, registry: IdRegistry) -> dict:
     """The Suspension data file.
 
     Nothing here is read out of a BSP: the map's facts live in
@@ -850,7 +914,7 @@ def build_suspension(registry: IdRegistry) -> dict:
             "name": sus.NAME,
             "map": sus.MAP,
             "option": sus.OPTION,
-            "goal_class": sus.GOAL_CLASS,
+            "gated_class": sus.GATED_CLASS,
             # Logic, not the plugin: which classes can get explosives at all, and
             # the first section that cannot be finished without them.
             "explosive_classes": list(sus.EXPLOSIVE_CLASSES),
@@ -858,6 +922,9 @@ def build_suspension(registry: IdRegistry) -> dict:
             "start_signal": sus.START_SIGNAL,
             "end_signal": sus.END_SIGNAL,
             "jugger_volumes": sus.JUGGER_VOLUMES,
+            # One per class: the room behind its doorway, which the plugin has to
+            # keep players out of while the class is locked.
+            "booth_volumes": suspension_booth_volumes(maps_dir),
             "jugger_seal": sus.JUGGER_SEAL,
             "difficulties": [
                 {
@@ -971,7 +1038,9 @@ def main(argv: list[str] | None = None) -> int:
     # Built after the campaigns so their ids keep the numbers they already have,
     # and folded into the one data version, which has to cover everything a seed
     # can contain or the plugin would accept data the client disagrees with.
-    arcade = {f"{CAMPAIGN_SUBDIR}/{sus.KEY}.json": build_suspension(registry)}
+    arcade = {
+        f"{CAMPAIGN_SUBDIR}/{sus.KEY}.json": build_suspension(args.maps, registry)
+    }
     data["data_version"] = registry.fingerprint(
         live_ids(data["locations"], data["items"])
         + live_ids(
