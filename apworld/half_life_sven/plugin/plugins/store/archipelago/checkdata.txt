@@ -19,7 +19,7 @@
 #   G|<arcade>|<part>|<targetname>|<classname>   the Juggernaut seal
 #   E|<arcade>|<class>|<field>|<value>  how to grant a class without its booth
 V|4
-D|3386abff3877
+D|537bc031e46c
 M|half_life|Half-Life|nihilanth
 M|opposing_force|Opposing Force|of_worlds_collide
 M|blue_shift|Blue Shift|bs_leap_of_faith

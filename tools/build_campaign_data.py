@@ -49,7 +49,6 @@ from campaign_layout import (
     UNREACHABLE_CHARGERS,
     WEAPON_ALIASES,
     WEAPON_ANCHORS,
-    UNRANDOMISED_WEAPON_LOCATIONS,
     STARTING_WEAPONS,
     WEAPON_CAMPAIGN,
     WEAPON_ITEMS,
@@ -561,7 +560,7 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
             # Shephard's vest are all `item_suit` -- and walking up to it is as
             # much a moment as finding a gun.
             for item_name, classnames in {
-                **WEAPON_ITEMS, **OPTIONAL_ITEMS, **UNRANDOMISED_WEAPON_LOCATIONS
+                **WEAPON_ITEMS, **OPTIONAL_ITEMS
             }.items():
                 # A hand-placed anchor wins: some weapons are handed over rather
                 # than left lying about, and those leave no entity to find.

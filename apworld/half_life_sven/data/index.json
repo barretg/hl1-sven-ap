@@ -1,5 +1,5 @@
 {
- "data_version": "3386abff3877",
+ "data_version": "537bc031e46c",
  "files": [
   "campaigns/half_life.json",
   "campaigns/opposing_force.json",
@@ -8,6 +8,22 @@
   "campaigns/suspension.json"
  ],
  "items": [
+  {
+   "id": 7710092,
+   "name": "Crowbar",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_crowbar"
+   ],
+   "campaign": "half_life",
+   "campaigns": [
+    "half_life",
+    "opposing_force",
+    "blue_shift",
+    "they_hunger"
+   ]
+  },
   {
    "id": 7710017,
    "name": "Glock",

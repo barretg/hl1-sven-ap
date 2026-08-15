@@ -1071,6 +1071,24 @@
    ]
   },
   {
+   "id": 7720311,
+   "name": "Opposing Force - First Combat Knife",
+   "chapter": "of_welcome_to_black_mesa",
+   "map": "of1a2",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "of1a2",
+    "classnames": [
+     "weapon_crowbar"
+    ]
+   },
+   "position": [
+    549,
+    -2822,
+    68
+   ]
+  },
+  {
    "id": 7720294,
    "name": "Opposing Force - First Glock",
    "chapter": "of_missing_in_action",
@@ -1377,24 +1395,6 @@
     367,
     2816,
     48
-   ]
-  },
-  {
-   "id": 7720311,
-   "name": "Opposing Force - First Combat Knife",
-   "chapter": "of_welcome_to_black_mesa",
-   "map": "of1a2",
-   "trigger": {
-    "type": "weapon_pickup",
-    "map": "of1a2",
-    "classnames": [
-     "weapon_crowbar"
-    ]
-   },
-   "position": [
-    549,
-    -2822,
-    68
    ]
   },
   {

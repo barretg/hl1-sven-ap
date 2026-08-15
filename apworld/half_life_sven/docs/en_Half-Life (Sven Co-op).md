@@ -91,7 +91,8 @@ That starting weapon is the crowbar unless `random_starting_weapon` is on, in
 which case it is any melee weapon your campaigns could hand out — Opposing
 Force's pipe wrench or combat knife, They Hunger's spanner. It replaces the
 crowbar outright, so a wrench start means the crowbars in the levels are refused
-like everything else.
+like everything else — until the Crowbar item arrives, because it is in the pool
+like any other weapon the seed did not start you with.
 
 A campaign's final mission is not unlocked by an item at all. Nihilanth opens once
 you have completed a configurable number of other Half-Life missions, and every
@@ -108,8 +109,9 @@ for Opposing Force, 5 for Blue Shift, 2 for They Hunger), the weapons of every
 campaign you enabled, and optionally the HEV suit and long jump module.
 Everything else is filler: ammo caches, medkits and armour batteries.
 
-Half-Life brings 13 weapons (Glock, .357, MP5, shotgun, crossbow, RPG, Tau
-cannon, gluon gun, hivehand, satchel charges, tripmines, snarks, hand grenades).
+Half-Life brings 14 weapons (the crowbar, Glock, .357, MP5, shotgun, crossbow,
+RPG, Tau cannon, gluon gun, hivehand, satchel charges, tripmines, snarks, hand
+grenades).
 Opposing Force adds eight more: the desert eagle, SAW, sniper rifle, displacer,
 spore launcher, barnacle grapple, pipe wrench and minigun. They Hunger adds nine
 of its own, from the Colt 1911 and tommy gun to the tesla gun. Blue Shift adds

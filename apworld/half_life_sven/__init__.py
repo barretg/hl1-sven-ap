@@ -49,6 +49,7 @@ from .items import (
     filler_weights,
     item_campaign,
     item_campaigns,
+    item_classnames,
     item_name_groups,
     item_name_to_id,
     optional_items,
@@ -151,10 +152,9 @@ class HalfLifeSvenWorld(World):
         self.missions_required_for: dict[str, int] = {}
         # Classnames granted from the first spawn and never taken away. The
         # melee half is chosen per seed when `random_starting_weapon` is on.
+        # Whatever these cover leaves the pool: you cannot be sent a wrench you
+        # are already holding.
         self.starting_weapons: list[str] = list(STARTING_WEAPONS)
-        # The item name of that melee weapon, when it has one. It leaves the pool:
-        # you cannot be sent a wrench you are already holding.
-        self.starting_melee_item: str = ""
 
         # -- Suspension, the arcade map. All inert while it is switched off.
         self.suspension_enabled: bool = False
@@ -252,11 +252,21 @@ class HalfLifeSvenWorld(World):
         # Opposing Force is full of them, so attributing it to Half-Life alone
         # left an Opposing Force seed with shotguns and no shotgun item, which
         # meant every one of them refused for the whole run.
+        #
+        # A weapon the seed opens with is not something to find. Matched by
+        # classname rather than by item name, so it holds for every melee starter
+        # alike -- the crowbar included, which is an ordinary item that a default
+        # seed simply happens to hand you before the run begins.
+        held = set(self.starting_weapons)
+        starting_items = {
+            name for name, classnames in item_classnames.items()
+            if classnames and held.issuperset(classnames)
+        }
         self.available_item_names = {
             name for name in weapon_items
             if set(item_campaigns.get(name, [item_campaign.get(name, DEFAULT_CAMPAIGN)]))
             & set(self.included_campaigns)
-            and name != self.starting_melee_item
+            and name not in starting_items
         }
         for name in optional_items:
             if getattr(self.options, OPTIONAL_ITEM_NAMES[name]):
@@ -551,10 +561,10 @@ class HalfLifeSvenWorld(World):
         the seed's campaigns could hand out, so an Opposing Force run can open on
         a pipe wrench and a They Hunger run on a spanner.
 
-        Whatever it lands on replaces the crowbar rather than joining it. The
-        crowbar is gated on an item name the pool never contains, so the moment it
-        stops being a starting weapon it is refused like any other ungranted
-        weapon, and a wrench start means a wrench for the whole run.
+        Whatever it lands on replaces the crowbar rather than joining it, and the
+        one it replaced becomes something to find: every melee weapon is an item,
+        so a wrench start puts the crowbar in the pool and leaves the crowbars in
+        the levels refused until it arrives.
         """
         candidates = melee_starters_for(
             self.included_campaigns,
@@ -566,14 +576,6 @@ class HalfLifeSvenWorld(World):
         passthrough = self.tracker_passthrough
         if passthrough and passthrough.get("starting_weapons"):
             self.starting_weapons = list(passthrough["starting_weapons"])
-            held = set(self.starting_weapons)
-            self.starting_melee_item = next(
-                (
-                    name for name, classnames in candidates.items()
-                    if name in weapon_items and held.issuperset(classnames)
-                ),
-                "",
-            )
             return
 
         if not self.options.random_starting_weapon or not candidates:
@@ -582,9 +584,6 @@ class HalfLifeSvenWorld(World):
 
         name = self.random.choice(sorted(candidates))
         self.starting_weapons = list(candidates[name]) + list(FIXED_STARTING_WEAPONS)
-        # Only if it is an item at all: nothing ever sends you a crowbar.
-        if name in weapon_items:
-            self.starting_melee_item = name
 
     @property
     def included_chapters(self) -> list[dict[str, Any]]:

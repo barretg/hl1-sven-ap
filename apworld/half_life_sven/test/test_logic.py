@@ -85,9 +85,14 @@ class TestDefaults(StartingMissionMixin, HalfLifeSvenTestBase):
         self.assertNotIn("Displacer Cannon", pool)
         self.assertNotIn("Tommy Gun", pool)
 
-    def test_crowbar_is_not_an_item(self) -> None:
-        names = self.multiworld.worlds[self.player].item_name_to_id
-        self.assertNotIn("Crowbar", names)
+    def test_the_crowbar_is_an_item_you_already_hold(self) -> None:
+        """It exists, but a default seed starts you with it, so it is not in the pool."""
+        world = self.multiworld.worlds[self.player]
+        self.assertIn("Crowbar", world.item_name_to_id)
+
+        pool = {item.name for item in self.multiworld.itempool if item.player == self.player}
+        self.assertNotIn("Crowbar", pool)
+        self.assertNotIn("Crowbar", world.available_item_names)
 
     def test_victory_needs_every_mission_by_default(self) -> None:
         """With the default missions_required, holding one mission short fails."""
@@ -353,14 +358,17 @@ class TestRandomStartingWeapon(StartingMissionMixin, HalfLifeSvenTestBase):
         "random_starting_weapon": True,
     }
 
+    def melee_items(self) -> dict[str, str]:
+        """Melee item name -> its classname, across the campaigns in this seed."""
+        return {
+            name: classnames[0]
+            for campaign in ("half_life", "opposing_force", "they_hunger")
+            for name, classnames in MELEE_STARTERS[campaign].items()
+        }
+
     def test_it_starts_with_exactly_one_melee_weapon_and_the_medkit(self) -> None:
         world = self.multiworld.worlds[self.player]
-        melee = {
-            classname
-            for campaign in ("half_life", "opposing_force", "they_hunger")
-            for classnames in MELEE_STARTERS[campaign].values()
-            for classname in classnames
-        }
+        melee = set(self.melee_items().values())
 
         self.assertIn("weapon_medkit", world.starting_weapons)
         chosen = [c for c in world.starting_weapons if c in melee]
@@ -369,12 +377,23 @@ class TestRandomStartingWeapon(StartingMissionMixin, HalfLifeSvenTestBase):
     def test_the_chosen_weapon_is_not_also_in_the_pool(self) -> None:
         """You cannot be sent a wrench you are already holding."""
         world = self.multiworld.worlds[self.player]
-        if not world.starting_melee_item:
-            self.skipTest("this seed rolled the crowbar, which is never an item")
-
         pool = {item.name for item in self.multiworld.itempool if item.player == self.player}
-        self.assertNotIn(world.starting_melee_item, pool)
-        self.assertNotIn(world.starting_melee_item, world.available_item_names)
+        held = set(world.starting_weapons)
+
+        chosen = [n for n, c in self.melee_items().items() if c in held]
+        self.assertEqual(len(chosen), 1, world.starting_weapons)
+        self.assertNotIn(chosen[0], pool)
+        self.assertNotIn(chosen[0], world.available_item_names)
+
+    def test_every_melee_weapon_it_passed_over_is_in_the_pool(self) -> None:
+        """The crowbar included: a wrench start must leave a crowbar to find."""
+        world = self.multiworld.worlds[self.player]
+        pool = {item.name for item in self.multiworld.itempool if item.player == self.player}
+        held = set(world.starting_weapons)
+
+        for name, classname in self.melee_items().items():
+            if classname not in held:
+                self.assertIn(name, pool, name)
 
 
 class TestStartingWeaponLeftAlone(StartingMissionMixin, HalfLifeSvenTestBase):
@@ -383,11 +402,12 @@ class TestStartingWeaponLeftAlone(StartingMissionMixin, HalfLifeSvenTestBase):
     def test_it_is_still_the_crowbar(self) -> None:
         world = self.multiworld.worlds[self.player]
         self.assertEqual(world.starting_weapons, ["weapon_crowbar", "weapon_medkit"])
-        self.assertEqual(world.starting_melee_item, "")
 
     def test_the_wrench_is_a_normal_item(self) -> None:
         pool = {item.name for item in self.multiworld.itempool if item.player == self.player}
         self.assertIn("Pipe Wrench", pool)
+        # And the crowbar is not, since this seed hands it over on the first spawn.
+        self.assertNotIn("Crowbar", pool)
 
 
 class TestSharedWeaponsWithoutHalfLife(HalfLifeSvenTestBase):

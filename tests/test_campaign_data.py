@@ -241,20 +241,12 @@ def test_checkdata_has_every_chapter(campaign: dict, checkdata: list[list[str]])
 def test_checkdata_locked_classnames_map_to_real_items(
     campaign: dict, checkdata: list[list[str]]
 ) -> None:
-    """Every gate names an item that can arrive, bar the deliberate exception.
-
-    The crowbar is gated on an item name the pool never contains, which is what
-    makes a `random_starting_weapon` seed able to take it away: see
-    `test_the_crowbar_is_gated_but_starts_unlocked`.
-    """
-    from campaign_layout import UNRANDOMISED_WEAPON_LOCATIONS
-
+    """Every gate names an item that can actually arrive."""
     names = {item["name"] for item in campaign["items"]}
-    unreachable = set(UNRANDOMISED_WEAPON_LOCATIONS)
     locked = [(r[1], r[2]) for r in checkdata if r[0] == "K"]
     assert locked
     for classname, item_name in locked:
-        assert item_name in names or item_name in unreachable, classname
+        assert item_name in names, classname
 
 
 def test_the_crowbar_is_gated_but_starts_unlocked(
@@ -263,16 +255,17 @@ def test_the_crowbar_is_gated_but_starts_unlocked(
     """Both, and that pair is the mechanism rather than a contradiction.
 
     Starting weapons are checked before gates, so by default the crowbar is
-    yours. A seed that starts you with a wrench instead simply leaves it out of
-    the starting list, and the gate then refuses it for the rest of the run
-    because no item named "Crowbar" is ever in the pool.
+    yours from the first spawn and its item never enters the pool. A seed that
+    starts you with a wrench instead leaves it out of the starting list, the gate
+    then refuses every crowbar in the levels, and the item is in the pool to be
+    found -- the same shape as any other weapon.
     """
     starting = {r[1] for r in checkdata if r[0] == "S"}
     locked = {r[1]: r[2] for r in checkdata if r[0] == "K"}
 
     assert "weapon_crowbar" in starting
     assert locked.get("weapon_crowbar") == "Crowbar"
-    assert "Crowbar" not in {item["name"] for item in campaign["items"]}
+    assert "Crowbar" in {item["name"] for item in campaign["items"]}
 
 
 def test_every_map_has_a_reached_location(campaign: dict) -> None:
@@ -400,8 +393,13 @@ def test_every_weapon_has_one_first_pickup_per_campaign(campaign: dict) -> None:
         seen.add(key)
 
 
-def test_the_crowbar_is_a_location_but_never_an_item(campaign: dict) -> None:
-    """You start with one; finding the campaign's own is still worth a check."""
+def test_the_crowbar_is_both_a_location_and_an_item(campaign: dict) -> None:
+    """A default seed starts you with one; every campaign's own is still a check.
+
+    The item exists so that `random_starting_weapon` has something to give back
+    when it opens a run on a wrench instead. Whether it reaches the pool is the
+    apworld's call, not the data's.
+    """
     names = [
         entry["name"] for entry in campaign["locations"]
         if entry["trigger"]["type"] == "weapon_pickup"
@@ -410,7 +408,11 @@ def test_the_crowbar_is_a_location_but_never_an_item(campaign: dict) -> None:
     # Half-Life's keeps its original wording; the rest name their campaign.
     assert "First Crowbar" in names
     assert len(names) == len(set(names))
-    assert "Crowbar" not in {item["name"] for item in campaign["items"]}
+
+    crowbar = next(i for i in campaign["items"] if i["name"] == "Crowbar")
+    assert crowbar["group"] == "weapon"
+    assert crowbar["classification"] == "progression"
+    assert crowbar["classnames"] == ["weapon_crowbar"]
 
 
 def test_first_pickups_are_at_the_earliest_map_holding_the_weapon(

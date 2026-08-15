@@ -165,6 +165,12 @@ HALF_LIFE = Campaign(
         # (HLSPClassicMode.as maps m16 -> 9mmAR when Classic Mode is on), and the
         # Glock exists under both its Half-Life and Sven names, so both spellings
         # unlock together.
+        #
+        # The crowbar is an item like any other. In a default seed it is also a
+        # starting weapon, and a weapon you already hold never joins the pool --
+        # so it only becomes something to find when `random_starting_weapon`
+        # hands you a wrench or a spanner instead.
+        "Crowbar": ["weapon_crowbar"],
         "Glock": ["weapon_glock", "weapon_9mmhandgun"],
         ".357 Magnum": ["weapon_357"],
         "MP5": ["weapon_9mmAR", "weapon_m16"],
@@ -616,26 +622,20 @@ for _campaign in CAMPAIGNS:
     for _name in _campaign.melee:
         MELEE_CAMPAIGNS.setdefault(_name, []).append(_campaign.key)
 
-# Weapons that are a check but never an item. Walking up to the one the campaign
-# actually gives you is a moment in the run whether or not you started with it.
-UNRANDOMISED_WEAPON_LOCATIONS: dict[str, list[str]] = {
-    "Crowbar": ["weapon_crowbar"],
-}
-
 # Optional items, controlled by YAML toggles.
 OPTIONAL_ITEMS: dict[str, list[str]] = {
     "HEV Suit": ["item_suit"],
     "Long Jump Module": ["item_longjump"],
 }
 
-# The crowbar is in here despite never being an item, and that is what stops you
-# picking one up in a seed that started you with a wrench instead: the classname
-# is gated on an item name the pool never contains, so it is refused unless it is
-# also one of the seed's starting weapons -- and starting weapons are checked
-# first. In a seed that does start you with a crowbar, nothing changes.
+# Every classname the plugin holds back until its item arrives, mapped to that
+# item. A seed's starting weapons are checked ahead of this table, so a classname
+# in here is still yours from the first spawn if the seed started you with it --
+# which is how the crowbar is free in a default seed and something to find in one
+# that opened on a wrench.
 CLASSNAME_TO_ITEM: dict[str, str] = {
     classname: item
-    for table in (WEAPON_ITEMS, OPTIONAL_ITEMS, UNRANDOMISED_WEAPON_LOCATIONS)
+    for table in (WEAPON_ITEMS, OPTIONAL_ITEMS)
     for item, classnames in table.items()
     for classname in classnames
 }

@@ -731,6 +731,24 @@
    }
   },
   {
+   "id": 7720320,
+   "name": "Blue Shift - First Crowbar",
+   "chapter": "bs_duty_calls",
+   "map": "ba_canal1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_canal1",
+    "classnames": [
+     "weapon_crowbar"
+    ]
+   },
+   "position": [
+    2080,
+    288,
+    56
+   ]
+  },
+  {
    "id": 7720312,
    "name": "Blue Shift - First Glock",
    "chapter": "bs_insecurity",
@@ -887,24 +905,6 @@
     80,
     -304,
     3088
-   ]
-  },
-  {
-   "id": 7720320,
-   "name": "Blue Shift - First Crowbar",
-   "chapter": "bs_duty_calls",
-   "map": "ba_canal1",
-   "trigger": {
-    "type": "weapon_pickup",
-    "map": "ba_canal1",
-    "classnames": [
-     "weapon_crowbar"
-    ]
-   },
-   "position": [
-    2080,
-    288,
-    56
    ]
   },
   {

@@ -339,6 +339,24 @@
    }
   },
   {
+   "id": 7720333,
+   "name": "They Hunger - First Umbrella",
+   "chapter": "th_episode_1",
+   "map": "th_ep1_01",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "th_ep1_01",
+    "classnames": [
+     "weapon_crowbar"
+    ]
+   },
+   "position": [
+    64,
+    344,
+    267
+   ]
+  },
+  {
    "id": 7720321,
    "name": "They Hunger - First .357 Magnum",
    "chapter": "th_episode_1",
@@ -552,24 +570,6 @@
     -1362,
     200,
     34
-   ]
-  },
-  {
-   "id": 7720333,
-   "name": "They Hunger - First Umbrella",
-   "chapter": "th_episode_1",
-   "map": "th_ep1_01",
-   "trigger": {
-    "type": "weapon_pickup",
-    "map": "th_ep1_01",
-    "classnames": [
-     "weapon_crowbar"
-    ]
-   },
-   "position": [
-    64,
-    344,
-    267
    ]
   },
   {

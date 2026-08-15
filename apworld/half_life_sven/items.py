@@ -52,6 +52,13 @@ unlock_item_for_chapter: dict[str, str] = {
     if entry.get("group") == "chapter" and entry["chapter"] not in GOAL_COMPANIONS
 }
 
+# Item name -> the engine classnames it unlocks. What decides whether a seed's
+# starting inventory already covers an item: a weapon you are handed on the first
+# spawn has nothing left to send you, so it never joins the pool.
+item_classnames: dict[str, list[str]] = {
+    entry["name"]: entry["classnames"] for entry in ITEMS if "classnames" in entry
+}
+
 # Item name -> the campaign that brought it. Weapons and mission unlocks carry
 # one; filler and traps belong to no campaign and are always in the pool.
 item_campaign: dict[str, str] = {

@@ -2674,6 +2674,24 @@
    }
   },
   {
+   "id": 7720173,
+   "name": "First Crowbar",
+   "chapter": "unforeseen_consequences",
+   "map": "hl_c02_a1",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "hl_c02_a1",
+    "classnames": [
+     "weapon_crowbar"
+    ]
+   },
+   "position": [
+    1678,
+    1943,
+    -129
+   ]
+  },
+  {
    "id": 7720160,
    "name": "First Glock",
    "chapter": "unforeseen_consequences",
@@ -2943,24 +2961,6 @@
     1855,
     -297,
     -244
-   ]
-  },
-  {
-   "id": 7720173,
-   "name": "First Crowbar",
-   "chapter": "unforeseen_consequences",
-   "map": "hl_c02_a1",
-   "trigger": {
-    "type": "weapon_pickup",
-    "map": "hl_c02_a1",
-    "classnames": [
-     "weapon_crowbar"
-    ]
-   },
-   "position": [
-    1678,
-    1943,
-    -129
    ]
   },
   {

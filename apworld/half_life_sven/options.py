@@ -33,14 +33,9 @@ MAX_MISSIONS = _MAX["half_life"]
 
 
 class MissionsRequired(Range):
-    """How many Half-Life missions open Nihilanth.
+    """How many Half-Life missions open Worlds Collide.
 
-    Nihilanth is never unlocked by an item -- it becomes available once this many
-    other Half-Life missions have been finished. The default is every one of them.
-
-    Each campaign has its own version of this setting and they are completely
-    independent: Opposing Force progress does nothing for Nihilanth, and
-    Half-Life progress does nothing for Worlds Collide.
+    Independent of every other campaign's setting.
     """
 
     display_name = "Missions Required"
@@ -65,10 +60,7 @@ class OpposingForceMissionsRequired(Range):
 class BlueShiftMissionsRequired(Range):
     """How many Blue Shift missions open Power Struggle.
 
-    Power Struggle and the escape that follows it are the campaign's ending
-    rather than two more missions, so no item unlocks either: this count opens
-    Power Struggle, and clearing it opens A Leap Of Faith behind it. That leaves
-    five missions this can ask for, where it used to accept six.
+    Power Struggle and A Leap of Faith are together, so only 5 missions in this.
 
     Independent of every other campaign's setting. Ignored unless Blue Shift is
     in the seed.
@@ -101,6 +93,7 @@ class LogicDifficulty(Choice):
     and Lambda Core want something heavier than a pistol; Xen onward wants the Tau
     cannon and the RPG by name, plus the long jump module and HEV suit when those
     are shuffled. Safe for anyone, and the default.
+
     loose: weapon requirements are dropped entirely, so the generator may expect
     you to clear Surface Tension with a crowbar and will happily place your only
     gun behind a mission that assumes you already have one. The equipment gates on
@@ -168,13 +161,8 @@ class IncludeTheyHunger(Toggle):
     from the tommy gun to the tesla gun.
 
     Under strict logic, Episode 1 is enterable with a melee weapon and everything
-    after it expects a gun -- its own or one that travels, since Half-Life's and
-    Opposing Force's work here too. Loose logic drops that as it drops every
-    weapon gate.
-
-    Its check placement has not had a pass yet. It has only three chargers in the
-    whole campaign, so chargesanity barely touches it and almost all of its checks
-    come from reaching maps.
+    after it expects a gun: Half-Life's and Opposing Force's weapons work here too. 
+    Loose logic drops that as it drops every weapon gate.
     """
 
     display_name = "Include They Hunger"
@@ -189,17 +177,8 @@ class ExcludeIntroMissions(DefaultOnToggle):
     - **Incoming** (Opposing Force) — the osprey ride in.
     - **Living Quarters Outbound** (Blue Shift) — the tram ride the other way.
 
-    They Hunger has none; it opens on Episode 1 proper. Opposing Force's Boot
-    Camp is the training course rather than the intro and is not included in the 
-    apworld.
-
-    These are minutes of riding and listening with nothing to fight. Turned on,
-    each one goes entirely: no regions, no checks, no unlock item, and it stops
-    counting toward that campaign's Missions Required.
-
-    Note that the campaign portal has no console for Black Mesa Inbound — Valve's
-    hub room starts at Anomalous Materials — so when it is included, `!warp 0` is
-    the only way to travel there. The other two have consoles like any mission.
+    Note that these missions don't have terminals in the hub and can only be
+    reached via the '!warp' command.
     """
 
     display_name = "Exclude Intro Missions"
@@ -230,10 +209,11 @@ class RandomStartingWeapon(Toggle):
     only Half-Life or Blue Shift enabled there is nothing but the crowbar to pick,
     and the setting changes nothing.
 
-    Whatever it lands on replaces the crowbar completely: the crowbar is then
-    refused for the rest of the run the way any ungranted weapon is, and if the
-    weapon it chose was an item that item leaves the pool. You always keep the
-    medkit.
+    Whichever melee weapon it lands on replaces the crowbar rather than joining
+    it, and the crowbar becomes an ordinary item in the pool: the crowbars lying
+    in the levels are refused until it is sent to you.
+
+    You always keep the medkit.
     """
 
     display_name = "Random Starting Weapon"
@@ -244,16 +224,12 @@ class AllowRestrictedStartingWeapon(Toggle):
 
     Today that means exactly one thing: They Hunger's spanner, and only when They
     Hunger is in the seed. It is a weapon its maps register themselves rather
-    than one the game ships, so it does not exist anywhere else -- start with it
-    and you are empty-handed in every other campaign until a real weapon arrives.
+    than one the game ships, so it does not exist anywhere else. If you start with
+    it you are empty-handed in every other campaign until a real weapon arrives.
 
-    Logic does not model that. Anything past the point you would have picked up
-    your first melee weapon is technically out of logic until you are given
-    something, so this is off unless you want the rough edge.
-
-    Nothing to do with the umbrella, the shovel or the combat knife: those are
-    Half-Life's crowbar and pipe wrench wearing local models, and they travel
-    everywhere.
+    Anything past the point you would have picked up your first melee weapon is 
+    technically out of logic until you are given something, so this is off unless 
+    you want the rough edge.
     """
 
     display_name = "Allow Restricted Starting Weapon"
@@ -263,13 +239,9 @@ class ShuffleHevSuit(Toggle):
     """Shuffle the HEV suit into the item pool.
 
     What the item controls is armour: until it arrives, armour is held at zero
-    from every source — the campaign's own loadout, batteries, charge panels and
-    filler grants alike. You keep the suit itself throughout, because in GoldSrc
-    it is the suit that draws the weapon HUD and a player without one cannot
-    change weapons at all.
+    from every source.
 
-    The Xen missions expect it either way, because the long jump module runs off
-    suit power.
+    The Xen missions expect that you have it.
     """
 
     display_name = "Shuffle HEV Suit"
@@ -278,8 +250,8 @@ class ShuffleHevSuit(Toggle):
 class ShuffleLongJump(Toggle):
     """Shuffle the long jump module into the item pool.
 
-    When on, the Xen missions expect it in logic, and you cannot long jump until
-    the item arrives however many modules the campaign puts in front of you.
+    When on, the Xen missions expect that you have it, and you cannot long jump 
+    until the item arrives.
 
     When off, the module is left to Half-Life entirely: no long jump early on,
     and you pick it up where the campaign hands it over, in Forget About Freeman
@@ -340,11 +312,10 @@ class DeathLinkAmnesty(Range):
 class TrapPercentage(Range):
     """Percentage of your filler items replaced by traps.
 
-    Three exist, all of them the whole lobby's problem, and all nuisances rather
-    than punishments — none can cost you a run:
+    Three exist, all of them the whole lobby's problem:
 
     - Scientist Trap: four scientists, one of each variant, appear around every
-      player and start following them about.
+      player.
     - Headcrab Trap: four headcrabs each, same idea, considerably less friendly.
     - Butterfingers Trap: everyone drops the weapon they are holding. The suit
       reissues it after half a minute if you cannot find it again.
@@ -353,7 +324,7 @@ class TrapPercentage(Range):
     display_name = "Trap Percentage"
     range_start = 0
     range_end = 100
-    default = 15
+    default = 20
 
 
 # --- Suspension -----------------------------------------------------------
@@ -369,8 +340,8 @@ class IncludeSuspension(Toggle):
     fights along a suspension bridge in eight sections at a difficulty the lobby
     votes for. It has no hub console, so you reach it with `!warp suspension`.
 
-    It adds its own items — seven of the eight classes, plus Progressive
-    Suspension Difficulty — and its own goal: a run cleared with every one of
+    It adds its own items: seven of the eight classes, plus Progressive
+    Suspension Difficulty. I has its own goal: a run cleared with every one of
     the eight classes at your capped difficulty. Everything else in the seed is
     unaffected.
 
@@ -381,7 +352,7 @@ class IncludeSuspension(Toggle):
     display_name = "Include Suspension"
 
 
-class SuspensionClassanity(Toggle):
+class SuspensionClassanity(DefaultOnToggle):
     """Every section is a separate check for every class that clears it.
 
     Off, each section is one check per difficulty: 8 per tier, whoever plays
@@ -389,9 +360,8 @@ class SuspensionClassanity(Toggle):
     player in the lobby holding that class when the section falls sends it.
 
     On, with an Insane cap, that is 256 checks. Suspension then dwarfs the four
-    campaigns put together, and is meant for a full lobby: eight players on eight
-    different classes clear eight classes' worth of checks in one run, where a
-    solo player needs eight runs.
+    campaigns put together, and is meant for a full lobby, as it'd be a lot of
+    work with minimal players.
     """
 
     display_name = "Suspension Classanity"
@@ -401,23 +371,19 @@ class SuspensionMaxDifficulty(Choice):
     """Hardest Suspension tier in logic.
 
     Difficulty is the team's shared ticket pool, voted for in the lobby. Fewer
-    tickets is harder; when they run out the round becomes survival and the next
-    wipe loses it:
+    tickets is harder (each is a single life); when they run out the round becomes 
+    survival and the next wipe loses it:
 
       easy     50 tickets
       medium   25 tickets
       hard     10 tickets
       insane    1 ticket
 
-    Tiers above this are excluded entirely — no checks, and no Progressive
-    Suspension Difficulty item for them. The number of those items in the pool is
-    one fewer than the number of tiers, because Easy is always open.
-
     **Above Medium is not recommended unless you know what you are asking for.**
     This is the cap the goal is measured at: winning the seed means a run cleared
     with each of the eight classes *at this tier*. Hard is ten tickets for the
     whole team and Insane is one, on a map that expects a full lobby, so a Hard
-    or Insane cap can mean dozens of attempts per class.
+    or Insane cap could mean dozens of attempts per class.
     """
 
     display_name = "Suspension Max Difficulty"
@@ -448,7 +414,7 @@ class SuspensionRequiredAward(Choice):
     so **above Silver is not recommended unless you know what you are asking
     for**: gold is five team deaths across a whole run and platinum is none at
     all, on every one of the eight class clears the goal needs. Leave that option
-    off and this is only about which medals are checks.
+    off and this is only about which medals send checks.
     """
 
     display_name = "Suspension Required Award"
@@ -470,7 +436,7 @@ class SuspensionGoalClasses(OptionSet):
 
     The Juggernaut is the expensive one. The map only opens it after a run has
     been cleared with each of the other seven, so leaving it in means those
-    seven clears are needed whether or not they are named here — and taking it
+    seven clears are needed whether or not they are named here, and taking it
     out is what makes a short list actually short.
 
     Both spellings are accepted, the lobby's sign and the map's own entity name:
@@ -498,9 +464,9 @@ class SuspensionGoalRequiresAward(Toggle):
     your capped difficulty, however many times the team died doing it.
 
     On, those clears must also have earned `suspension_required_award` at that
-    tier — so with the award at gold, every class has to be cleared in a run
+    tier, so with the award at gold, every class has to be cleared in a run
     costing the team five deaths or fewer. That is a much harder seed than the
-    same options with this off, and it is the option to leave alone if you are
+    same options with this off, and it is an option to leave alone if you are
     not sure.
     """
 
@@ -518,7 +484,7 @@ class SuspensionMaxAwardsArePriority(Toggle):
     display_name = "Suspension Max Awards Are Priority"
 
 
-class SuspensionDifficultyRolldown(Toggle):
+class SuspensionDifficultyRolldown(DefaultOnToggle):
     """Clearing a section also sends that section's easier tiers.
 
     Off, a section check belongs to the tier you actually played, and the eight
@@ -537,8 +503,7 @@ class SuspensionStartingClass(Choice):
 
     Six of the other seven are items. The Juggernaut is neither: it is not in
     the pool at all, and the map opens it once a run has been cleared with each
-    of the other seven — which is also the last step of the goal, since winning
-    means a clear with all eight at your capped difficulty.
+    of the other seven.
     """
 
     display_name = "Suspension Starting Class"
@@ -551,8 +516,8 @@ class SuspensionStartingClass(Choice):
     option_medic = 6
     option_engineer = 7
     # What the map's own entities call them, which is what this option used to
-    # take. The sign in the lobby and the entity behind it disagree -- the booth
-    # that hands out a shotgun is `shotty` and reads Pointman -- so both spell
+    # take. The sign in the lobby and the entity behind it disagree - the booth
+    # that hands out a shotgun is `shotty` and reads Pointman - so both spell
     # the same choice.
     alias_soldier = 1
     alias_gl_soldier = 2
