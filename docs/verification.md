@@ -8,7 +8,7 @@
 | Data consistency (`data/` ↔ `checkdata.txt`) | `pytest tests/test_campaign_data.py` | passing |
 | Suspension data and its checkdata records | `pytest tests/test_suspension_data.py` | passing |
 | AngelScript source rules (API calls, record guards, exemptions that regressed) | `pytest tests/test_plugin_source.py` | passing |
-| Suspension generation | `ArchipelagoGenerate` at the easy cap and at the insane cap with classanity, platinum and priority medals | passing |
+| Suspension generation | `ArchipelagoGenerate` at the easy cap and at the insane cap with classanity, platinum and priority medals, including a seed with no class in the starting inventory so the explosives gate binds | passing |
 | Suspension in-game | — | reaching it and reading a round pass; the locks, the medals and the clear are still open |
 | World generation, AP 0.6.7 | `ArchipelagoGenerate` on real seeds | passing |
 | Option matrix | `missions_required` 1 / 8 / 17, strict + loose, suit and long jump on and off, 3-slot multiworld | passing |
@@ -501,6 +501,13 @@ have not are the boxes below.
   which is why it landed on a respawn in the lobby rather than at the moment the
   seal was set. Switching an entity on now asks what it is: a pusher gets
   SOLID_BSP, everything else SOLID_TRIGGER.
+
+  Worth writing down, since it looked like a spawn-room fault: that `trigger_hurt`
+  is `*310`, at the Juggernaut booth doorway (6260..6277, -6064..-6000), not in
+  the spawn area. Seven other entities share the name `jugger` — five
+  `trigger_changevalue`, a `trigger_changemodel` and a `game_player_equip` — so
+  the seal has always had to filter by classname as well as by name, and the
+  filter is what kept it down to two.
 - Locked class booths, three wrong answers deep. The portals are 64x64 slabs four
   units thick standing in the booth doorways, so a player is never *in* a booth:
   walking into one teleports them past it. Switching the teleport off did not
@@ -515,8 +522,33 @@ have not are the boxes below.
 - Neither lock said anything. A locked booth is a wall and a wall cannot be
   pressed, so the refusal is on proximity: walk up to one and the centre of the
   screen reads "You have not found the Sniper yet", the same sentence in the
-  same place as a weapon that has not been granted, repeated no more than once
-  every four seconds.
+  same place as a weapon that has not been granted.
+- Then the vote refusal said it several times a second. `Hooks::Player::PlayerUse`
+  fires every frame for every player rather than on a press, so looking at a
+  locked button from across the lobby was enough to answer it over and over. It
+  now waits for `IN_USE`, and both refusals repeat at most once every four
+  seconds per player.
+- The goal changed shape. It was "a run cleared as the Juggernaut at the capped
+  tier", with the Juggernaut itself an item in the pool — which was wrong twice
+  over: the map already gates that class behind clearing with the other seven,
+  so the item unlocked something the map would open anyway, and being handed it
+  early skipped the map's own rule. The Juggernaut is out of the pool entirely
+  and the goal is now a run cleared with **all eight classes at the capped
+  tier**, with `suspension_goal_requires_award` deciding whether those clears
+  must earn the seed's medal as well. Both are counted from checked locations by
+  the client, so the plugin no longer sends a goal for the arcade at all.
+- The round loop never stopped. Our counters latch, so consuming the end signal
+  without spending it let the think loop end the round, restart it on the start
+  signal still standing, and end it again four times a second. Both counters are
+  zeroed as they are read.
+- A medal was only sent if the run scored *exactly* one the seed contains, so a
+  five-death gold on a bronze-capped ladder sent nothing. Every medal the deaths
+  earned is sent now, and the bottom rung is always earned.
+- The Juggernaut's placeholder icon flashed. The reveal is a multi_manager fire
+  and the seal is reapplied by the one-second lock sweep, so it was fired again
+  every second; it is applied only on a change now.
+- The arcade ends its own map, and the server followed its map cycle into a map
+  the seed knows nothing about. A scored round warps back to the bridge.
 - `!warp` matched a mission on any part of its name but the arcade map only on
   the whole of it, so `!warp susp` found nothing and Suspension was the one
   place in the command that had to be typed out. It now takes a fragment like
@@ -604,7 +636,28 @@ have not are the boxes below.
 
 Seed 5. Getting there and reading the round is confirmed; nothing past that is.
 
-- [ ] **`!warp susp` gets there**, and so does any other part of "Suspension" or
+Two things about the map itself, so neither is mistaken for a plugin fault. The
+explosives crates (`restock_explo`) equip **Engineer, Grenadier and Pointman
+only** — `class_engineer` gets a satchel and a tripmine, `class_GL_soldier` AR
+grenades, `class_shotty` hand grenades. Assault is not on that list and never
+was, so the tank is not its fight; take one of those three. And the lobby floor
+is four `trigger_push` volumes covering the spawn points, which is why spawning
+shoves you into the room. Nothing of ours touches either.
+
+The first of those is now a logic rule: every check from **section 2** onward,
+plus the clears and the medals, sits behind holding one of those three class
+items. Section 1 alone is open to any class. The entity list would have put this
+at section 4, where the named tank fight is; play found armour to deal with in
+section 2 as well, which is what the crate in that section is there for, and the
+report wins.
+
+- [ ] **The gate is real, in both directions.** With only, say, the Sniper and
+  the Medic held, a run cannot get past section 2; take the Grenadier and it can.
+  If a tank turns out to be killable by gunfire alone — they are 1500 health
+  `func_breakable`s, so they are not obviously immune — this rule is stricter
+  than the map and should be relaxed, not the other way round.
+
+- [x] **`!warp susp` gets there**, and so does any other part of "Suspension" or
   of the map name. The arcade was only ever compared for equality while every
   mission matched on a fragment, so it alone had to be typed out in full. A
   fragment that matches the arcade *and* a mission now lists both rather than
@@ -620,11 +673,16 @@ Seed 5. Getting there and reading the round is confirmed; nothing past that is.
    button that is not there cannot be pressed, so nothing could be said about
    it, and the tier order made a silent gap easy to mistake for a bug.
 
+   The refusal must be **one line per press, not a stream**. PlayerUse is a
+   per-frame hook rather than a per-press one, so the first version answered
+   several times a second to anyone merely looking at the button. It now
+   requires `IN_USE` and repeats at most every four seconds.
+
    What holds the lock is that the button's `target` is cut while it is locked,
    so the press fires nothing whatever route reached it. Solidity is left
    exactly as the map built it, which is what gives the use trace something to
    land on and the refusal something to answer.
-- [ ] **A locked class booth is a wall that says why.** Walk up to one whose item
+- [x] **A locked class booth is a wall that says why.** Walk up to one whose item
   has not arrived: you cannot get in, and the centre of the screen reads "You
   have not found the Sniper yet" — the same sentence, in the same place, as a
   weapon you have not been granted. Then receive the class and walk in.
@@ -636,20 +694,53 @@ Seed 5. Getting there and reading the round is confirmed; nothing past that is.
   from the portal's own brush, which the engine spawns legally, and which is
   removed rather than disabled when the item lands.
 - [ ] **The Juggernaut icon replaces the placeholder** rather than drawing on
-  top of it.
-- [ ] **Section boundaries.** Confirm each section credit lands as that section
+  top of it, **and neither flashes**. The seal is applied from the one-second
+  lock sweep, and firing the reveal is not idempotent — a multi_manager fire
+  every second made the placeholder blink over the icon for as long as anyone
+  watched. It is applied only when the answer changes now.
+- [ ] **One clear line per clear.** Finishing a run said "cleared on easy" and
+  "easy underway" alternately, several times a second, for the rest of the map.
+  Our counters latch — the map sets a signal once and it stands — so reading the
+  end signal without spending it meant the round ended, restarted on the start
+  signal still standing, and ended again. Both are zeroed as they are consumed.
+- [ ] **The map comes back to the bridge.** The arcade ends its own map when the
+  bridge is taken, and the server then followed its map cycle into something
+  that is not in the seed at all. A scored round now warps back to Suspension on
+  the far side of that change. `!hub` is still how to leave.
+- [ ] **The medals land.** Clear a run and every medal the deaths earned arrives,
+  not only the best one: five deaths is a gold, and on a seed whose ladder stops
+  at bronze that used to send *nothing at all*, because the one medal the run
+  was scored as was not a check in this seed. A won run always earns the bottom
+  rung whatever the deaths.
+- [x] **Section boundaries.** Confirm each section credit lands as that section
   falls, not one early or one late. `s6` hangs off `s6_captured_text` rather
   than `s7_apc_start`, because the latter is delayed twenty seconds.
-- [ ] **The Juggernaut.** Below insane the booth is believed to be inert, so the
-   plugin watches the portal box and grants the class itself. Confirm the portal
-   grants it once the item is held, that a second player is refused, that the
-   restock stations still work for the granted class (they filter on
-   `targetname`), and that the model change takes — `g_EntityFuncs.SetModel` on a
-   player is the least certain call in the module, and if it does nothing the
-   class is still mechanically correct and merely looks wrong.
+- [ ] **The Juggernaut is earned, not sent.** It is no longer an item and is not
+   in the pool at all: clear a run with each of the other seven, at any tier,
+   and the booth opens on its own. Nothing arrives in chat, because nothing was
+   sent — the client works it out from the seven clears it has seen checked and
+   puts the class in the snapshot.
+- [ ] **The Juggernaut booth itself.** Below insane the booth is believed to be
+   inert, so the plugin watches the portal box and grants the class itself.
+   Confirm the portal grants it once it has been earned, that a second player is
+   refused, that the restock stations still work for the granted class (they
+   filter on `targetname`), and that the model change takes —
+   `g_EntityFuncs.SetModel` on a player is the least certain call in the module,
+   and if it does nothing the class is still mechanically correct and merely
+   looks wrong.
 - [ ] The medal matches the team's death count.
 - [ ] Every lesser medal arrives with it.
-- [ ] Section checks land for the classes in play, and nothing lands for a class
+- [x] Section checks land for the classes in play, and nothing lands for a class
   nobody was holding.
-- [ ] The clear is credited to the class each player spent most of the run as.
-- [ ] A run cleared as the Juggernaut at the capped tier sends `GOAL|suspension`.
+  - [] Test this with a bigger mix of classes
+- [x] The clear is credited to the class each player spent most of the run as.
+- [ ] **The goal is eight clears at the capped tier.** One per class, the
+  Juggernaut included, all at the hardest tier the seed contains. The plugin
+  sends no goal for the arcade any more — the condition is a set of checks
+  rather than an event, so the client decides it from what the server says is
+  checked, which also means releasing those clears counts.
+- [ ] **`suspension_goal_requires_award: true` adds the medal**: the same eight
+  clears, plus the seed's hardest medal at that tier. Off, deaths do not matter.
+- [ ] **Reaching it does not win a seed that has campaigns in it.** On a mixed
+  seed, finishing Suspension reports the arcade and nothing else; the slot is
+  only marked complete once every campaign's finale has landed too.

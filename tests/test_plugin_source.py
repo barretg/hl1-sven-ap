@@ -460,7 +460,7 @@ def test_a_locked_booth_says_why(sources: dict[str, str]) -> None:
     body = function_body(sources["ap_suspension.as"], "SuspensionWarnLockedBooths")
     assert "HUD_PRINTCENTER" in body, "the booth refusal is not where the weapon one is"
     assert "have not found the" in body, "the wording drifted from the weapon refusal"
-    assert "SUS_BOOTH_WARN_INTERVAL" in body, "the message repeats every think"
+    assert "SUS_REFUSAL_INTERVAL" in body, "the message repeats every think"
 
 
 def test_the_arcade_answers_to_part_of_its_name(sources: dict[str, str]) -> None:

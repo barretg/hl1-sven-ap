@@ -218,3 +218,45 @@ def test_checkdata_args_match_what_the_plugin_looks_up(
 def test_format_version_advertises_the_arcade_records(records: list[list[str]]) -> None:
     version = next(r for r in records if r[0] == "V")
     assert int(version[1]) >= 4
+
+
+def test_the_explosives_gate_names_real_classes_and_a_real_section(
+    arcade: dict,
+) -> None:
+    """Only three classes can get explosives on the bridge, and past the tank
+    the run cannot go on without them.
+
+    The restock crates are `game_player_equip` entities filtered by class
+    targetname and they name `class_engineer`, `class_GL_soldier` and
+    `class_shotty` alone; no other booth loadout carries anything explosive. A
+    lobby of Assaults, Snipers, Supports and Medics has nothing that can hurt a
+    1500 health tank.
+    """
+    keys = {entry["key"] for entry in arcade["classes"]}
+    explosive = arcade["explosive_classes"]
+
+    assert explosive, "the gate is empty, so it gates nothing"
+    assert set(explosive) <= keys, f"unknown class in {explosive}"
+    assert arcade["goal_class"] not in explosive, (
+        "the Juggernaut stands behind every other class already; counting it "
+        "here would let the gate be satisfied by the one item that needs it"
+    )
+
+    indices = {entry["index"] for entry in arcade["sections"]}
+    first = arcade["explosives_from_section"]
+    assert first in indices, f"section {first} does not exist"
+    # Not the first section, or the whole map would be behind three classes, and
+    # not the last, or the sections it is meant to cover would not be covered.
+    assert min(indices) < first < max(indices)
+
+
+def test_only_the_first_section_is_outside_the_explosives_gate(arcade: dict) -> None:
+    """Section 2 is where armour first has to be dealt with, so section 1 is the
+    only one any class can finish. Reported from play: the entity list alone
+    puts the named tank fight in section 4, and there is one in section 2 as
+    well, which is why the map has an explosives crate there."""
+    first = arcade["explosives_from_section"]
+    assert first == 2
+
+    ungated = [e["key"] for e in arcade["sections"] if e["index"] < first]
+    assert ungated == ["s1"]

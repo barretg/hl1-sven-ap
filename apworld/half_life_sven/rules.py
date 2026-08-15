@@ -182,6 +182,18 @@ def suspension_rule(
             lambda state, names=required_classes: state.has_all(names, player)
         )
 
+    # Past the tank, somebody in the lobby has to be able to hurt it, and only
+    # three of the eight classes can. Held rather than played: the class a check
+    # names is the one you were on when it landed, and switching between
+    # sections is normal -- so blow the tank up as the Engineer and finish the
+    # run as the Sniper if the Sniper is whose section this is.
+    if world.suspension_needs_explosives(trigger):
+        explosives = world.suspension_explosive_class_items()
+        if explosives:
+            conditions.append(
+                lambda state, names=explosives: state.has_any(names, player)
+            )
+
     if not conditions:
         return None
     if len(conditions) == 1:

@@ -309,6 +309,10 @@ class HalfLifeSvenContext(SuperContext):
         # Difficulty items have. The starting class arrives as a normal item.
         self.suspension_classes: set[str] = set()
         self.suspension_open = 0
+        # Whether the goal wants the medal as well as the clears, and which class
+        # the map keeps behind the other seven. Both arrive with the slot data.
+        self.suspension_goal_requires_award = False
+        self.suspension_goal_class = ""
         self.goal_sent = False
         self.chat_relay = True
         self.bridge_failures = 0
@@ -459,6 +463,12 @@ class HalfLifeSvenContext(SuperContext):
             if self.is_mission_complete(location_id)
         } - {""}
 
+        # Suspension is a goal of its own and is settled the same way: by what
+        # has been checked. Nothing in the game reports "the arcade is finished",
+        # because finishing it is a set of clears rather than an event.
+        if self.suspension_goal_met:
+            self.completed_missions.add(SUSPENSION_GOAL_KEY)
+
     def on_package(self, cmd: str, args: dict) -> None:
         # Universal Tracker does its work in here when its context is the base,
         # so it has to see every packet. Harmless otherwise.
@@ -512,6 +522,12 @@ class HalfLifeSvenContext(SuperContext):
             self.suspension_rolldown = bool(slot_data.get("suspension_rolldown", False))
             self.suspension_tiers = list(slot_data.get("suspension_difficulties", ()))
             self.suspension_awards = list(slot_data.get("suspension_awards", ()))
+            self.suspension_goal_requires_award = bool(
+                slot_data.get("suspension_goal_requires_award", False)
+            )
+            self.suspension_goal_class = str(
+                slot_data.get("suspension_goal_class", "")
+            )
             self.death_link_enabled = bool(slot_data.get("death_link", False))
             self.death_link_amnesty = int(
                 slot_data.get("death_link_amnesty", self.death_link_amnesty)
@@ -673,6 +689,98 @@ class HalfLifeSvenContext(SuperContext):
         """
         return self.unlocked_items | self.always_unlocked
 
+    # -- Suspension ------------------------------------------------------
+
+    @property
+    def suspension_arcade(self) -> dict | None:
+        for entry in self.campaign.get("arcades", ()):
+            return entry
+        return None
+
+    @property
+    def suspension_class_keys(self) -> list[str]:
+        arcade = self.suspension_arcade
+        if arcade is None:
+            return []
+        return [entry["key"] for entry in arcade["classes"]]
+
+    @property
+    def suspension_top_tier(self) -> str:
+        """The hardest tier this seed contains, which is what the goal is at."""
+        return self.suspension_tiers[-1] if self.suspension_tiers else ""
+
+    def suspension_checked(self, kind: str, tier: str, **fields) -> bool:
+        """Has this Suspension location been checked?
+
+        By what the location *is* rather than by name: the names are display
+        text and free to be reworded, while the trigger is the identity the ids
+        are keyed on.
+        """
+        for entry in self.campaign["locations"]:
+            trigger = entry["trigger"]
+            if trigger["type"] != kind or trigger.get("difficulty") != tier:
+                continue
+            if any(trigger.get(key) != value for key, value in fields.items()):
+                continue
+            return entry["id"] in self.checked_locations
+        return False
+
+    @property
+    def suspension_juggernaut_open(self) -> bool:
+        """Has a run been cleared with each of the other seven classes?
+
+        Any tier, which is the map's own rule. This is the one class with no
+        item: the client works it out and tells the game, so the booth opens the
+        moment the seventh clear lands rather than at the next map load.
+        """
+        if not self.suspension_enabled or not self.suspension_goal_class:
+            return False
+        others = [
+            key for key in self.suspension_class_keys
+            if key != self.suspension_goal_class
+        ]
+        if not others:
+            return False
+        return all(
+            any(
+                self.suspension_checked("suspension_clear", tier, **{"class": key})
+                for tier in self.suspension_tiers
+            )
+            for key in others
+        )
+
+    @property
+    def suspension_goal_met(self) -> bool:
+        """A run cleared with every class at the capped tier.
+
+        Plus the medal, where `suspension_goal_requires_award` asks for it: the
+        hardest one the seed contains, at the same tier. Judged from what the
+        server says has been checked rather than from what the game just
+        reported, so it survives a reconnect and a release alike.
+        """
+        if not self.suspension_enabled:
+            return False
+
+        tier = self.suspension_top_tier
+        classes = self.suspension_class_keys
+        if not tier or not classes:
+            return False
+
+        if not all(
+            self.suspension_checked("suspension_clear", tier, **{"class": key})
+            for key in classes
+        ):
+            return False
+
+        if self.suspension_goal_requires_award and self.suspension_awards:
+            # Hardest first in the data's order, which is the one the option
+            # named; every easier medal rolls down from it anyway.
+            return self.suspension_checked(
+                "suspension_award", tier, award=self.suspension_awards[0]
+            )
+
+        return True
+
     @property
     def suspension_state(self) -> dict | None:
         """What the game needs to run the arcade map, or None if it has none."""
@@ -685,7 +793,13 @@ class HalfLifeSvenContext(SuperContext):
             "tiers": list(self.suspension_tiers),
             "awards": list(self.suspension_awards),
             "open": self.suspension_open,
-            "classes": sorted(self.suspension_classes),
+            # The Juggernaut is not an item, so it is not in `suspension_classes`
+            # and never will be. It joins the list the moment the other seven
+            # have each cleared a run, which is the map's own rule for it.
+            "classes": sorted(
+                self.suspension_classes
+                | ({self.suspension_goal_class} if self.suspension_juggernaut_open else set())
+            ),
         }
 
     def completed_in(self, campaign_key: str) -> int:
@@ -924,6 +1038,23 @@ async def game_watcher(ctx: HalfLifeSvenContext) -> None:
                 ctx.bridge_failures = 0
 
 
+async def report_goal(ctx: HalfLifeSvenContext) -> None:
+    """Tell the server the slot is won, once and only once.
+
+    Reached from two directions now. A campaign finale arrives as an event, but
+    Suspension's goal is a set of checks with no event behind it -- the eighth
+    class clear simply lands, and the run is over -- so every poll asks as well.
+    """
+    if ctx.goal_sent or not ctx.run_complete:
+        return
+    if ctx.server is None or ctx.server.socket.closed:
+        return
+
+    ctx.goal_sent = True
+    await ctx.send_msgs([{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}])
+    logger.info("Goal complete!")
+
+
 async def pump(ctx: HalfLifeSvenContext) -> None:
     """One poll: drain the game's events, then publish the snapshot."""
     if ctx.bridge is None:
@@ -955,12 +1086,8 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
                 logger.info(
                     f"{name or event.arg} finished. {len(remaining)} campaign(s) to go."
                 )
-            elif not ctx.goal_sent and ctx.server and not ctx.server.socket.closed:
-                ctx.goal_sent = True
-                await ctx.send_msgs(
-                    [{"cmd": "StatusUpdate", "status": ClientStatus.CLIENT_GOAL}]
-                )
-                logger.info("Goal complete!")
+            else:
+                await report_goal(ctx)
         elif event.kind == "ACK":
             ctx.bridge.acknowledge(int(event.arg))
         elif event.kind == "DEATH":
@@ -1023,6 +1150,11 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
             for location_id in unseen:
                 logger.info(f"Check: {ctx.location_name_by_id.get(location_id, location_id)}")
             await ctx.send_msgs([{"cmd": "LocationChecks", "locations": unseen}])
+
+    # The last class clear of a Suspension goal is a check like any other, and
+    # nothing announces it, so this is where the run is noticed as finished.
+    ctx.sync_completed_missions()
+    await report_goal(ctx)
 
     # Always published, even if reading failed: the snapshot is how the game
     # learns about unlocks, and it must not be skipped just because ap_out.txt

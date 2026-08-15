@@ -348,6 +348,22 @@ int SuspensionCounter( const string& in szName )
 	return int( pEntity.pev.frags );
 }
 
+/*
+* Put a counter back, because the map never will.
+*
+* Our counters latch: the map sets one once and it stays set for the rest of the
+* map. Reading "the round has ended" without clearing it meant the think loop
+* ended the round, saw the start signal still standing, began it again, saw the
+* end signal still standing... four times a second, for as long as the map ran.
+* Every counter we consume is spent here.
+*/
+void SuspensionSetCounter( const string& in szName, int iValue )
+{
+	CBaseEntity@ pEntity = g_EntityFuncs.FindEntityByTargetname( null, szName );
+	if( pEntity !is null )
+		pEntity.pev.frags = iValue;
+}
+
 // --- Setting up the map ---------------------------------------------------
 
 /*
@@ -418,6 +434,10 @@ void SuspensionMapStart()
 		g_SusClasses[i].hBlock = EHandle();
 	}
 	g_flSusBoothWarned.deleteAll();
+	g_flSusVoteRefused.deleteAll();
+	// This map's seal is whatever the map spawned it as, not what we left the
+	// last one in.
+	g_iSusSealApplied = -1;
 
 	if( !SuspensionManaged() )
 		return;
@@ -731,8 +751,19 @@ bool SuspensionJuggernautAllowed()
 * classname. Sealing is the one thing here that touches the map's own entities,
 * and it is reversible: nothing is created or removed.
 */
+// What the seal was last set to: -1 nothing yet, 0 open, 1 sealed. The locks are
+// reasserted every second and this is not idempotent -- the reveal is a
+// multi_manager fire, and firing it four times a minute made the placeholder
+// flash on and off over the Juggernaut's icon for as long as anyone watched.
+int g_iSusSealApplied = -1;
+
 void SuspensionSealJuggernaut( bool bSealed )
 {
+	int iWanted = bSealed ? 1 : 0;
+	if( g_iSusSealApplied == iWanted )
+		return;
+	g_iSusSealApplied = iWanted;
+
 	SuspensionSetSealPart( "wall", bSealed );
 	SuspensionSetSealPart( "hurt", bSealed );
 
@@ -974,6 +1005,11 @@ void SuspensionBeginRound()
 	g_iSusDeaths = 0;
 	g_SusClassSections.deleteAll();
 
+	// Spent, so the next round needs the map to signal a start of its own.
+	SuspensionSetCounter( SUS_COUNTER_START, 0 );
+	SuspensionSetCounter( SUS_COUNTER_END, 0 );
+	SuspensionSetCounter( SUS_COUNTER_SECTION, 0 );
+
 	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
 		"[AP] Suspension: " + g_szSusTier + " underway.\n" );
 }
@@ -1081,19 +1117,44 @@ void SuspensionEndRound()
 		return;
 	g_bSusRoundActive = false;
 
+	// Both spent: the map's signals stand for the rest of the map, and reading
+	// them again is what turned one clear into an endless run of them.
+	SuspensionSetCounter( SUS_COUNTER_END, 0 );
+	SuspensionSetCounter( SUS_COUNTER_START, 0 );
+
 	// The last section has no signal of its own: reaching the end of the round
 	// is what clears it.
 	if( g_SusSections.length() > 0 )
 		SuspensionCreditSection( g_SusSections[ g_SusSections.length() - 1 ].index );
 
-	string szAward = SuspensionAwardFor( g_iSusDeaths );
-	if( szAward.Length() > 0 && g_Suspension.AwardWanted( szAward ) )
-		SuspensionSendAward( szAward, g_szSusTier );
+	// Every medal the run earned, not only the best one. A seed whose ladder
+	// stops at bronze contains no gold medal at all, so a five-death run -- a
+	// gold -- used to send nothing whatever, because the one medal it was
+	// scored as was not a check in this seed. An award is earned when the team
+	// died no more often than it allows, and every easier one is earned with it.
+	bool bAnyEarned = false;
+	for( uint i = 0; i < g_SusAwards.length(); ++i )
+	{
+		APAward@ pAward = g_SusAwards[i];
+		if( g_iSusDeaths > pAward.deaths )
+			continue;
+		bAnyEarned = true;
+		if( g_Suspension.AwardWanted( pAward.key ) )
+			SuspensionSendAward( pAward.key, g_szSusTier );
+	}
+
+	// Past the bottom of the ladder is still the bottom rung rather than
+	// nothing: a won run always earns the worst medal, however it went.
+	if( !bAnyEarned && g_SusAwards.length() > 0 )
+	{
+		APAward@ pWorst = g_SusAwards[ g_SusAwards.length() - 1 ];
+		if( g_Suspension.AwardWanted( pWorst.key ) )
+			SuspensionSendAward( pWorst.key, g_szSusTier );
+	}
 
 	// A run was finished at this tier, whoever played what.
 	SuspensionSendClear( "", g_szSusTier );
 
-	bool bGoal = false;
 	for( int i = 1; i <= g_Engine.maxClients; ++i )
 	{
 		CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( i );
@@ -1105,20 +1166,51 @@ void SuspensionEndRound()
 			continue;
 
 		SuspensionSendClear( szClass, g_szSusTier );
-
-		// The goal is a run cleared as the map-gated class at the hardest tier
-		// this seed contains. The client decides what that means for the slot.
-		if( szClass == g_pArcade.goalClass
-		 && g_Suspension.TierIndex( g_szSusTier ) == int( g_Suspension.tiers.length() ) - 1 )
-			bGoal = true;
 	}
+
+	// No goal is reported from here. Winning the arcade is a set of clears --
+	// one per class at the capped tier, and the medal too where the seed asks
+	// for it -- which is a question about what has been checked rather than
+	// about what just happened, and only the client can see that.
 
 	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
 		"[AP] Suspension cleared on " + g_szSusTier + " with "
 		+ g_iSusDeaths + " deaths.\n" );
 
-	if( bGoal )
-		BridgeSend( "GOAL|" + g_pArcade.key );
+	// The map ends itself once the bridge is taken, and the server then moves on
+	// to whatever its map cycle says -- which stranded the lobby somewhere that
+	// is not in the seed at all. Come back here instead.
+	g_bSusRestartPending = true;
+}
+
+// Set when a round is scored, read on the far side of the map change the map
+// makes for itself. Survives that change, like everything else the plugin has
+// to carry across one.
+bool g_bSusRestartPending = false;
+
+/*
+* We were playing the arcade, the map ended, and the server has loaded something
+* else. Go back rather than leave the lobby stranded on a map from the cycle.
+*
+* Answered once: if Suspension is not in the seed any more -- a new slot, say --
+* the hub is where everything else goes.
+*/
+bool SuspensionConsumeRestart()
+{
+	if( !g_bSusRestartPending )
+		return false;
+
+	g_bSusRestartPending = false;
+
+	if( g_pArcade is null || !g_Suspension.enabled )
+		return false;
+	if( g_szCurrentMap == g_pArcade.map )
+		return false;  // it restarted itself; nothing to do
+
+	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+		"[AP] Back to " + g_pArcade.name + "...\n" );
+	ChangeLevel( g_pArcade.map );
+	return true;
 }
 
 // --- Hooks ----------------------------------------------------------------
@@ -1143,8 +1235,24 @@ bool SuspensionBlockUse( CBasePlayer@ pPlayer, CBaseEntity@ pEntity )
 		if( g_Suspension.TierOpen( pTier.key ) )
 			return false;
 
-		g_PlayerFuncs.SayText( pPlayer,
-			"[AP] " + pTier.name + " is locked. Find Progressive Suspension Difficulty.\n" );
+		// PlayerUse is a per-frame hook, not a per-press one: it runs on every
+		// think for every player, so merely looking at the button from across the
+		// lobby was a refusal several times a second. Answer a press.
+		if( ( pPlayer.pev.button & IN_USE ) == 0 )
+			return true;
+
+		// And a press is held down across many frames, so say it occasionally
+		// even then.
+		string szKey = SuspensionPlayerKey( pPlayer ) + "|" + pTier.key;
+		float flLast = 0.0f;
+		if( !g_flSusVoteRefused.get( szKey, flLast )
+		    || g_Engine.time - flLast >= SUS_REFUSAL_INTERVAL )
+		{
+			g_flSusVoteRefused[ szKey ] = g_Engine.time;
+			g_PlayerFuncs.SayText( pPlayer,
+				"[AP] " + pTier.name + " is locked. Find Progressive Suspension Difficulty.\n" );
+		}
+
 		return true;
 	}
 	return false;
@@ -1166,10 +1274,15 @@ const float SUS_LOCK_SYNC_INTERVAL = 1.0f;
 
 // Close enough to a booth's doorway to have meant to walk into it.
 const float SUS_BOOTH_WARN_RANGE = 80.0f;
-// And how long before the same player is told the same thing again.
-const float SUS_BOOTH_WARN_INTERVAL = 4.0f;
+
+// How long before a player is told the same thing again, whichever lock told
+// them. Both refusals are driven by something that repeats every tick -- the
+// think loop for a booth, the use key for a button -- so without this they are
+// not a message but a wall of text.
+const float SUS_REFUSAL_INTERVAL = 4.0f;
 
 dictionary g_flSusBoothWarned;
+dictionary g_flSusVoteRefused;
 
 /*
 * Tell a player why the booth they are standing at will not let them in.
@@ -1212,7 +1325,7 @@ void SuspensionWarnLockedBooths()
 			string szKey = SuspensionPlayerKey( pPlayer ) + "|" + pClass.key;
 			float flLast = 0.0f;
 			if( g_flSusBoothWarned.get( szKey, flLast )
-			    && g_Engine.time - flLast < SUS_BOOTH_WARN_INTERVAL )
+			    && g_Engine.time - flLast < SUS_REFUSAL_INTERVAL )
 				continue;
 
 			g_flSusBoothWarned[ szKey ] = g_Engine.time;

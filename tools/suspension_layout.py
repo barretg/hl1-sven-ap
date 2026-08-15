@@ -216,6 +216,33 @@ JUGGER_SEAL = {
 }
 
 
+# --- Explosives -----------------------------------------------------------
+#
+# The bridge cannot be pushed past the tank without them, and only three classes
+# can get any. The restock crates along the way (`restock_explo`) are three
+# `game_player_equip` entities filtered by the player's class targetname:
+# `class_engineer` gets a satchel and a tripmine, `class_GL_soldier` AR
+# grenades, `class_shotty` hand grenades. Nothing equips `class_soldier`,
+# `class_saw`, `class_sniper` or `class_medic`, and their booth loadouts carry
+# no explosives either -- an Assault has a 9mmAR, a pistol, a Desert Eagle and a
+# crowbar, and the tank is a 1500 health `func_breakable` shooting back with a
+# 50 damage mortar.
+#
+# Section 3's detonation pack is *not* one of these: it is an `item_inventory`
+# lying on the bridge that anybody may carry to the marked spot, so section 3
+# gates on nothing.
+
+EXPLOSIVE_CLASSES = ("gl_soldier", "shotty", "engineer")
+
+# The first section that needs them, by index. Section 2 is where the armour
+# first has to be dealt with -- the APC, and a tank behind it, which is why the
+# map puts an explosives crate (`s2_restock_explo`) in that section. Reported
+# from play; the entity list alone would have put this at section 4, where the
+# named tank fight is. Everything after is behind it, so the requirement carries
+# to the end of the run and to the clear and medal that depend on finishing it.
+EXPLOSIVES_FROM_SECTION = 2
+
+
 # --- Awards ---------------------------------------------------------------
 #
 # The medal shown at the end of a won round, scored on the team's *total* deaths.

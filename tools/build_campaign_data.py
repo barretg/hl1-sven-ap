@@ -851,6 +851,10 @@ def build_suspension(registry: IdRegistry) -> dict:
             "map": sus.MAP,
             "option": sus.OPTION,
             "goal_class": sus.GOAL_CLASS,
+            # Logic, not the plugin: which classes can get explosives at all, and
+            # the first section that cannot be finished without them.
+            "explosive_classes": list(sus.EXPLOSIVE_CLASSES),
+            "explosives_from_section": sus.EXPLOSIVES_FROM_SECTION,
             "start_signal": sus.START_SIGNAL,
             "end_signal": sus.END_SIGNAL,
             "jugger_volumes": sus.JUGGER_VOLUMES,

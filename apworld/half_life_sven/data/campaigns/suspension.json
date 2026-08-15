@@ -6,6 +6,12 @@
   "map": "suspension",
   "option": "suspension",
   "goal_class": "jugger",
+  "explosive_classes": [
+   "gl_soldier",
+   "shotty",
+   "engineer"
+  ],
+  "explosives_from_section": 2,
   "start_signal": "start_events",
   "end_signal": "end_script",
   "jugger_volumes": {

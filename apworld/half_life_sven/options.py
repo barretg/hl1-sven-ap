@@ -337,9 +337,13 @@ class IncludeSuspension(Toggle):
     fights along a suspension bridge in eight sections at a difficulty the lobby
     votes for. It has no hub console, so you reach it with `!warp suspension`.
 
-    It adds its own items — one per class, plus Progressive Suspension Difficulty
-    — and its own goal, a completed run as the Juggernaut. Everything else in the
-    seed is unaffected.
+    It adds its own items — seven of the eight classes, plus Progressive
+    Suspension Difficulty — and its own goal: a run cleared with every one of
+    the eight classes at your capped difficulty. Everything else in the seed is
+    unaffected.
+
+    The Juggernaut is not an item. The map keeps it behind a run cleared with
+    each of the other seven, which is where it stays.
     """
 
     display_name = "Include Suspension"
@@ -376,6 +380,12 @@ class SuspensionMaxDifficulty(Choice):
     Tiers above this are excluded entirely — no checks, and no Progressive
     Suspension Difficulty item for them. The number of those items in the pool is
     one fewer than the number of tiers, because Easy is always open.
+
+    **Above Medium is not recommended unless you know what you are asking for.**
+    This is the cap the goal is measured at: winning the seed means a run cleared
+    with each of the eight classes *at this tier*. Hard is ten tickets for the
+    whole team and Insane is one, on a map that expects a full lobby, so a Hard
+    or Insane cap can mean dozens of attempts per class.
     """
 
     display_name = "Suspension Max Difficulty"
@@ -399,8 +409,14 @@ class SuspensionRequiredAward(Choice):
       noob       more than 30
 
     Medals roll down: earning one sends every easier one on that tier too, so
-    nobody has to throw a run to collect the bad ones. This setting only decides
-    how far up the ladder goes — pick platinum and a flawless run is a check.
+    nobody has to throw a run to collect the bad ones. This setting decides how
+    far up the ladder goes — pick platinum and a flawless run is a check.
+
+    It is also what `suspension_goal_requires_award` measures the goal against,
+    so **above Silver is not recommended unless you know what you are asking
+    for**: gold is five team deaths across a whole run and platinum is none at
+    all, on every one of the eight class clears the goal needs. Leave that option
+    off and this is only about which medals are checks.
     """
 
     display_name = "Suspension Required Award"
@@ -411,6 +427,22 @@ class SuspensionRequiredAward(Choice):
     option_gold = 4
     option_platinum = 5
     default = 2
+
+
+class SuspensionGoalRequiresAward(Toggle):
+    """The goal needs the medal as well as the clears.
+
+    Off, Suspension is won by clearing a run with each of the eight classes at
+    your capped difficulty, however many times the team died doing it.
+
+    On, those clears must also have earned `suspension_required_award` at that
+    tier — so with the award at gold, every class has to be cleared in a run
+    costing the team five deaths or fewer. That is a much harder seed than the
+    same options with this off, and it is the option to leave alone if you are
+    not sure.
+    """
+
+    display_name = "Suspension Goal Requires Award"
 
 
 class SuspensionMaxAwardsArePriority(Toggle):
@@ -441,9 +473,10 @@ class SuspensionDifficultyRolldown(Toggle):
 class SuspensionStartingClass(Choice):
     """The Suspension class you start the seed holding.
 
-    The other seven are items. The Juggernaut is never the starting class: it
-    unlocks per tier by clearing a run with each of the other seven, and a run
-    cleared as the Juggernaut at your capped difficulty is the goal.
+    Six of the other seven are items. The Juggernaut is neither: it is not in
+    the pool at all, and the map opens it once a run has been cleared with each
+    of the other seven — which is also the last step of the goal, since winning
+    means a clear with all eight at your capped difficulty.
     """
 
     display_name = "Suspension Starting Class"
@@ -489,6 +522,7 @@ class HalfLifeSvenOptions(PerGameCommonOptions):
     suspension_classanity: SuspensionClassanity
     suspension_max_difficulty: SuspensionMaxDifficulty
     suspension_required_award: SuspensionRequiredAward
+    suspension_goal_requires_award: SuspensionGoalRequiresAward
     suspension_max_awards_are_priority: SuspensionMaxAwardsArePriority
     suspension_difficulty_rolldown: SuspensionDifficultyRolldown
     suspension_starting_class: SuspensionStartingClass

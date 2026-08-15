@@ -391,7 +391,13 @@ class HalfLifeSvenWorld(World):
             chosen if chosen in startable else self.random.choice(startable)
         )
 
-        self.available_item_names.update(suspension_class_items.values())
+        # Seven of the eight. The Juggernaut is not an item at all: the map opens
+        # it once a run has been cleared with each of the others, and putting a
+        # copy in the pool would have meant an item that unlocks something
+        # already unlocked -- or worse, one that does not, if it arrived first.
+        self.available_item_names.update(
+            suspension_class_items[key] for key in startable
+        )
         if self.suspension_difficulty_item and len(self.suspension_tier_index) > 1:
             self.available_item_names.add(self.suspension_difficulty_item)
 
@@ -430,6 +436,58 @@ class HalfLifeSvenWorld(World):
             return True
         return False
 
+    def suspension_explosive_class_items(self) -> list[str]:
+        """Class items whose class can get explosives on the bridge.
+
+        Three of the eight. The restock crates equip by class targetname and
+        name only these, and no other class's booth loadout carries anything
+        explosive, so a lobby without one of them has nothing that can hurt the
+        tank in section 4.
+        """
+        arcade = self.suspension
+        if arcade is None:
+            return []
+        return sorted(
+            suspension_class_items[key]
+            for key in arcade.get("explosive_classes", ())
+            if key in suspension_class_items
+        )
+
+    def suspension_needs_explosives(self, trigger: dict[str, Any]) -> bool:
+        """Is this check past the tank?
+
+        Sections from the tank onward, and everything that depends on finishing
+        a run: the clear and every medal. Sections before it are reachable with
+        any class -- section 3's detonation pack is a map item anybody can carry.
+        """
+        arcade = self.suspension
+        if arcade is None:
+            return False
+
+        first = arcade.get("explosives_from_section")
+        if not first:
+            return False
+
+        if trigger["type"] != SUSPENSION_SECTION:
+            return True  # a clear or a medal, which needs the whole run
+
+        for section in arcade.get("sections", ()):
+            if section["key"] == trigger.get("section"):
+                return int(section["index"]) >= int(first)
+        return False
+
+    def suspension_shuffled_class_items(self) -> list[str]:
+        """The seven class items that exist. Never the Juggernaut's."""
+        arcade = self.suspension
+        if arcade is None:
+            return []
+        return sorted(
+            suspension_class_items[entry["key"]]
+            for entry in arcade["classes"]
+            if entry["key"] != arcade["goal_class"]
+            and entry["key"] in suspension_class_items
+        )
+
     def suspension_classes_required(self, class_key: str) -> list[str]:
         """Class items a check naming this class needs."""
         arcade = self.suspension
@@ -437,14 +495,22 @@ class HalfLifeSvenWorld(World):
             return []
         if class_key != arcade["goal_class"]:
             return [suspension_class_items[class_key]]
-        # The Juggernaut opens only after a run has been cleared with each of the
-        # others, so in logic it stands behind all of them.
-        return sorted(suspension_class_items.values())
+        # The Juggernaut has no item. It opens once a run has been cleared with
+        # each of the other seven, so in logic it stands behind all seven of
+        # theirs -- which is also the last thing the goal waits on.
+        return self.suspension_shuffled_class_items()
 
     def suspension_goal_rule(self):
-        """A cleared run as the Juggernaut, at the hardest tier this seed has."""
+        """A run cleared with every class, at the hardest tier this seed has.
+
+        In items that is the seven that exist plus the tier: the eighth class is
+        the Juggernaut, which the map hands over once the other seven have each
+        cleared a run, and the medal the goal may also want is a matter of skill
+        rather than of inventory. Both of those are the client's to judge from
+        what has actually been checked.
+        """
         player = self.player
-        names = self.suspension_classes_required(self.suspension["goal_class"])
+        names = self.suspension_shuffled_class_items()
         tier = max(self.suspension_tier_index.values(), default=0)
         difficulty_item = self.suspension_difficulty_item
 
@@ -627,4 +693,12 @@ class HalfLifeSvenWorld(World):
             "suspension_awards": list(self.suspension_awards),
             "suspension_rolldown": bool(self.options.suspension_difficulty_rolldown),
             "suspension_starting_class": self.suspension_starting_class,
+            # The goal is the client's to judge, so it needs the terms: every
+            # class cleared at the capped tier, and whether the medal counts too.
+            "suspension_goal_requires_award": bool(
+                self.options.suspension_goal_requires_award
+            ),
+            "suspension_goal_class": (
+                self.suspension["goal_class"] if self.suspension_enabled else ""
+            ),
         }

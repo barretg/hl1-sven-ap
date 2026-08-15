@@ -199,6 +199,12 @@ void MapStart()
 	// must not swallow the mission the player just chose.
 	bool bDeliberate = g_szIntendedMap == g_szCurrentMap;
 
+	// The arcade ended its own map and the server moved on to whatever its cycle
+	// says. Asked before anything else, because that map is nobody's mission and
+	// every test below would call it one.
+	if( SuspensionConsumeRestart() )
+		return;
+
 	// A mission finished on the way here and the campaign carried us into the
 	// next one. Nothing on this map counts; go back to the hub. Consumed either
 	// way: a stale flag is spent here rather than left to fire at the next map.

@@ -51,14 +51,27 @@ to die on purpose.
 
 Difficulty is the lobby's shared ticket pool — 50 on easy down to a single ticket
 on insane — and `Progressive Suspension Difficulty` items open the tiers in
-order, so a fresh seed can only vote easy. Seven of the eight classes are items;
-the eighth, the Juggernaut, opens per tier once a run has been cleared with each
-of the others, and a run cleared as the Juggernaut at your capped tier is a goal
-in its own right.
+order, so a fresh seed can only vote easy. Seven of the eight classes are items.
+The eighth, the Juggernaut, is not: the map opens it once a run has been cleared
+with each of the other seven, exactly as it does outside a randomiser.
+
+Suspension's goal is a run cleared with **every one of the eight classes at your
+capped difficulty** — so the Juggernaut is the last of them, and the cap is what
+the goal is measured at. `suspension_goal_requires_award` adds the medal to that:
+off, the deaths do not matter; on, each of those clears has to earn
+`suspension_required_award` as well. Reaching it does not win the seed on its
+own — every campaign in the YAML still has to be finished too.
 
 `suspension_classanity` turns each section into a check *per class*, which is
 lobby-scale: eight players on eight different classes clear eight classes' worth
 in one run, where a solo player would need eight runs.
+
+Section 4 is a tank, and only the Grenadier, the Pointman and the Engineer can
+get anything that hurts it — the bridge's explosives crates equip those three
+and nobody else. So every check from the tank onward, along with the clears and
+the medals, is in logic behind holding one of those three classes. The sections
+before it are open to any class, the detonation pack in section 3 included:
+that one is a map item anybody can pick up and carry.
 
 There is no hub console for it. Type `!warp suspension`.
 
