@@ -6,6 +6,7 @@ from Options import (
     Choice,
     DeathLink,
     DefaultOnToggle,
+    OptionSet,
     PerGameCommonOptions,
     Range,
     StartInventoryPool,
@@ -288,6 +289,37 @@ class ShuffleLongJump(Toggle):
     display_name = "Shuffle Long Jump Module"
 
 
+class LobbyDeathLink(Choice):
+    """Whether one player's death takes the rest of the lobby with it.
+
+    Sven Co-op is co-operative and the slot is the whole lobby, so a DeathLink
+    normally means everybody: one player dies, the lobby gibs, and one DeathLink
+    goes out to the multiworld. This setting separates those two halves.
+
+      on           the lobby gibs wherever you are. The default, and what
+                   DeathLink has always done here.
+      non_arcade   the lobby gibs in the campaigns, but never on Suspension —
+                   a bridge run is long, deaths there are the medal's business,
+                   and one player's mistake need not end it for seven others.
+      off          nobody else dies for your death. The DeathLink still goes
+                   out, so other worlds are unaffected.
+
+    Only your own deaths are governed by this. A DeathLink *arriving* from
+    another world still takes the lobby, whatever this says: being killed by it
+    is what receiving one means, and there is nothing else it could do to a slot
+    that is eight people.
+
+    `death_link: false` overrides this to off. There is no lobby wipe without a
+    DeathLink to be the point of it.
+    """
+
+    display_name = "Lobby DeathLink"
+    option_on = 0
+    option_non_arcade = 1
+    option_off = 2
+    default = 0
+
+
 class DeathLinkAmnesty(Range):
     """How many deaths the lobby is forgiven before one is sent to the multiworld.
 
@@ -429,6 +461,36 @@ class SuspensionRequiredAward(Choice):
     default = 2
 
 
+class SuspensionGoalClasses(OptionSet):
+    """Which classes a run has to be cleared with to win Suspension.
+
+    All eight by default, at your capped difficulty, which is the whole of the
+    goal. Naming fewer shortens it: `[assault, medic]` is won by clearing the
+    bridge once as each of those two and never touching the other six.
+
+    The Juggernaut is the expensive one. The map only opens it after a run has
+    been cleared with each of the other seven, so leaving it in means those
+    seven clears are needed whether or not they are named here — and taking it
+    out is what makes a short list actually short.
+
+    Both spellings are accepted, the lobby's sign and the map's own entity name:
+    Assault is `soldier`, Grenadier is `gl_soldier`, Pointman is `shotty`,
+    Support is `saw`. An empty list means all eight.
+    """
+
+    display_name = "Suspension Goal Classes"
+    valid_keys = frozenset({
+        "assault", "grenadier", "pointman", "support",
+        "sniper", "medic", "engineer", "juggernaut",
+        # The map's names for the four that disagree with their signs.
+        "soldier", "gl_soldier", "shotty", "saw",
+    })
+    default = frozenset({
+        "assault", "grenadier", "pointman", "support",
+        "sniper", "medic", "engineer", "juggernaut",
+    })
+
+
 class SuspensionGoalRequiresAward(Toggle):
     """The goal needs the medal as well as the clears.
 
@@ -522,10 +584,12 @@ class HalfLifeSvenOptions(PerGameCommonOptions):
     suspension_classanity: SuspensionClassanity
     suspension_max_difficulty: SuspensionMaxDifficulty
     suspension_required_award: SuspensionRequiredAward
+    suspension_goal_classes: SuspensionGoalClasses
     suspension_goal_requires_award: SuspensionGoalRequiresAward
     suspension_max_awards_are_priority: SuspensionMaxAwardsArePriority
     suspension_difficulty_rolldown: SuspensionDifficultyRolldown
     suspension_starting_class: SuspensionStartingClass
     start_inventory_from_pool: StartInventoryPool
     death_link: DeathLink
+    lobby_death_link: LobbyDeathLink
     death_link_amnesty: DeathLinkAmnesty

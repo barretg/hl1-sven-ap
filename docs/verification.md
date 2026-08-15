@@ -528,6 +528,16 @@ have not are the boxes below.
   locked button from across the lobby was enough to answer it over and over. It
   now waits for `IN_USE`, and both refusals repeat at most once every four
   seconds per player.
+- The booth wall was the worst of the four attempts. A `func_wall` of ours, built
+  from the portal's brush, stayed standing after its class had been earned: the
+  `EHandle` to it came back null while the entity did not, so unlocking removed
+  nothing and the guard that explains a shut booth skipped it for the same
+  reason — no message, no way in, until the map reloaded. A `restart` while one
+  stood crashed the game outright, with no error line to go on. The plugin no
+  longer creates anything on this map: a locked portal is switched off, and a
+  player who walks through a switched-off doorway is put back at their own last
+  position outside it. Blaming the crash on the wall is a suspicion rather than
+  a diagnosis — it is what changed, and it is what a `restart` retest settles.
 - The goal changed shape. It was "a run cleared as the Juggernaut at the capped
   tier", with the Juggernaut itself an item in the pool — which was wrong twice
   over: the map already gates that class behind clearing with the other seven,
@@ -624,6 +634,25 @@ have not are the boxes below.
   return, nothing forgotten, and you stay in whatever mission you were playing.
   A momentary drop is not a new run.
 
+### 5. DeathLink
+
+`lobby_death_link` pulls the two halves of DeathLink apart: the report to the
+multiworld, and the lobby going with you. Seed 4 carries `on` for slot A and
+`off` for slot B, so one lobby shows both.
+
+- [ ] **`off` still sends.** B dies: nobody else in the lobby is gibbed, and A's
+  world still receives the DeathLink. A dies: everyone gibs, as always.
+- [ ] **Inbound is not governed by it.** Send B a DeathLink from another world
+  with `off` set: the lobby still gibs. Being killed by one is what receiving
+  one means, and the slot is the whole lobby.
+- [ ] **`death_link: false` overrides it.** With DeathLink off and
+  `lobby_death_link: on`, a death takes nobody: the wipe has nothing to be the
+  point of. The client resolves that before the game sees it, sending
+  `lobby_death_link=off` rather than leaving the plugin to reason about it.
+- [ ] **`non_arcade` spares Suspension only.** Die in a campaign mission and the
+  lobby gibs; die on the bridge and it does not, while the death still counts
+  toward the medal and still reports to the multiworld.
+
 ### 4. Mission gating and completion
 
 - [x] **Warping mission to mission stays put.** `!warp` from the middle of one
@@ -651,7 +680,7 @@ at section 4, where the named tank fight is; play found armour to deal with in
 section 2 as well, which is what the crate in that section is there for, and the
 report wins.
 
-- [ ] **The gate is real, in both directions.** With only, say, the Sniper and
+- [x] **The gate is real, in both directions.** With only, say, the Sniper and
   the Medic held, a run cannot get past section 2; take the Grenadier and it can.
   If a tank turns out to be killable by gunfire alone — they are 1500 health
   `func_breakable`s, so they are not obviously immune — this rule is stricter
@@ -662,7 +691,7 @@ report wins.
   mission matched on a fragment, so it alone had to be typed out in full. A
   fragment that matches the arcade *and* a mission now lists both rather than
   guessing.
-- [ ] **The vote buttons.** With one Progressive Suspension Difficulty item held,
+- [x] **The vote buttons.** With one Progressive Suspension Difficulty item held,
    easy and medium should be pressable and hard and insane should not be there
    at all. The mapping is `vote_button4` easy through `vote_button1` insane —
    backwards from the tier order, so an off-by-one here locks the wrong buttons.
@@ -682,18 +711,29 @@ report wins.
    so the press fires nothing whatever route reached it. Solidity is left
    exactly as the map built it, which is what gives the use trace something to
    land on and the refusal something to answer.
-- [x] **A locked class booth is a wall that says why.** Walk up to one whose item
-  has not arrived: you cannot get in, and the centre of the screen reads "You
-  have not found the Sniper yet" — the same sentence, in the same place, as a
-  weapon you have not been granted. Then receive the class and walk in.
+- [x] **A locked class booth turns you round and says why.** Walk into one whose
+  item has not arrived: you are put straight back where you were standing, and
+  the centre of the screen reads "You have not found the Sniper yet" — the same
+  sentence, in the same place, as a weapon you have not been granted. Then
+  receive the class **mid-round** and walk in: the booth must open there and
+  then, without a map load.
 
-  Three versions of this have been wrong. Switching the teleport off opened a
-  room whose only way out was the teleport, and players stuck inside it; sending
-  them to a spawn point instead teleported them into a wall; making the trigger
-  itself solid is the crash below. The block is now a `func_wall` of ours built
-  from the portal's own brush, which the engine spawns legally, and which is
-  removed rather than disabled when the item lands.
-- [ ] **The Juggernaut icon replaces the placeholder** rather than drawing on
+  Four versions of this have been wrong, each worse than the last. Switching the
+  teleport off opened a room whose only way out was the teleport, and players
+  stuck inside it. Pointing the teleport at a spawn instead put them inside a
+  wall. Making the trigger itself solid is the fatal solid/movetype pair. A
+  `func_wall` of ours built from the portal's brush then outlived the class being
+  earned — the handle came back null while the brush stood, so the booth stayed
+  shut with nothing to say and nothing to remove — and a `restart` with one
+  standing crashed the game with no error at all.
+
+  Nothing is built now and nothing of the map's is made solid. The portal is
+  switched off, and a player who crosses a switched-off doorway is put back at
+  their own last position outside it, which needs nothing known about the map.
+- [x] **`restart` on the arcade map does not crash.** With a class locked, with
+  one just unlocked, and mid-round. The crash had no error line, so the only
+  evidence either way is whether it happens again.
+- [x] **The Juggernaut icon replaces the placeholder** rather than drawing on
   top of it, **and neither flashes**. The seal is applied from the one-second
   lock sweep, and firing the reveal is not idempotent — a multi_manager fire
   every second made the placeholder blink over the icon for as long as anyone
@@ -703,11 +743,11 @@ report wins.
   Our counters latch — the map sets a signal once and it stands — so reading the
   end signal without spending it meant the round ended, restarted on the start
   signal still standing, and ended again. Both are zeroed as they are consumed.
-- [ ] **The map comes back to the bridge.** The arcade ends its own map when the
+- [x] **The map comes back to the bridge.** The arcade ends its own map when the
   bridge is taken, and the server then followed its map cycle into something
   that is not in the seed at all. A scored round now warps back to Suspension on
   the far side of that change. `!hub` is still how to leave.
-- [ ] **The medals land.** Clear a run and every medal the deaths earned arrives,
+- [x] **The medals land.** Clear a run and every medal the deaths earned arrives,
   not only the best one: five deaths is a gold, and on a seed whose ladder stops
   at bronze that used to send *nothing at all*, because the one medal the run
   was scored as was not a check in this seed. A won run always earns the bottom
@@ -715,12 +755,12 @@ report wins.
 - [x] **Section boundaries.** Confirm each section credit lands as that section
   falls, not one early or one late. `s6` hangs off `s6_captured_text` rather
   than `s7_apc_start`, because the latter is delayed twenty seconds.
-- [ ] **The Juggernaut is earned, not sent.** It is no longer an item and is not
+- [x] **The Juggernaut is earned, not sent.** It is no longer an item and is not
    in the pool at all: clear a run with each of the other seven, at any tier,
    and the booth opens on its own. Nothing arrives in chat, because nothing was
    sent — the client works it out from the seven clears it has seen checked and
    puts the class in the snapshot.
-- [ ] **The Juggernaut booth itself.** Below insane the booth is believed to be
+- [x] **The Juggernaut booth itself.** Below insane the booth is believed to be
    inert, so the plugin watches the portal box and grants the class itself.
    Confirm the portal grants it once it has been earned, that a second player is
    refused, that the restock stations still work for the granted class (they
@@ -728,8 +768,8 @@ report wins.
    `g_EntityFuncs.SetModel` on a player is the least certain call in the module,
    and if it does nothing the class is still mechanically correct and merely
    looks wrong.
-- [ ] The medal matches the team's death count.
-- [ ] Every lesser medal arrives with it.
+- [x] The medal matches the team's death count.
+- [x] Every lesser medal arrives with it.
 - [x] Section checks land for the classes in play, and nothing lands for a class
   nobody was holding.
   - [] Test this with a bigger mix of classes
@@ -739,6 +779,11 @@ report wins.
   sends no goal for the arcade any more — the condition is a set of checks
   rather than an event, so the client decides it from what the server says is
   checked, which also means releasing those clears counts.
+- [ ] **`suspension_goal_classes` shortens that list.** With `[assault, medic]`
+  the goal is those two clears at the capped tier and nothing else — the other
+  six classes are still items and still have checks, they just are not the
+  finish line. Naming the Juggernaut still costs the seven clears the map wants
+  before it opens, whether or not those seven are named.
 - [ ] **`suspension_goal_requires_award: true` adds the medal**: the same eight
   clears, plus the seed's hardest medal at that tier. Off, deaths do not matter.
 - [ ] **Reaching it does not win a seed that has campaigns in it.** On a mixed

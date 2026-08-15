@@ -1,14 +1,17 @@
 /*
 * DeathLink.
 *
-* In a seed with DeathLink on, the rule is the same regardless of where the death
-* came from: any death is everyone's death. A player dying locally gibs the rest
-* of the lobby and sends one DeathLink out; a DeathLink arriving from the
-* multiworld gibs the lobby.
+* Two halves, which a seed may now set apart. A player dying locally sends one
+* DeathLink out and, if `lobby_death_link` says so, gibs the rest of the lobby
+* with them; a DeathLink arriving from the multiworld gibs the lobby regardless,
+* because being killed by one is the whole of what receiving one means, and this
+* slot is eight people.
 *
-* With DeathLink off, none of that happens. The death is still reported to the
-* client -- that is how the client decides anything at all -- but the wipe is the
-* DeathLink, and a seed without one must not have it.
+* `lobby_death_link` is "on" everywhere, "off" nowhere, or "non_arcade" -- every
+* campaign but Suspension, where a run is long and a death is already counted
+* against the medal. It is forced off wherever DeathLink itself is off: the
+* death is still reported to the client, which is how the client decides
+* anything at all, but a wipe with no DeathLink behind it means nothing.
 *
 * The only thing standing between the wipe and an infinite cascade is
 * g_flDeathLinkImmuneUntil, which is always set *before* the wipe runs.
@@ -161,16 +164,17 @@ HookReturnCode PlayerKilled( CBasePlayer@ pPlayer, CBaseEntity@ pAttacker, int i
 	// advice the client applies on top of that.
 	BridgeSend( "DEATH|" + szName + "|" + szCause + "|" + ( bForgiven ? "1" : "0" ) );
 
-	// Taking the lobby with them is the DeathLink itself, and a seed without
-	// DeathLink must not have one. Reporting the death is unconditional because
-	// the client decides what it means; wiping the lobby is a local effect and
-	// there is nothing for it to mean when the option is off.
+	// Taking the lobby with them is a separate question from sending a DeathLink
+	// out, and `lobby_death_link` is where a seed answers it: everywhere, nowhere,
+	// or everywhere but the arcade map, where a run is long and a death is
+	// already the medal's business. Never without DeathLink itself -- there is
+	// nothing for a wipe to mean when no DeathLink is going anywhere.
 	//
-	// Gating on our cached copy of the flag is right here where it is wrong for
-	// the report above: a stale `true` costs one wipe that should not have
-	// happened, where a stale `false` on the report would silently swallow a
-	// death for good.
-	if( !g_State.deathLink )
+	// Reporting the death above is unconditional because the client decides what
+	// it means. Gating on our cached copy of the flags is right here where it is
+	// wrong there: a stale `true` costs one wipe that should not have happened,
+	// where a stale `false` on the report would silently swallow a death for good.
+	if( !g_State.LobbyDiesWith( SuspensionManaged() ) )
 		return HOOK_CONTINUE;
 
 	string szReason = szName + " died (" + szCause + ") and took everyone along.";

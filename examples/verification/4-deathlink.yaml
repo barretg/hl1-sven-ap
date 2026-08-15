@@ -26,6 +26,13 @@
 # players to the lobby if you have them.
 #
 # Steps 1 to 3 have already passed; step 4 is the one still open.
+#
+# Slot B also carries `lobby_death_link: off`, which is the new setting: the two
+# halves of DeathLink pulled apart. B's deaths must still send a DeathLink to A
+# and must gib nobody in the lobby; A's deaths gib everyone as before. An
+# inbound DeathLink takes the lobby either way, whichever slot receives it.
+# `non_arcade` is the third setting and needs Suspension to test, so it belongs
+# with seed 5.
 
 name: Ver4DeathA
 description: DeathLink slot A
@@ -42,6 +49,8 @@ Half-Life (Sven Co-op):
   trap_percentage: 0
   death_link: true
   death_link_amnesty: 2
+  # The ordinary behaviour: this slot's deaths take the lobby with them.
+  lobby_death_link: on
   start_inventory:
     Office Complex Unlock: 1
     RPG: 1
@@ -64,6 +73,10 @@ Half-Life (Sven Co-op):
   trap_percentage: 0
   death_link: true
   death_link_amnesty: 2
+  # The half of DeathLink this slot keeps: it reports its deaths and takes
+  # nobody with it. Slot A above is the ordinary "everyone goes" behaviour, so
+  # one lobby shows both.
+  lobby_death_link: off
   start_inventory:
     Office Complex Unlock: 1
     RPG: 1

@@ -181,5 +181,25 @@ Kill Nihilanth. Its mission only opens once you have completed enough of the
 others, so the run is a tour of Black Mesa rather than a beeline.
 
 With several campaigns enabled it is every one of their finales, each behind its
-own count. With Suspension enabled it is those plus one more: a run of the bridge
-cleared as the Juggernaut, at the hardest tier your YAML allows.
+own count. With Suspension enabled it is those plus one more: the bridge cleared
+with each class in `suspension_goal_classes` — all eight by default — at the
+hardest tier your YAML allows, and earning `suspension_required_award` too if
+`suspension_goal_requires_award` is on.
+
+## What happens when somebody dies?
+
+With DeathLink on, a death is the whole lobby's: everyone gibs and one DeathLink
+goes out to the multiworld. `lobby_death_link` separates those two halves, since
+one player's mistake ending the round for seven others is not always what a
+lobby wants:
+
+- **on** — the default, and what DeathLink has always done here.
+- **non_arcade** — the lobby gibs in the campaigns but never on Suspension,
+  where a run is long and deaths are already the medal's business.
+- **off** — nobody else dies for your death, and the DeathLink still goes out.
+
+A DeathLink *arriving* from another world always takes the lobby, whatever this
+is set to: being killed by it is what receiving one means. And with DeathLink
+itself off, none of it happens — there is nothing for a wipe to be the point of.
+`death_link_amnesty` is separate again, and forgives a number of deaths before
+one is reported at all.

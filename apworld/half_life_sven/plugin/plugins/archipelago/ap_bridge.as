@@ -172,6 +172,7 @@ void BridgePoll()
 	bool bGoalOpen = false;
 	bool bConnected = false;
 	bool bDeathLink = false;
+	string szLobbyDeath = "on";
 	int iAmnesty = 0;
 	array<string> events;
 
@@ -295,6 +296,10 @@ void BridgePoll()
 			bDeathLink = szValue == "1";
 		else if( szKey == "death_link_amnesty" )
 			iAmnesty = atoi( szValue );
+		// Absent from an older client, where the default below stands and means
+		// what it has always meant: the lobby goes with you.
+		else if( szKey == "lobby_death_link" )
+			szLobbyDeath = szValue;
 		else if( szKey == "event" )
 			events.insertLast( szValue );
 		// The arcade map. Absent from a seed that has none, and from a client too
@@ -382,6 +387,7 @@ void BridgePoll()
 	g_State.connected = bConnected;
 	g_State.deathLink = bDeathLink;
 	g_State.deathLinkAmnesty = iAmnesty;
+	g_State.lobbyDeathLink = szLobbyDeath;
 
 	// An item arriving opens a Suspension tier or class, and the locks are
 	// entity state rather than a question asked at press time -- so they have to

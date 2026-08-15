@@ -108,7 +108,31 @@ class APState
 	// Deaths the lobby may take before one is reported to the multiworld.
 	// 0 means every death counts, which is what an older client implies too.
 	int deathLinkAmnesty = 0;
+	// Whether one player's death takes the rest of the lobby with it, and where:
+	// "on" everywhere, "non_arcade" outside Suspension, "off" nowhere. An older
+	// client sends nothing and means "on", which is all this ever did.
+	string lobbyDeathLink = "on";
 	int lastEventSeq = 0;
+
+	/*
+	* Does a death here wipe the lobby?
+	*
+	* The wipe and the DeathLink are separate halves of the same option now: a
+	* seed can send DeathLinks out without gibbing seven other people for one
+	* mistake, and can spare the arcade map alone, where a run is long and a
+	* death is already the medal's business.
+	*
+	* Never true without DeathLink itself, which the client enforces before the
+	* answer ever gets here.
+	*/
+	bool LobbyDiesWith( bool bOnArcade ) const
+	{
+		if( !deathLink || lobbyDeathLink == "off" )
+			return false;
+		if( lobbyDeathLink == "non_arcade" )
+			return !bOnArcade;
+		return true;
+	}
 
 	bool ChapterUnlocked( const string& in szKey ) const
 	{

@@ -185,6 +185,7 @@ class Bridge:
         checked: list[int] | None = None,
         missing: list[int] | None = None,
         death_link_amnesty: int = 0,
+        lobby_death_link: str = "on",
         data_version: str = "",
         slot: str = "",
         suspension: dict | None = None,
@@ -212,6 +213,10 @@ class Bridge:
             f"connected={1 if connected else 0}",
             f"goal_open={1 if goal_open else 0}",
             f"death_link={1 if death_link else 0}",
+            # Whether a local death takes the lobby with it, and where: "on",
+            # "non_arcade" or "off". Absent from an older client, which the game
+            # reads as "on" -- the only behaviour there has ever been.
+            f"lobby_death_link={lobby_death_link}",
             # Counted down by the plugin, not here: the death message has to name
             # the remaining allowance at the moment of the death.
             f"death_link_amnesty={max(0, int(death_link_amnesty))}",

@@ -154,15 +154,26 @@ def test_record_guards_match_what_the_generator_emits() -> None:
 def test_a_death_only_wipes_the_lobby_when_deathlink_is_on(
     sources: dict[str, str],
 ) -> None:
-    """The wipe *is* the DeathLink. Only the report to the client is meant to be
-    unconditional, and for a while the wipe was too -- so every death gibbed the
-    lobby in seeds that had the option switched off."""
+    """Only the report to the client is meant to be unconditional, and for a
+    while the wipe was too -- so every death gibbed the lobby in seeds that had
+    the option switched off. The wipe is now its own setting on top of that, and
+    the one answer both questions go through is `LobbyDiesWith`."""
     body = function_body(sources["ap_deathlink.as"], "PlayerKilled")
-    gate = body.find("g_State.deathLink")
+    gate = body.find("LobbyDiesWith(")
     wipe = body.find("WipeLobby(")
-    assert gate >= 0, "PlayerKilled no longer checks whether DeathLink is on"
+    assert gate >= 0, "PlayerKilled no longer asks whether the lobby dies with them"
     assert wipe >= 0, "PlayerKilled no longer wipes the lobby at all"
-    assert gate < wipe, "the DeathLink check must come before the wipe"
+    assert gate < wipe, "the check must come before the wipe"
+
+    # A method rather than a free function, so it is read by hand: the brace
+    # matcher above only knows about functions at the top level.
+    state = sources["ap_state.as"]
+    start = state.find("bool LobbyDiesWith(")
+    assert start >= 0, "LobbyDiesWith is gone"
+    answer = state[start:state.index("\n\t}", start)]
+
+    assert "deathLink" in answer, "a wipe without a DeathLink behind it means nothing"
+    assert '"non_arcade"' in answer, "the arcade exemption is gone"
 
 
 def test_the_arcade_map_is_exempt_from_the_weapon_gating(
@@ -439,28 +450,41 @@ def test_solid_bsp_is_only_ever_given_to_a_pusher(sources: dict[str, str]) -> No
     assert "SOLID_TRIGGER" in guard, "a non-pusher has nothing safe to be switched on as"
 
 
-def test_a_locked_class_booth_is_walled_off_rather_than_disabled(
-    sources: dict[str, str],
-) -> None:
-    """Three things have failed here. Switching the teleport off opened a room
-    whose only way out was the teleport, and players stuck; sending them to a
-    spawn point instead put them inside a wall; making the trigger itself solid
-    is the crash above. A wall of our own, built by the engine from the portal's
-    brush, is none of those."""
-    body = function_body(sources["ap_suspension.as"], "SuspensionSetPortalOpen")
+def test_nothing_is_built_to_lock_a_class_booth(sources: dict[str, str]) -> None:
+    """Four versions of this have been wrong, and the last one was the worst.
 
-    assert '"func_wall"' in body, "the block is no longer an entity the engine builds"
-    assert "pev.model" in body, "the wall is not built from the portal's own brush"
-    assert "g_EntityFuncs.Remove(" in body, "unlocking leaves the wall standing"
+    Switching the teleport off opened a room whose only way out was the
+    teleport, and players stuck; pointing it at a spawn instead teleported them
+    into a wall; making the trigger itself solid is the fatal solid/movetype
+    pair. Then a `func_wall` of ours built from the portal's brush outlived the
+    class being earned -- the handle to it came back null while the brush stood
+    -- and a `restart` with one standing crashed the game outright.
+
+    So the lock creates nothing and makes nothing of the map's solid. The portal
+    is switched off, and the booth behind it is watched.
+    """
+    text = sources["ap_suspension.as"]
+    body = function_body(text, "SuspensionSetPortalOpen")
+
+    assert "CreateEntity(" not in body, "the booth lock builds an entity again"
+    assert "SOLID_BSP" not in body, "a trigger made SOLID_BSP is the crash, not the fix"
+    assert "SOLID_NOT" in body, "a locked portal is no longer switched off"
 
 
-def test_a_locked_booth_says_why(sources: dict[str, str]) -> None:
-    """A wall that refuses silently reads as a broken map. The message is the
-    same sentence and the same centre print a locked weapon gets."""
-    body = function_body(sources["ap_suspension.as"], "SuspensionWarnLockedBooths")
+def test_a_locked_booth_puts_you_back_and_says_why(sources: dict[str, str]) -> None:
+    """A switched-off portal is a doorway onto a room with no exit, so anybody
+    who walks one has to be put back where they were -- with the same sentence
+    and the same centre print a locked weapon gets."""
+    body = function_body(sources["ap_suspension.as"], "SuspensionGuardLockedBooths")
+
     assert "HUD_PRINTCENTER" in body, "the booth refusal is not where the weapon one is"
     assert "have not found the" in body, "the wording drifted from the weapon refusal"
     assert "SUS_REFUSAL_INTERVAL" in body, "the message repeats every think"
+    assert "SetOrigin(" in body, "nobody is put back out of the booth"
+    assert "g_szSusSafeSpot" in body, (
+        "put back to where, exactly? the player's own last position outside is "
+        "the only spot that needs nothing known about the map"
+    )
 
 
 def test_the_arcade_answers_to_part_of_its_name(sources: dict[str, str]) -> None:

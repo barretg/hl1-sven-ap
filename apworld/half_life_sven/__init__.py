@@ -170,6 +170,8 @@ class HalfLifeSvenWorld(World):
         self.suspension_priority_awards: set[str] = set()
         # The class the seed starts holding. Never the Juggernaut.
         self.suspension_starting_class: str = ""
+        # The classes the goal wants a run cleared with, all eight by default.
+        self.suspension_goal_classes: list[str] = []
         self.suspension_difficulty_item: str = suspension_difficulty_item
 
     # -- generation ------------------------------------------------------
@@ -391,6 +393,20 @@ class HalfLifeSvenWorld(World):
             chosen if chosen in startable else self.random.choice(startable)
         )
 
+        # Which classes the goal wants a clear with, in the data's order so the
+        # list reads the way the lobby does. Both spellings resolve, the same way
+        # the starting class does, and an empty list means all of them.
+        all_classes = [entry["key"] for entry in arcade["classes"]]
+        wanted_classes = {
+            by_option_key.get(key, key)
+            for key in self.options.suspension_goal_classes.value
+        }
+        if passthrough and passthrough.get("suspension_goal_classes"):
+            wanted_classes = set(passthrough["suspension_goal_classes"])
+        self.suspension_goal_classes = [
+            key for key in all_classes if key in wanted_classes
+        ] or list(all_classes)
+
         # Seven of the eight. The Juggernaut is not an item at all: the map opens
         # it once a run has been cleared with each of the others, and putting a
         # copy in the pool would have meant an item that unlocks something
@@ -501,16 +517,20 @@ class HalfLifeSvenWorld(World):
         return self.suspension_shuffled_class_items()
 
     def suspension_goal_rule(self):
-        """A run cleared with every class, at the hardest tier this seed has.
+        """A run cleared with each class the goal names, at the hardest tier.
 
-        In items that is the seven that exist plus the tier: the eighth class is
-        the Juggernaut, which the map hands over once the other seven have each
-        cleared a run, and the medal the goal may also want is a matter of skill
-        rather than of inventory. Both of those are the client's to judge from
-        what has actually been checked.
+        In items that is one per class named -- except the Juggernaut, which has
+        none and stands behind the other seven, so naming it asks for all seven.
+        The medal the goal may also want is a matter of skill rather than of
+        inventory. Both of those are the client's to judge from what has actually
+        been checked.
         """
         player = self.player
-        names = self.suspension_shuffled_class_items()
+        names = sorted({
+            item
+            for key in self.suspension_goal_classes
+            for item in self.suspension_classes_required(key)
+        })
         tier = max(self.suspension_tier_index.values(), default=0)
         difficulty_item = self.suspension_difficulty_item
 
@@ -700,5 +720,13 @@ class HalfLifeSvenWorld(World):
             ),
             "suspension_goal_class": (
                 self.suspension["goal_class"] if self.suspension_enabled else ""
+            ),
+            "suspension_goal_classes": list(self.suspension_goal_classes),
+            # Whether a death takes the rest of the lobby with it, and where.
+            # Forced off without a DeathLink to be the point of it.
+            "lobby_death_link": (
+                self.options.lobby_death_link.current_key
+                if self.options.death_link
+                else "off"
             ),
         }

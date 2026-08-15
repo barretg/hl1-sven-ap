@@ -309,10 +309,15 @@ class HalfLifeSvenContext(SuperContext):
         # Difficulty items have. The starting class arrives as a normal item.
         self.suspension_classes: set[str] = set()
         self.suspension_open = 0
-        # Whether the goal wants the medal as well as the clears, and which class
-        # the map keeps behind the other seven. Both arrive with the slot data.
+        # Whether the goal wants the medal as well as the clears, which classes
+        # it wants clears with, and which class the map keeps behind the other
+        # seven. All three arrive with the slot data.
         self.suspension_goal_requires_award = False
+        self.suspension_goal_classes: list[str] = []
         self.suspension_goal_class = ""
+        # "on", "non_arcade" or "off": whether one player's death takes the rest
+        # of the lobby with it, and where. Off whenever DeathLink itself is off.
+        self.lobby_death_link = "on"
         self.goal_sent = False
         self.chat_relay = True
         self.bridge_failures = 0
@@ -528,6 +533,12 @@ class HalfLifeSvenContext(SuperContext):
             self.suspension_goal_class = str(
                 slot_data.get("suspension_goal_class", "")
             )
+            self.suspension_goal_classes = list(
+                slot_data.get("suspension_goal_classes", ())
+            )
+            # Absent from a seed generated before the option existed, which read
+            # as "the lobby gibs" and still does.
+            self.lobby_death_link = str(slot_data.get("lobby_death_link", "on"))
             self.death_link_enabled = bool(slot_data.get("death_link", False))
             self.death_link_amnesty = int(
                 slot_data.get("death_link_amnesty", self.death_link_amnesty)
@@ -762,7 +773,8 @@ class HalfLifeSvenContext(SuperContext):
             return False
 
         tier = self.suspension_top_tier
-        classes = self.suspension_class_keys
+        # The YAML's list where it named one, every class otherwise.
+        classes = self.suspension_goal_classes or self.suspension_class_keys
         if not tier or not classes:
             return False
 
@@ -1124,6 +1136,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
                 goals_open=sorted(ctx.open_goal_chapters),
                 death_link=ctx.death_link_enabled,
                 death_link_amnesty=ctx.death_link_amnesty,
+                lobby_death_link=ctx.lobby_death_link,
                 excluded=sorted(ctx.excluded_chapters),
                 ungated=sorted(ctx.ungated_classnames),
                 starting=list(ctx.starting_weapons),
@@ -1167,6 +1180,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
         goals_open=sorted(ctx.open_goal_chapters),
         death_link=ctx.death_link_enabled,
         death_link_amnesty=ctx.death_link_amnesty,
+        lobby_death_link=ctx.lobby_death_link,
         excluded=sorted(ctx.excluded_chapters),
         ungated=sorted(ctx.ungated_classnames),
         starting=list(ctx.starting_weapons),

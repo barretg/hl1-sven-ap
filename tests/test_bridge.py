@@ -467,3 +467,17 @@ def test_snapshot_carries_the_tracker_location_sets(bridge: Bridge) -> None:
 
     # A check landing has to reach the game, so this counts as a change.
     assert snapshot(bridge, checked=[7720001, 7720002, 7720003], missing=[]) is True
+
+
+def test_snapshot_carries_the_lobby_deathlink_setting(bridge: Bridge) -> None:
+    """Separate from DeathLink itself: a seed can send them out without gibbing
+    seven other people, or spare the arcade map alone."""
+    snapshot(bridge, lobby_death_link="non_arcade")
+    assert "lobby_death_link=non_arcade" in bridge.in_path.read_text(encoding="utf-8")
+
+
+def test_the_lobby_deathlink_defaults_to_the_old_behaviour(bridge: Bridge) -> None:
+    """An older client sends no such line and the game reads "on", which is the
+    only thing a lobby wipe has ever done."""
+    snapshot(bridge)
+    assert "lobby_death_link=on" in bridge.in_path.read_text(encoding="utf-8")
