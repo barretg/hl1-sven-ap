@@ -1,5 +1,5 @@
 {
- "data_version": "537bc031e46c",
+ "data_version": "4743ecf728c0",
  "files": [
   "campaigns/half_life.json",
   "campaigns/opposing_force.json",
@@ -597,6 +597,9 @@
   ],
   "rpg": [
    "RPG"
+  ],
+  "barnacle_grapple": [
+   "Barnacle Grapple"
   ]
  },
  "starting_weapons": [

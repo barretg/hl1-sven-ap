@@ -19,7 +19,7 @@
 #   G|<arcade>|<part>|<targetname>|<classname>   the Juggernaut seal
 #   E|<arcade>|<class>|<field>|<value>  how to grant a class without its booth
 V|4
-D|537bc031e46c
+D|4743ecf728c0
 M|half_life|Half-Life|nihilanth
 M|opposing_force|Opposing Force|of_worlds_collide
 M|blue_shift|Blue Shift|bs_leap_of_faith
@@ -299,12 +299,9 @@ L|7720205|of3a6|map_reached||Vicarious Reality - Part 3 Reached
 L|7720206|of4a1|map_reached||Pit Worm's Nest - Part 1 Reached
 L|7720207|of4a2|map_reached||Pit Worm's Nest - Part 2 Reached
 L|7720208|of4a2|charger|func_healthcharger:*75|Pit Worm's Nest - Health Charger 1 (Part 2)|-2044 2 444
-L|7720209|of4a2|charger|func_healthcharger:*76|Pit Worm's Nest - Health Charger 2 (Part 2)|-2044 0 513
-L|7720210|of4a2|charger|func_healthcharger:*202|Pit Worm's Nest - Health Charger 4 (Part 2)|544 -1318 1148
-L|7720211|of4a2|charger|func_healthcharger:*203|Pit Worm's Nest - Health Charger 3 (Part 2)|-544 -1318 1148
+L|7720211|of4a2|charger|func_healthcharger:*203|Pit Worm's Nest - Health Charger 2 (Part 2)|-544 -1318 1148
 L|7720212|of4a3|map_reached||Pit Worm's Nest - Part 3 Reached
-L|7720213|of4a3|charger|func_healthcharger:*137|Pit Worm's Nest - Health Charger 3 (Part 3)|544 -1318 1148
-L|7720214|of4a3|charger|func_healthcharger:*138|Pit Worm's Nest - Health Charger 2 (Part 3)|-544 -1318 1148
+L|7720213|of4a3|charger|func_healthcharger:*137|Pit Worm's Nest - Health Charger 2 (Part 3)|544 -1318 1148
 L|7720215|of4a3|charger|func_healthcharger:*191|Pit Worm's Nest - Health Charger 1 (Part 3)|176 -2116 356
 L|7720216|of4a4|map_reached||Pit Worm's Nest - Part 4 Reached
 L|7720226|of6a4|map_reached||Worlds Collide - Part 1 Reached

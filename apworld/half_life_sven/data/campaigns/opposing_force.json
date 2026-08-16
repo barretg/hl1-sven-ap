@@ -54,6 +54,7 @@
    "campaign": "opposing_force",
    "is_goal": false,
    "gates": {},
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -68,6 +69,7 @@
    "campaign": "opposing_force",
    "is_goal": false,
    "gates": {},
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -83,6 +85,7 @@
    "campaign": "opposing_force",
    "is_goal": false,
    "gates": {},
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -102,6 +105,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -121,6 +125,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -140,6 +145,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -158,6 +164,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -177,6 +184,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -197,6 +205,13 @@
      "heavy"
     ]
    },
+   "map_gates": {
+    "of4a4": {
+     "always": [
+      "barnacle_grapple"
+     ]
+    }
+   },
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -215,8 +230,12 @@
    "gates": {
     "strict": [
      "heavy"
+    ],
+    "always": [
+     "barnacle_grapple"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -234,8 +253,12 @@
    "gates": {
     "strict": [
      "heavy"
+    ],
+    "always": [
+     "barnacle_grapple"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -252,8 +275,12 @@
    "gates": {
     "strict": [
      "heavy"
+    ],
+    "always": [
+     "barnacle_grapple"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": true
   }
@@ -791,25 +818,8 @@
    ]
   },
   {
-   "id": 7720209,
-   "name": "Pit Worm's Nest - Health Charger 2 (Part 2)",
-   "chapter": "of_pit_worms_nest",
-   "map": "of4a2",
-   "trigger": {
-    "type": "charger",
-    "map": "of4a2",
-    "classname": "func_healthcharger",
-    "model": "*76"
-   },
-   "position": [
-    -2044,
-    0,
-    513
-   ]
-  },
-  {
    "id": 7720211,
-   "name": "Pit Worm's Nest - Health Charger 3 (Part 2)",
+   "name": "Pit Worm's Nest - Health Charger 2 (Part 2)",
    "chapter": "of_pit_worms_nest",
    "map": "of4a2",
    "trigger": {
@@ -820,23 +830,6 @@
    },
    "position": [
     -544,
-    -1318,
-    1148
-   ]
-  },
-  {
-   "id": 7720210,
-   "name": "Pit Worm's Nest - Health Charger 4 (Part 2)",
-   "chapter": "of_pit_worms_nest",
-   "map": "of4a2",
-   "trigger": {
-    "type": "charger",
-    "map": "of4a2",
-    "classname": "func_healthcharger",
-    "model": "*202"
-   },
-   "position": [
-    544,
     -1318,
     1148
    ]
@@ -869,25 +862,8 @@
    ]
   },
   {
-   "id": 7720214,
-   "name": "Pit Worm's Nest - Health Charger 2 (Part 3)",
-   "chapter": "of_pit_worms_nest",
-   "map": "of4a3",
-   "trigger": {
-    "type": "charger",
-    "map": "of4a3",
-    "classname": "func_healthcharger",
-    "model": "*138"
-   },
-   "position": [
-    -544,
-    -1318,
-    1148
-   ]
-  },
-  {
    "id": 7720213,
-   "name": "Pit Worm's Nest - Health Charger 3 (Part 3)",
+   "name": "Pit Worm's Nest - Health Charger 2 (Part 3)",
    "chapter": "of_pit_worms_nest",
    "map": "of4a3",
    "trigger": {

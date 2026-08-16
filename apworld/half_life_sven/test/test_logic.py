@@ -350,6 +350,96 @@ class TestOpposingForceOnly(StartingMissionMixin, HalfLifeSvenTestBase):
         )
 
 
+class BarnacleGrappleMixin:
+    """Opposing Force is built around the grapple from Pit Worm's Nest part 4 on.
+
+    A traversal requirement rather than a combat one, so unlike every other
+    weapon gate it holds at both logic difficulties -- which is why this mixin is
+    run under strict and loose alike.
+    """
+
+    LATER_MISSIONS = ("Foxtrot Uniform", "The Package", "Worlds Collide")
+
+    def without_the_grapple(self):
+        world = self.multiworld.worlds[self.player]
+        state = self.multiworld.get_all_state(False)
+        state.remove(world.create_item("Barnacle Grapple"))
+        state.sweep_for_advancements()
+        return state
+
+    def test_the_grapple_is_in_the_pool(self) -> None:
+        pool = {item.name for item in self.multiworld.itempool if item.player == self.player}
+        self.assertIn("Barnacle Grapple", pool)
+
+    def test_pit_worms_nest_part_4_needs_it(self) -> None:
+        state = self.without_the_grapple()
+        self.assertFalse(
+            self.can_reach_entrance("Pit Worm's Nest: of4a4", state),
+            "part 4 is reachable without the grapple",
+        )
+
+    def test_the_earlier_parts_do_not(self) -> None:
+        """Including part 3, which is where the grapple itself lies."""
+        state = self.without_the_grapple()
+        for map_name in ("of4a2", "of4a3"):
+            self.assertTrue(
+                self.can_reach_entrance(f"Pit Worm's Nest: {map_name}", state),
+                f"{map_name} was gated on the grapple it comes before",
+            )
+        self.assertTrue(
+            self.multiworld.get_location(
+                "Opposing Force - First Barnacle Grapple", self.player
+            ).can_reach(state),
+            "the grapple's own pickup is behind the grapple",
+        )
+
+    def test_every_mission_after_it_needs_it(self) -> None:
+        state = self.without_the_grapple()
+        for name in self.LATER_MISSIONS:
+            self.assertFalse(
+                self.can_reach_entrance(f"Enter {name}", state),
+                f"{name} is reachable without the grapple",
+            )
+
+    def test_the_missions_before_it_do_not(self) -> None:
+        state = self.without_the_grapple()
+        self.assertTrue(self.can_reach_entrance("Enter Pit Worm's Nest", state))
+        self.assertTrue(self.can_reach_entrance("Enter Vicarious Reality", state))
+
+    def test_the_seed_cannot_be_won_without_it(self) -> None:
+        state = self.without_the_grapple()
+        self.assertFalse(self.multiworld.completion_condition[self.player](state))
+
+
+class TestBarnacleGrappleStrict(BarnacleGrappleMixin, HalfLifeSvenTestBase):
+    options = {
+        "include_half_life": False,
+        "include_opposing_force": True,
+        "logic_difficulty": "strict",
+    }
+
+
+class TestBarnacleGrappleLoose(BarnacleGrappleMixin, HalfLifeSvenTestBase):
+    """The point of the `always` gate: loose logic drops weapon gates, not this one."""
+
+    options = {
+        "include_half_life": False,
+        "include_opposing_force": True,
+        "logic_difficulty": "loose",
+    }
+
+    def test_the_heavy_gate_really_is_dropped(self) -> None:
+        """So the grapple is doing the work above, not the tier it sits beside."""
+        world = self.multiworld.worlds[self.player]
+        state = self.multiworld.get_all_state(False)
+        for name in ("RPG", "SAW", "Displacer Cannon", "Minigun",
+                     "Spore Launcher", "Sniper Rifle", "Shotgun", "MP5"):
+            state.remove(world.create_item(name))
+        state.sweep_for_advancements()
+
+        self.assertTrue(self.can_reach_entrance("Enter Foxtrot Uniform", state))
+
+
 class TestRandomStartingWeapon(StartingMissionMixin, HalfLifeSvenTestBase):
     options = {
         "include_half_life": True,

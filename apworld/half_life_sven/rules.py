@@ -6,9 +6,14 @@ Two kinds of gate exist:
   goal mission and any mission paired with it, which open once
   `missions_required` other missions are done.
 * **Weapon gates** -- expressed as "any one of this group of weapons". They are
-  attached either to a mission entrance (everything in the mission inherits it)
-  or to an individual location, which is how a check that sits past the point
-  where a weapon becomes necessary carries that requirement.
+  attached to a mission entrance (everything in the mission inherits it), to the
+  seam between two parts of a mission (everything from that part on inherits
+  it), or to an individual location, which is how a check that sits past the
+  point where a weapon becomes necessary carries that requirement.
+
+A gate is either `strict`, which loose logic drops because it is about how hard
+the fighting is, or `always`, which no difficulty drops because it is about
+whether the map lets you past at all.
 
 The groups themselves live in `tools/campaign_layout.py` and are baked into
 `data/index.json`; this module only turns them into callables.
@@ -32,7 +37,11 @@ from .options import LogicDifficulty
 if TYPE_CHECKING:
     from . import HalfLifeSvenWorld
 
-# Gate keys used by `gates["always"]` in the campaign data.
+# Gate keys used by `gates["always"]` that name a single optional item rather
+# than a requirement group. Only a gate naming one of these is allowed to vanish
+# when the item is not in the pool: the YAML decides whether the suit and the
+# long jump module are shuffled at all, and equipment nobody will receive is not
+# a gate. Any other `always` key is read as a requirement group.
 EQUIPMENT_GATES = {"longjump": "Long Jump Module", "suit": "HEV Suit"}
 
 
@@ -55,6 +64,71 @@ def any_of(world: "HalfLifeSvenWorld", groups: list[str]) -> Callable[[Collectio
     return rule
 
 
+def all_of(
+    conditions: list[Callable[[CollectionState], bool]]
+) -> Callable[[CollectionState], bool] | None:
+    """Fold a list of rules into one, or None where there is nothing to ask."""
+    if not conditions:
+        return None
+    if len(conditions) == 1:
+        return conditions[0]
+
+    def rule(state: CollectionState) -> bool:
+        return all(condition(state) for condition in conditions)
+
+    return rule
+
+
+def gate_conditions(
+    world: "HalfLifeSvenWorld", gates: dict
+) -> list[Callable[[CollectionState], bool]]:
+    """What a gate table asks for, as rules.
+
+    Shared by mission doors and the seams between parts, which express the same
+    two kinds of requirement and differ only in where they hang.
+    """
+    player = world.player
+    conditions: list[Callable[[CollectionState], bool]] = []
+
+    if world.options.logic_difficulty.value == LogicDifficulty.option_strict:
+        strict = any_of(world, gates.get("strict", []))
+        if strict is not None:
+            conditions.append(strict)
+
+    for key in gates.get("always", []):
+        item_name = EQUIPMENT_GATES.get(key)
+        if item_name is None:
+            required = any_of(world, [key])
+            if required is not None:
+                conditions.append(required)
+        elif item_name in world.available_item_names:
+            conditions.append(lambda state, name=item_name: state.has(name, player))
+
+    return conditions
+
+
+def gates_are_shut(world: "HalfLifeSvenWorld", gates: dict) -> bool:
+    """Does this gate table ask for anything the seed can actually provide?
+
+    The startability question, and deliberately not `gate_conditions`: this runs
+    before the pool exists, so it asks whether items would be named rather than
+    building rules around them.
+    """
+    if world.options.logic_difficulty.value == LogicDifficulty.option_strict:
+        if any(group_items(world, group) for group in gates.get("strict", [])):
+            return True
+
+    for key in gates.get("always", []):
+        item_name = EQUIPMENT_GATES.get(key)
+        if item_name is None:
+            if group_items(world, key):
+                return True
+        elif item_name in world.available_item_names:
+            return True
+
+    return False
+
+
 def chapter_is_startable(world: "HalfLifeSvenWorld", chapter: dict) -> bool:
     """Can this mission be entered with nothing but its own unlock item?
 
@@ -67,18 +141,11 @@ def chapter_is_startable(world: "HalfLifeSvenWorld", chapter: dict) -> bool:
 
     Called before the pool is built, so it reads `available_item_names` — a gate
     naming equipment nobody will ever receive is not a gate.
+
+    Only the mission door counts. A gate on a later part of the mission leaves
+    part 1 walkable, which is all this question is about.
     """
-    gates = chapter["gates"]
-
-    if world.options.logic_difficulty.value == LogicDifficulty.option_strict:
-        if any(group_items(world, group) for group in gates.get("strict", [])):
-            return False
-
-    for key in gates.get("always", []):
-        if EQUIPMENT_GATES[key] in world.available_item_names:
-            return False
-
-    return True
+    return not gates_are_shut(world, chapter["gates"])
 
 
 def chapter_entry_rule(
@@ -86,18 +153,7 @@ def chapter_entry_rule(
 ) -> Callable[[CollectionState], bool] | None:
     """Rule for the Hub -> first map of a mission entrance."""
     player = world.player
-    conditions: list[Callable[[CollectionState], bool]] = []
-
-    gates = chapter["gates"]
-    if world.options.logic_difficulty.value == LogicDifficulty.option_strict:
-        strict = any_of(world, gates.get("strict", []))
-        if strict is not None:
-            conditions.append(strict)
-
-    for key in gates.get("always", []):
-        item_name = EQUIPMENT_GATES[key]
-        if item_name in world.available_item_names:
-            conditions.append(lambda state, name=item_name: state.has(name, player))
+    conditions = gate_conditions(world, chapter["gates"])
 
     # The seal: this campaign's own count, from this campaign's own setting.
     # Missions finished elsewhere in the seed do nothing for it. Both the finale
@@ -125,15 +181,26 @@ def chapter_entry_rule(
         unlock = world.unlock_item_for_chapter[chapter["key"]]
         conditions.append(lambda state, name=unlock: state.has(name, player))
 
-    if not conditions:
+    return all_of(conditions)
+
+
+def map_entry_rule(
+    world: "HalfLifeSvenWorld", chapter: dict, map_name: str
+) -> Callable[[CollectionState], bool] | None:
+    """Rule for the seam between two parts of one mission.
+
+    Almost always None. It exists for the mission that hands you the thing it
+    then requires: Opposing Force leaves the barnacle grapple in Pit Worm's Nest
+    part 3 and is built around it from part 4 on, so gating the mission would put
+    the grapple's own pickup behind the grapple.
+
+    Missing entirely from data built before `map_gates` existed, which reads as
+    no gate.
+    """
+    gates = chapter.get("map_gates", {}).get(map_name)
+    if not gates:
         return None
-    if len(conditions) == 1:
-        return conditions[0]
-
-    def rule(state: CollectionState) -> bool:
-        return all(condition(state) for condition in conditions)
-
-    return rule
+    return all_of(gate_conditions(world, gates))
 
 
 def location_rule(

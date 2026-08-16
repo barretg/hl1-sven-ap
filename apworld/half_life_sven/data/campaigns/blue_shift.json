@@ -44,6 +44,7 @@
    "campaign": "blue_shift",
    "is_goal": false,
    "gates": {},
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -60,6 +61,7 @@
    "campaign": "blue_shift",
    "is_goal": false,
    "gates": {},
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -76,6 +78,7 @@
    "campaign": "blue_shift",
    "is_goal": false,
    "gates": {},
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -101,6 +104,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -124,6 +128,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -143,6 +148,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -160,6 +166,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "bs_power_struggle",
    "complete_on_endgame": true
   }

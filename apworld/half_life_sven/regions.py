@@ -6,6 +6,9 @@ Each Sven Co-op map is its own region so that a check in part 4 of Surface
 Tension is correctly gated behind reaching parts 1-3. Missions are entered only
 from the Hub, which mirrors how the game actually works: you leave the campaign
 portal into a mission and come back to it when the mission ends.
+
+That per-map split is also what lets a requirement begin partway through a
+mission -- see `map_entry_rule`.
 """
 
 from __future__ import annotations
@@ -23,7 +26,7 @@ from .data import (
     victory_event,
 )
 from .locations import HalfLifeSvenLocation, locations_by_map
-from .rules import chapter_entry_rule, location_rule, suspension_rule
+from .rules import chapter_entry_rule, location_rule, map_entry_rule, suspension_rule
 
 if TYPE_CHECKING:
     from . import HalfLifeSvenWorld
@@ -73,7 +76,14 @@ def create_regions(world: "HalfLifeSvenWorld") -> None:
                     chapter_entry_rule(world, chapter),
                 )
             else:
-                previous.connect(region, f"{chapter['name']}: {map_name}")
+                # Usually unconditional -- walking from part 3 into part 4 is
+                # the game's business, not ours. A handful of seams carry a
+                # requirement that starts there rather than at the mission door.
+                previous.connect(
+                    region,
+                    f"{chapter['name']}: {map_name}",
+                    map_entry_rule(world, chapter, map_name),
+                )
             previous = region
 
         assert previous is not None

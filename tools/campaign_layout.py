@@ -97,7 +97,21 @@ class Campaign:
     # anywhere else: `GiveNamedItem` on another campaign's map has nothing to make.
     script_weapons: bool = False
     # Mission entry gates, as `{chapter key: {"strict": [group, ...]}}`.
+    #
+    # `strict` is dropped under loose logic: it says the mission wants a real
+    # weapon, not that the map refuses to let you past. `always` holds at every
+    # difficulty and is for the places the geometry decides -- Xen's long jump
+    # module, and anything else a player simply cannot walk around.
     gates: dict[str, dict[str, list[str]]] = field(default_factory=dict)
+    # The same, one level down: `{map: {"strict"/"always": [group, ...]}}` for a
+    # requirement that starts partway through a mission rather than at its door.
+    #
+    # A mission that hands you the thing it then demands needs this. Opposing
+    # Force leaves the barnacle grapple in Pit Worm's Nest part 3 and expects it
+    # from part 4 on; gating the mission would put parts 1-3, the grapple's own
+    # pickup included, behind a weapon they do not need. The gate goes on the
+    # seam between the two parts instead.
+    map_gates: dict[str, dict[str, list[str]]] = field(default_factory=dict)
     # One mission this campaign's finale is not unsealed without, whatever
     # `missions_required` says. For a finale that is really the tail of the
     # mission before it: Blue Shift ends on an outro you watch, so clearing it
@@ -336,9 +350,18 @@ OPPOSING_FORCE = Campaign(
         "of_vicarious_reality": {"strict": ["ranged"]},
         # The pit worm and the gene worm are both damage races.
         "of_pit_worms_nest": {"strict": ["heavy"]},
-        "of_foxtrot_uniform": {"strict": ["heavy"]},
-        "of_the_package": {"strict": ["heavy"]},
-        "of_worlds_collide": {"strict": ["heavy"]},
+        # From Foxtrot Uniform on, the campaign assumes the grapple. It is left
+        # in Pit Worm's Nest part 3 and every route afterwards is built around
+        # swinging from barnacles, so this is geometry rather than firepower and
+        # holds under loose logic too -- see `map_gates` for part 4, which is
+        # where the assumption actually starts.
+        "of_foxtrot_uniform": {"strict": ["heavy"], "always": ["barnacle_grapple"]},
+        "of_the_package": {"strict": ["heavy"], "always": ["barnacle_grapple"]},
+        "of_worlds_collide": {"strict": ["heavy"], "always": ["barnacle_grapple"]},
+    },
+    map_gates={
+        # Part 3 is where the grapple lies; part 4 is where you need it.
+        "of4a4": {"always": ["barnacle_grapple"]},
     },
 )
 
@@ -521,6 +544,15 @@ CHAPTER_GATES: dict[str, dict[str, list[str]]] = {
     key: gates for campaign in CAMPAIGNS for key, gates in campaign.gates.items()
 }
 
+# Gates that start partway through a mission, keyed by the map they begin on.
+# Emitted onto the chapter that owns the map, so the apworld can hang the rule on
+# the seam between two parts rather than on the mission door.
+MAP_GATES: dict[str, dict[str, list[str]]] = {
+    map_name: gates
+    for campaign in CAMPAIGNS
+    for map_name, gates in campaign.map_gates.items()
+}
+
 # Console targetname base -> chapter key, for every console the hub has.
 PORTAL_CONSOLES: dict[str, str] = {
     console: key
@@ -584,6 +616,16 @@ UNREACHABLE_CHARGERS: dict[str, set[str]] = {
     # Part 1, rebuilt 451 units from where Part 2 drops you and on the other side
     # of the wall you arrive behind.
     "hl_c02_a2": {"func_healthcharger:*1"},
+    # Pit Worm's Nest, Part 2. Both of this map's health chargers come as a pair
+    # with one half out of reach: `*76` sits 69 units above `*75` at the same
+    # spot, and `*202` mirrors `*203` across the pit. In each pair only the one
+    # left here can be used. Reported from play 2026-08-15.
+    "of4a2": {"func_healthcharger:*76", "func_healthcharger:*202"},
+    # Pit Worm's Nest, Part 3, which rebuilds that same pit room: `*138` and
+    # `*137` sit at the very coordinates Part 2's pair does. The sealed half is
+    # the *other* one here -- Part 3 drops you on the far side, so it is the
+    # `-544` copy that cannot be reached rather than the `+544` one.
+    "of4a3": {"func_healthcharger:*138"},
 }
 
 # What you start with when nothing randomises it: the crowbar, as it always was.
@@ -755,6 +797,7 @@ REQUIREMENT_GROUPS: dict[str, list[str]] = {
     "underwater": UNDERWATER_WEAPONS,
     "tau_cannon": ["Tau Cannon"],
     "rpg": ["RPG"],
+    "barnacle_grapple": ["Barnacle Grapple"],
 }
 
 # --- Which location types to generate -------------------------------------

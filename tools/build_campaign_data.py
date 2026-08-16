@@ -41,6 +41,7 @@ from campaign_layout import (
     ITEM_ID_BASE,
     KILL_MILESTONE_FRACTIONS,
     LOCATION_ID_BASE,
+    MAP_GATES,
     MIN_LOCATIONS_PER_MAP,
     NOTABLE_MONSTERS,
     OPTIONAL_ITEMS,
@@ -673,6 +674,12 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                 "campaign": chapter["campaign"],
                 "is_goal": chapter["key"] in GOAL_CHAPTERS,
                 "gates": CHAPTER_GATES.get(chapter["key"], {}),
+                # Gates that begin on a later part of this mission rather than
+                # at its door. Absent for all but a handful of missions, and
+                # absent entirely from data built before they existed.
+                "map_gates": {
+                    m: MAP_GATES[m] for m in chapter["maps"] if m in MAP_GATES
+                },
                 # A mission that must be cleared before this one opens, on top
                 # of whatever unlocks it. "" for all but a paired finale.
                 "requires_chapter": GOAL_REQUIRES.get(chapter["key"], ""),

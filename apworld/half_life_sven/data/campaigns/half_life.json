@@ -64,6 +64,7 @@
    "campaign": "half_life",
    "is_goal": false,
    "gates": {},
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -78,6 +79,7 @@
    "campaign": "half_life",
    "is_goal": false,
    "gates": {},
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -92,6 +94,7 @@
    "campaign": "half_life",
    "is_goal": false,
    "gates": {},
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -105,6 +108,7 @@
    "campaign": "half_life",
    "is_goal": false,
    "gates": {},
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -122,6 +126,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -141,6 +146,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -158,6 +164,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -176,6 +183,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -194,6 +202,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -211,6 +220,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -228,6 +238,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -249,6 +260,7 @@
      "ranged"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -266,6 +278,7 @@
      "heavy"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -286,6 +299,7 @@
      "heavy"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -308,6 +322,7 @@
      "suit"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -330,6 +345,7 @@
      "suit"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -355,6 +371,7 @@
      "suit"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   },
@@ -378,6 +395,7 @@
      "suit"
     ]
    },
+   "map_gates": {},
    "requires_chapter": "",
    "complete_on_endgame": false
   }

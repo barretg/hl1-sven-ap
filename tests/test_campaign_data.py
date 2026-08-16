@@ -214,13 +214,38 @@ def test_location_requirements_reference_real_groups(campaign: dict) -> None:
             assert entry["requires"] in groups, entry["name"]
 
 
+def gate_names_are_real(gates: dict, groups: set, where: str) -> None:
+    """`strict` names a requirement group; `always` names one or a piece of kit."""
+    for name in gates.get("strict", []):
+        assert name in groups, where
+    for name in gates.get("always", []):
+        assert name in groups or name in ("longjump", "suit"), where
+
+
 def test_chapter_gates_reference_real_groups(campaign: dict) -> None:
     groups = set(campaign["requirement_groups"])
     for chapter in campaign["chapters"]:
-        for name in chapter["gates"].get("strict", []):
-            assert name in groups, chapter["key"]
-        for name in chapter["gates"].get("always", []):
-            assert name in ("longjump", "suit"), chapter["key"]
+        gate_names_are_real(chapter["gates"], groups, chapter["key"])
+
+
+def test_map_gates_reference_real_groups_and_maps(campaign: dict) -> None:
+    """A seam gate has to name a group, and a map the mission actually has."""
+    groups = set(campaign["requirement_groups"])
+    for chapter in campaign["chapters"]:
+        for map_name, gates in chapter.get("map_gates", {}).items():
+            assert map_name in chapter["maps"], f"{chapter['key']} {map_name}"
+            gate_names_are_real(gates, groups, f"{chapter['key']} {map_name}")
+
+
+def test_a_seam_gate_never_sits_on_a_missions_first_part(campaign: dict) -> None:
+    """That is a mission gate, and belongs on the door where startability sees it.
+
+    `chapter_is_startable` reads only the door. A requirement hidden on part 1
+    would let a seed pick the mission as its start and then refuse to enter it.
+    """
+    for chapter in campaign["chapters"]:
+        first = chapter["maps"][0]
+        assert first not in chapter.get("map_gates", {}), chapter["key"]
 
 
 # --- checkdata.txt must mirror campaign.json ------------------------------
