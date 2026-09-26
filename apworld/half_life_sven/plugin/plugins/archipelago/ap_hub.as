@@ -1401,14 +1401,21 @@ HookReturnCode MapChange( const string& in szNextMap )
 	if( g_CurrentChapter !is null )
 	{
 		// A mission is only finished if all three hold:
-		//   - we are leaving from its *last* map. Walking out of the middle is
-		//     not finishing it.
+		//   - we are leaving from its *last* map, or onward into a later mission
+		//     of the same campaign. Walking back out of the middle is not
+		//     finishing it. The second half is for missions whose exit is not
+		//     their last map: Duty Calls leaves from `ba_canal2` (`ba_canal3`
+		//     only leads back to it) and Power Struggle from `ba_teleport2`.
 		//   - the transition is the campaign's, not ours. `!hub` and `!warp` out
 		//     of a one-map mission are leaving, however far in you got.
 		//   - we were actually playing it (g_bMissionActive): the engine can
 		//     drop us on a locked mission's map and take us straight out again,
 		//     and that must not read as a completion.
-		if( g_szCurrentMap == g_CurrentChapter.LastMap()
+		bool bOnward = pNext !is null
+		    && pNext.campaign == g_CurrentChapter.campaign
+		    && pNext.index > g_CurrentChapter.index;
+
+		if( ( g_szCurrentMap == g_CurrentChapter.LastMap() || bOnward )
 		    && !g_bSelfChange && g_bMissionActive )
 			CompleteChapter( g_CurrentChapter );
 
