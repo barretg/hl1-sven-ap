@@ -59,12 +59,14 @@ array<APTLoc@> g_Locs;
 dictionary g_CampaignShort;   // campaign key -> short
 dictionary g_CampaignIntro;   // campaign key -> "1" / "0"
 array<string> g_CampaignOrder;
+array<string> g_KeyItems;       // every item name a K record gates on
 
 void LoadCheckdata()
 {
 	g_Chapters.resize( 0 );
 	g_Locs.resize( 0 );
 	g_CampaignOrder.resize( 0 );
+	g_KeyItems.resize( 0 );
 
 	File@ pFile = g_FileSystem.OpenFile( APT_CHECKDATA, OpenFile::READ );
 	if( pFile is null || !pFile.IsOpen() )
@@ -95,6 +97,11 @@ void LoadCheckdata()
 			c.maps = f[4].Split( "," );
 			c.campaign = f[6];
 			g_Chapters.insertLast( c );
+		}
+		else if( f[0] == "K" && f.length() >= 3 )
+		{
+			if( g_KeyItems.find( f[2] ) < 0 )
+				g_KeyItems.insertLast( f[2] );
 		}
 		else if( f[0] == "L" && f.length() >= 6 )
 		{
@@ -389,10 +396,15 @@ array<string> Items( const string& in szList )
 	return result;
 }
 
-// Everything a fully-kitted new seed would have, before a scenario edits it.
+// Everything a new seed can hand out, weapons included, so nothing is gated
+// unless a scenario takes it away.
 array<string> BaseItems()
 {
-	return Items( "HEV Suit;PCV;Security Armor;Flashlight;Long Jump Module;Melee Throw" );
+	array<string> items = Items( "HEV Suit;PCV;Security Armor;Flashlight;Long Jump Module;Melee Throw" );
+	for( uint i = 0; i < g_KeyItems.length(); ++i )
+		if( items.find( g_KeyItems[i] ) < 0 )
+			items.insertLast( g_KeyItems[i] );
+	return items;
 }
 
 array<string> g_Items;
@@ -730,8 +742,6 @@ void MapStart()
 
 void RestoreSnapshotFor( APTScenario@ s )
 {
-	if( g_Items.length() > 0 )
-		return;
 	ApplyItems( s );
 	g_bLegacy = s.legacy;
 	g_bReached = s.reached;
@@ -1179,6 +1189,11 @@ void PluginInit()
 	BuildScenarios();
 	LoadState();
 	SkipOut();
+
+	// A reload must not leave the main plugin reading a snapshot the previous
+	// build of this plugin wrote.
+	if( Current() !is null && g_bConnected )
+		RestoreSnapshotFor( Current() );
 
 	@g_pPoll = g_Scheduler.SetInterval( "PollOut", 0.25f, g_Scheduler.REPEAT_INFINITE_TIMES );
 }

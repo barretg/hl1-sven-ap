@@ -184,7 +184,10 @@ void ClearWithheldWeapons()
 
 	g_PendingDrops.resize( 0 );
 	for( uint i = 0; i < g_szHeldWeapons.length(); ++i )
+	{
 		g_szHeldWeapons[i] = "";
+		g_HeldEntities[i].resize( 0 );
+	}
 }
 
 /*
@@ -197,14 +200,22 @@ void ClearWithheldWeapons()
 * dropped weapon. So this compares each player's inventory frame to frame, and
 * for every weapon that vanished books the nearest loose copy of that class
 * around where they stood, retrying for a second while the drop spawns.
+*
+* Only a copy that was not already lying there counts. The loadout strips and
+* regives weapons, which looks exactly like a drop from here, and without this
+* every map weapon near a respawning player was booked as theirs and never sent.
 */
 array<string> g_szHeldWeapons( 33 );
+// The same inventories as entities, so a weapon that left a player's hands as
+// itself is booked directly.
+array<array<EHandle>> g_HeldEntities( 33 );
 
 class PendingDrop
 {
 	string szClassname;
 	Vector vecOrigin;
 	float flUntil;
+	array<EHandle> already;   // loose copies lying there before it vanished
 }
 array<PendingDrop@> g_PendingDrops;
 
@@ -212,8 +223,9 @@ array<PendingDrop@> g_PendingDrops;
 const float DROP_SEARCH_RADIUS = 160.0f;
 const float DROP_SEARCH_TIME = 1.0f;
 
-string HeldWeaponList( CBasePlayer@ pPlayer )
+string HeldWeaponList( CBasePlayer@ pPlayer, array<EHandle>@ entities )
 {
+	entities.resize( 0 );
 	string szList = "|";
 	for( size_t iSlot = 0; iSlot < MAX_ITEM_TYPES; ++iSlot )
 	{
@@ -221,13 +233,22 @@ string HeldWeaponList( CBasePlayer@ pPlayer )
 		while( pItem !is null )
 		{
 			szList += pItem.GetClassname() + "|";
+			entities.insertLast( EHandle( pItem ) );
 			@pItem = cast<CBasePlayerItem@>( pItem.m_hNextItem.GetEntity() );
 		}
 	}
 	return szList;
 }
 
-/* The nearest loose, unbooked copy of the class; true once one is booked. */
+bool WasAlreadyLoose( PendingDrop@ drop, CBaseEntity@ pEntity )
+{
+	for( uint i = 0; i < drop.already.length(); ++i )
+		if( drop.already[i].IsValid() && drop.already[i].GetEntity() is pEntity )
+			return true;
+	return false;
+}
+
+/* The nearest new loose copy of the class; true once one is booked. */
 bool BookDrop( PendingDrop@ drop )
 {
 	CBaseEntity@ pBest = null;
@@ -236,7 +257,7 @@ bool BookDrop( PendingDrop@ drop )
 
 	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname( pEntity, drop.szClassname ) ) !is null )
 	{
-		if( WeaponIsHeld( pEntity ) || IsTrapDrop( pEntity ) )
+		if( WeaponIsHeld( pEntity ) || IsTrapDrop( pEntity ) || WasAlreadyLoose( drop, pEntity ) )
 			continue;
 		float flDist = ( pEntity.pev.origin - drop.vecOrigin ).Length();
 		if( flDist <= flBest )
@@ -259,21 +280,36 @@ void TrackPlayerDrops( CBasePlayer@ pPlayer )
 	if( iIndex < 0 || uint( iIndex ) >= g_szHeldWeapons.length() )
 		return;
 
-	string szNow = HeldWeaponList( pPlayer );
+	array<EHandle> before = g_HeldEntities[iIndex];
+	string szNow = HeldWeaponList( pPlayer, g_HeldEntities[iIndex] );
 	string szBefore = g_szHeldWeapons[iIndex];
 	g_szHeldWeapons[iIndex] = szNow;
 
+	// Anything carried last frame that is now lying loose is this player's drop.
+	for( uint i = 0; i < before.length(); ++i )
+	{
+		CBaseEntity@ pWas = before[i].GetEntity();
+		if( pWas !is null && !WeaponIsHeld( pWas ) )
+			RegisterTrapDrop( pWas );
+	}
+
 	if( !szBefore.IsEmpty() && szBefore != szNow )
 	{
-		array<string>@ before = szBefore.Split( "|" );
-		for( uint i = 0; i < before.length(); ++i )
+		array<string>@ gone = szBefore.Split( "|" );
+		for( uint i = 0; i < gone.length(); ++i )
 		{
-			if( before[i].IsEmpty() || szNow.Find( "|" + before[i] + "|" ) != String::INVALID_INDEX )
+			if( gone[i].IsEmpty() || szNow.Find( "|" + gone[i] + "|" ) != String::INVALID_INDEX )
 				continue;
 			PendingDrop drop;
-			drop.szClassname = before[i];
+			drop.szClassname = gone[i];
 			drop.vecOrigin = pPlayer.pev.origin;
 			drop.flUntil = g_Engine.time + DROP_SEARCH_TIME;
+			CBaseEntity@ pLoose = null;
+			while( ( @pLoose = g_EntityFuncs.FindEntityByClassname( pLoose, drop.szClassname ) ) !is null )
+			{
+				if( !WeaponIsHeld( pLoose ) && !IsTrapDrop( pLoose ) )
+					drop.already.insertLast( EHandle( pLoose ) );
+			}
 			g_PendingDrops.insertLast( drop );
 		}
 	}
