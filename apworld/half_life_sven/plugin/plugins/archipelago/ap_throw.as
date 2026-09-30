@@ -83,7 +83,7 @@ void ThrowMelee( CBasePlayer@ pPlayer )
 	// sweep would otherwise put it back in their hand within the second.
 	WithholdWeapon( pPlayer, THROWN_CLASSNAME, MELEE_THROW_RETURN );
 
-	CBaseEntity@ pThrown = pPlayer.DropItem( THROWN_CLASSNAME );
+	CBaseEntity@ pThrown = ScriptDropItem( pPlayer, THROWN_CLASSNAME );
 	if( pThrown is null )
 	{
 		ReleaseWeapon( pPlayer, THROWN_CLASSNAME );

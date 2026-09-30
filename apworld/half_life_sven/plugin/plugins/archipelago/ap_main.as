@@ -209,6 +209,9 @@ void MapStart()
 	if( !SuspensionMap() )
 		ForceSurvivalOff();
 
+	// After the map's cfg, which may turn dropping back on.
+	BlockPlayerDrops();
+
 	BridgeHello();
 
 	// A mission that ends rather than travels was being played when the last map

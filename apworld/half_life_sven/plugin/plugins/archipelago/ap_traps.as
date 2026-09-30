@@ -781,7 +781,7 @@ void Butterfingers()
 		// DropItem with no position throws the held weapon the way the engine's
 		// own drop does. It is `DropItem`, not `DropPlayerItem`: the latter is
 		// the C++ name and is not bound to script.
-		CBaseEntity@ pDropped = pPlayer.DropItem( szClassname );
+		CBaseEntity@ pDropped = ScriptDropItem( pPlayer, szClassname );
 
 		if( pDropped is null )
 		{
@@ -809,4 +809,27 @@ void ShuffleVariants( array<int>@ values )
 		values[i - 1] = values[j];
 		values[j] = swap;
 	}
+}
+
+/*
+* Players may not drop weapons at all (see BlockPlayerDrops): a dropped weapon
+* picked back up was sending its check, and no tracking of where the drop landed
+* held up. Deaths still drop, and those are booked by TrackPlayerDrops.
+*/
+void BlockPlayerDrops()
+{
+	if( g_EngineFuncs.CVarGetFloat( "mp_dropweapons" ) != 0 )
+		g_EngineFuncs.CVarSetFloat( "mp_dropweapons", 0 );
+}
+
+/*
+* The plugin's own drops (Butterfingers, the melee throw) lift the block for
+* the one call, in case the cvar also governs DropItem.
+*/
+CBaseEntity@ ScriptDropItem( CBasePlayer@ pPlayer, const string& in szClassname )
+{
+	g_EngineFuncs.CVarSetFloat( "mp_dropweapons", 1 );
+	CBaseEntity@ pDropped = pPlayer.DropItem( szClassname );
+	g_EngineFuncs.CVarSetFloat( "mp_dropweapons", 0 );
+	return pDropped;
 }

@@ -289,6 +289,12 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		pPlayer.GiveNamedItem( szClassname );
 		g_bHandingOver = false;
 
+		// Not always collected on the spot: right after a drop Sven will not let
+		// the player pick that weapon straight back up, and the fresh copy sat
+		// loose at their feet until the sweep sent it as found. Whatever was just
+		// made here is theirs, collected or not.
+		BookHandedOverCopies( pPlayer, szClassname );
+
 		granted.insertLast( szClassname );
 	}
 
@@ -557,6 +563,9 @@ void ApplyLoadoutToAll()
 */
 void EnforceLoadouts()
 {
+	// Also covers a plugin reload mid-map, and anything that turns it back on.
+	BlockPlayerDrops();
+
 	ApplyLoadoutToAll();
 
 	// Shares the timer rather than adding another: both are "look at the world
@@ -644,6 +653,18 @@ void GiveAmmoForHeldWeapons( CBasePlayer@ pPlayer )
 * synchronous, so a flag either side of the call is enough.
 */
 bool g_bHandingOver = false;
+
+void BookHandedOverCopies( CBasePlayer@ pPlayer, const string& in szClassname )
+{
+	CBaseEntity@ pEntity = null;
+	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname( pEntity, szClassname ) ) !is null )
+	{
+		if( InInventory( pEntity ) )
+			continue;
+		if( ( pEntity.pev.origin - pPlayer.pev.origin ).Length() <= HANDOVER_EPSILON )
+			RegisterTrapDrop( pEntity );
+	}
+}
 
 // A handed-over weapon is built at the player's own origin. Anything lying in
 // the world is a bounding box away at least, so a couple of units is generous.

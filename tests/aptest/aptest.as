@@ -1135,7 +1135,6 @@ void RecordResult( bool bPass, const string& in szNote )
 void Say( const string& in szText )
 {
 	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[APT] " + szText + "\n" );
-	g_Game.AlertMessage( at_console, "[APT] " + szText + "\n" );
 }
 
 string Join( const array<string>@ values, const string& in szSep )
