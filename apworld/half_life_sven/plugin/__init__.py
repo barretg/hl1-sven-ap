@@ -22,14 +22,17 @@ from pathlib import Path
 # `svencoop/scripts/`. `tests/test_plugin_manifest.py` fails if this drifts from
 # what is actually on disk, since a missing entry would silently half-install.
 PLUGIN_FILES = (
+    "plugins/archipelago/ap_bots.as",
     "plugins/archipelago/ap_bridge.as",
     "plugins/archipelago/ap_deathlink.as",
     "plugins/archipelago/ap_hub.as",
     "plugins/archipelago/ap_items.as",
     "plugins/archipelago/ap_locations.as",
     "plugins/archipelago/ap_main.as",
+    "plugins/archipelago/ap_menu.as",
     "plugins/archipelago/ap_state.as",
     "plugins/archipelago/ap_suspension.as",
+    "plugins/archipelago/ap_throw.as",
     "plugins/archipelago/ap_traps.as",
     "plugins/store/archipelago/checkdata.txt",
 )
@@ -129,7 +132,7 @@ def uninstall(game_dir: str | os.PathLike[str]) -> tuple[int, bool]:
     removed = 0
 
     # Scripts. Limited to `.as` so that anything the player put here by hand
-    # survives -- and if something did, the directory is left in place too.
+    # survives: and if something did, the directory is left in place too.
     removed += sweep(scripts / PLUGIN_SUBDIR, "*.as")
 
     # The bridge directory, generated data and live session files alike.
@@ -182,7 +185,7 @@ def remove_plugin_block(text: str) -> str:
     Found by matching braces around the script key rather than by looking for the
     exact text `install` wrote. The old version did the latter, so a config that
     had been reindented, reformatted by another tool, or edited by hand kept the
-    entry forever -- and the game then tried to load a plugin whose files had just
+    entry forever: and the game then tried to load a plugin whose files had just
     been deleted.
     """
     key = text.find(PLUGIN_SCRIPT_KEY)

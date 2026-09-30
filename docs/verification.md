@@ -9,14 +9,14 @@
 | Suspension data and its checkdata records | `pytest tests/test_suspension_data.py` | passing |
 | AngelScript source rules (API calls, record guards, exemptions that regressed) | `pytest tests/test_plugin_source.py` | passing |
 | Suspension generation | `ArchipelagoGenerate` at the easy cap and at the insane cap with classanity, platinum and priority medals, including a seed with no class in the starting inventory so the explosives gate binds | passing |
-| Suspension in-game | — | reaching it and reading a round pass; the locks, the medals and the clear are still open |
+| Suspension in-game | in play | reaching it and reading a round pass; the locks, the medals and the clear are still open |
 | World generation, AP 0.6.7 | `ArchipelagoGenerate` on real seeds | passing |
 | Option matrix | `missions_required` 1 / 8 / 17, strict + loose, suit and long jump on and off, 3-slot multiworld | passing |
 | Campaign matrix | all four enabled, Opposing Force alone, They Hunger alone, every campaign switched off, and a pre-campaign YAML | passing |
 | AngelScript plugin | in-game checklist below | passing except the boxes under "Still open" |
 
 Ready-made YAMLs for the remaining items are in
-[examples/verification/](../examples/verification/) — five seeds, each one
+[examples/verification/](../examples/verification/): five seeds, each one
 covering a group of the unchecked boxes below, with the unlocks and weapons they
 need already in the starting inventory.
 
@@ -35,7 +35,7 @@ construction.
 
 The AngelScript half has been written against the API as documented and as used
 by Sven Co-op's own shipped scripts, but has not been executed. Work through this
-in order — each step depends on the one above it.
+in order: each step depends on the one above it.
 
 ### 0. Campaigns, first
 
@@ -74,7 +74,7 @@ that have never run in-game at all.
   at all: it opens on `blue_shift_missions_required` like the finale behind it.
   Before the count is met, `!ap` should read `sealed (...)` for both and both
   consoles should refuse, saying "sealed until more missions are done" rather
-  than "locked" -- there is no item coming. Meet the count and Power Struggle
+  than "locked": there is no item coming. Meet the count and Power Struggle
   opens; with it still unfinished, A Leap Of Faith should read
   `sealed (finish more missions, including Power Struggle)` however many other
   missions are done. Clear Power Struggle and it opens.
@@ -89,7 +89,7 @@ that have never run in-game at all.
   weapons to whichever campaign declared them left this seed with shotguns and no
   shotgun item, so every one of them was refused for the whole run.
 - [x] **A Leap Of Faith is credited when it ends, not when it loads.** Warp in and
-  confirm nothing is sent on arrival -- the campaign used to be won by
+  confirm nothing is sent on arrival: the campaign used to be won by
   connecting, because the outro is one map and arriving on a finale's last map
   is normally the only moment there is. Watch it through to the credits: the
   completion, the goal and the trip back to the hub should all land after the
@@ -132,7 +132,7 @@ With `random_starting_weapon: true` and Opposing Force or They Hunger enabled:
 
 Console spellings (`~`), which do the same work without opening chat:
 
-- [x] **`.ap`, `.ap_tracker`, `.ap_find`, `.ap_warp`, `.ap_hub`, `.ap_help` — with
+- [x] **`.ap`, `.ap_tracker`, `.ap_find`, `.ap_warp`, `.ap_hub`, `.ap_help`: with
   the leading dot.** Sven namespaces a plugin's console commands from
   `concommandns` in `default_plugins.txt`; we set none, so the separator dot
   survives on its own and the bare name is an unknown command. The server prints
@@ -147,7 +147,7 @@ Console spellings (`~`), which do the same work without opening chat:
   the whole phrase rather than only the first word.
 - [x] `!` commands work in chat only, `.` commands in the console only. Typing `!ap`
   into the console is an unknown command and always will be.
-- [x] They register when the module loads, not per map — and the module only loads
+- [x] They register when the module loads, not per map: and the module only loads
   on server start or `as_reloadplugins`, so copying new script files over a
   running server changes nothing.
 
@@ -232,12 +232,12 @@ The riskiest assumption in the plugin is that `Hooks::PickupObject::CanCollect`
 fires for weapon entities and not only for item pickups. The outcomes, best
 first:
 
-- **Check is sent** (chat shows the location name) — the pickup path works.
-- **Weapon is refused** — `CanCollect` covers weapons. Good.
-- **Weapon is kept for up to a second, then vanishes** — `CanCollect` does not
+- **Check is sent** (chat shows the location name): the pickup path works.
+- **Weapon is refused**: `CanCollect` covers weapons. Good.
+- **Weapon is kept for up to a second, then vanishes**: `CanCollect` does not
   cover weapons and `SweepIllegalWeapons` in `ap_items.as` is doing the work.
   That is the intended fallback; it is worth tightening `SWEEP_INTERVAL`.
-- **Weapon is kept permanently** — neither path fired. Check that the classname
+- **Weapon is kept permanently**: neither path fired. Check that the classname
   appears as a `K` record in `checkdata.txt`.
 
 ### 4. Mission gating and completion
@@ -258,7 +258,7 @@ first:
   Still no completion: a transition we asked for is never a completion, however
   far into the map you got.
 - [x] Finish a mission the campaign chains straight into another (Unforeseen
-  Consequences runs into Office Complex). Office Complex must send **nothing** —
+  Consequences runs into Office Complex). Office Complex must send **nothing**:
   no "Reached" on the way through, no "Complete" on the way back to the hub. This
   is the phantom-check regression: reaching a mission you were bounced out of
   used to credit both.
@@ -365,7 +365,7 @@ the campaign rather than granted, so on a seed with it off:
   minute, then reload. No ammo arrives. Two separate faults did this:
   the loadout topped up every weapon held rather than the ones it had just
   granted, and it asked whether a player held a gun by one classname when the
-  gun has two — so the Glock, MP5 and SAW were handed over again every sweep,
+  gun has two: so the Glock, MP5 and SAW were handed over again every sweep,
   each grant bringing a clip with it. The glock's tell was 17 rounds at a time
   up to its 250 cap, and a refill the moment it was fired.
   A burst of ammo out of nowhere is now either a run of `Ammo Cache` filler
@@ -394,7 +394,7 @@ trap arriving is one, so this used to drop a module each time.
 
 Check the module itself still works, since it is now switched on directly rather
 than by handing over a pickup: with it received, duck-jump should long jump. With
-`shuffle_longjump: true` and the item not yet received, it should not — including
+`shuffle_longjump: true` and the item not yet received, it should not; including
 on a map whose own .cfg hands one out.
 
 The case that matters most is a map change, and `hl_c14` onward is where to test
@@ -411,17 +411,21 @@ Generate with `trap_percentage: 100` for a seed that is nothing but traps.
   set is four *different* scientists rather than four of the same model.
 - [x] Headcrab Trap: four headcrabs per player, same placement.
 - [x] With two players standing apart, both get their own four. Standing together,
-  they get eight between them — that is intended, not a bug.
+  they get eight between them: that is intended, not a bug.
 - [x] Neither should spawn inside geometry. Stand with your back to a wall, in a
   corridor, and in a lift, and check nothing arrives stuck. Some bearings finding
   no room is expected and fine; all four failing is not.
 - [x] Butterfingers: every living player's held weapon lands on the floor, and stays
-  there. Watch for a full second — the loadout sweep must not put it back.
+  there. Watch for a full second: the loadout sweep must not put it back.
 - [x] Wait thirty seconds without touching it: the weapon is reissued.
 - [x] Spring Butterfingers, then change level before the timer runs out. The weapon
   comes back on the new map rather than being withheld against a clock that
   restarted.
 - [x] Spring Butterfingers, then die. The weapon comes back on respawn.
+- [ ] Drop a weapon with G whose check has not been sent (a granted starting
+  weapon, or one received as an item), walk away, then pick it up again. No check
+  is sent, neither by the pickup nor by standing next to it.
+- [ ] Die holding such a weapon. Picking the dropped copy up sends no check.
 - [x] Springing any trap with nobody alive must not error; the trap is simply spent.
 
 ### 6. Goal
@@ -440,7 +444,7 @@ On a short test seed with `missions_required: 1`:
 - [x] **You can get there at all.** `!ap` lists Suspension under an Arcade
   heading with `!warp suspension` beside it, and that warp works from the hub.
   It is not a mission and has no console, so this is the only way in. On a seed
-  without it the heading is absent entirely — `!warp suspension` is the one place
+  without it the heading is absent entirely: `!warp suspension` is the one place
   that still answers "not in this seed", because there it is a direct question.
 - [x] **The counters.** The plugin creates `trigger_changevalue` entities answering
   to names the map already fires (`s3_events`, `win_red_tickets`,
@@ -457,14 +461,14 @@ The rest of the arcade map is below the divider.
 
 ---
 
-## Still open — 08/14/26
+## Still open: 08/14/26
 
 Everything above has been run in game and passed. Everything below has not, or
 failed when it was tried and has been changed since. An item moves up the moment
 it passes, so this section only ever shrinks, and each one keeps the heading it
 belongs to.
 
-Use [examples/verification/](../examples/verification/) — five seeds, each
+Use [examples/verification/](../examples/verification/): five seeds, each
 covering a group of these, with the unlocks and weapons already in the starting
 inventory. Suspension is seed 5, which now contains nothing but the bridge.
 
@@ -490,22 +494,22 @@ have not are the boxes below.
   was to stop touching their solidity at all. A locked button is left where the
   map put it, so the use trace lands on it and PlayerUse answers the press with
   a sentence; the cut wire is what makes answering it safe.
-- **`SOLID_BSP WITHOUT MOVE_PUSH` — twice, from two different causes.** The
+- **`SOLID_BSP WITHOUT MOVE_PUSH`: twice, from two different causes.** The
   engine checks `solid` against `movetype` every time it links an entity, and
   the pair being wrong is fatal rather than cosmetic. First it was a relink of
   our own (`SetOrigin` to the origin the entity already had) revalidating a
   button; that is gone, and no map entity is ever relinked now. Then it turned
   out the Juggernaut's seal had been wrong all along: the seal is a
   `func_wall_toggle` **and** a `trigger_hurt`, and sealing set SOLID_BSP on both
-  — legal for the wall, fatal for the trigger the next time anything linked it,
+legal for the wall, fatal for the trigger the next time anything linked it,
   which is why it landed on a respawn in the lobby rather than at the moment the
   seal was set. Switching an entity on now asks what it is: a pusher gets
   SOLID_BSP, everything else SOLID_TRIGGER.
 
   Worth writing down, since it looked like a spawn-room fault: that `trigger_hurt`
   is `*310`, at the Juggernaut booth doorway (6260..6277, -6064..-6000), not in
-  the spawn area. Seven other entities share the name `jugger` — five
-  `trigger_changevalue`, a `trigger_changemodel` and a `game_player_equip` — so
+  the spawn area. Seven other entities share the name `jugger`: five
+  `trigger_changevalue`, a `trigger_changemodel` and a `game_player_equip`: so
   the seal has always had to filter by classname as well as by name, and the
   filter is what kept it down to two.
 - Locked class booths, three wrong answers deep. The portals are 64x64 slabs four
@@ -530,8 +534,8 @@ have not are the boxes below.
   seconds per player.
 - And the guard that replaced the wall bounced players off thin air on the
   bridge, twice: it worked out where a booth was at runtime, from the portal's
-  `absmin`/`absmax` — which belong to the engine's link state, and the portal was
-  deliberately not linked — and from the assumption that a booth is on the far
+  `absmin`/`absmax`: which belong to the engine's link state, and the portal was
+  deliberately not linked: and from the assumption that a booth is on the far
   side of its face from the lobby. The portals are the eight faces of an octagon
   in the middle of the lobby, so that far side is the room.
 
@@ -545,14 +549,14 @@ have not are the boxes below.
   from the portal's brush, stayed standing after its class had been earned: the
   `EHandle` to it came back null while the entity did not, so unlocking removed
   nothing and the guard that explains a shut booth skipped it for the same
-  reason — no message, no way in, until the map reloaded. A `restart` while one
+  reason: no message, no way in, until the map reloaded. A `restart` while one
   stood crashed the game outright, with no error line to go on. The plugin no
   longer creates anything on this map: a locked portal is switched off, and a
   player who walks through a switched-off doorway is put back at their own last
   position outside it. Blaming the crash on the wall is a suspicion rather than
-  a diagnosis — it is what changed, and it is what a `restart` retest settles.
+  a diagnosis: it is what changed, and it is what a `restart` retest settles.
 - The goal changed shape. It was "a run cleared as the Juggernaut at the capped
-  tier", with the Juggernaut itself an item in the pool — which was wrong twice
+  tier", with the Juggernaut itself an item in the pool: which was wrong twice
   over: the map already gates that class behind clearing with the other seven,
   so the item unlocked something the map would open anyway, and being handed it
   early skipped the map's own rule. The Juggernaut is out of the pool entirely
@@ -590,7 +594,7 @@ have not are the boxes below.
 - The other half of the same fault, found on the second pass: being *handed* a
   weapon sent its check too. `GiveNamedItem` builds the weapon and touches the
   player with it before it returns, so the loadout's own grant reached the
-  pickup hook indistinguishable from walking over one — arriving in Office
+  pickup hook indistinguishable from walking over one: arriving in Office
   Complex with the Shotgun already received sent First Shotgun on spawn. Our
   grants now raise a flag the hook reads, and anything else built at the
   player's own origin (a map `.cfg` loadout, `game_player_equip`) is refused a
@@ -609,7 +613,7 @@ have not are the boxes below.
 - Except the session was the wrong thing to watch, found on the second pass: it
   is minted once per client launch, so it fired when the same slot reconnected
   from a restarted client and stayed put when a different slot was connected
-  from the client already running — which is the one that matters, and the one
+  from the client already running: which is the one that matters, and the one
   that did nothing. The snapshot now carries `slot=<seed>:<slot number>` and the
   reset hangs off that. An empty slot is a disconnected client, not a new run,
   so a dropped connection on its own moves nobody.
@@ -680,7 +684,7 @@ Seed 5. Getting there and reading the round is confirmed; nothing past that is.
 
 Two things about the map itself, so neither is mistaken for a plugin fault. The
 explosives crates (`restock_explo`) equip **Engineer, Grenadier and Pointman
-only** — `class_engineer` gets a satchel and a tripmine, `class_GL_soldier` AR
+only**: `class_engineer` gets a satchel and a tripmine, `class_GL_soldier` AR
 grenades, `class_shotty` hand grenades. Assault is not on that list and never
 was, so the tank is not its fight; take one of those three. And the lobby floor
 is four `trigger_push` volumes covering the spawn points, which is why spawning
@@ -695,8 +699,8 @@ report wins.
 
 - [x] **The gate is real, in both directions.** With only, say, the Sniper and
   the Medic held, a run cannot get past section 2; take the Grenadier and it can.
-  If a tank turns out to be killable by gunfire alone — they are 1500 health
-  `func_breakable`s, so they are not obviously immune — this rule is stricter
+  If a tank turns out to be killable by gunfire alone: they are 1500 health
+  `func_breakable`s, so they are not obviously immune: this rule is stricter
   than the map and should be relaxed, not the other way round.
 
 - [x] **`!warp susp` gets there**, and so does any other part of "Suspension" or
@@ -706,12 +710,12 @@ report wins.
   guessing.
 - [x] **The vote buttons.** With one Progressive Suspension Difficulty item held,
    easy and medium should be pressable and hard and insane should not be there
-   at all. The mapping is `vote_button4` easy through `vote_button1` insane —
+   at all. The mapping is `vote_button4` easy through `vote_button1` insane:
    backwards from the tier order, so an off-by-one here locks the wrong buttons.
 
    A locked button is **there, pressable, and refuses out loud**: chat says
    "Hard is locked. Find Progressive Suspension Difficulty." and no vote is
-   cast. Making them vanish worked as a lock and was wrong as an answer — a
+   cast. Making them vanish worked as a lock and was wrong as an answer: a
    button that is not there cannot be pressed, so nothing could be said about
    it, and the tier order made a silent gap easy to mistake for a bug.
 
@@ -726,7 +730,7 @@ report wins.
    land on and the refusal something to answer.
 - [x] **A locked class booth turns you round and says why.** Walk into one whose
   item has not arrived: you are put straight back where you were standing, and
-  the centre of the screen reads "You have not found the Sniper yet" — the same
+  the centre of the screen reads "You have not found the Sniper yet": the same
   sentence, in the same place, as a weapon you have not been granted. Then
   receive the class **mid-round** and walk in: the booth must open there and
   then, without a map load.
@@ -736,13 +740,13 @@ report wins.
   stuck inside it. Pointing the teleport at a spawn instead put them inside a
   wall. Making the trigger itself solid is the fatal solid/movetype pair. A
   `func_wall` of ours built from the portal's brush then outlived the class being
-  earned — the handle came back null while the brush stood, so the booth stayed
-  shut with nothing to say and nothing to remove — and a `restart` with one
+  earned: the handle came back null while the brush stood, so the booth stayed
+  shut with nothing to say and nothing to remove: and a `restart` with one
   standing crashed the game with no error at all.
 
   The fifth and sixth were the same mistake as the first: disable the portal and
   cope with the trap. Watching for anybody who fell in needs to know where a
-  booth *is*, and the answer was wrong twice — `absmin`/`absmax` belong to the
+  booth *is*, and the answer was wrong twice: `absmin`/`absmax` belong to the
   engine's link state and a disabled portal is not linked, and the eight portals
   are the eight faces of an octagon in the middle of the lobby, so "the far side
   of this face from the lobby" points into the room everybody is walking
@@ -761,12 +765,12 @@ report wins.
   evidence either way is whether it happens again.
 - [x] **The Juggernaut icon replaces the placeholder** rather than drawing on
   top of it, **and neither flashes**. The seal is applied from the one-second
-  lock sweep, and firing the reveal is not idempotent — a multi_manager fire
+  lock sweep, and firing the reveal is not idempotent: a multi_manager fire
   every second made the placeholder blink over the icon for as long as anyone
   watched. It is applied only when the answer changes now.
 - [x] **One clear line per clear.** Finishing a run said "cleared on easy" and
   "easy underway" alternately, several times a second, for the rest of the map.
-  Our counters latch — the map sets a signal once and it stands — so reading the
+  Our counters latch, the map sets a signal once and it stands, so reading the
   end signal without spending it meant the round ended, restarted on the start
   signal still standing, and ended again. Both are zeroed as they are consumed.
 - [x] **The map comes back to the bridge.** The arcade ends its own map when the
@@ -784,13 +788,13 @@ report wins.
 - [x] **The Juggernaut is earned, not sent.** It is no longer an item and is not
    in the pool at all: clear a run with each of the other seven, at any tier,
    and the booth opens on its own. Nothing arrives in chat, because nothing was
-   sent — the client works it out from the seven clears it has seen checked and
+   sent: the client works it out from the seven clears it has seen checked and
    puts the class in the snapshot.
 - [x] **The Juggernaut booth itself.** Below insane the booth is believed to be
    inert, so the plugin watches the portal box and grants the class itself.
    Confirm the portal grants it once it has been earned, that a second player is
    refused, that the restock stations still work for the granted class (they
-   filter on `targetname`), and that the model change takes —
+   filter on `targetname`), and that the model change takes:
    `g_EntityFuncs.SetModel` on a player is the least certain call in the module,
    and if it does nothing the class is still mechanically correct and merely
    looks wrong.
@@ -802,11 +806,11 @@ report wins.
 - [x] The clear is credited to the class each player spent most of the run as.
 - [ ] **The goal is eight clears at the capped tier.** One per class, the
   Juggernaut included, all at the hardest tier the seed contains. The plugin
-  sends no goal for the arcade any more — the condition is a set of checks
+  sends no goal for the arcade any more: the condition is a set of checks
   rather than an event, so the client decides it from what the server says is
   checked, which also means releasing those clears counts.
 - [ ] **`suspension_goal_classes` shortens that list.** With `[assault, medic]`
-  the goal is those two clears at the capped tier and nothing else — the other
+  the goal is those two clears at the capped tier and nothing else: the other
   six classes are still items and still have checks, they just are not the
   finish line. Naming the Juggernaut still costs the seven clears the map wants
   before it opens, whether or not those seven are named.

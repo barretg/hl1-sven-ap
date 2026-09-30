@@ -44,9 +44,9 @@ GAME_NAME = "Half-Life (Sven Co-op)"
 POLL_INTERVAL = 0.2
 
 # Suspension's own goal, alongside each campaign's finale. Not a chapter key: the
-# arcade map has no missions. Nothing in the game reports it either -- winning it
+# arcade map has no missions. Nothing in the game reports it either: winning it
 # is a run cleared with each class the YAML names, at the capped tier, which is a
-# set of checks rather than an event -- so the client is what decides it.
+# set of checks rather than an event: so the client is what decides it.
 SUSPENSION_GOAL_KEY = "suspension"
 
 # The chosen install path is remembered in host.yaml (see client/settings.py), so
@@ -67,7 +67,7 @@ IN_GAME_COMMANDS = (
 #
 # The leading dot is not decoration. Sven Co-op namespaces a plugin's console
 # commands with the `concommandns` field from default_plugins.txt, and with none
-# set the separator survives on its own -- the server logs these as `.ap` and so
+# set the separator survives on its own: the server logs these as `.ap` and so
 # on at load, and `ap` without the dot is simply an unknown command.
 IN_GAME_CONSOLE_COMMANDS = ".ap, .ap_tracker, .ap_find, .ap_warp, .ap_hub, .ap_help"
 
@@ -275,7 +275,7 @@ class HalfLifeSvenContext(SuperContext):
         self.unlocked_chapters: set[str] = set()
         self.unlocked_items: set[str] = set()
         # Equipment this seed did not shuffle. No item will ever be sent for it,
-        # so the game has to be told up front or it gates it for the whole run --
+        # so the game has to be told up front or it gates it for the whole run:
         # which for the HEV suit meant no armour, ever.
         self.always_unlocked: set[str] = unshuffled_grants()
         # The other half of that answer: equipment the game should simply be left
@@ -283,6 +283,10 @@ class HalfLifeSvenContext(SuperContext):
         # gates classnames, and it has to stop gating these entirely rather than
         # treat them as owned.
         self.ungated_classnames: set[str] = unshuffled_vanilla_classnames()
+        # Campaign -> the item that is armour on its maps. Empty until a seed
+        # says otherwise, which the plugin reads as the HEV Suit everywhere:
+        # all a seed rolled before per-campaign armour ever had.
+        self.armour_items: dict[str, str] = {}
         # What the run opens with. Per seed since `random_starting_weapon`, so it
         # comes from slot data; the campaign data's list is the fallback for a
         # seed generated before that existed.
@@ -299,7 +303,7 @@ class HalfLifeSvenContext(SuperContext):
         # Deaths the lobby is forgiven before one is reported to the multiworld.
         # The plugin owns the countdown; this is only the allowance it counts from.
         self.death_link_amnesty = 4
-        # -- Suspension, the arcade map. All of it inert unless slot data says
+        #Suspension, the arcade map. All of it inert unless slot data says
         # the seed contains it, and absent from the snapshot entirely if not.
         self.suspension_enabled = False
         self.suspension_classanity = False
@@ -328,7 +332,7 @@ class HalfLifeSvenContext(SuperContext):
 
         self.resolve_game_dir()
 
-    # -- setup -----------------------------------------------------------
+    #setup -----------------------------------------------------------
 
     def resolve_game_dir(self) -> None:
         """Find the install without asking. Only prompt if that fails.
@@ -441,7 +445,7 @@ class HalfLifeSvenContext(SuperContext):
         if not plugin.is_installed(path):
             logger.warning("The Sven Co-op plugin is not installed here. Run /install.")
 
-    # -- Archipelago -----------------------------------------------------
+    #Archipelago -----------------------------------------------------
 
     async def server_auth(self, password_requested: bool = False) -> None:
         if password_requested and not self.password:
@@ -455,7 +459,7 @@ class HalfLifeSvenContext(SuperContext):
         The server is the authority on what has been checked, and a mission's
         completion *is* a location. Tracking only the `COMPLETE` events the game
         reports made the client disagree with the server the moment a location
-        was released or collected from anywhere else -- sending a mission's
+        was released or collected from anywhere else: sending a mission's
         completion check by hand did nothing in game, because the client had
         never seen the event that normally accompanies it.
 
@@ -506,7 +510,7 @@ class HalfLifeSvenContext(SuperContext):
             #
             # An empty list is respected as an empty list, which is what a seed
             # of nothing but the arcade map means. Only a seed that mentions
-            # neither key -- one generated before campaigns existed -- falls back
+            # neither key, one generated before campaigns existed, falls back
             # to the finales the data itself declares.
             if "goal_chapters" in slot_data:
                 self.goal_chapters = {key for key in slot_data["goal_chapters"] if key}
@@ -524,12 +528,28 @@ class HalfLifeSvenContext(SuperContext):
             # Absent from slot data reads as "not shuffled". Either way the item
             # is never sent, so the game has to be told; what differs is what it
             # is told. See `unshuffled_grants` and `unshuffled_vanilla_classnames`.
-            unshuffled = {
-                name for name, option in optional_item_options().items()
-                if not slot_data.get(option, False)
-            }
+            #
+            # A seed that lists what it shuffled is taken at its word: equipment
+            # its options named but its campaigns did not need (Blue Shift's
+            # armour in a Half-Life seed) is not coming, so it is held. An older
+            # seed is read off its options, with one repair: it had one HEV Suit
+            # for every campaign, so the other campaigns' armour, which did not
+            # exist yet, is held rather than waited for.
+            if "shuffled_equipment" in slot_data:
+                shuffled = set(slot_data["shuffled_equipment"])
+                unshuffled = set(optional_item_options()) - shuffled
+            else:
+                unshuffled = {
+                    name for name, option in optional_item_options().items()
+                    if not slot_data.get(option, False)
+                }
+                unshuffled |= LEGACY_ARMOUR_ITEMS
             self.always_unlocked = unshuffled_grants(unshuffled)
-            self.ungated_classnames = unshuffled_vanilla_classnames(unshuffled)
+            # Equipment placed at its vanilla check is a real item and gated like
+            # one; only equipment left entirely to the campaign goes ungated.
+            placed = set(slot_data.get("placed_at_vanilla", ()))
+            self.ungated_classnames = unshuffled_vanilla_classnames(unshuffled - placed)
+            self.armour_items = dict(slot_data.get("armour_items", {}))
             self.starting_weapons = list(
                 slot_data.get("starting_weapons", self.starting_weapons)
             )
@@ -619,8 +639,8 @@ class HalfLifeSvenContext(SuperContext):
 
         The server resends the whole item history on every reconnect, with
         `index` saying where the batch starts. Unlocks are idempotent so they can
-        simply be reapplied, but filler is a one-shot effect -- health, armour,
-        an ammo top-up -- and re-delivering it on reconnect both floods the
+        simply be reapplied, but filler is a one-shot effect: health, armour,
+        an ammo top-up: and re-delivering it on reconnect both floods the
         bridge and means nothing in the game. Two reconnects used to double the
         backlog each time, which is how a few dozen items became hundreds.
         """
@@ -661,7 +681,7 @@ class HalfLifeSvenContext(SuperContext):
             # Counted rather than collected: the nth copy opens the nth tier, and
             # a set of names could not say how many arrived.
             self.suspension_open += 1
-        elif group in ("weapon", "optional"):
+        elif group in ("weapon", "optional", "ability"):
             self.unlocked_items.add(entry["name"])
         elif group == "filler" and deliver_filler and self.bridge:
             self.bridge.queue_event("ITEM", entry["name"])
@@ -670,7 +690,7 @@ class HalfLifeSvenContext(SuperContext):
             # redelivered on reconnect: nobody wants their traps twice.
             self.bridge.queue_event("TRAP", entry["name"])
 
-    # -- campaign helpers ------------------------------------------------
+    #campaign helpers ------------------------------------------------
 
     def chapter_for_location(self, location_id: int) -> str:
         for entry in self.campaign["locations"]:
@@ -696,7 +716,7 @@ class HalfLifeSvenContext(SuperContext):
 
         The client's `session` id cannot answer this. It is minted once per
         launch, so it changes when the same slot reconnects after a client
-        restart -- a blip, nothing to react to -- and stays put when a player
+        restart, a blip, nothing to react to, and stays put when a player
         connects a *different* slot from the same client, which is the case that
         makes everything the game remembers wrong.
 
@@ -717,7 +737,7 @@ class HalfLifeSvenContext(SuperContext):
         """
         return self.unlocked_items | self.always_unlocked
 
-    # -- Suspension ------------------------------------------------------
+    #Suspension ------------------------------------------------------
 
     @property
     def suspension_arcade(self) -> dict | None:
@@ -852,7 +872,7 @@ class HalfLifeSvenContext(SuperContext):
         """Is this campaign's finale unsealed?
 
         A finale paired with one particular mission also waits for that one by
-        name, unless the seed left it out -- in which case waiting would seal the
+        name, unless the seed left it out: in which case waiting would seal the
         campaign forever.
         """
         campaign_key = self.campaign_of_chapter.get(chapter_key, "")
@@ -875,7 +895,7 @@ class HalfLifeSvenContext(SuperContext):
 
         Unlock items, plus any sealed companion whose count is met. The two are
         combined rather than chosen between, so a seed rolled before the seal
-        moved -- which still has a Power Struggle unlock in its pool -- opens it
+        moved, which still has a Power Struggle unlock in its pool, opens it
         on the item exactly as it always did.
         """
         return self.unlocked_chapters | {
@@ -960,7 +980,7 @@ class HalfLifeSvenContext(SuperContext):
                 status = "complete"
             elif chapter["key"] in self.goal_companions:
                 # Sealed by the count like the finale it leads into, so it is
-                # counted out rather than reported as locked -- there is no item
+                # counted out rather than reported as locked: there is no item
                 # coming for it and "locked" would send a player looking for one.
                 done = self.completed_in(campaign_key)
                 required = self.missions_required_for.get(
@@ -1006,6 +1026,11 @@ def optional_item_options() -> dict[str, str]:
     return OPTIONAL_ITEM_NAMES
 
 
+# Armour items that did not exist before per-campaign armour. A seed without
+# `shuffled_equipment` never sends them, so they are held from the start.
+LEGACY_ARMOUR_ITEMS = frozenset({"PCV", "Security Armor"})
+
+
 def unshuffled_grants(unshuffled: set[str] | None = None) -> set[str]:
     """Unshuffled equipment the game should treat as owned from the first spawn.
 
@@ -1016,7 +1041,7 @@ def unshuffled_grants(unshuffled: set[str] | None = None) -> set[str]:
 
     if unshuffled is None:
         unshuffled = set(optional_item_options())
-    return unshuffled - VANILLA_WHEN_UNSHUFFLED
+    return set(unshuffled) - VANILLA_WHEN_UNSHUFFLED
 
 
 def unshuffled_vanilla_classnames(unshuffled: set[str] | None = None) -> set[str]:
@@ -1034,7 +1059,7 @@ def unshuffled_vanilla_classnames(unshuffled: set[str] | None = None) -> set[str
     if unshuffled is None:
         unshuffled = set(optional_item_options())
 
-    wanted = unshuffled & VANILLA_WHEN_UNSHUFFLED
+    wanted = set(unshuffled) & VANILLA_WHEN_UNSHUFFLED
     return {
         classname
         for entry in load_campaign()["items"]
@@ -1071,8 +1096,8 @@ async def report_goal(ctx: HalfLifeSvenContext) -> None:
     """Tell the server the slot is won, once and only once.
 
     Reached from two directions now. A campaign finale arrives as an event, but
-    Suspension's goal is a set of checks with no event behind it -- the eighth
-    class clear simply lands, and the run is over -- so every poll asks as well.
+    Suspension's goal is a set of checks with no event behind it: the eighth
+    class clear simply lands, and the run is over: so every poll asks as well.
     """
     if ctx.goal_sent or not ctx.run_complete:
         return
@@ -1161,6 +1186,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
                 missing=sorted(ctx.missing_locations),
                 data_version=ctx.data_version,
                 slot=ctx.slot_identity,
+                armour=ctx.armour_items,
                 suspension=ctx.suspension_state,
                 force=True,
             )
@@ -1205,6 +1231,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
         missing=sorted(ctx.missing_locations),
         data_version=ctx.data_version,
         slot=ctx.slot_identity,
+        armour=ctx.armour_items,
         suspension=ctx.suspension_state,
     )
 

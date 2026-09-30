@@ -174,6 +174,67 @@ class TestEquipmentNotShuffled(StartingMissionMixin, HalfLifeSvenTestBase):
         state = self.multiworld.get_all_state(False)
         self.assertTrue(self.can_reach_entrance("Enter Xen", state))
 
+    def test_the_long_jump_module_stays_at_its_vanilla_check(self) -> None:
+        """Unshuffled, it is still an item, locked where Lambda Core hands it over."""
+        location = self.multiworld.get_location("First Long Jump Module", self.player)
+        self.assertIsNotNone(location.item)
+        self.assertEqual(location.item.name, "Long Jump Module")
+        self.assertTrue(location.locked)
+
+        slot_data = self.multiworld.worlds[self.player].fill_slot_data()
+        self.assertEqual(slot_data["placed_at_vanilla"], ["Long Jump Module"])
+        self.assertNotIn("Long Jump Module", slot_data["shuffled_equipment"])
+
+
+class TestPerCampaignArmour(StartingMissionMixin, HalfLifeSvenTestBase):
+    options = {
+        "include_half_life": True,
+        "include_opposing_force": True,
+        "shuffle_hev_suit": True,
+    }
+
+    def test_each_included_campaign_brings_its_own_armour(self) -> None:
+        pool = {item.name for item in self.multiworld.itempool if item.player == self.player}
+        self.assertIn("HEV Suit", pool)
+        self.assertIn("PCV", pool)
+        # Blue Shift is not in this seed, so neither is its armour.
+        self.assertNotIn("Security Armor", pool)
+
+    def test_slot_data_names_the_armour_for_each_campaign(self) -> None:
+        slot_data = self.multiworld.worlds[self.player].fill_slot_data()
+        self.assertEqual(slot_data["armour_items"]["opposing_force"], "PCV")
+        self.assertEqual(slot_data["armour_items"]["blue_shift"], "Security Armor")
+        self.assertIn("PCV", slot_data["shuffled_equipment"])
+        self.assertNotIn("Security Armor", slot_data["shuffled_equipment"])
+
+
+class TestFlashlightAndThrow(StartingMissionMixin, HalfLifeSvenTestBase):
+    options = {"shuffle_flashlight": True, "melee_throw": True}
+
+    def test_both_are_in_the_pool(self) -> None:
+        pool = {item.name for item in self.multiworld.itempool if item.player == self.player}
+        self.assertIn("Flashlight", pool)
+        self.assertIn("Melee Throw", pool)
+
+
+class TestFlashlightAndThrowOff(HalfLifeSvenTestBase):
+    options = {"shuffle_flashlight": False, "melee_throw": False}
+
+    def test_neither_is_in_the_pool(self) -> None:
+        pool = {item.name for item in self.multiworld.itempool if item.player == self.player}
+        self.assertNotIn("Flashlight", pool)
+        self.assertNotIn("Melee Throw", pool)
+
+
+class TestHealingPools(HalfLifeSvenTestBase):
+    options = {"chargesanity": True}
+
+    def test_xen_healing_pools_are_checks(self) -> None:
+        names = {
+            location.name for location in self.multiworld.get_locations(self.player)
+        }
+        self.assertIn("Xen - Healing Pool", names)
+
 
 class TestTraps(HalfLifeSvenTestBase):
     options = {"trap_percentage": 50}
@@ -195,7 +256,7 @@ class TestTraps(HalfLifeSvenTestBase):
         world = self.multiworld.worlds[self.player]
         return world.available_item_names - {
             unlock_item_for_chapter[key] for key in world.starting_chapters
-        }
+        } - set(world.vanilla_placements)
 
 
 class TestNoTraps(HalfLifeSvenTestBase):
@@ -237,7 +298,9 @@ class TestChargesanityOff(StartingMissionMixin, HalfLifeSvenTestBase):
             location for location in self.multiworld.get_locations(self.player)
             if location.address is not None
         ]
-        self.assertEqual(len(pool), len(non_event))
+        # Equipment left at its vanilla check is placed there, not pooled.
+        placed = self.multiworld.worlds[self.player].vanilla_placements
+        self.assertEqual(len(pool) + len(placed), len(non_event))
 
 
 class TestChargesanityOn(HalfLifeSvenTestBase):
@@ -341,7 +404,7 @@ class TestOpposingForceOnly(StartingMissionMixin, HalfLifeSvenTestBase):
         names = {
             location.name for location in self.multiworld.get_locations(self.player)
         }
-        self.assertIn("Opposing Force - First Shotgun", names)
+        self.assertIn("Opposing Force: First Shotgun", names)
 
     def test_its_finale_is_the_only_goal(self) -> None:
         world = self.multiworld.worlds[self.player]
@@ -354,7 +417,7 @@ class BarnacleGrappleMixin:
     """Opposing Force is built around the grapple from Pit Worm's Nest part 4 on.
 
     A traversal requirement rather than a combat one, so unlike every other
-    weapon gate it holds at both logic difficulties -- which is why this mixin is
+    weapon gate it holds at both logic difficulties: which is why this mixin is
     run under strict and loose alike.
     """
 
@@ -378,6 +441,14 @@ class BarnacleGrappleMixin:
             "part 4 is reachable without the grapple",
         )
 
+    def test_the_part_2_healing_pool_needs_it(self) -> None:
+        """Across the gap the grapple crosses, under either logic."""
+        state = self.without_the_grapple()
+        location = self.multiworld.get_location(
+            "Pit Worm's Nest - Healing Pool (Part 2)", self.player
+        )
+        self.assertFalse(location.can_reach(state))
+
     def test_the_earlier_parts_do_not(self) -> None:
         """Including part 3, which is where the grapple itself lies."""
         state = self.without_the_grapple()
@@ -388,7 +459,7 @@ class BarnacleGrappleMixin:
             )
         self.assertTrue(
             self.multiworld.get_location(
-                "Opposing Force - First Barnacle Grapple", self.player
+                "Opposing Force: First Barnacle Grapple", self.player
             ).can_reach(state),
             "the grapple's own pickup is behind the grapple",
         )
@@ -624,7 +695,7 @@ class TestPairedFinale(StartingMissionMixin, HalfLifeSvenTestBase):
         # Nothing finished yet: sealed, however many unlock items are held.
         self.assertFalse(self.can_reach_entrance("Enter Power Struggle", state))
 
-        # One mission is what this seed asks for, and it is all it asks for --
+        # One mission is what this seed asks for, and it is all it asks for:
         # no item, and no clearing of the mission it is paired with.
         state.collect(world.create_item(mission_complete_event("blue_shift")), True)
         state.sweep_for_advancements()

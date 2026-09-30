@@ -1,11 +1,11 @@
-# Verification seed 4 of 5 — DeathLink, two slots
+# Verification seed 4 of 5: DeathLink, two slots
 #
-# From "Still open — 08/14/26":
+# From "Still open: 08/14/26":
 #
 #   5. One explosion killing several players still sends exactly one DeathLink
 #
-# The other open DeathLink item -- that with `death_link: false` a death takes
-# nobody with it -- cannot be tested here, because both slots below have it on.
+# The other open DeathLink item: that with `death_link: false` a death takes
+# nobody with it: cannot be tested here, because both slots below have it on.
 # Every other seed in this folder has it off, so it is checked there: die on
 # seed 1, 2, 3 or 5 and nobody else in the lobby should be gibbed. The wipe was
 # happening regardless of the option, which is the bug that item guards.
@@ -15,9 +15,9 @@
 # killing several players at once and you have to be able to cause one.
 #
 # Amnesty starts at 2, which is the order to work through:
-#   1. Die once, then again  — chat counts down, nothing leaves the lobby
+#   1. Die once, then again: chat counts down, nothing leaves the lobby
 #   2. In the client:  /amnesty 0
-#   3. Die once more          — one DeathLink goes out immediately
+#   3. Die once more: one DeathLink goes out immediately
 #   4. Gather both players and fire an RPG at your feet: still exactly one
 #      DeathLink in the log, not one per player
 #

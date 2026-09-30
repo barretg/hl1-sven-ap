@@ -1,5 +1,5 @@
 {
- "data_version": "4743ecf728c0",
+ "data_version": "156f49e597ab",
  "files": [
   "campaigns/half_life.json",
   "campaigns/opposing_force.json",
@@ -443,6 +443,10 @@
    "group": "optional",
    "classnames": [
     "item_suit"
+   ],
+   "campaigns": [
+    "half_life",
+    "they_hunger"
    ]
   },
   {
@@ -453,6 +457,44 @@
    "classnames": [
     "item_longjump"
    ]
+  },
+  {
+   "id": 7710093,
+   "name": "Security Armor",
+   "classification": "progression",
+   "group": "optional",
+   "classnames": [
+    "item_armorvest",
+    "item_helmet"
+   ],
+   "campaigns": [
+    "blue_shift"
+   ]
+  },
+  {
+   "id": 7710094,
+   "name": "PCV",
+   "classification": "progression",
+   "group": "optional",
+   "classnames": [
+    "item_suit"
+   ],
+   "campaigns": [
+    "opposing_force"
+   ]
+  },
+  {
+   "id": 7710095,
+   "name": "Flashlight",
+   "classification": "useful",
+   "group": "optional",
+   "classnames": []
+  },
+  {
+   "id": 7710096,
+   "name": "Melee Throw",
+   "classification": "useful",
+   "group": "ability"
   },
   {
    "id": 7710032,
@@ -499,21 +541,28 @@
    "name": "Scientist Trap",
    "classification": "trap",
    "group": "trap",
-   "weight": 34
+   "weight": 25
   },
   {
    "id": 7710037,
    "name": "Headcrab Trap",
    "classification": "trap",
    "group": "trap",
-   "weight": 33
+   "weight": 25
   },
   {
    "id": 7710038,
    "name": "Butterfingers Trap",
    "classification": "trap",
    "group": "trap",
-   "weight": 33
+   "weight": 25
+  },
+  {
+   "id": 7710097,
+   "name": "Bot Swarm Trap",
+   "classification": "trap",
+   "group": "trap",
+   "weight": 25
   }
  ],
  "requirement_groups": {

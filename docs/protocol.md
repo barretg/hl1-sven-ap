@@ -36,8 +36,8 @@ files alongside the bridge: `ap_pending.txt` (a queued return to the hub) and
 
 **The snapshot is idempotent, events are not.** `ap_in.txt` is a complete
 picture, rewritten whenever it changes and safe to apply any number of times.
-Anything that must happen exactly once — a filler item grant, an incoming
-DeathLink — cannot live there, because it would fire again on the next map load.
+Anything that must happen exactly once: a filler item grant, an incoming
+DeathLink: cannot live there, because it would fire again on the next map load.
 Those ride as sequenced `event=` lines instead.
 
 **Events are acknowledged, not counted.** The plugin acts on an event, writes
@@ -56,7 +56,7 @@ drain as the game acknowledges what it has. Nothing is dropped. `DEATHLINK` and
 `CHAT` bypass the window, because both are time-sensitive and the plugin discards
 a DeathLink older than ten seconds.
 
-## `ap_out.txt` — game to client
+## `ap_out.txt`: game to client
 
 Append-only. The client keeps a byte cursor and only consumes complete lines, so
 a line the plugin is midway through writing is picked up whole on the next poll.
@@ -72,7 +72,7 @@ If the file shrinks, the client treats it as a new game session and rewinds.
 | `CHAT\|<player>\|<message>` | in-game chat, for relaying to multiworld chat |
 | `ACK\|<seq>` | event consumed; client may drop it |
 
-## `ap_in.txt` — client to game
+## `ap_in.txt`: client to game
 
 A full snapshot, written to a temp file and renamed so the plugin never reads a
 half-written one. The plugin reads it whole every poll and early-outs if the text
@@ -91,7 +91,7 @@ already-applied and be ACKed away without running.
 `slot` is `<seed name>:<slot number>`, and it is the *only* thing the plugin
 resets its run state on: which checks it has sent, which mission it thinks is
 being played, where the lobby is. The session cannot do that job and was wrong
-both ways round when it tried — it changes when the same slot reconnects from a
+both ways round when it tried: it changes when the same slot reconnects from a
 restarted client, which should move nobody, and does not change when a different
 slot is connected from the client already running, which is the case that makes
 everything remembered wrong. An empty `slot` is a disconnected client rather
@@ -104,7 +104,7 @@ differently is worse than a bridge that visibly does nothing.
 
 `lobby_death_link` is `on`, `non_arcade` or `off`: whether one player's death
 takes the rest of the lobby with it, and where. It is separate from `death_link`,
-which is only about the multiworld — a seed can report deaths without gibbing
+which is only about the multiworld: a seed can report deaths without gibbing
 seven other people, or spare the arcade map alone, where a run is long and a
 death is already counted against the medal. The client resolves the interaction
 before the plugin sees it and sends `off` whenever `death_link` is off, rather
@@ -147,7 +147,7 @@ sus_open=1
 sus_classes=medic,sniper
 ```
 
-`sus_open` is a *count* — how many `Progressive Suspension Difficulty` items have
+`sus_open` is a *count*: how many `Progressive Suspension Difficulty` items have
 arrived, and so the index of the hardest tier the lobby may vote for. It cannot
 ride in `items`, which is a set of names and can only say whether one arrived at
 all. `sus_tiers` is easiest first and `sus_awards` hardest first, and both are
@@ -162,8 +162,8 @@ this list itself. Nothing about it is sent as an item, and the plugin is told th
 same way it is told about everything else.
 
 Suspension's goal is not in this file at all. Winning the arcade is a set of
-checks — one clear per class in `suspension_goal_classes` at the capped tier, and
-the medal too where the YAML asks for it — rather than an event the game could
+checks: one clear per class in `suspension_goal_classes` at the capped tier, and
+the medal too where the YAML asks for it: rather than an event the game could
 report, so the client decides it from the server's checked locations. That is
 also why releasing those clears from the server console counts. The plugin sends
 `GOAL|<chapter key>` for campaign finales and nothing at all for the arcade.
@@ -209,7 +209,7 @@ session.
 away, which `random_starting_weapon` turns into a per-seed answer: the melee half
 can be a pipe wrench or a spanner rather than the crowbar. It overrides the `S`
 records in `checkdata.txt`, which are the default rather than the truth. An empty
-list means the client has nothing to say and the file's records stand — never
+list means the client has nothing to say and the file's records stand: never
 "start with nothing", since taking a player's only melee weapon away is not a
 state the bridge should be able to express.
 
@@ -220,7 +220,7 @@ started you with something else the gate refuses it, because no item named
 
 `now` is the client's wall clock at write time. Event freshness is judged by
 comparing an event's timestamp against `now` from the same snapshot, so the two
-sides never have to agree on a clock — and a DeathLink that arrived during a map
+sides never have to agree on a clock: and a DeathLink that arrived during a map
 load is correctly recognised as stale rather than killing you on arrival.
 
 ### Event lines
@@ -256,7 +256,7 @@ Pipe-delimited so AngelScript can parse it with a single `string.Split("|")`.
 | `L` | id, map, trigger type, trigger arg, name |
 | | `map_reached` has no arg; `chapter_complete` carries the chapter key; `charger` carries `<classname>:<brush model>`, e.g. `func_recharge:*79`, plus `@<origin>` when one brush carries two units; `weapon_pickup` carries the comma-separated classnames |
 | | `suspension_section` carries `<section>:<class>:<tier>`, `suspension_clear` carries `<class>:<tier>` and `suspension_award` carries `<medal>:<tier>`. An empty class is the classless variant a seed without classanity uses |
-| `K` | classname, item name — pickup refused until that item is held |
+| `K` | classname, item name: pickup refused until that item is held |
 | `S` | classname always granted (the crowbar and the medkit), the default a snapshot's `starting` may override |
 | `R` | classname, comma-separated campaigns whose maps it may be granted on |
 
@@ -270,9 +270,9 @@ not collide:
 | `Z` | arcade, section key, index, name, clear signal |
 | `W` | arcade, class key, name, the targetname the map gives the player, booth signal, map-gated, and the teleport destination its lobby portal sends to |
 | `A` | arcade, medal key, name, most deaths that still earns it |
-| `J` | arcade, volume name, mins, maxs — a box the plugin watches |
-| `G` | arcade, part, targetname, classname — the Juggernaut seal |
-| `E` | arcade, class, field, value — how to grant a class without its booth |
+| `J` | arcade, volume name, mins, maxs: a box the plugin watches |
+| `G` | arcade, part, targetname, classname: the Juggernaut seal |
+| `E` | arcade, class, field, value: how to grant a class without its booth |
 
 There are four kinds of `J`, all measured out of `suspension.bsp` by the
 generator:
@@ -288,8 +288,8 @@ Measured at build time rather than asked of the engine, because the engine
 cannot be asked: `absmin`/`absmax` belong to its link state and a locked portal
 is deliberately not linked, so the numbers are whatever they last were. Nor can
 a booth be reasoned about from one face. The eight portals are the eight faces of
-an octagon standing in the middle of the lobby — four axis-aligned slabs four
-units thick and four diagonal ones the compiler records as squares — so the
+an octagon standing in the middle of the lobby: four axis-aligned slabs four
+units thick and four diagonal ones the compiler records as squares: so the
 booths are what the ring *encloses*, and the far side of any one face is the room
 everybody is walking through. Both mistakes shipped, and between them they
 bounced players off thin air in the middle of the bridge. The plugin tests the
@@ -348,7 +348,7 @@ mission past the console they pressed.
 in game and a number has to mean one mission whichever campaigns a seed contains.
 Half-Life is first, so its numbering is unchanged.
 
-A seed does not necessarily contain every location in this file — `chargesanity`,
+A seed does not necessarily contain every location in this file: `chargesanity`,
 `include_black_mesa_inbound` and the campaign toggles can drop whole groups, and
 the file always describes all four campaigns whether or not a seed uses them. The
 plugin still fires them; the client drops any check that is not in its slot's

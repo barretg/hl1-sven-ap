@@ -91,7 +91,7 @@ class Bridge:
         # it would mistake fresh events for ones it had already applied.
         self.session = uuid.uuid4().hex[:8]
 
-    # -- game -> client --------------------------------------------------
+    #game -> client --------------------------------------------------
 
     def reset_cursor(self) -> None:
         """Skip whatever is already in the log.
@@ -108,7 +108,7 @@ class Bridge:
 
         size = self.out_path.stat().st_size
         if size < self._cursor:
-            # The file was truncated -- a fresh game session. Start over.
+            # The file was truncated: a fresh game session. Start over.
             self._cursor = 0
         if size == self._cursor:
             return []
@@ -133,7 +133,7 @@ class Bridge:
             events.append(GameEvent(parts[0], parts[1:]))
         return events
 
-    # -- client -> game --------------------------------------------------
+    #client -> game --------------------------------------------------
 
     def queue_event(self, kind: str, payload: str) -> PendingEvent:
         """Queue a one-shot delivery. Never dropped, only metered."""
@@ -188,6 +188,7 @@ class Bridge:
         lobby_death_link: str = "on",
         data_version: str = "",
         slot: str = "",
+        armour: dict[str, str] | None = None,
         suspension: dict | None = None,
         force: bool = False,
     ) -> bool:
@@ -215,7 +216,7 @@ class Bridge:
             f"death_link={1 if death_link else 0}",
             # Whether a local death takes the lobby with it, and where: "on",
             # "non_arcade" or "off". Absent from an older client, which the game
-            # reads as "on" -- the only behaviour there has ever been.
+            # reads as "on": the only behaviour there has ever been.
             f"lobby_death_link={lobby_death_link}",
             # Counted down by the plugin, not here: the death message has to name
             # the remaining allowance at the moment of the death.
@@ -247,6 +248,14 @@ class Bridge:
             "checked=" + ",".join(str(i) for i in checked or ()),
             "missing=" + ",".join(str(i) for i in missing or ()),
         ]
+
+        # Campaign -> the item that is armour on its maps. Absent for a seed
+        # from before per-campaign armour, which the plugin reads as the HEV
+        # Suit everywhere: all such a seed ever had.
+        if armour:
+            lines.append(
+                "armour=" + ";".join(f"{key}:{name}" for key, name in sorted(armour.items()))
+            )
 
         # The arcade map, when the seed has one. Absent entirely otherwise, so a
         # plugin that predates it sees exactly the snapshot it always did.

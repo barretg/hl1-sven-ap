@@ -100,7 +100,7 @@ void SendCheck( APLocation@ pLocation )
 	// Not while we are only passing through. Finishing a mission loads the next
 	// one for a moment before we bounce back to the hub, and during those few
 	// seconds the proximity sweep is perfectly happy to notice the crowbar lying
-	// in the map we just arrived in -- which is how "Blue Shift - First Crowbar"
+	// in the map we just arrived in: which is how "Blue Shift - First Crowbar"
 	// arrived for finishing Insecurity, a mission away from where it lives.
 	//
 	// `g_bMissionActive` is exactly the right question: it is true only on a map
@@ -166,6 +166,7 @@ void BridgePoll()
 	dictionary items;
 	dictionary ungated;
 	dictionary goalsOpen;
+	dictionary armour;
 	dictionary checked;
 	dictionary missing;
 	array<string> starting;
@@ -302,6 +303,19 @@ void BridgePoll()
 			szLobbyDeath = szValue;
 		else if( szKey == "event" )
 			events.insertLast( szValue );
+		else if( szKey == "armour" )
+		{
+			// `campaign:item;campaign:item`. Absent for an older seed, which
+			// leaves the table empty and every campaign on the HEV Suit.
+			array<string>@ pairs = szValue.Split( ";" );
+			for( uint i = 0; i < pairs.length(); ++i )
+			{
+				int iColon = pairs[i].Find( ":" );
+				if( iColon > 0 )
+					armour[ pairs[i].SubString( 0, iColon ) ] =
+						pairs[i].SubString( iColon + 1 );
+			}
+		}
 		// The arcade map. Absent from a seed that has none, and from a client too
 		// old to know about it, in which case every one of these keeps its
 		// default and Suspension behaves as an ordinary unmanaged map.
@@ -332,8 +346,8 @@ void BridgePoll()
 	}
 
 	// A player who connects a different slot is playing a different seed, and
-	// everything the plugin remembers about the last one -- which checks it has
-	// already sent, which mission it thinks is being played -- is now wrong.
+	// everything the plugin remembers about the last one: which checks it has
+	// already sent, which mission it thinks is being played: is now wrong.
 	// Reconnecting has to be a safe thing to do, so the whole run state goes and
 	// the lobby goes back to the hub.
 	//
@@ -370,6 +384,7 @@ void BridgePoll()
 	g_State.excludedChapters = excluded;
 	g_State.unlockedItems = items;
 	g_UngatedClassnames = ungated;
+	g_ArmourItems = armour;
 
 	// An empty list means the client has nothing to say about it, not that the
 	// player should be left with no melee weapon at all, so the data file's own
@@ -390,7 +405,7 @@ void BridgePoll()
 	g_State.lobbyDeathLink = szLobbyDeath;
 
 	// An item arriving opens a Suspension tier or class, and the locks are
-	// entity state rather than a question asked at press time -- so they have to
+	// entity state rather than a question asked at press time: so they have to
 	// be brought back in line here, not on the next map load.
 	SuspensionSyncLocks();
 
@@ -401,12 +416,10 @@ void BridgePoll()
 		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[AP] Lost the multiworld connection.\n" );
 
 	// The one item whose arrival is otherwise invisible: the suit is never taken
-	// away, so nothing on screen changes except that armour starts working.
-	int iSuitNow = ClassnameAllowed( SUIT_CLASSNAME ) ? 1 : 0;
-	if( iSuitNow == 1 && g_iSuitOwned == 0 )
-		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
-			"[AP] HEV suit power restored. Armour works from here on.\n" );
-	g_iSuitOwned = iSuitNow;
+	// away, so nothing on screen changes except that armour starts working. Per
+	// armour item, since each campaign has its own and standing on another
+	// campaign's map must not read as having lost one.
+	AnnounceArmour();
 
 	// Applying the snapshot may have unlocked a weapon, so refresh loadouts
 	// before handling events (an incoming DeathLink should not race a grant).
@@ -414,6 +427,37 @@ void BridgePoll()
 
 	for( uint i = 0; i < events.length(); ++i )
 		HandleEvent( events[i] );
+}
+
+/*
+* Say when an armour item arrives.
+*
+* Remembered per item across map changes (-1 unknown, 0 not owned, 1 owned), so
+* a map load does not re-announce what the snapshot already said.
+*/
+dictionary g_ArmourOwned;
+
+void AnnounceArmour()
+{
+	array<string> names = { DEFAULT_ARMOUR_ITEM };
+	array<string>@ keys = g_ArmourItems.getKeys();
+	for( uint i = 0; i < keys.length(); ++i )
+	{
+		string szItem;
+		if( g_ArmourItems.get( keys[i], szItem ) && names.find( szItem ) < 0 )
+			names.insertLast( szItem );
+	}
+
+	for( uint i = 0; i < names.length(); ++i )
+	{
+		int iNow = g_State.ItemUnlocked( names[i] ) ? 1 : 0;
+		int iWas = -1;
+		g_ArmourOwned.get( names[i], iWas );
+		if( iNow == 1 && iWas == 0 )
+			g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+				"[AP] " + names[i] + " received. Armour works from here on.\n" );
+		g_ArmourOwned[ names[i] ] = iNow;
+	}
 }
 
 /*

@@ -1,14 +1,14 @@
 /*
 * Traps.
 *
-* All three are nuisances, never punishments. A trap that can cost a run turns
+* All four are nuisances, never punishments. A trap that can cost a run turns
 * every unopened location into a reason not to play, so nothing here kills, takes
-* progress away, or removes anything permanently -- Butterfingers is the closest,
+* progress away, or removes anything permanently: Butterfingers is the closest,
 * and the suit hands the weapon back half a minute later.
 *
 * Delivered as one-shot `TRAP` events, so they fire once and never replay on a
 * map load or a reconnect. Because they only ever fire once, a trap that arrives
-* while there is nobody to spring it on is simply gone -- which is what the queue
+* while there is nobody to spring it on is simply gone: which is what the queue
 * below exists to prevent.
 */
 
@@ -68,6 +68,64 @@ const float BUTTERFINGERS_LIFT = 150.0f;
 // sweep must leave the weapon where it landed.
 dictionary g_flWeaponDroppedAt;
 
+// The same key -> how long that weapon is withheld, where it is not the
+// Butterfingers default. A thrown crowbar comes back after ten seconds.
+dictionary g_flWeaponHoldFor;
+
+/*
+* Weapons on the floor that a player was carrying a moment ago: Butterfingers'
+* drops and thrown crowbars. Picking one up, or standing near one, is not finding
+* that weapon, so neither sends its check.
+*
+* Handles rather than entities, so a copy the engine has since removed simply
+* stops matching. Cleared on map load along with the withheld weapons.
+*/
+array<EHandle> g_TrapDrops;
+
+void RegisterTrapDrop( CBaseEntity@ pEntity )
+{
+	if( pEntity is null || IsTrapDrop( pEntity ) )
+		return;
+
+	// Pruned on the way in, so the list only ever holds what is on the floor.
+	for( uint i = g_TrapDrops.length(); i > 0; --i )
+	{
+		if( !g_TrapDrops[i - 1].IsValid() )
+			g_TrapDrops.removeAt( i - 1 );
+	}
+
+	g_TrapDrops.insertLast( EHandle( pEntity ) );
+}
+
+bool IsTrapDrop( CBaseEntity@ pEntity )
+{
+	if( pEntity is null )
+		return false;
+
+	for( uint i = 0; i < g_TrapDrops.length(); ++i )
+	{
+		if( g_TrapDrops[i].IsValid() && g_TrapDrops[i].GetEntity() is pEntity )
+			return true;
+	}
+
+	return false;
+}
+
+/* Book a weapon as dropped by this player, held back for `flSeconds`. */
+void WithholdWeapon( CBasePlayer@ pPlayer, const string& in szClassname, float flSeconds )
+{
+	string szKey = DroppedKey( pPlayer, szClassname );
+	g_flWeaponDroppedAt[ szKey ] = g_Engine.time;
+	g_flWeaponHoldFor[ szKey ] = flSeconds;
+}
+
+void ReleaseWeapon( CBasePlayer@ pPlayer, const string& in szClassname )
+{
+	string szKey = DroppedKey( pPlayer, szClassname );
+	g_flWeaponDroppedAt.delete( szKey );
+	g_flWeaponHoldFor.delete( szKey );
+}
+
 string DroppedKey( CBasePlayer@ pPlayer, const string& in szClassname )
 {
 	return "" + pPlayer.entindex() + "|" + szClassname;
@@ -90,9 +148,12 @@ bool WeaponWithheld( CBasePlayer@ pPlayer, const string& in szClassname )
 	if( flAge < 0.0f )
 		return false;
 
-	if( flAge >= BUTTERFINGERS_SECONDS )
+	float flHold = BUTTERFINGERS_SECONDS;
+	g_flWeaponHoldFor.get( DroppedKey( pPlayer, szClassname ), flHold );
+
+	if( flAge >= flHold )
 	{
-		g_flWeaponDroppedAt.delete( DroppedKey( pPlayer, szClassname ) );
+		ReleaseWeapon( pPlayer, szClassname );
 		return false;
 	}
 
@@ -112,12 +173,51 @@ bool WeaponJustDropped( CBasePlayer@ pPlayer, const string& in szClassname )
 * Called on map load. The globals survive a map change but `g_Engine.time` does
 * not, so a deadline recorded on the last map reads as far in the future on this
 * one and would withhold the weapon indefinitely. A map change is a generous
-* enough end to the trap anyway -- the dropped gun is on a level nobody is
+* enough end to the trap anyway: the dropped gun is on a level nobody is
 * standing on any more.
 */
 void ClearWithheldWeapons()
 {
 	g_flWeaponDroppedAt.deleteAll();
+	g_flWeaponHoldFor.deleteAll();
+	g_TrapDrops.resize( 0 );
+
+	for( uint i = 0; i < g_hLastActive.length(); ++i )
+		g_hLastActive[i] = EHandle();
+}
+
+/*
+* The weapon each player had in hand last frame, by entity index.
+*
+* A weapon a player drops themselves (G, `drop`, or on death) is one they were
+* already carrying, so it is booked with the trap drops: picking it up again,
+* or standing next to it, must not send its check. Watching the hand rather than
+* the drop command covers every way a weapon leaves it, and the entity is the
+* same one that lands on the floor.
+*/
+array<EHandle> g_hLastActive( 33 );
+
+/* Per frame, per player, from PlayerPreThink. */
+void TrackPlayerDrops( CBasePlayer@ pPlayer )
+{
+	int iIndex = pPlayer.entindex();
+	if( iIndex < 0 || uint( iIndex ) >= g_hLastActive.length() )
+		return;
+
+	CBaseEntity@ pActive = pPlayer.m_hActiveItem.GetEntity();
+	CBaseEntity@ pLast = g_hLastActive[iIndex].GetEntity();
+
+	if( pLast !is null && pLast !is pActive )
+	{
+		// Switching weapons leaves the old one in the inventory; only one that
+		// no longer belongs to this player has actually been let go.
+		CBasePlayerItem@ pItem = cast<CBasePlayerItem@>( pLast );
+		if( pItem !is null && ( !pItem.m_hPlayer.IsValid()
+		    || pItem.m_hPlayer.GetEntity() !is pPlayer ) )
+			RegisterTrapDrop( pLast );
+	}
+
+	g_hLastActive[iIndex] = pActive is null ? EHandle() : EHandle( pActive );
 }
 
 /*
@@ -138,7 +238,10 @@ void ClearWithheldWeapons( CBasePlayer@ pPlayer )
 	for( uint i = 0; i < keys.length(); ++i )
 	{
 		if( keys[i].SubString( 0, szPrefix.Length() ) == szPrefix )
+		{
 			g_flWeaponDroppedAt.delete( keys[i] );
+			g_flWeaponHoldFor.delete( keys[i] );
+		}
 	}
 }
 
@@ -153,7 +256,7 @@ void ClearWithheldWeapons( CBasePlayer@ pPlayer )
 *   done in spawn functions
 *
 * So the models are booked in MapInit instead, and this records that it happened.
-* Cleared in Initialise, which runs on plugin load as well as on map load -- a
+* Cleared in Initialise, which runs on plugin load as well as on map load: a
 * plugin reloaded mid-map missed its chance to precache anything, and must not
 * spawn a monster until the next map has booked them properly.
 */
@@ -167,13 +270,14 @@ bool g_bTrapMonstersPrecached = false;
 * the precache table against a server that dies when one does.
 *
 * PrecacheMonster builds the monster once and throws it away, so it pulls in the
-* models, sounds and sentences its own Precache would -- including the scientist
+* models, sounds and sentences its own Precache would: including the scientist
 * sub-models the spawner picks between.
 */
 void PrecacheTrapMonsters()
 {
 	g_Game.PrecacheMonster( "monster_scientist", true );
 	g_Game.PrecacheMonster( "monster_headcrab", false );
+	PrecacheBots();
 
 	g_bTrapMonstersPrecached = true;
 }
@@ -194,7 +298,7 @@ const float TRAP_QUEUE_DELAY = 5.0f;
 const uint TRAP_QUEUE_MAX = 12;
 
 // Traps that arrived with nowhere to land, oldest first. Deliberately a plain
-// global: it survives a map change, which is the entire point -- a trap received
+// global: it survives a map change, which is the entire point; a trap received
 // on the way out of one level springs on the next one.
 array<string> g_QueuedTraps;
 
@@ -233,14 +337,15 @@ bool KnownTrap( const string& in szName )
 {
 	return szName == "Scientist Trap"
 	    || szName == "Headcrab Trap"
-	    || szName == "Butterfingers Trap";
+	    || szName == "Butterfingers Trap"
+	    || szName == "Bot Swarm Trap";
 }
 
 /*
 * Is there anywhere for a trap to land right now?
 *
 * Two ways for the answer to be no. Nobody alive and out of observer mode is the
-* obvious one -- every trap here acts on living players, so with none the trap is
+* obvious one: every trap here acts on living players, so with none the trap is
 * spent on nothing. A queued level change is the subtle one: the map is loaded
 * and people are standing on it, but they are about to be somewhere else, and
 * spawning a crowd of headcrabs into a level that is one breath from unloading
@@ -251,8 +356,8 @@ bool TrapGroundReady()
 	if( g_szPendingLevel.Length() > 0 )
 		return false;
 
-	// Nothing can be spawned on this map, so hold everything -- including
-	// Butterfingers, which needs no precache -- rather than draining half a queue
+	// Nothing can be spawned on this map, so hold everything: including
+	// Butterfingers, which needs no precache: rather than draining half a queue
 	// now and leaving the rest. The next map load books the models and releases
 	// the lot.
 	if( !g_bTrapMonstersPrecached )
@@ -277,8 +382,8 @@ bool TrapGroundReady()
 * Drain the queue if the level has been standing still long enough.
 *
 * Called from the once-a-second sweep, so the real wait is TRAP_QUEUE_DELAY plus
-* up to a second. Anything that makes the ground unready -- a level change queued,
-* the last player dying -- puts the clock back to zero, so the countdown restarts
+* up to a second. Anything that makes the ground unready: a level change queued,
+* the last player dying: puts the clock back to zero, so the countdown restarts
 * rather than resuming: five settled seconds, not five seconds in total.
 */
 void ProcessTrapQueue()
@@ -310,7 +415,7 @@ void ProcessTrapQueue()
 /*
 * Forget that this map was ever settled.
 *
-* Called on map load. Only the clock is reset -- the queue itself is what carries
+* Called on map load. Only the clock is reset: the queue itself is what carries
 * the held traps to the new map.
 */
 void ResetTrapGround()
@@ -331,6 +436,8 @@ void SpringTrapNow( const string& in szName )
 		SpawnTrap( "monster_headcrab", "What remarkable specimen!" );
 	else if( szName == "Butterfingers Trap" )
 		Butterfingers();
+	else if( szName == "Bot Swarm Trap" )
+		BotSwarm();
 	else
 		APLog( "unknown trap: " + szName );
 }
@@ -555,10 +662,10 @@ void Butterfingers()
 
 		// Booked before the drop: the loadout sweep runs every second and would
 		// put it straight back in their hands.
-		g_flWeaponDroppedAt[ DroppedKey( pPlayer, szClassname ) ] = g_Engine.time;
+		WithholdWeapon( pPlayer, szClassname, BUTTERFINGERS_SECONDS );
 
 		// DropItem with no position throws the held weapon the way the engine's
-		// own drop does. It is `DropItem`, not `DropPlayerItem` -- the latter is
+		// own drop does. It is `DropItem`, not `DropPlayerItem`: the latter is
 		// the C++ name and is not bound to script.
 		CBaseEntity@ pDropped = pPlayer.DropItem( szClassname );
 
@@ -566,10 +673,11 @@ void Butterfingers()
 		{
 			// Some weapons refuse to be dropped. Do not leave a booking behind
 			// that would stop the sweep reissuing something they still hold.
-			g_flWeaponDroppedAt.delete( DroppedKey( pPlayer, szClassname ) );
+			ReleaseWeapon( pPlayer, szClassname );
 			continue;
 		}
 
+		RegisterTrapDrop( pDropped );
 		++iDropped;
 	}
 

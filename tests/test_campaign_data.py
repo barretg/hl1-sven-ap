@@ -109,7 +109,7 @@ def test_portal_consoles_point_at_chapters_of_their_own_campaign(
 
         # Consoles are positional and in campaign order: the Nth console opens
         # the Nth mission that has one. Ordered by the number in the name, not
-        # the name -- Half-Life's are unpadded, so `hl_ch10` sorts before
+        # the name: Half-Life's are unpadded, so `hl_ch10` sorts before
         # `hl_ch2` as text.
         def console_number(name: str) -> int:
             digits = re.search(r"(\d+)$", name)
@@ -144,7 +144,7 @@ def test_a_campaign_never_claims_more_consoles_than_the_hub_has(
     """Missions may lack a console; consoles may never lack a mission.
 
     An intro has none by design, and Opposing Force's Crush Depth has none either
-    -- the hub simply has no `of_ch06`. What must never happen is a console
+the hub simply has no `of_ch06`. What must never happen is a console
     listed twice or pointing past the end of the mission list, which is how the
     panels came to be off by one.
     """
@@ -182,7 +182,7 @@ def test_locations_outnumber_progression_items(campaign: dict) -> None:
 def test_traps_exist_and_are_classified_as_traps(campaign: dict) -> None:
     traps = [item for item in campaign["items"] if item.get("group") == "trap"]
     assert {item["name"] for item in traps} == {
-        "Scientist Trap", "Headcrab Trap", "Butterfingers Trap"
+        "Scientist Trap", "Headcrab Trap", "Butterfingers Trap", "Bot Swarm Trap"
     }
     for item in traps:
         assert item["classification"] == "trap", item["name"]
@@ -283,7 +283,7 @@ def test_the_crowbar_is_gated_but_starts_unlocked(
     yours from the first spawn and its item never enters the pool. A seed that
     starts you with a wrench instead leaves it out of the starting list, the gate
     then refuses every crowbar in the levels, and the item is in the pool to be
-    found -- the same shape as any other weapon.
+    found: the same shape as any other weapon.
     """
     starting = {r[1] for r in checkdata if r[0] == "S"}
     locked = {r[1]: r[2] for r in checkdata if r[0] == "K"}
@@ -334,7 +334,9 @@ def test_charger_triggers_name_a_brush_model(campaign: dict) -> None:
 
     for entry in chargers:
         trigger = entry["trigger"]
-        assert trigger["classname"] in ("func_healthcharger", "func_recharge")
+        assert trigger["classname"] in (
+            "func_healthcharger", "func_recharge", "trigger_hurt"
+        )
         assert trigger["model"].startswith("*")
         assert trigger["model"][1:].isdigit(), entry["name"]
 
@@ -343,7 +345,7 @@ def test_chargers_are_unique_within_a_map(campaign: dict) -> None:
     """Two locations the plugin cannot tell apart would strand the second.
 
     Identity is the brush model, plus the origin when a mapper has reused one
-    brush for two units -- `ba_canal1` builds a second health charger from
+    brush for two units: `ba_canal1` builds a second health charger from
     `*196` and shifts it 80 units across.
     """
     seen: set[tuple[str, str, str]] = set()
@@ -494,8 +496,12 @@ def test_optional_equipment_carries_the_classnames_it_gates(campaign: dict) -> N
     }
 
     assert optional, "no optional equipment in the campaign data"
+    # The flashlight is a key, not an entity.
     for name, classnames in optional.items():
-        assert classnames, name
+        if name == "Flashlight":
+            assert classnames == [], name
+        else:
+            assert classnames, name
 
 
 def test_optional_equipment_is_gated_by_classname(
@@ -646,8 +652,8 @@ def test_a_script_registered_melee_starter_belongs_to_its_own_campaign(
 
     A script-registered weapon does not exist outside its own maps, so starting
     with one means empty hands everywhere else. That is accepted for the campaign
-    that owns the weapon -- it is only reachable when that campaign is in the
-    seed -- but offering it from anywhere else would be a plain bug.
+    that owns the weapon: it is only reachable when that campaign is in the
+    seed: but offering it from anywhere else would be a plain bug.
     """
     restricted = campaign["restricted_classnames"]
 
@@ -758,7 +764,7 @@ def test_every_campaign_can_be_started_without_a_gun(campaign: dict) -> None:
     """Each campaign needs a mission you may enter holding only a melee weapon.
 
     The starting mission is picked from these. With none, generation falls back
-    to any mission at all and hands out one that logic then refuses to enter --
+    to any mission at all and hands out one that logic then refuses to enter:
     which is exactly what happened to Opposing Force once its every mission was
     gated and `exclude_intro_missions` removed the one that was not.
     """
@@ -822,8 +828,8 @@ def test_endgame_missions_are_finales(campaign: dict) -> None:
 
     Every other mission is finished by leaving its last map, which the plugin
     already sees; arming the marker there would only add a way to miss a
-    completion. Two finale shapes need it -- a one-map finale, and one whose last
-    map ends the campaign instead of travelling on -- so the map count is not
+    completion. Two finale shapes need it: a one-map finale, and one whose last
+    map ends the campaign instead of travelling on: so the map count is not
     the test.
     """
     for chapter in campaign["chapters"]:
@@ -836,7 +842,7 @@ def test_unreachable_chargers_are_gone_from_the_build(campaign: dict) -> None:
     """Nothing hand-listed as unreachable may survive into the location table.
 
     The table is keyed `classname:model` on a map, and a recompiled BSP can
-    renumber brush models -- at which point the entry silently stops matching and
+    renumber brush models: at which point the entry silently stops matching and
     the check comes back, unreachable and holding up the seed. Failing here is
     how that gets noticed.
     """

@@ -1,11 +1,11 @@
-# Verification seed 2 of 5 — a seed with no Half-Life in it
+# Verification seed 2 of 5: a seed with no Half-Life in it
 #
 # Everything this seed was written for has passed. It is kept as the regression
 # seed for the campaign-independence work, and it carries one open item:
 #
 #   retest: missions the seed left out are absent from !ap
 #
-# That is the strongest case there is for it -- three of the four campaigns are
+# That is the strongest case there is for it: three of the four campaigns are
 # off, so `!ap` should be a short list of Opposing Force and They Hunger and
 # nothing else. No "not in this seed" lines, and no empty campaign headings.
 #
@@ -21,7 +21,7 @@
 #     documented rough edge rather than a bug.
 #
 # Opposing Force and They Hunger together, so the melee roll has three
-# candidates -- Crowbar, Pipe Wrench, Spanner. Check the spoiler's Starting
+# candidates: Crowbar, Pipe Wrench, Spanner. Check the spoiler's Starting
 # Items before playing; a Crowbar roll makes the last two vacuous, so regenerate
 # if you want them exercised.
 

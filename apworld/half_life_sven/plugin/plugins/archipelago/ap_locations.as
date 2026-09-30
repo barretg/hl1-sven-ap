@@ -2,15 +2,15 @@
 * Turning things that happen in the map into Archipelago checks.
 *
 * Every location was generated from an entity that provably exists in the BSP
-* (see tools/build_campaign_data.py), so there are no coordinate guesses here --
+* (see tools/build_campaign_data.py), so there are no coordinate guesses here:
 * a check fires off a classname, a kill, or a map transition.
 */
 
 /*
 * A weapon or item was walked over: fire the matching pickup check, if any.
 *
-* Both location kinds are scoped to this map. `weapon_pickup` is the one place
-* Half-Life would first have handed you that weapon; `pickup` is the older
+* `weapon_pickup` is campaign-wide: any copy on any of this campaign's maps is
+* the first one found (see g_WeaponPickups). `pickup` is the older per-map,
 * per-copy variant, currently not generated.
 *
 * Called whether or not the player is allowed to keep the weapon: walking over it
@@ -54,7 +54,7 @@ const float WEAPON_REACH = 72.0f;
 * CanCollect only fires when the engine is deciding whether to hand something
 * over, and it does not for a weapon you are already carrying. The crowbar is in
 * everyone's starting inventory, so its check would otherwise be impossible to
-* send -- and with `accessibility: full` an unsendable location is a seed that
+* send: and with `accessibility: full` an unsendable location is a seed that
 * cannot be finished. Any weapon whose item has already arrived has the same
 * problem, so this covers all of them: standing next to the pickup is enough.
 *
@@ -113,11 +113,18 @@ bool AnyPlayerNear( const string& in szClassname )
 	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname( pEntity, szClassname ) ) !is null )
 	{
 		// A weapon in someone's inventory is still an entity of this classname,
-		// and its origin is that player's origin -- so the sweep found a shotgun
+		// and its origin is that player's origin: so the sweep found a shotgun
 		// nought units from a player who was simply carrying one, and sent the
 		// check for standing in the map it happens to be anchored to. The check
 		// belongs to the copy lying in the world, so anything held is skipped.
 		if( WeaponIsHeld( pEntity ) )
+			continue;
+
+		// The copy Butterfingers threw on the floor, or a thrown crowbar, is the
+		// weapon somebody was carrying a moment ago rather than one found. The
+		// sweep is why guarding the pickup was not enough: it fires on a weapon
+		// *lying near* a player, so the trap sent the weapon check by itself.
+		if( IsTrapDrop( pEntity ) )
 			continue;
 
 		for( int i = 1; i <= g_Engine.maxClients; ++i )
@@ -128,6 +135,11 @@ bool AnyPlayerNear( const string& in szClassname )
 				continue;
 
 			if( ( pPlayer.pev.origin - pEntity.pev.origin ).Length() > WEAPON_REACH )
+				continue;
+
+			// A weapon this player is owed back is their own, wherever a copy of
+			// it is lying.
+			if( WeaponWithheld( pPlayer, szClassname ) )
 				continue;
 
 			// Near is not the same as reachable. Distance alone counted a weapon
@@ -205,6 +217,65 @@ void RegisterChargerCheck( CBaseEntity@ pEntity )
 			return;
 		}
 	}
+}
+
+/*
+* Xen's healing pools. Nothing is pressed, so a pool is found by standing in it:
+* any living player whose box overlaps the trigger's sends it.
+*
+* Polled on the fast timer, and only while this map still has an unsent pool,
+* so the usual cost is a length check on an empty array. The trigger is found by
+* its brush model, the same identity the generator keyed it by; a pool's
+* `absmin`/`absmax` are live because a trigger is linked into the world.
+*/
+void SweepHealingPools()
+{
+	if( g_MapPools.length() == 0 || !g_bMissionActive )
+		return;
+
+	for( uint i = 0; i < g_MapPools.length(); ++i )
+	{
+		APLocation@ pLocation = g_MapPools[i];
+		if( g_SentChecks.exists( "" + pLocation.id ) )
+			continue;
+
+		// `trigger_hurt:*82` -> `*82`.
+		string szModel = pLocation.arg.SubString( POOL_CLASSNAME.Length() + 1 );
+
+		CBaseEntity@ pPool = null;
+		while( ( @pPool = g_EntityFuncs.FindEntityByClassname( pPool, POOL_CLASSNAME ) ) !is null )
+		{
+			if( string( pPool.pev.model ) != szModel )
+				continue;
+			if( AnyPlayerInside( pPool ) )
+			{
+				SendCheck( pLocation );
+				break;
+			}
+		}
+	}
+}
+
+bool AnyPlayerInside( CBaseEntity@ pVolume )
+{
+	Vector vecMin = pVolume.pev.absmin;
+	Vector vecMax = pVolume.pev.absmax;
+
+	for( int i = 1; i <= g_Engine.maxClients; ++i )
+	{
+		CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( i );
+		if( pPlayer is null || !pPlayer.IsConnected() || !pPlayer.IsAlive() )
+			continue;
+
+		Vector vecLo = pPlayer.pev.absmin;
+		Vector vecHi = pPlayer.pev.absmax;
+		if( vecLo.x <= vecMax.x && vecHi.x >= vecMin.x
+		 && vecLo.y <= vecMax.y && vecHi.y >= vecMin.y
+		 && vecLo.z <= vecMax.z && vecHi.z >= vecMin.z )
+			return true;
+	}
+
+	return false;
 }
 
 /*

@@ -1,4 +1,4 @@
-# Verification seed 3 of 5 — the HEV suit, the long jump module, and chargers
+# Verification seed 3 of 5: the HEV suit, the long jump module, and chargers
 #
 # Every item this seed was written for has passed. It is kept as the regression
 # seed for the equipment split and the charger checks, both of which have a long
@@ -13,7 +13,7 @@
 #
 # One note from the first pass: the suit had to be re-sent on the second map
 # before armour would charge, then worked on every map after. If that recurs,
-# say so -- it looked like a timing fluke and was not reproduced.
+# say so: it looked like a timing fluke and was not reproduced.
 #
 # Already passed, and what would break if it regressed:
 #
@@ -32,8 +32,8 @@
 # is left to the campaign to hand out on its own schedule.
 #
 # To re-run the regression pass, do the no-suit half first:
-#   1. !warp Anomalous Materials, walk over the suit    — refused
-#   2. Pick up a battery, hold use on an HEV panel      — armour stays 0
+#   1. !warp Anomalous Materials, walk over the suit: refused
+#   2. Pick up a battery, hold use on an HEV panel: armour stays 0
 #   3. Then, from the Archipelago server console:  /send Ver3Suit HEV Suit
 #      Chat announces it once; armour starts climbing; cross into hl_c01_a2 and
 #      there must be no second announcement.

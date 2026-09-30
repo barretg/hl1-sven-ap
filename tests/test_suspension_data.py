@@ -1,7 +1,7 @@
 """Suspension's generated data, and its half of checkdata.txt.
 
-The arcade map is a different shape from a campaign -- no chapters, no hub
-console, its own goal -- so it gets its own consistency tests rather than being
+The arcade map is a different shape from a campaign: no chapters, no hub
+console, its own goal: so it gets its own consistency tests rather than being
 squeezed into the campaign ones. What they mostly guard is the combinatorial
 part: every tier crossed with every section, class and medal, with nothing
 missing and nothing duplicated.

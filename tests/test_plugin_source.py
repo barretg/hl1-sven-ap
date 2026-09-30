@@ -1,6 +1,6 @@
 """Static checks on the AngelScript sources.
 
-Nothing here compiles anything -- the compiler is the game server, and the only
+Nothing here compiles anything: the compiler is the game server, and the only
 feedback it gives is a line number in the server console after a reload. These
 are the cheap checks that would have caught real breakage before it got that
 far, and every one of them is a bug that actually shipped.
@@ -63,7 +63,7 @@ def function_body(text: str, name: str) -> str:
 # API reference is https://sven-coop.github.io/, one path segment per class.
 
 BANNED_CALLS = {
-    # Ammo is read by index -- m_rgAmmo(i) or AmmoInventory(i) -- and the index
+    # Ammo is read by index, m_rgAmmo(i) or AmmoInventory(i), and the index
     # comes from the weapon's m_iPrimaryAmmoType. Only GiveAmmo takes a name.
     "GetAmmoIndex": "no such method; use pWeapon.m_iPrimaryAmmoType as the index",
     "ClearPendingHubReturn": "not a function; call SetPendingHubReturn( false )",
@@ -74,7 +74,7 @@ BANNED_CALLS = {
 def test_no_calls_to_functions_that_do_not_exist(sources: dict[str, str]) -> None:
     for name, text in sources.items():
         for banned, why in BANNED_CALLS.items():
-            assert f"{banned}(" not in text, f"{name}: {banned} -- {why}"
+            assert f"{banned}(" not in text, f"{name}: {banned}; {why}"
 
 
 def test_arrays_are_returned_by_value(sources: dict[str, str]) -> None:
@@ -90,7 +90,7 @@ def test_dictionaries_are_read_with_get(sources: dict[str, str]) -> None:
     cannot take. `dict.get( key, @handle )` is the way in."""
     for name, text in sources.items():
         offenders = re.findall(r"cast<[^>]+>\(\s*\w+\[", text)
-        assert not offenders, f"{name}: cast of a dictionary index -- use get()"
+        assert not offenders, f"{name}: cast of a dictionary index; use get()"
 
 
 # --- The two halves have to agree -----------------------------------------
@@ -117,7 +117,7 @@ def test_record_guards_match_what_the_generator_emits() -> None:
     """Every checkdata record must carry at least the fields the parser demands.
 
     The parser guards each record type with `parts.length() >= N`, and a record
-    emitted with fewer fields than that is silently skipped -- no error, no log
+    emitted with fewer fields than that is silently skipped: no error, no log
     line, just a table that is quietly empty. Adding a field to the generator
     without widening the guard fails the other way round, which is harmless but
     means the new field is being ignored.
@@ -155,7 +155,7 @@ def test_a_death_only_wipes_the_lobby_when_deathlink_is_on(
     sources: dict[str, str],
 ) -> None:
     """Only the report to the client is meant to be unconditional, and for a
-    while the wipe was too -- so every death gibbed the lobby in seeds that had
+    while the wipe was too: so every death gibbed the lobby in seeds that had
     the option switched off. The wipe is now its own setting on top of that, and
     the one answer both questions go through is `LobbyDiesWith`."""
     body = function_body(sources["ap_deathlink.as"], "PlayerKilled")
@@ -200,7 +200,7 @@ def test_loadout_ammo_is_only_set_for_weapons_just_granted(
 
     Topping up every weapon held, rather than only the ones this call handed
     over, refills whatever the player has been firing once a second for as long
-    as they stand there -- infinite ammo, with a pickup sound each time.
+    as they stand there: infinite ammo, with a pickup sound each time.
     """
     text = sources["ap_items.as"]
     body = function_body(text, "ApplyLoadout")
@@ -220,7 +220,7 @@ def test_the_loadout_checks_every_name_a_weapon_has(sources: dict[str, str]) -> 
     Glock is `weapon_9mmhandgun` and `weapon_glock`, MP5 is `weapon_9mmAR` and
     `weapon_m16`, SAW is `weapon_m249` and `weapon_saw`. Asking `HasItem` about
     one name while the player carries the other answers no, so the loadout hands
-    the gun over again every sweep -- and every grant brings a clip of ammo.
+    the gun over again every sweep: and every grant brings a clip of ammo.
     """
     body = function_body(sources["ap_items.as"], "ApplyLoadout")
     assert "HasWeaponUnderAnyName(" in body, (
@@ -290,7 +290,7 @@ def test_a_released_completion_marks_the_mission_complete(
     sources: dict[str, str],
 ) -> None:
     """A mission's completion is a location, so it can arrive from the server
-    with the mission never played -- released, collected, or sent by hand.
+    with the mission never played: released, collected, or sent by hand.
 
     `!ap` worked its status out from whether every location in the mission had
     been found, which a released completion does not make true, so the mission
@@ -353,7 +353,7 @@ def test_the_run_resets_on_the_slot_rather_than_the_session(
     """Reconnecting has to be safe in both directions.
 
     The session id is minted per client launch, so it fired when the same slot
-    reconnected from a restarted client -- a blip that should move nobody -- and
+    reconnected from a restarted client, a blip that should move nobody, and
     stayed put when a different slot was connected from the client already
     running, which is the case that makes every remembered check wrong.
     """
@@ -376,7 +376,7 @@ def test_a_locked_vote_button_is_disarmed_rather_than_removed(
     and so cannot be answered.
 
     The button is now left exactly as the map built it, solid and drawn, so the
-    use trace lands on it and PlayerUse can say why -- and its `target` is taken
+    use trace lands on it and PlayerUse can say why: and its `target` is taken
     away, which is what leaves the press harmless. The whole set of locks is
     reasserted on a timer because the map kills and resets its own entities.
     """
@@ -433,7 +433,7 @@ def test_solid_bsp_is_only_ever_given_to_a_pusher(sources: dict[str, str]) -> No
     """The engine checks `solid` against `movetype` every time it links an
     entity, and SOLID_BSP on anything but a MOVETYPE_PUSH entity is a fatal
     error, not a warning. The Juggernaut's seal is a `func_wall_toggle` *and* a
-    `trigger_hurt`, and sealing gave both of them SOLID_BSP -- which killed the
+    `trigger_hurt`, and sealing gave both of them SOLID_BSP: which killed the
     server on a respawn in the lobby, long after the seal was set."""
     text = sources["ap_suspension.as"]
 
@@ -462,7 +462,7 @@ def test_a_locked_class_booth_is_walled_shut(sources: dict[str, str]) -> None:
 
     The barrier is built from the portal's own brush, which is exactly the right
     shape in exactly the right place with nothing derived, and the engine spawns
-    it as a `func_wall` -- a pusher, and so legally SOLID_BSP, which the trigger
+    it as a `func_wall`: a pusher, and so legally SOLID_BSP, which the trigger
     is not.
     """
     text = sources["ap_suspension.as"]
@@ -517,7 +517,7 @@ def test_the_arcade_answers_to_part_of_its_name(sources: dict[str, str]) -> None
     """`!warp` matches missions on any part of their name, but the arcade map was
     only ever compared for equality, so it alone had to be spelled out in full.
     It is not a chapter, so it is never in `matches` and needs its own test
-    alongside them -- including in the "be more specific" list, or a query that
+    alongside them: including in the "be more specific" list, or a query that
     matched both would silently pick one."""
     body = function_body(sources["ap_hub.as"], "WarpToQuery")
     assert "ArcadeMatchesQuery(" in body, (

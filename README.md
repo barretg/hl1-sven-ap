@@ -1,4 +1,4 @@
-# Half-Life (Sven Co-op) — Archipelago
+# Half-Life (Sven Co-op): Archipelago
 
 An Archipelago randomizer for the single-player campaigns shipped inside
 [Sven Co-op](https://store.steampowered.com/app/225840/Sven_Coop/): Half-Life,
@@ -45,7 +45,7 @@ suspension`.
 | Piece | What it is |
 | --- | --- |
 | Tiers | Easy 50 tickets, Medium 25, Hard 10, Insane 1. `suspension_max_difficulty` caps it; `Progressive Suspension Difficulty` opens them in order |
-| Sections | 8, each a check per tier — or a check per class per tier with `suspension_classanity` |
+| Sections | 8, each a check per tier: or a check per class per tier with `suspension_classanity` |
 | Classes | 8 items. One is your starting class; the Juggernaut is earned |
 | Medals | Platinum 0 deaths through N00b, capped by `suspension_required_award`, always rolling down |
 | Goal | A run cleared as the Juggernaut at your capped tier |
@@ -112,14 +112,14 @@ See [docs/protocol.md](docs/protocol.md).
 
 ## Locations
 
-Three kinds of location, 357 across all four campaigns (173 of them Half-Life's)
-against at most 69 progression items:
+Three kinds of location, 378 across all four campaigns (189 of them Half-Life's)
+against at most 71 progression items:
 
 | Type | Count | Fires when |
 | --- | --- | --- |
 | `map_reached` / `chapter_complete` | 160 | you reach a map division, or finish a mission |
-| `charger` | 144 | you press use on a health or HEV wall unit |
-| `weapon_pickup` | 53 | you reach the weapon that campaign would first have given you |
+| `charger` | 162 | you press use on a health or HEV wall unit, or step into a Xen healing pool |
+| `weapon_pickup` | 58 | you find a weapon for the first time in that campaign |
 
 Weapon checks are per campaign, not per seed: each campaign has its own "first
 shotgun" at its own earliest map. Anchoring them once across everything would
@@ -127,17 +127,19 @@ have stranded every shared weapon's check in a Half-Life map, so a seed without
 Half-Life would have lost them.
 
 Chargers are identified by their brush model index (`func_recharge:*79`), which
-is the only per-entity identity the BSP and the running game agree on — they have
+is the only per-entity identity the BSP and the running game agree on: they have
 no targetname. The check fires on the `+use`, not on draining the unit. They can
 be switched off wholesale with `chargesanity: false`.
 
-Weapon checks sit at the *vanilla* first location: the earliest map in campaign
-order that contains that weapon, and only there. Picking the same weapon up later
-sends nothing. The crowbar has one too, despite being starting inventory.
+Weapon checks are anchored, for logic, at the earliest map in campaign order that
+contains that weapon, but any copy on any of that campaign's maps sends it. Not
+one on the hub or Suspension, not one the game hands you, and not one
+Butterfingers or a throw put on the floor. The crowbar has one too, despite
+being starting inventory.
 
 Walking over a weapon sends its check whether or not the multiworld has granted
 it. Because the engine's pickup hook does not fire for a weapon you already
-carry — the crowbar, always — a one-second proximity sweep backs it up, so no
+carry, the crowbar, always, a one-second proximity sweep backs it up, so no
 weapon check can become unsendable.
 
 Richer location types are already implemented and derived from the map files
@@ -148,9 +150,9 @@ milestones, but too many of them read as arbitrary in play, so they are switched
 off via `ENABLED_LOCATION_TYPES` in `tools/campaign_layout.py` pending a pass to
 work out which ones actually earn a check.
 
-Editorial decisions that *cannot* be derived from the maps — which campaigns
+Editorial decisions that *cannot* be derived from the maps: which campaigns
 exist, mission grouping, console-to-mission, which classnames map to which item,
-and the logic gates — live in one file,
+and the logic gates: live in one file,
 [`tools/campaign_layout.py`](tools/campaign_layout.py). That is the file to edit
 when tuning logic or adding a campaign.
 
@@ -176,7 +178,7 @@ python tools/install_plugin.py --game "<Sven Co-op>"
 ```
 
 The generated data and `checkdata.txt` are both committed, so neither the apworld
-nor the client needs Sven Co-op installed — only the generators do.
+nor the client needs Sven Co-op installed: only the generators do.
 
 ## Status
 

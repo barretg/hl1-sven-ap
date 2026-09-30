@@ -2,8 +2,8 @@
 
 `tools/build_campaign_data.py` produces all of it straight from the Sven Co-op
 BSPs: `index.json` for what is shared across campaigns, and one file per campaign
-under `campaigns/`. Everything downstream -- the world, the client, and the
-AngelScript plugin's `checkdata.txt` -- reads the merged result, so there is
+under `campaigns/`. Everything downstream: the world, the client, and the
+AngelScript plugin's `checkdata.txt`: reads the merged result, so there is
 exactly one place where a location id is defined.
 
 The split is on-disk layout only. `load_campaign()` returns the same single dict
@@ -145,7 +145,7 @@ def melee_starters_for(
     """Every melee weapon the campaigns in a seed could start you with.
 
     `allow_restricted` lets in weapons that exist only on their own campaign's
-    maps -- They Hunger's spanner, and nothing else today. Off by default,
+    maps: They Hunger's spanner, and nothing else today. Off by default,
     because starting with one means empty hands everywhere else.
     """
     starters: dict[str, list[str]] = {}
@@ -178,13 +178,13 @@ GOAL_PREREQUISITES: dict[str, str] = {
 # A paired finale is the tail of one mission rather than a level of its own, so
 # the two are really one ending: A Leap Of Faith is the escape cutscene at the
 # end of Power Struggle. Handing out a Power Struggle unlock made the pair
-# incoherent -- the item could open the run's last real mission long before the
+# incoherent: the item could open the run's last real mission long before the
 # count that seals the ending it leads into, or arrive after it and hold the
 # ending shut with nothing left to do about it.
 #
 # So the count opens the whole ending: the paired mission and, once it is
 # cleared, the finale behind it. That is what `missions_required` already claimed
-# to do -- "How many Blue Shift missions open Power Struggle" -- and now does.
+# to do, "How many Blue Shift missions open Power Struggle", and now does.
 #
 # Derived from the pairing rather than declared, so any campaign that gains a
 # paired finale gets this for free, and campaign data written before the pairing
@@ -232,13 +232,31 @@ INTRO_CHAPTER: str = CHAPTERS[0]["key"]
 
 # The scene-setting mission of each campaign that has one: Half-Life's tram ride,
 # Blue Shift's ride the other way, Opposing Force's boot camp. `exclude_intro_missions`
-# drops all of them at once. They Hunger has none -- it opens on Episode 1 proper.
+# drops all of them at once. They Hunger has none: it opens on Episode 1 proper.
 INTRO_CHAPTERS: list[str] = [
     c["intro_chapter"] for c in CAMPAIGNS if c.get("intro_chapter")
 ]
 
-# Items that only enter the pool when the matching YAML toggle is on.
-OPTIONAL_ITEM_NAMES = {"HEV Suit": "shuffle_hev_suit", "Long Jump Module": "shuffle_longjump"}
+# Items that only enter the pool when the matching YAML toggle is on. Each
+# campaign's armour item follows the HEV suit's toggle, and only exists in a seed
+# that includes a campaign it is armour for.
+OPTIONAL_ITEM_NAMES = {
+    "HEV Suit": "shuffle_hev_suit",
+    "Long Jump Module": "shuffle_longjump",
+    "PCV": "shuffle_hev_suit",
+    "Security Armor": "shuffle_hev_suit",
+    "Flashlight": "shuffle_flashlight",
+}
+
+# The armour items, and the campaigns each one is armour on. Read from the
+# campaign data rather than declared, so the two cannot disagree.
+ARMOUR_ITEMS: dict[str, str] = {
+    c["key"]: c.get("armour_item", "HEV Suit") for c in CAMPAIGNS
+}
+
+# Abilities that only exist when their YAML toggle is on. Unlike the equipment
+# above, off means the ability is absent, not granted.
+ABILITY_ITEM_NAMES: dict[str, str] = {"Melee Throw": "melee_throw"}
 
 # Of those, the ones that go back to behaving exactly as Half-Life does when the
 # toggle is off, rather than being handed over at the start of the run.
@@ -250,6 +268,14 @@ OPTIONAL_ITEM_NAMES = {"HEV Suit": "shuffle_hev_suit", "Long Jump Module": "shuf
 # both possible and what "not shuffled" ought to mean. Granting it up front put a
 # module in the player's legs ten missions before Half-Life would have.
 VANILLA_WHEN_UNSHUFFLED = frozenset({"Long Jump Module"})
+
+# How a seed rolled today leaves those alone: as a real item locked to the check
+# where the campaign hands it over, rather than left ungated for the campaign to
+# hand out. Every mission starts from the hub, so a module that only ever lived
+# in one playthrough's inventory was gone again by the next warp; the item is
+# sent back by the server and stays. Seeds from before this carry no
+# `placed_at_vanilla` in slot data and keep the ungated behaviour.
+VANILLA_PLACEMENTS: dict[str, str] = {"Long Jump Module": "First Long Jump Module"}
 
 # Trigger type of the health / HEV charger checks, switched off by `chargesanity`.
 CHARGER_TRIGGER = "charger"

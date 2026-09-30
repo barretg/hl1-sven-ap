@@ -66,7 +66,7 @@ def parse_entities(text: str) -> list[dict[str, str]]:
                 entities.append(current)
             current = None
         elif current is not None and line.startswith('"'):
-            # "key" "value" -- values may contain spaces but not unescaped quotes.
+            # "key" "value": values may contain spaces but not unescaped quotes.
             parts = line.split('"')
             if len(parts) >= 5:
                 current[parts[1]] = parts[3]

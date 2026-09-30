@@ -24,6 +24,8 @@
     "weapon_spanner"
    ]
   },
+  "short": "th",
+  "armour_item": "HEV Suit",
   "consoles": {
    "th_ep01": "th_episode_1",
    "th_ep02": "th_episode_2",
@@ -343,7 +345,7 @@
   },
   {
    "id": 7720333,
-   "name": "They Hunger - First Umbrella",
+   "name": "They Hunger: First Umbrella",
    "chapter": "th_episode_1",
    "map": "th_ep1_01",
    "trigger": {
@@ -361,7 +363,7 @@
   },
   {
    "id": 7720321,
-   "name": "They Hunger - First .357 Magnum",
+   "name": "They Hunger: First .357 Magnum",
    "chapter": "th_episode_1",
    "map": "th_ep1_02",
    "trigger": {
@@ -379,7 +381,7 @@
   },
   {
    "id": 7720322,
-   "name": "They Hunger - First TNT",
+   "name": "They Hunger: First TNT",
    "chapter": "th_episode_1",
    "map": "th_ep1_03",
    "trigger": {
@@ -397,7 +399,7 @@
   },
   {
    "id": 7720323,
-   "name": "They Hunger - First Shovel",
+   "name": "They Hunger: First Shovel",
    "chapter": "th_episode_1",
    "map": "th_ep1_01",
    "trigger": {
@@ -415,7 +417,7 @@
   },
   {
    "id": 7720324,
-   "name": "They Hunger - First Colt 1911",
+   "name": "They Hunger: First Colt 1911",
    "chapter": "th_episode_1",
    "map": "th_ep1_01",
    "trigger": {
@@ -433,7 +435,7 @@
   },
   {
    "id": 7720325,
-   "name": "They Hunger - First Taurus",
+   "name": "They Hunger: First Taurus",
    "chapter": "th_episode_3",
    "map": "th_ep3_00",
    "trigger": {
@@ -451,7 +453,7 @@
   },
   {
    "id": 7720326,
-   "name": "They Hunger - First Sawed-Off Shotgun",
+   "name": "They Hunger: First Sawed-Off Shotgun",
    "chapter": "th_episode_1",
    "map": "th_ep1_01",
    "trigger": {
@@ -469,7 +471,7 @@
   },
   {
    "id": 7720327,
-   "name": "They Hunger - First Grease Gun",
+   "name": "They Hunger: First Grease Gun",
    "chapter": "th_episode_3",
    "map": "th_ep3_04",
    "trigger": {
@@ -487,7 +489,7 @@
   },
   {
    "id": 7720328,
-   "name": "They Hunger - First Tommy Gun",
+   "name": "They Hunger: First Tommy Gun",
    "chapter": "th_episode_1",
    "map": "th_ep1_03",
    "trigger": {
@@ -505,7 +507,7 @@
   },
   {
    "id": 7720329,
-   "name": "They Hunger - First M14",
+   "name": "They Hunger: First M14",
    "chapter": "th_episode_1",
    "map": "th_ep1_01",
    "trigger": {
@@ -523,7 +525,7 @@
   },
   {
    "id": 7720330,
-   "name": "They Hunger - First M16A1",
+   "name": "They Hunger: First M16A1",
    "chapter": "th_episode_2",
    "map": "th_ep2_00",
    "trigger": {
@@ -541,7 +543,7 @@
   },
   {
    "id": 7720331,
-   "name": "They Hunger - First Tesla Gun",
+   "name": "They Hunger: First Tesla Gun",
    "chapter": "th_episode_1",
    "map": "th_ep1_04",
    "trigger": {
@@ -559,7 +561,7 @@
   },
   {
    "id": 7720332,
-   "name": "They Hunger - First Spanner",
+   "name": "They Hunger: First Spanner",
    "chapter": "th_episode_2",
    "map": "th_ep2_00",
    "trigger": {

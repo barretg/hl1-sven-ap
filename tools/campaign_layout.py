@@ -60,7 +60,7 @@ class Campaign:
     # The mission that is scene-setting rather than a level: Half-Life's tram
     # ride, Blue Shift's ride the other way, Opposing Force's boot camp. Dropped
     # from the seed by `exclude_intro_missions`. Empty where a campaign has none
-    # -- They Hunger opens straight into Episode 1.
+    #They Hunger opens straight into Episode 1.
     intro_chapter: str = ""
     # Weapons this campaign brings to the pool that no earlier one has. Shared
     # weapons (every campaign has a crowbar) are declared once, by Half-Life.
@@ -72,7 +72,7 @@ class Campaign:
     # What this campaign can hand you to swing at things with. One of these
     # replaces the crowbar when `random_starting_weapon` is on, so every entry
     # has to be a melee weapon the campaign's own maps actually contain *and* one
-    # the engine knows about everywhere -- see `script_weapons`.
+    # the engine knows about everywhere: see `script_weapons`.
     melee: dict[str, list[str]] = field(default_factory=dict)
     # Where a weapon's "first" check belongs when the map has no entity for it.
     #
@@ -87,7 +87,7 @@ class Campaign:
     # something else. Sven Co-op does that with a `globalmodellist` in the map
     # .cfg: They Hunger's maps swap the pipe wrench's models for a shovel and the
     # hand grenade's for a stick of TNT, so a check reading "First Pipe Wrench"
-    # names something the player never sees. Display only -- the item, the
+    # names something the player never sees. Display only: the item, the
     # classname and the location id are all unchanged.
     weapon_aliases: dict[str, str] = field(default_factory=dict)
     # True when this campaign's weapons are custom entities its own map scripts
@@ -100,7 +100,7 @@ class Campaign:
     #
     # `strict` is dropped under loose logic: it says the mission wants a real
     # weapon, not that the map refuses to let you past. `always` holds at every
-    # difficulty and is for the places the geometry decides -- Xen's long jump
+    # difficulty and is for the places the geometry decides: Xen's long jump
     # module, and anything else a player simply cannot walk around.
     gates: dict[str, dict[str, list[str]]] = field(default_factory=dict)
     # The same, one level down: `{map: {"strict"/"always": [group, ...]}}` for a
@@ -122,8 +122,8 @@ class Campaign:
     #
     # A finale normally ends in a `game_end` that never changes level, so
     # arriving on its last map is the only moment the plugin can see. That reads
-    # fairly where the last map is the ending -- Half-Life's `hl_c18` is what
-    # plays once Nihilanth is dead -- and wrongly in two other shapes:
+    # fairly where the last map is the ending: Half-Life's `hl_c18` is what
+    # plays once Nihilanth is dead: and wrongly in two other shapes:
     #
     #   - the finale that *is* one map. Blue Shift's `ba_outro`: connecting to it
     #     cleared the campaign before a second of it had played.
@@ -133,6 +133,17 @@ class Campaign:
     #
     # Both are armed on arrival instead and credited when the map really ends.
     endgame_chapters: list[str] = field(default_factory=list)
+    # What `!warp <short> <n>` calls this campaign, as in `!warp of 3`.
+    short: str = ""
+    # The item that switches armour on while playing this campaign's maps. Each
+    # campaign hands over its own protective gear: Gordon's HEV suit,
+    # Shephard's PCV, Barney's vest and helmet: and `shuffle_hev_suit` shuffles
+    # every one the seed contains.
+    armour_item: str = "HEV Suit"
+    # What this campaign's own copy of a piece of equipment is called, for its
+    # "First ..." check. Opposing Force's `item_suit` is the PCV, not an HEV
+    # suit. Display only: the key and the id stay the equipment's own.
+    equipment_aliases: dict[str, str] = field(default_factory=dict)
 
 
 HALF_LIFE = Campaign(
@@ -142,7 +153,7 @@ HALF_LIFE = Campaign(
     missions_option="missions_required",
     # Names come from the `## Chapter NN:` header in each map's shipped .cfg. The
     # spelling "Unforeseen Consequences" is corrected here (Valve's cfg misspells
-    # it "Unforseen"), and hl_c18's cfg header is a copy-paste of chapter 11's --
+    # it "Unforseen"), and hl_c18's cfg header is a copy-paste of chapter 11's:
     # it is really the endgame, so it is folded into the Nihilanth chapter.
     chapters=[
         ("black_mesa_inbound", "Black Mesa Inbound", ["hl_c00"]),
@@ -171,6 +182,7 @@ HALF_LIFE = Campaign(
     # Mission 0 is the tram ride and the hub has no console for it.
     consoles=[None] + [f"hl_ch{n}" for n in range(1, 18)],
     goal_chapter="nihilanth",
+    short="hl",
     # The tram ride: no weapons, no enemies, two checks.
     intro_chapter="black_mesa_inbound",
     weapons={
@@ -181,7 +193,7 @@ HALF_LIFE = Campaign(
         # unlock together.
         #
         # The crowbar is an item like any other. In a default seed it is also a
-        # starting weapon, and a weapon you already hold never joins the pool --
+        # starting weapon, and a weapon you already hold never joins the pool:
         # so it only becomes something to find when `random_starting_weapon`
         # hands you a wrench or a spanner instead.
         "Crowbar": ["weapon_crowbar"],
@@ -214,7 +226,7 @@ HALF_LIFE = Campaign(
         "lambda_core": {"strict": ["heavy"]},
         # Xen: the long jump module is standard equipment from here on, and the
         # suit is what powers it. Strict logic names the two weapons by hand
-        # rather than a tier -- the alien grunt and Gonarch fights are not
+        # rather than a tier: the alien grunt and Gonarch fights are not
         # something to walk into with a shotgun, so both the Tau cannon and the
         # RPG are required outright.
         "xen": {"strict": ["tau_cannon", "rpg"], "always": ["longjump", "suit"]},
@@ -239,8 +251,8 @@ HALF_LIFE = Campaign(
 #
 # Keys are deliberately left alone. They key every location id in `data/ids.json`,
 # so renaming one renumbers a location and breaks a seed already being played.
-# That leaves a few reading oddly against their names -- `of_crush_depth` is "We
-# Are Not Alone" -- which is worth a tidy-up before release and not during a run.
+# That leaves a few reading oddly against their names: `of_crush_depth` is "We
+# Are Not Alone": which is worth a tidy-up before release and not during a run.
 #
 # `of4a5` is left out deliberately: nothing in any shipped map changelevels to it,
 # so a check there could never fire and an item placed on it would be lost.
@@ -271,8 +283,8 @@ OPPOSING_FORCE = Campaign(
         ("of_the_package", "The Package", ["of6a1", "of6a2", "of6a3"]),
         # `of6a5`, the Gene Worm fight, is left out for the same reason as
         # `of4a5`: this port does not play it. `of6a4b` still carries retail's
-        # `trigger_changelevel` to it, but the func_button by the guard -- the one
-        # that should open the descent -- fires a `trigger_relay` instead, which
+        # `trigger_changelevel` to it, but the func_button by the guard: the one
+        # that should open the descent: fires a `trigger_relay` instead, which
         # puts up "Sven Co-op Opposing Force: thanks for playing!" and then a
         # `game_end` five seconds later. That is where the campaign stops, so
         # `of6a5` is a map with no way in, and a goal sitting on it never fired.
@@ -292,20 +304,23 @@ OPPOSING_FORCE = Campaign(
     consoles=[
         None,                # Incoming
         "of_ch01", "of_ch02", "of_ch03", "of_ch04", "of_ch05",
-        None,                # Crush Depth -- the hub has no of_ch06
+        None,                # Crush Depth: the hub has no of_ch06
         "of_ch07", "of_ch08", "of_ch09", "of_ch10", "of_ch11",
     ],
     goal_chapter="of_worlds_collide",
+    short="of",
+    armour_item="PCV",
+    equipment_aliases={"HEV Suit": "PCV"},
     # With `of6a5` gone the finale ends on `of6a4b`, and arriving there is not
-    # finishing it -- there is a whole map to fight through first. The `game_end`
+    # finishing it: there is a whole map to fight through first. The `game_end`
     # on the button is the real ending and no changelevel follows it, so this is
     # credited the same way Blue Shift's outro is: armed on arrival, sent once the
     # map has actually ended.
     endgame_chapters=["of_worlds_collide"],
     # Incoming, the osprey ride in: Opposing Force's answer to the tram ride,
     # and what `exclude_intro_missions` drops. Boot Camp is the training course
-    # rather than the intro -- Half-Life's equivalent, the Hazard Course, is not
-    # part of its campaign at all -- so it stays in, console-less, reached by
+    # rather than the intro: Half-Life's equivalent, the Hazard Course, is not
+    # part of its campaign at all: so it stays in, console-less, reached by
     # `!warp` like Crush Depth.
     intro_chapter="of_incoming",
     weapons={
@@ -318,8 +333,8 @@ OPPOSING_FORCE = Campaign(
         "Pipe Wrench": ["weapon_pipewrench"],
         "Minigun": ["weapon_minigun"],
         # No combat knife. Opposing Force's maps still place `weapon_knife`, but
-        # this build of Sven Co-op has no such weapon -- it is in neither
-        # server.dll nor any map script -- so those entities never spawn. As an
+        # this build of Sven Co-op has no such weapon: it is in neither
+        # server.dll nor any map script: so those entities never spawn. As an
         # item it could never be granted and as a check it could never fire,
         # which is exactly the sort of location fill will hide progression behind.
     },
@@ -328,8 +343,8 @@ OPPOSING_FORCE = Campaign(
     # crowbar is replaced outright: `v_crowbar.mdl` becomes `v_knife.mdl`, skin
     # `knife_blade.BMP`. Shephard carries a combat knife, not a crowbar.
     #
-    # `weapon_knife` was its own entity once and is unsupported in this build --
-    # Opposing Force's maps still place a few, and those never spawn -- so the
+    # `weapon_knife` was its own entity once and is unsupported in this build:
+    # Opposing Force's maps still place a few, and those never spawn: so the
     # knife reaches players the only way it can, as the crowbar's local face.
     weapon_aliases={"Crowbar": "Combat Knife"},
     melee={
@@ -353,7 +368,7 @@ OPPOSING_FORCE = Campaign(
         # From Foxtrot Uniform on, the campaign assumes the grapple. It is left
         # in Pit Worm's Nest part 3 and every route afterwards is built around
         # swinging from barnacles, so this is geometry rather than firepower and
-        # holds under loose logic too -- see `map_gates` for part 4, which is
+        # holds under loose logic too: see `map_gates` for part 4, which is
         # where the assumption actually starts.
         "of_foxtrot_uniform": {"strict": ["heavy"], "always": ["barnacle_grapple"]},
         "of_the_package": {"strict": ["heavy"], "always": ["barnacle_grapple"]},
@@ -365,7 +380,7 @@ OPPOSING_FORCE = Campaign(
     },
 )
 
-# Six consoles for the six missions after the tram ride, which has none -- the
+# Six consoles for the six missions after the tram ride, which has none: the
 # same shape as Half-Life and Opposing Force. Names come from `titles.txt`, which
 # is also where the seventh chapter came from: `BA_TELEPORTTITLE` is "A Leap of
 # Faith", the trip to Xen and back, and grouping it in with Focal Point left one
@@ -393,7 +408,7 @@ BLUE_SHIFT = Campaign(
           "ba_xen6"]),
         ("bs_power_struggle", "Power Struggle",
          ["ba_teleport2", "ba_power1", "ba_power2"]),
-        # The escape, and the last panel on the wall -- so this is Blue Shift's
+        # The escape, and the last panel on the wall: so this is Blue Shift's
         # finale rather than Power Struggle.
         ("bs_leap_of_faith", "A Leap Of Faith", ["ba_outro"]),
     ],
@@ -402,9 +417,11 @@ BLUE_SHIFT = Campaign(
     # Freight, Focal Point, Power Struggle, A Leap Of Faith.
     consoles=[None] + [f"bs_ch{n:02d}" for n in range(1, 7)],
     goal_chapter="bs_leap_of_faith",
+    short="bs",
+    armour_item="Security Armor",
     # A Leap Of Faith is the escape cutscene, not a level: Barney is teleported
     # through three scenes and the credits roll. Clearing it on its own says
-    # nothing, so Blue Shift's goal is the pair -- Power Struggle finished, then
+    # nothing, so Blue Shift's goal is the pair: Power Struggle finished, then
     # the outro watched through to its `game_end`.
     goal_requires="bs_power_struggle",
     endgame_chapters=["bs_leap_of_faith"],
@@ -427,8 +444,8 @@ BLUE_SHIFT = Campaign(
 )
 
 # Three consoles, three episodes. Its check placement is still the plain shape
-# every campaign gets for free -- a check per map, per mission, per charger and
-# per weapon -- and the only logic it asserts is that you do not walk into
+# every campaign gets for free: a check per map, per mission, per charger and
+# per weapon: and the only logic it asserts is that you do not walk into
 # Episode 2 or 3 with nothing but a melee weapon. `th_escape` is a standalone
 # bonus map rather than part of any episode, so it is left out.
 THEY_HUNGER = Campaign(
@@ -447,6 +464,7 @@ THEY_HUNGER = Campaign(
     ],
     consoles=[f"th_ep{n:02d}" for n in range(1, 4)],
     goal_chapter="th_episode_3",
+    short="th",
     weapons={
         "Colt 1911": ["weapon_colt1911"],
         "Taurus": ["weapon_th_taurus"],
@@ -459,7 +477,7 @@ THEY_HUNGER = Campaign(
         "Spanner": ["weapon_spanner"],
     },
     # From `models/hunger/hungerglobal.txt`, the model replacement list its maps
-    # load -- and read out of the models themselves, because the replacement
+    # load: and read out of the models themselves, because the replacement
     # *filenames* lie: `v_hungercrowbar.mdl` is internally `v_umbrella.mdl` and
     # skinned `Umbrella_Base.bmp`. They Hunger's melee weapon is the umbrella.
     #
@@ -477,7 +495,7 @@ THEY_HUNGER = Campaign(
     # none of them can be handed over outside its maps.
     script_weapons=True,
     # The crowbar and the wrench are built into the game, so they exist
-    # everywhere -- they just look like an umbrella and a shovel while you are
+    # everywhere: they just look like an umbrella and a shovel while you are
     # here, which is the whole charm of opening a They Hunger run with one.
     #
     # The spanner is the deliberate rough edge. It is script-registered, so a
@@ -493,7 +511,7 @@ THEY_HUNGER = Campaign(
     },
     # Episode 1 is where you find your first guns, so it stays enterable with a
     # melee weapon and is the only episode that can be handed out at the start.
-    # Everything after it expects you to be armed with something that shoots --
+    # Everything after it expects you to be armed with something that shoots:
     # its own or another campaign's, since this group covers both.
     gates={
         "th_episode_2": {"strict": ["ranged_they_hunger"]},
@@ -600,7 +618,7 @@ RESTRICTED_CLASSNAMES: dict[str, list[str]] = {
 # Sven Co-op's transitions are one way, so the copy on the far side is sealed:
 # you arrive behind the wall it is on and nothing takes you back. The entity is
 # still in the map, the derived table still finds it, and the check it produced
-# could never be sent -- which under `accessibility: full` holds the whole seed
+# could never be sent: which under `accessibility: full` holds the whole seed
 # on a location nobody can collect.
 #
 # Keyed `{map: {classname:model, ...}}`, exactly how a charger's location id is
@@ -623,9 +641,28 @@ UNREACHABLE_CHARGERS: dict[str, set[str]] = {
     "of4a2": {"func_healthcharger:*76", "func_healthcharger:*202"},
     # Pit Worm's Nest, Part 3, which rebuilds that same pit room: `*138` and
     # `*137` sit at the very coordinates Part 2's pair does. The sealed half is
-    # the *other* one here -- Part 3 drops you on the far side, so it is the
+    # the *other* one here: Part 3 drops you on the far side, so it is the
     # `-544` copy that cannot be reached rather than the `+544` one.
     "of4a3": {"func_healthcharger:*138"},
+    # Opposing Force's sealed healing volumes: two prefab rooms compiled into
+    # maps that never open them, the same box at the same size in each. Found by
+    # flood fill in the retail maps (hl1-anniversary-ap), and these are the same
+    # boxes in Sven Co-op's port.
+    "of4a1": {"trigger_hurt:*10"},
+    "of5a1": {"trigger_hurt:*160"},
+    "of6a1": {"trigger_hurt:*45"},
+    "of5a2": {"trigger_hurt:*101"},
+    "of6a4": {"trigger_hurt:*78"},
+    "of6a4b": {"trigger_hurt:*115"},
+}
+
+# Gates on a single location, `{map: {"classname:model": gates}}`, for a check
+# that sits past a requirement its mission and map do not have. The same
+# `strict` / `always` shape as a mission gate.
+LOCATION_GATES: dict[str, dict[str, dict[str, list[str]]]] = {
+    # Pit Worm's Nest, Part 2: the healing pool is across the gap the grapple
+    # crosses, which part 3 is where you find it.
+    "of4a2": {"trigger_hurt:*143": {"always": ["barnacle_grapple"]}},
 }
 
 # What you start with when nothing randomises it: the crowbar, as it always was.
@@ -668,11 +705,29 @@ for _campaign in CAMPAIGNS:
 OPTIONAL_ITEMS: dict[str, list[str]] = {
     "HEV Suit": ["item_suit"],
     "Long Jump Module": ["item_longjump"],
+    # Blue Shift's armour: the guard's vest and helmet. Both are pickups the
+    # campaign leaves lying about, so both are what its "First" check is for,
+    # and both are refused until the item arrives: armour you cannot wear.
+    "Security Armor": ["item_armorvest", "item_helmet"],
 }
+
+# Optional items whose pickup is another item's entity, as `{item: (class,
+# classnames)}`. The PCV is Opposing Force's `item_suit` in `of1a1`, where its
+# "First" check already sits (it is the HEV Suit's anchor there, shown as the
+# PCV). The classname stays the HEV Suit's to gate; what the PCV gates is armour
+# on Opposing Force's maps. The flashlight is a key, not an entity.
+EQUIPMENT_SHARING_PICKUP: dict[str, tuple[str, list[str]]] = {
+    "PCV": ("progression", ["item_suit"]),
+    "Flashlight": ("useful", []),
+}
+
+# Abilities: present only when their YAML toggle is on, absent (not granted)
+# when it is off.
+ABILITY_ITEMS: dict[str, str] = {"Melee Throw": "useful"}
 
 # Every classname the plugin holds back until its item arrives, mapped to that
 # item. A seed's starting weapons are checked ahead of this table, so a classname
-# in here is still yours from the first spawn if the seed started you with it --
+# in here is still yours from the first spawn if the seed started you with it:
 # which is how the crowbar is free in a default seed and something to find in one
 # that opened on a wrench.
 CLASSNAME_TO_ITEM: dict[str, str] = {
@@ -691,6 +746,15 @@ CLASSNAME_TO_ITEM: dict[str, str] = {
 CHARGER_CLASSNAMES: dict[str, str] = {
     "func_healthcharger": "Health Charger",
     "func_recharge": "HEV Charger",
+}
+
+# Xen's healing pools, which are checks for the same reason the wall units are:
+# fixed, obvious, and the only thing on Xen that gives health back. A pool is a
+# `trigger_hurt` with *negative* damage: the same entity as every hazard in the
+# campaign, so the sign is the whole test. Checked by standing in one; under
+# `chargesanity`, like the wall units.
+HEALING_POOL_CLASSNAMES: dict[str, str] = {
+    "trigger_hurt": "Healing Pool",
 }
 
 # --- Logic groups ---------------------------------------------------------
@@ -757,7 +821,7 @@ RANGED_WEAPONS_THEY_HUNGER = RANGED_WEAPONS + [
 
 EXPLOSIVES = ["RPG", "Hand Grenade", "Satchel Charge", "Tripmine", "Spore Launcher"]
 
-# Usable while swimming -- the crowbar is, but ichthyosaurs realistically are not
+# Usable while swimming: the crowbar is, but ichthyosaurs realistically are not
 # a melee fight, and grenades/tripmines do not work underwater.
 UNDERWATER_WEAPONS = [
     "Glock", ".357 Magnum", "MP5", "Crossbow", "Tau Cannon", "Gluon Gun", "Hivehand",

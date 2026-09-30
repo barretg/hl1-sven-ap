@@ -74,7 +74,7 @@ def set_value(key: str, value: Any, path: Path | None = None) -> None:
     save(data, path)
 
 
-# -- host.yaml -------------------------------------------------------------
+#host.yaml -------------------------------------------------------------
 
 
 def _group():

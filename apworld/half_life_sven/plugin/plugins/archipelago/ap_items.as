@@ -4,7 +4,7 @@
 * Three things have to line up for the crowbar-only start to hold:
 *   1. The HL campaign .cfg files equip a full loadout on spawn (see the
 *      `weapon_*` lines in maps/hl_c*.cfg), so we strip and re-grant on spawn.
-*   2. Weapons lying in the world must refuse to be picked up -- that is the
+*   2. Weapons lying in the world must refuse to be picked up: that is the
 *      PickupObject::CanCollect hook.
 *   3. Anything that slips through either of those (scripted_sequence gifts,
 *      game_player_equip, monster drops) is caught by a periodic sweep.
@@ -104,7 +104,7 @@ array<string> AllowedClassnames()
 //
 // It is never taken away either, and that is deliberate. In GoldSrc the suit bit
 // is what un-hides the weapon HUD, and the client's weapon-selection input is
-// disabled behind the same flag -- so a player without the suit cannot switch
+// disabled behind the same flag: so a player without the suit cannot switch
 // weapons at all, which made an unsuited run close to unplayable. What the HEV
 // Suit *item* controls is armour: see EnforceArmour.
 const string SUIT_CLASSNAME = "item_suit";
@@ -115,7 +115,7 @@ const float SUIT_PICKUP_RESTORE_DELAY = 1.5f;
 
 // The long jump module is never handed over with GiveNamedItem. That builds the
 // pickup entity in the world and touches the player with it, so a grant the
-// player did not need leaves a module lying on the floor -- and since the loadout
+// player did not need leaves a module lying on the floor: and since the loadout
 // is reapplied on every snapshot change, every item and every trap dropped
 // another one. SetLongJump does what the pickup does, without the pickup.
 const string LONGJUMP_CLASSNAME = "item_longjump";
@@ -141,12 +141,12 @@ bool HasItem( CBasePlayer@ pPlayer, const string& in szClassname )
 /*
 * Does the player already hold this weapon under any of its names?
 *
-* Three items are one gun with two classnames -- Glock is `weapon_9mmhandgun`
+* Three items are one gun with two classnames: Glock is `weapon_9mmhandgun`
 * and `weapon_glock`, MP5 is `weapon_9mmAR` and `weapon_m16`, SAW is
 * `weapon_m249` and `weapon_saw`. A player carrying one of the pair does not
 * have the other by name, so asking `HasItem` about it answered no and the
 * loadout handed the same gun over again on every sweep. No second weapon
-* appeared -- the engine will not stack one -- but each grant brought a clip of
+* appeared, the engine will not stack one, but each grant brought a clip of
 * ammo with it, so a glock climbed seventeen rounds a second to its cap and
 * refilled itself the moment it was fired.
 */
@@ -287,7 +287,7 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 
 	// Only for what was just handed over. This runs from the one-second sweep as
 	// well as from a spawn, so topping up everything held would refill a weapon
-	// the player had been firing, every second, for the whole run -- infinite
+	// the player had been firing, every second, for the whole run: infinite
 	// ammo with a pickup sound attached.
 	if( granted.length() > 0 )
 		SetLoadoutAmmo( pPlayer, granted );
@@ -297,7 +297,7 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 * Bring weapons this call just handed over up to half their maximum ammo.
 *
 * `GiveNamedItem` hands over a weapon's default ammo along with the weapon, and
-* the defaults are wildly uneven -- a glock arrives near full, a revolver with
+* the defaults are wildly uneven: a glock arrives near full, a revolver with
 * six. Half of maximum is the loadout's own rule, applied in one step.
 *
 * `granted` is what makes it a loadout rule rather than a refill. ApplyLoadout
@@ -354,15 +354,15 @@ void SetLoadoutAmmo( CBasePlayer@ pPlayer, const array<string>& in granted )
 * true and the jump unchanged, which is a worse bug than the litter it replaced
 * because nothing about it is visible.
 *
-* Also the only way to take the module away again -- it is not an inventory item,
+* Also the only way to take the module away again: it is not an inventory item,
 * so StripDisallowed cannot see it, and a campaign .cfg that hands one out would
 * otherwise stick for the rest of the run.
 *
 * Both halves are checked before either is skipped, because they do not live for
 * the same length of time. m_fLongJump belongs to the player entity and is gone
 * the moment a map changes; the physics key buffer belongs to the client
-* connection and survives it. So after every level change the two disagree --
-* flag false, "slj" still 1 -- and a guard that trusted the flag alone concluded
+* connection and survives it. So after every level change the two disagree:
+* flag false, "slj" still 1: and a guard that trusted the flag alone concluded
 * there was nothing to do while the player carried on long jumping for the rest
 * of the run.
 */
@@ -392,7 +392,7 @@ void SetLongJump( CBasePlayer@ pPlayer, bool bEnabled )
 * and no way to change weapons.
 *
 * Safe everywhere, because in this world the suit is not what the HEV Suit item
-* controls -- armour is, and EnforceArmour holds that at zero until the item
+* controls: armour is, and EnforceArmour holds that at zero until the item
 * arrives. Wearing the suit grants nothing on its own.
 */
 void EnsureSuit( CBasePlayer@ pPlayer )
@@ -402,10 +402,102 @@ void EnsureSuit( CBasePlayer@ pPlayer )
 }
 
 /*
-* Armour is what the HEV Suit item actually grants.
+* The item that is armour on the map we are on.
 *
-* The suit itself is never removed -- without it there is no weapon HUD and no
-* way to change weapons -- so the item has to mean something else, and armour is
+* Each campaign's own: the HEV Suit for Half-Life and They Hunger, the PCV for
+* Opposing Force, the Security Armor for Blue Shift. A seed rolled before that
+* split sends no table, and every campaign's armour is the HEV Suit: exactly
+* what it always was.
+*/
+const string DEFAULT_ARMOUR_ITEM = "HEV Suit";
+
+string ArmourItemHere()
+{
+	string szItem;
+	if( g_CurrentChapter !is null && g_ArmourItems.get( g_CurrentChapter.campaign, szItem ) )
+		return szItem;
+	return DEFAULT_ARMOUR_ITEM;
+}
+
+/* Does armour work here? */
+bool ArmourAllowed()
+{
+	return g_State.ItemUnlocked( ArmourItemHere() );
+}
+
+/*
+* Is the flashlight allowed right now?
+*
+* Always on the hub and the arcade map, which are not part of the randomiser, and
+* always while the client is not connected: an empty snapshot means "we do not
+* know", not "you have nothing".
+*/
+const string FLASHLIGHT_ITEM = "Flashlight";
+
+bool FlashlightAllowed()
+{
+	if( !g_State.connected || g_CurrentChapter is null || SuspensionManaged() )
+		return true;
+	return g_State.ItemUnlocked( FLASHLIGHT_ITEM );
+}
+
+// Half-Life's flashlight toggle.
+const int IMPULSE_FLASHLIGHT = 100;
+
+// One refusal a second per player at most: the impulse arrives once per press,
+// but a player mashing the key does not need to be told each time.
+dictionary g_flFlashlightNagged;
+
+/*
+* Every frame, per player: the flashlight gate and the melee throw.
+*
+* The flashlight is a key rather than an entity, so there is nothing to refuse at
+* a pickup. The impulse is eaten before the engine sees it, and a light that was
+* already on, from before a reload, or switched on by a map, is put out.
+*/
+HookReturnCode PlayerPreThink( CBasePlayer@ pPlayer, uint& out uiFlags )
+{
+	uiFlags = 0;
+
+	if( pPlayer is null )
+		return HOOK_CONTINUE;
+
+	// Before the alive check: a weapon dropped on death is let go too.
+	TrackPlayerDrops( pPlayer );
+
+	if( !pPlayer.IsAlive() )
+		return HOOK_CONTINUE;
+
+	if( !FlashlightAllowed() )
+	{
+		if( pPlayer.pev.impulse == IMPULSE_FLASHLIGHT )
+		{
+			pPlayer.pev.impulse = 0;
+
+			string szKey = "" + pPlayer.entindex();
+			float flLast = 0.0f;
+			g_flFlashlightNagged.get( szKey, flLast );
+			if( g_Engine.time - flLast > 1.0f || g_Engine.time < flLast )
+			{
+				g_flFlashlightNagged[ szKey ] = g_Engine.time;
+				g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCENTER,
+					"You have not found the Flashlight yet.\n" );
+			}
+		}
+
+		if( pPlayer.FlashlightIsOn() )
+			pPlayer.FlashlightTurnOff();
+	}
+
+	MeleeThrowThink( pPlayer );
+	return HOOK_CONTINUE;
+}
+
+/*
+* Armour is what the armour item actually grants.
+*
+* The suit itself is never removed: without it there is no weapon HUD and no
+* way to change weapons: so the item has to mean something else, and armour is
 * the honest answer: the HUD is the suit's interface, the armour is its function.
 * Until the item arrives, armour is held at zero no matter where it came from:
 * the campaign's own spawn loadout, a battery, a charge panel, or a filler grant.
@@ -419,8 +511,8 @@ void EnforceArmour( CBasePlayer@ pPlayer )
 	if( pPlayer is null || !pPlayer.IsConnected() || !pPlayer.IsAlive() )
 		return;
 
-	// Not gated in this seed, or already earned.
-	if( ClassnameAllowed( SUIT_CLASSNAME ) )
+	// Not gated in this seed, or already earned, for this campaign's armour.
+	if( ArmourAllowed() )
 		return;
 
 	if( pPlayer.pev.armorvalue > 0.0f )
@@ -462,10 +554,13 @@ void EnforceLoadouts()
 	// Same bargain again: the trap queue is asking "is there anywhere to put one
 	// yet", which is a question about the world once a second.
 	ProcessTrapQueue();
+
+	// And the check counter, for whoever has it on.
+	UpdateCheckHud();
 }
 
 /*
-* Deliver a filler item. Filler is generous on purpose -- most of the 174
+* Deliver a filler item. Filler is generous on purpose: most of the 174
 * locations hold filler, so it needs to feel like a reward rather than noise.
 */
 void GrantFillerItem( const string& in szItemName )
@@ -486,7 +581,7 @@ void GrantFillerItem( const string& in szItemName )
 		{
 			// Nothing to put it in yet. Granting it anyway would show a number
 			// that the next sweep takes straight back off again.
-			if( ClassnameAllowed( SUIT_CLASSNAME ) )
+			if( ArmourAllowed() )
 				pPlayer.TakeArmor( 20.0f, DMG_GENERIC, 100 );
 		}
 		else if( szItemName == "Ammo Cache" )
@@ -569,7 +664,7 @@ HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool
 
 	// The arcade map is outside the randomiser entirely. Its classes hand out
 	// their own weapons and its restock stations refill them, so gating anything
-	// here left a Sniper with no rifle and a Medic with no medkit -- and the
+	// here left a Sniper with no rifle and a Medic with no medkit: and the
 	// weapon checks are campaign-wide rather than per map, so collecting a
 	// class's shotgun would have sent Half-Life's First Shotgun from a bridge.
 	if( SuspensionManaged() )
@@ -578,10 +673,13 @@ HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool
 	string szClassname = pPickup.GetClassname();
 
 	// Walking over the weapon is what sends the check, whether or not the player
-	// is allowed to keep it -- that is the whole point of the randomiser. A
+	// is allowed to keep it: that is the whole point of the randomiser. A
 	// weapon put into your hands is not walked over, though: the check belongs
 	// to the copy lying in the map, the same rule the proximity sweep follows.
-	if( !PickupWasHandedOver( pPickup, pPlayer ) )
+	// Nor is one a trap threw on the floor, or one this player is owed back:
+	// those are weapons they were already carrying.
+	if( !PickupWasHandedOver( pPickup, pPlayer ) && !IsTrapDrop( pPickup )
+	    && !WeaponWithheld( pPlayer, szClassname ) )
 		RegisterPickupCheck( szClassname );
 
 	// Butterfingers just threw this out of their hands and they are standing on
@@ -592,7 +690,13 @@ HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool
 		return HOOK_HANDLED;
 	}
 
-	if( ClassnameAllowed( szClassname ) )
+	// The suit's pickup is armour on this campaign's maps: an Opposing Force
+	// `item_suit` is the PCV, and waits on the PCV rather than the HEV Suit.
+	bool bAllowed = szClassname == SUIT_CLASSNAME
+		? ( ClassnameUngated( szClassname ) || ArmourAllowed() )
+		: ClassnameAllowed( szClassname );
+
+	if( bAllowed )
 	{
 		// Collecting the suit runs a sequence that empties the inventory, so
 		// hand the unlocked weapons back once it has finished with them.
@@ -612,6 +716,9 @@ HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool
 
 string LockedItemName( const string& in szClassname )
 {
+	if( szClassname == SUIT_CLASSNAME )
+		return ArmourItemHere();
+
 	string szItem;
 	if( g_LockedClassnames.get( szClassname, szItem ) )
 		return szItem;

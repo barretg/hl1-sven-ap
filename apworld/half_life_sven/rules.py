@@ -2,10 +2,10 @@
 
 Two kinds of gate exist:
 
-* **Mission unlocks** -- entering a mission needs its unlock item, except for the
+* **Mission unlocks**: entering a mission needs its unlock item, except for the
   goal mission and any mission paired with it, which open once
   `missions_required` other missions are done.
-* **Weapon gates** -- expressed as "any one of this group of weapons". They are
+* **Weapon gates**: expressed as "any one of this group of weapons". They are
   attached to a mission entrance (everything in the mission inherits it), to the
   seam between two parts of a mission (everything from that part on inherits
   it), or to an individual location, which is how a check that sits past the
@@ -139,7 +139,7 @@ def chapter_is_startable(world: "HalfLifeSvenWorld", chapter: dict) -> bool:
     burns its swap budget, and dies with "no more spots to place N items.
     Remaining locations are invalid".
 
-    Called before the pool is built, so it reads `available_item_names` — a gate
+    Called before the pool is built, so it reads `available_item_names`: a gate
     naming equipment nobody will ever receive is not a gate.
 
     Only the mission door counts. A gate on a later part of the mission leaves
@@ -170,7 +170,7 @@ def chapter_entry_rule(
 
     if chapter["is_goal"]:
         # Some finales are the tail of one particular mission rather than a
-        # mission in their own right, and open only once that one is cleared --
+        # mission in their own right, and open only once that one is cleared:
         # Blue Shift's outro after Power Struggle. Skipped if the seed left the
         # paired mission out, which would otherwise seal the campaign forever.
         prerequisite = GOAL_PREREQUISITES.get(chapter["key"], "")
@@ -206,13 +206,25 @@ def map_entry_rule(
 def location_rule(
     world: "HalfLifeSvenWorld", entry: dict
 ) -> Callable[[CollectionState], bool] | None:
-    """Extra requirement on a single location, e.g. a boss that needs real damage."""
+    """Extra requirement on a single location.
+
+    Two shapes. `requires` is a strict-only weapon group, e.g. a boss that needs
+    real damage. `gates` is a mission gate's table hung on one check, for one
+    that sits past something its mission and map do not ask for: Pit Worm's
+    Nest's healing pool, across the gap the grapple crosses.
+    """
+    conditions: list[Callable[[CollectionState], bool]] = []
+
     requirement = entry.get("requires")
-    if not requirement:
-        return None
-    if world.options.logic_difficulty.value != LogicDifficulty.option_strict:
-        return None  # loose logic drops soft weapon gates
-    return any_of(world, [requirement])
+    if requirement and world.options.logic_difficulty.value == LogicDifficulty.option_strict:
+        required = any_of(world, [requirement])
+        if required is not None:
+            conditions.append(required)
+
+    if entry.get("gates"):
+        conditions += gate_conditions(world, entry["gates"])
+
+    return all_of(conditions)
 
 
 def suspension_rule(
@@ -226,7 +238,7 @@ def suspension_rule(
       is the tier everyone starts on and needs none.
     - the class, where the check names one. The Juggernaut needs every other
       class as well, because it opens only once a run has been cleared with each
-      of them -- the plugin enforces the clears, and logic enforces the items,
+      of them: the plugin enforces the clears, and logic enforces the items,
       which is what stops the generator expecting a Juggernaut run from a player
       who cannot field the seven runs that unlock it.
     """
@@ -252,7 +264,7 @@ def suspension_rule(
     # Past the tank, somebody in the lobby has to be able to hurt it, and only
     # three of the eight classes can. Held rather than played: the class a check
     # names is the one you were on when it landed, and switching between
-    # sections is normal -- so blow the tank up as the Engineer and finish the
+    # sections is normal: so blow the tank up as the Engineer and finish the
     # run as the Sniper if the Sniper is whose section this is.
     if world.suspension_needs_explosives(trigger):
         explosives = world.suspension_explosive_class_items()

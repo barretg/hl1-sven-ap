@@ -3,7 +3,7 @@
 The Half-Life campaign maps are the source of truth for what a location can be:
 we only ever create a check for something that provably exists in the map file.
 The generated JSON is committed, so neither the apworld nor the client needs Sven
-Co-op installed -- only this tool does.
+Co-op installed: only this tool does.
 
 Output is one file per campaign under `data/campaigns/`, plus `data/index.json`
 for what is genuinely shared: the data version, the weapon pool, the logic groups
@@ -30,8 +30,11 @@ from campaign_layout import (
     CAMPAIGNS,
     CAMPAIGN_OF_CHAPTER,
     CHAPTERS,
+    ABILITY_ITEMS,
     CHARGER_CLASSNAMES,
     CLASSNAME_TO_ITEM,
+    EQUIPMENT_SHARING_PICKUP,
+    HEALING_POOL_CLASSNAMES,
     DEFAULT_CAMPAIGN,
     ENABLED_LOCATION_TYPES,
     ENDGAME_CHAPTERS,
@@ -40,6 +43,7 @@ from campaign_layout import (
     IGNORED_MONSTERS,
     ITEM_ID_BASE,
     KILL_MILESTONE_FRACTIONS,
+    LOCATION_GATES,
     LOCATION_ID_BASE,
     MAP_GATES,
     MIN_LOCATIONS_PER_MAP,
@@ -142,6 +146,23 @@ def normalise_origin(raw: str) -> str:
     return " ".join(str(v) for v in values)
 
 
+def is_charger_unit(entity: dict[str, str]) -> bool:
+    """Is this entity something chargesanity makes a check of?
+
+    The wall units always are. A `trigger_hurt` only when its damage is
+    negative, which is what makes it a healing pool rather than lava.
+    """
+    classname = entity.get("classname", "")
+    if classname in CHARGER_CLASSNAMES:
+        return True
+    if classname in HEALING_POOL_CLASSNAMES:
+        try:
+            return float(entity.get("dmg", "0")) < 0
+        except ValueError:
+            return False
+    return False
+
+
 def brush_model_index(entity: dict[str, str]) -> int:
     """Numeric part of a brush entity's `*N` model, for a deterministic order."""
     model = entity.get("model", "")
@@ -193,8 +214,8 @@ class IdRegistry:
         The registry alone is not enough, because it is append-only: *removing* a
         location leaves it untouched, so the two halves agreed on the version
         while disagreeing on the location set. That is the worse direction of the
-        mismatch -- an apworld holding a check the plugin will never send is a
-        seed nobody can finish -- and it went undetected when Unforeseen
+        mismatch: an apworld holding a check the plugin will never send is a
+        seed nobody can finish: and it went undetected when Unforeseen
         Consequences lost its sealed-off charger.
         """
         payload = json.dumps(
@@ -269,7 +290,8 @@ class LocationBuilder:
 
     def add(self, chapter: dict, map_name: str, base_name: str, trigger: dict,
             requires: str | None = None, prefixed: bool = True,
-            position: tuple[float, float, float] | None = None) -> dict:
+            position: tuple[float, float, float] | None = None,
+            gates: dict | None = None) -> dict:
         # Campaign-wide locations skip the mission prefix: the mission is only
         # where logic hangs them, not where the player will find the thing.
         name = self._unique(f"{chapter['name']} - {base_name}" if prefixed else base_name)
@@ -283,6 +305,10 @@ class LocationBuilder:
         }
         if requires:
             location["requires"] = requires
+        # A gate on this one location, in a mission gate's shape. Absent for all
+        # but a handful, and from data built before any existed.
+        if gates:
+            location["gates"] = gates
         # Where it is in the world, for `!find`. Whole units: the command is a
         # compass, and nobody needs a check located to the nearest thousandth.
         if position is not None:
@@ -310,7 +336,7 @@ def campaigns_holding(
 
     Read from the BSPs rather than taken from whichever campaign declared the
     item, because they are not the same question. Half-Life declares the shotgun,
-    but Opposing Force and Blue Shift are full of them -- and attributing the item
+    but Opposing Force and Blue Shift are full of them: and attributing the item
     to Half-Life alone left an Opposing Force seed with shotguns it could never be
     given the item for, so they sat in the levels permanently refused.
     """
@@ -396,7 +422,7 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
             # BSP and the running game both know, so ids are keyed to it.
             #
             # Except when a mapper reuses one brush and shifts the copy with an
-            # `origin` key -- `ba_canal1` has two health chargers 80 units apart
+            # `origin` key: `ba_canal1` has two health chargers 80 units apart
             # sharing `*196`. Those are two real units a player can drink from, so
             # they are two checks, told apart by the origin the engine will report
             # for each. Only the offset copies carry it, so every id that existed
@@ -408,12 +434,16 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                 # why the map's remaining chargers close the gap rather than
                 # skipping a number.
                 unreachable = UNREACHABLE_CHARGERS.get(map_name, set())
-                for classname, display in CHARGER_CLASSNAMES.items():
+                gated = LOCATION_GATES.get(map_name, {})
+                for classname, display in {
+                    **CHARGER_CLASSNAMES, **HEALING_POOL_CLASSNAMES
+                }.items():
                     found = [
                         e for e in ents
                         if e.get("classname", "") == classname
                         and brush_model_index(e) >= 0
                         and f"{classname}:{e['model']}" not in unreachable
+                        and is_charger_unit(e)
                     ]
 
                     # Numbered by how far they are from where players arrive,
@@ -448,7 +478,7 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                             trigger["origin"] = origin
 
                         # The brush's own centre, shifted by whatever `origin`
-                        # the mapper gave the entity -- which is exactly how the
+                        # the mapper gave the entity: which is exactly how the
                         # engine will place it.
                         centre = centres[map_name].get(entity["model"])
                         position = None
@@ -462,10 +492,11 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                             f"{display}{count}{suffix}",
                             trigger,
                             position=position,
+                            gates=gated.get(f"{classname}:{entity['model']}"),
                         )
 
             # Every distinct pickup classname present in the map becomes one
-            # check -- collecting any instance of it fires the check once.
+            # check: collecting any instance of it fires the check once.
             if "pickup" in enabled:
                 pickups = sorted({
                     e.get("classname", "") for e in ents
@@ -557,8 +588,8 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
         for campaign in CAMPAIGNS:
             campaign_chapters = [c for c in chapters if c["campaign"] == campaign.key]
             # The suit and the long jump module are checks too. Each campaign
-            # hands the suit over somewhere -- Gordon's HEV, Barney's uniform,
-            # Shephard's vest are all `item_suit` -- and walking up to it is as
+            # hands the suit over somewhere: Gordon's HEV, Barney's uniform,
+            # Shephard's vest are all `item_suit`: and walking up to it is as
             # much a moment as finding a gun.
             for item_name, classnames in {
                 **WEAPON_ITEMS, **OPTIONAL_ITEMS
@@ -587,13 +618,14 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                 # Hunger reskins the pipe wrench into a shovel, and a check named
                 # after a wrench sends people looking for the wrong thing.
                 shown = WEAPON_ALIASES.get(campaign.key, {}).get(item_name, item_name)
+                shown = campaign.equipment_aliases.get(item_name, shown)
                 # Half-Life's names predate the other campaigns and stay as they
                 # were; the rest say which campaign they belong to, since "First
                 # Shotgun" now exists in more than one.
                 label = (
                     f"First {shown}"
                     if campaign.key == DEFAULT_CAMPAIGN
-                    else f"{campaign.name} - First {shown}"
+                    else f"{campaign.name}: First {shown}"
                 )
                 # Where the earliest copy sits. There may be several in the map;
                 # the first is as good as any, and `!find` says "one of them".
@@ -654,6 +686,9 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                 # Melee weapons this campaign could open a run with, when
                 # `random_starting_weapon` is on.
                 "melee": campaign.melee,
+                # `!warp of 3`, and the item that is armour on its maps.
+                "short": campaign.short,
+                "armour_item": campaign.armour_item,
                 # Portal console targetname -> the mission its button enters.
                 # A table rather than a rule, because the hub numbers its
                 # consoles differently in every campaign.
@@ -739,8 +774,26 @@ def build_items(
             or [WEAPON_CAMPAIGN[name]],
         )
 
+    # Equipment belongs to the campaigns that armour or light with it, which is
+    # what decides whether a seed has it at all.
+    armour_campaigns: dict[str, list[str]] = {}
+    for campaign in CAMPAIGNS:
+        armour_campaigns.setdefault(campaign.armour_item, []).append(campaign.key)
+
     for name, classnames in OPTIONAL_ITEMS.items():
-        add(name, "progression", group="optional", classnames=classnames)
+        extra = {}
+        if name in armour_campaigns:
+            extra["campaigns"] = armour_campaigns[name]
+        add(name, "progression", group="optional", classnames=classnames, **extra)
+
+    for name, (classification, classnames) in EQUIPMENT_SHARING_PICKUP.items():
+        extra = {}
+        if name in armour_campaigns:
+            extra["campaigns"] = armour_campaigns[name]
+        add(name, classification, group="optional", classnames=classnames, **extra)
+
+    for name, classification in ABILITY_ITEMS.items():
+        add(name, classification, group="ability")
 
     for name, classnames, weight in (
         ("Ammo Cache", ["ammo_generic"], 40),
@@ -753,9 +806,10 @@ def build_items(
     # Traps replace a share of the filler, set by `trap_percentage`. Each is a
     # nuisance rather than a punishment: nothing here can cost a run.
     for name, weight in (
-        ("Scientist Trap", 34),
-        ("Headcrab Trap", 33),
-        ("Butterfingers Trap", 33),
+        ("Scientist Trap", 25),
+        ("Headcrab Trap", 25),
+        ("Butterfingers Trap", 25),
+        ("Bot Swarm Trap", 25),
     ):
         add(name, "trap", group="trap", weight=weight)
 
@@ -831,7 +885,7 @@ def build_suspension(maps_dir: Path, registry: IdRegistry) -> dict:
 
     Nothing here is read out of a BSP: the map's facts live in
     `suspension_layout.py`, and what this builds from them is the combinatorial
-    part -- one location per section per class per difficulty, the clears, and
+    part: one location per section per class per difficulty, the clears, and
     the medals.
 
     Every combination is emitted whether or not a seed uses it, exactly as the
@@ -976,7 +1030,7 @@ def split(data: dict, extras: dict[str, dict] | None = None) -> dict[str, dict]:
     the relative order `build` produced, which is what lets the loader rebuild
     the chapter, campaign and item lists exactly as they were.
 
-    `extras` are already-built files of another kind -- the arcade maps -- which
+    `extras` are already-built files of another kind, the arcade maps, which
     are listed in the index after the campaigns so that a campaign is still what
     a seed falls back on.
     """

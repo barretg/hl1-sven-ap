@@ -84,7 +84,7 @@ def test_settings_path_is_absolute_and_named() -> None:
     assert path.name.endswith(".json")
 
 
-# -- host.yaml -------------------------------------------------------------
+#host.yaml -------------------------------------------------------------
 
 
 class AttributeGroup:

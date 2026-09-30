@@ -11,7 +11,7 @@
 * The map announces every step of its own progress by firing entities by name:
 * `s3_events` when section 2 falls, `win_red_tickets` when the lobby votes Easy,
 * `end_script` when the round is scored. None of that is hookable from a plugin
-* -- a multi_manager fires targets, it does not call script functions, and
+*a multi_manager fires targets, it does not call script functions, and
 * `trigger_script` resolves its function against the *map's* script rather than
 * ours.
 *
@@ -139,7 +139,7 @@ dictionary g_SusSeal;          // part -> "targetname|classname"
 class APSuspensionState
 {
 	// Everything here is off until a snapshot says otherwise, so a seed without
-	// the map -- or a client too old to mention it -- leaves Suspension alone.
+	// the map, or a client too old to mention it, leaves Suspension alone.
 	bool enabled = false;
 	bool classanity = false;
 	bool rolldown = false;
@@ -494,8 +494,8 @@ void SuspensionEnsureScheduled()
 // Solidity turned out to be the wrong tool for both of them, in opposite
 // directions. A vote button is left exactly as the map built it and has its
 // wiring cut instead, so a press is answered with a sentence and fires nothing.
-// A class booth cannot be answered that way -- there is nothing to press, only a
-// doorway to walk through -- so a wall of ours goes in front of it, and walking
+// A class booth cannot be answered that way: there is nothing to press, only a
+// doorway to walk through: so a wall of ours goes in front of it, and walking
 // up to that wall is what prints the sentence.
 //
 // The map's own entities are never made solid by hand. `SOLID_BSP` is legal
@@ -507,7 +507,7 @@ void SuspensionEnsureScheduled()
 * to.
 *
 * Only ever taken from a button we have not touched, which is why the target is
-* only believed while it is non-empty -- a blanked one is our own work, and
+* only believed while it is non-empty: a blanked one is our own work, and
 * believing it would lose the wiring for good.
 */
 void SuspensionRememberVoteButton( CBaseEntity@ pButton, APTier@ pTier )
@@ -526,8 +526,8 @@ void SuspensionRememberVoteButton( CBaseEntity@ pButton, APTier@ pTier )
 /*
 * Take the wiring out of a vote button, and put it back.
 *
-* Going non-solid should be enough on its own -- a brush the engine will not
-* trace against is a brush nobody can press -- and in game it was not: the vote
+* Going non-solid should be enough on its own: a brush the engine will not
+* trace against is a brush nobody can press: and in game it was not: the vote
 * still went through. Rather than work out which of the engine's routes to a
 * button survives that, this cuts the wire as well. A `func_button` with nothing
 * in `target` fires nothing when it is pressed, however it came to be pressed,
@@ -605,7 +605,7 @@ void SuspensionSyncLocks()
 		bool bOpen = g_Suspension.TierOpen( pTier.key );
 		SuspensionRememberVoteButton( pButton, pTier );
 		// Solid and visible either way. A button that vanishes refuses silently,
-		// and a locked tier deserves the same sentence a locked weapon gets --
+		// and a locked tier deserves the same sentence a locked weapon gets:
 		// which needs something for the use trace to land on. Cutting the wire is
 		// what makes the refusal safe: the press is answered, and nothing behind
 		// it fires whether or not the press itself can be stopped.
@@ -642,7 +642,7 @@ string SuspensionBlockName( APClass@ pClass )
 * Walking a portal is what teleports a player to the class pad behind it, so the
 * doorway has to be *shut* rather than switched off. Switching the teleport off
 * leaves the doorway open onto a room whose only way out was the teleport, and
-* players walk in and are stuck -- which is the fault this has come back to
+* players walk in and are stuck: which is the fault this has come back to
 * twice, first by disabling the portal and then by disabling it and trying to
 * watch for anybody who fell for it. Watching needs the geometry, the geometry is
 * an octagon in the middle of the lobby, and getting it wrong bounced players off
@@ -651,7 +651,7 @@ string SuspensionBlockName( APClass@ pClass )
 * A wall of our own is none of that. It is built from the portal's own brush, so
 * it is exactly the right shape in exactly the right place with nothing derived
 * or assumed, and the engine spawns it as a `func_wall`, which is a pusher and
-* legally SOLID_BSP -- setting that by hand on the trigger is what printed
+* legally SOLID_BSP: setting that by hand on the trigger is what printed
 * `SOLID_BSP WITHOUT MOVE_PUSH`.
 *
 * Removed rather than disabled when the class is earned, and removed again on
@@ -784,13 +784,13 @@ bool SuspensionJuggernautAllowed()
 /*
 * Open or shut the portal the map keeps the Juggernaut behind.
 *
-* Two entities share the class's name -- a `func_wall_toggle` across the portal
-* and a lethal `trigger_hurt` behind it -- so they are found by name *and*
+* Two entities share the class's name: a `func_wall_toggle` across the portal
+* and a lethal `trigger_hurt` behind it: so they are found by name *and*
 * classname. Sealing is the one thing here that touches the map's own entities,
 * and it is reversible: nothing is created or removed.
 */
 // What the seal was last set to: -1 nothing yet, 0 open, 1 sealed. The locks are
-// reasserted every second and this is not idempotent -- the reveal is a
+// reasserted every second and this is not idempotent: the reveal is a
 // multi_manager fire, and firing it four times a minute made the placeholder
 // flash on and off over the Juggernaut's icon for as long as anyone watched.
 int g_iSusSealApplied = -1;
@@ -824,7 +824,7 @@ void SuspensionSealJuggernaut( bool bSealed )
 * time it links an entity, and `SOLID_BSP without MOVETYPE_PUSH` is a fatal
 * error rather than a warning. The Juggernaut's seal is two entities, a
 * `func_wall_toggle` and a `trigger_hurt`, and giving both of them SOLID_BSP
-* took the server down the next time the trigger was linked -- on a respawn in
+* took the server down the next time the trigger was linked: on a respawn in
 * the lobby, long after the seal was set. Switching a trigger on means
 * SOLID_TRIGGER; only the wall is a wall.
 */
@@ -964,8 +964,8 @@ void SuspensionWatchJuggernaut()
 /*
 * Every tier at or below this one, when rolldown is on; otherwise just this one.
 *
-* Medals ignore the setting and always roll down -- nobody should have to throw
-* a run to collect the bad ones -- so they call this with bAlways.
+* Medals ignore the setting and always roll down: nobody should have to throw
+* a run to collect the bad ones: so they call this with bAlways.
 */
 array<string> SuspensionTiersFor( const string& in szTier, bool bAlways )
 {
@@ -1166,8 +1166,8 @@ void SuspensionEndRound()
 		SuspensionCreditSection( g_SusSections[ g_SusSections.length() - 1 ].index );
 
 	// Every medal the run earned, not only the best one. A seed whose ladder
-	// stops at bronze contains no gold medal at all, so a five-death run -- a
-	// gold -- used to send nothing whatever, because the one medal it was
+	// stops at bronze contains no gold medal at all, so a five-death run: a
+	// gold: used to send nothing whatever, because the one medal it was
 	// scored as was not a check in this seed. An award is earned when the team
 	// died no more often than it allows, and every easier one is earned with it.
 	bool bAnyEarned = false;
@@ -1206,9 +1206,9 @@ void SuspensionEndRound()
 		SuspensionSendClear( szClass, g_szSusTier );
 	}
 
-	// No goal is reported from here. Winning the arcade is a set of clears --
+	// No goal is reported from here. Winning the arcade is a set of clears:
 	// one per class at the capped tier, and the medal too where the seed asks
-	// for it -- which is a question about what has been checked rather than
+	// for it: which is a question about what has been checked rather than
 	// about what just happened, and only the client can see that.
 
 	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
@@ -1216,7 +1216,7 @@ void SuspensionEndRound()
 		+ g_iSusDeaths + " deaths.\n" );
 
 	// The map ends itself once the bridge is taken, and the server then moves on
-	// to whatever its map cycle says -- which stranded the lobby somewhere that
+	// to whatever its map cycle says: which stranded the lobby somewhere that
 	// is not in the seed at all. Come back here instead.
 	g_bSusRestartPending = true;
 }
@@ -1230,7 +1230,7 @@ bool g_bSusRestartPending = false;
 * We were playing the arcade, the map ended, and the server has loaded something
 * else. Go back rather than leave the lobby stranded on a map from the cycle.
 *
-* Answered once: if Suspension is not in the seed any more -- a new slot, say --
+* Answered once: if Suspension is not in the seed any more, a new slot, say:
 * the hub is where everything else goes.
 */
 bool SuspensionConsumeRestart()
@@ -1303,16 +1303,16 @@ void SuspensionCountDeath()
 }
 
 // When the locks are next reasserted. The map is free to spawn, respawn and
-// reset its own entities -- `kill_vote_button` alone removes all four buttons by
-// wildcard -- and a lock applied once at map start is only as good as whatever
+// reset its own entities: `kill_vote_button` alone removes all four buttons by
+// wildcard: and a lock applied once at map start is only as good as whatever
 // the map does next. Reasserting is idempotent and costs a handful of entity
 // lookups, so it runs on its own slow beat rather than every think.
 float g_flSusNextLockSync = 0.0f;
 const float SUS_LOCK_SYNC_INTERVAL = 1.0f;
 
 // How long before a player is told the same thing again, whichever lock told
-// them. Both refusals are driven by something that repeats every tick -- the
-// think loop for a booth, the use key for a button -- so without this they are
+// them. Both refusals are driven by something that repeats every tick: the
+// think loop for a booth, the use key for a button: so without this they are
 // not a message but a wall of text.
 const float SUS_REFUSAL_INTERVAL = 4.0f;
 
@@ -1328,8 +1328,8 @@ const float SUS_BOOTH_WARN_RANGE = 72.0f;
 * Only ever a message. Nobody is moved and nothing is created here: what stops
 * them walking in is the barrier across the doorway, and this is the sentence
 * that goes with the bump. Two attempts at moving people instead of walling them
-* out both went wrong -- one teleported them into a wall, the other bounced them
-* off thin air halfway along the bridge -- so the worst this can now do is say
+* out both went wrong: one teleported them into a wall, the other bounced them
+* off thin air halfway along the bridge: so the worst this can now do is say
 * the wrong class's name.
 *
 * The doorways come from `face_<class>` in checkdata.txt, measured out of the BSP

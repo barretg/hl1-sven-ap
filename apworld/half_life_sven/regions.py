@@ -8,7 +8,7 @@ from the Hub, which mirrors how the game actually works: you leave the campaign
 portal into a mission and come back to it when the mission ends.
 
 That per-map split is also what lets a requirement begin partway through a
-mission -- see `map_entry_rule`.
+mission: see `map_entry_rule`.
 """
 
 from __future__ import annotations
@@ -76,7 +76,7 @@ def create_regions(world: "HalfLifeSvenWorld") -> None:
                     chapter_entry_rule(world, chapter),
                 )
             else:
-                # Usually unconditional -- walking from part 3 into part 4 is
+                # Usually unconditional: walking from part 3 into part 4 is
                 # the game's business, not ours. A handful of seams carry a
                 # requirement that starts there rather than at the mission door.
                 previous.connect(
@@ -99,8 +99,8 @@ def add_suspension(world: "HalfLifeSvenWorld", hub: Region) -> None:
     Suspension is a single map with no sub-levels, so there is nothing to chain:
     every check on it is reachable the moment you can warp there, and what gates
     them is the tier and the class rather than where you are standing. It hangs
-    off the Hub for the same reason a mission does -- you leave the portal for it
-    and come back -- even though it has no console of its own.
+    off the Hub for the same reason a mission does: you leave the portal for it
+    and come back: even though it has no console of its own.
     """
     region = Region(SUSPENSION, world.player, world.multiworld)
     world.multiworld.regions.append(region)

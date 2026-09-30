@@ -22,6 +22,8 @@
     "weapon_crowbar"
    ]
   },
+  "short": "bs",
+  "armour_item": "Security Armor",
   "consoles": {
    "bs_ch01": "bs_insecurity",
    "bs_ch02": "bs_duty_calls",
@@ -563,6 +565,23 @@
    }
   },
   {
+   "id": 7720801,
+   "name": "Focal Point - Healing Pool (Part 2)",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen1",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_xen1",
+    "classname": "trigger_hurt",
+    "model": "*23"
+   },
+   "position": [
+    -2565,
+    -1828,
+    67
+   ]
+  },
+  {
    "id": 7720259,
    "name": "Focal Point - Part 3 Reached",
    "chapter": "bs_focal_point",
@@ -571,6 +590,23 @@
     "type": "map_reached",
     "map": "ba_xen2"
    }
+  },
+  {
+   "id": 7720802,
+   "name": "Focal Point - Healing Pool (Part 3)",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen2",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_xen2",
+    "classname": "trigger_hurt",
+    "model": "*28"
+   },
+   "position": [
+    764,
+    2074,
+    -29
+   ]
   },
   {
    "id": 7720260,
@@ -583,6 +619,23 @@
    }
   },
   {
+   "id": 7720803,
+   "name": "Focal Point - Healing Pool (Part 4)",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen3",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_xen3",
+    "classname": "trigger_hurt",
+    "model": "*50"
+   },
+   "position": [
+    1765,
+    -1937,
+    3
+   ]
+  },
+  {
    "id": 7720261,
    "name": "Focal Point - Part 5 Reached",
    "chapter": "bs_focal_point",
@@ -591,6 +644,23 @@
     "type": "map_reached",
     "map": "ba_xen4"
    }
+  },
+  {
+   "id": 7720804,
+   "name": "Focal Point - Healing Pool (Part 5)",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen4",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_xen4",
+    "classname": "trigger_hurt",
+    "model": "*39"
+   },
+   "position": [
+    -1712,
+    -100,
+    -13
+   ]
   },
   {
    "id": 7720262,
@@ -603,6 +673,23 @@
    }
   },
   {
+   "id": 7720805,
+   "name": "Focal Point - Healing Pool (Part 6)",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen5",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_xen5",
+    "classname": "trigger_hurt",
+    "model": "*157"
+   },
+   "position": [
+    -243,
+    -2128,
+    -221
+   ]
+  },
+  {
    "id": 7720263,
    "name": "Focal Point - Part 7 Reached",
    "chapter": "bs_focal_point",
@@ -611,6 +698,23 @@
     "type": "map_reached",
     "map": "ba_xen6"
    }
+  },
+  {
+   "id": 7720806,
+   "name": "Focal Point - Healing Pool (Part 7)",
+   "chapter": "bs_focal_point",
+   "map": "ba_xen6",
+   "trigger": {
+    "type": "charger",
+    "map": "ba_xen6",
+    "classname": "trigger_hurt",
+    "model": "*16"
+   },
+   "position": [
+    -2565,
+    -1828,
+    67
+   ]
   },
   {
    "id": 7720264,
@@ -739,7 +843,7 @@
   },
   {
    "id": 7720320,
-   "name": "Blue Shift - First Crowbar",
+   "name": "Blue Shift: First Crowbar",
    "chapter": "bs_duty_calls",
    "map": "ba_canal1",
    "trigger": {
@@ -757,7 +861,7 @@
   },
   {
    "id": 7720312,
-   "name": "Blue Shift - First Glock",
+   "name": "Blue Shift: First Glock",
    "chapter": "bs_insecurity",
    "map": "ba_security2",
    "trigger": {
@@ -771,7 +875,7 @@
   },
   {
    "id": 7720313,
-   "name": "Blue Shift - First .357 Magnum",
+   "name": "Blue Shift: First .357 Magnum",
    "chapter": "bs_captive_freight",
    "map": "ba_yard1",
    "trigger": {
@@ -789,7 +893,7 @@
   },
   {
    "id": 7720314,
-   "name": "Blue Shift - First MP5",
+   "name": "Blue Shift: First MP5",
    "chapter": "bs_power_struggle",
    "map": "ba_power1",
    "trigger": {
@@ -808,7 +912,7 @@
   },
   {
    "id": 7720315,
-   "name": "Blue Shift - First Shotgun",
+   "name": "Blue Shift: First Shotgun",
    "chapter": "bs_duty_calls",
    "map": "ba_canal2",
    "trigger": {
@@ -826,7 +930,7 @@
   },
   {
    "id": 7720316,
-   "name": "Blue Shift - First RPG",
+   "name": "Blue Shift: First RPG",
    "chapter": "bs_captive_freight",
    "map": "ba_yard5",
    "trigger": {
@@ -844,7 +948,7 @@
   },
   {
    "id": 7720317,
-   "name": "Blue Shift - First Satchel Charge",
+   "name": "Blue Shift: First Satchel Charge",
    "chapter": "bs_captive_freight",
    "map": "ba_yard1",
    "trigger": {
@@ -862,7 +966,7 @@
   },
   {
    "id": 7720318,
-   "name": "Blue Shift - First Snarks",
+   "name": "Blue Shift: First Snarks",
    "chapter": "bs_focal_point",
    "map": "ba_xen2",
    "trigger": {
@@ -880,7 +984,7 @@
   },
   {
    "id": 7720319,
-   "name": "Blue Shift - First Hand Grenade",
+   "name": "Blue Shift: First Hand Grenade",
    "chapter": "bs_captive_freight",
    "map": "ba_yard1",
    "trigger": {
@@ -898,7 +1002,7 @@
   },
   {
    "id": 7720432,
-   "name": "Blue Shift - First HEV Suit",
+   "name": "Blue Shift: First HEV Suit",
    "chapter": "bs_living_quarters",
    "map": "ba_tram1",
    "trigger": {
@@ -912,6 +1016,25 @@
     80,
     -304,
     3088
+   ]
+  },
+  {
+   "id": 7720807,
+   "name": "Blue Shift: First Security Armor",
+   "chapter": "bs_insecurity",
+   "map": "ba_security2",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "ba_security2",
+    "classnames": [
+     "item_armorvest",
+     "item_helmet"
+    ]
+   },
+   "position": [
+    647,
+    1352,
+    263
    ]
   },
   {

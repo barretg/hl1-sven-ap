@@ -28,6 +28,7 @@ trap_weights: list[int] = [e.get("weight", 1) for e in ITEMS if e["classificatio
 chapter_unlock_items: list[str] = [e["name"] for e in ITEMS if e.get("group") == "chapter"]
 weapon_items: list[str] = [e["name"] for e in ITEMS if e.get("group") == "weapon"]
 optional_items: list[str] = [e["name"] for e in ITEMS if e.get("group") == "optional"]
+ability_items: list[str] = [e["name"] for e in ITEMS if e.get("group") == "ability"]
 
 # Suspension's own items: one per class, and the tier unlock.
 suspension_class_items: dict[str, str] = {
@@ -77,13 +78,14 @@ item_name_groups: dict[str, set[str]] = {
     "Weapons": set(weapon_items),
     "Mission Unlocks": set(chapter_unlock_items),
     "Equipment": set(optional_items),
+    "Abilities": set(ability_items),
     "Filler": set(filler_items),
     "Traps": set(trap_items),
     "Suspension": set(suspension_class_items.values())
     | ({suspension_difficulty_item} if suspension_difficulty_item else set()),
 }
 
-# Events carry no id -- they exist only to express logic. There is a pair per
+# Events carry no id: they exist only to express logic. There is a pair per
 # campaign, since both are counted and the counts must stay separate.
 EVENT_ITEMS = EVENT_ITEM_NAMES
 

@@ -1,8 +1,8 @@
 """Universal Tracker support.
 
 UT re-runs this world's generation locally to work out what is in logic. Two of
-our decisions are rolled rather than derived -- which mission each campaign opens
-with, and what the run starts holding -- so UT is handed the real seed's answers
+our decisions are rolled rather than derived: which mission each campaign opens
+with, and what the run starts holding: so UT is handed the real seed's answers
 through `interpret_slot_data` and reads them back out of
 `multiworld.re_gen_passthrough`.
 

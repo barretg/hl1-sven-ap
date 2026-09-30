@@ -19,8 +19,11 @@
 #include "ap_locations"
 #include "ap_deathlink"
 #include "ap_traps"
+#include "ap_throw"
+#include "ap_bots"
 #include "ap_suspension"
 #include "ap_hub"
+#include "ap_menu"
 
 // How often to look for a new snapshot from the client. Fast enough that an item
 // arrives while it still feels connected to the check that earned it.
@@ -29,6 +32,11 @@ const float POLL_INTERVAL = 0.25f;
 // The loadout sweep is a safety net behind CanCollect and the spawn hook, not
 // the primary mechanism, so it can afford to be slow.
 const float SWEEP_INTERVAL = 1.0f;
+
+// For what has to move smoothly or be caught in passing: the bot swarm, a
+// thrown crowbar in flight, and a player running through a healing pool. Each
+// is a length check on an empty list when there is nothing to do.
+const float FAST_INTERVAL = 0.05f;
 
 void PluginInit()
 {
@@ -41,6 +49,7 @@ void PluginInit()
 	g_Hooks.RegisterHook( Hooks::Player::ClientSay, @ClientSay );
 	g_Hooks.RegisterHook( Hooks::Player::PlayerUse, @PlayerUse );
 	g_Hooks.RegisterHook( Hooks::Player::PlayerSpawn, @PlayerSpawn );
+	g_Hooks.RegisterHook( Hooks::Player::PlayerPreThink, @PlayerPreThink );
 	g_Hooks.RegisterHook( Hooks::Player::PlayerKilled, @PlayerKilled );
 	g_Hooks.RegisterHook( Hooks::Monster::MonsterKilled, @MonsterKilled );
 	g_Hooks.RegisterHook( Hooks::PickupObject::CanCollect, @PickupCanCollect );
@@ -78,7 +87,10 @@ void Initialise()
 	g_SentChecks.deleteAll();
 	g_flLastPortalUse.deleteAll();
 	ClearWithheldWeapons();
-	// The queued traps themselves are kept -- carrying them here is the point --
+	// Map entities, so gone with the map; the lists would only hold dead handles.
+	ClearBots();
+	ClearThrown();
+	// The queued traps themselves are kept, carrying them here is the point:
 	// but this map has to earn its own settled seconds before they land.
 	ResetTrapGround();
 	// Force a full reparse of the snapshot.
@@ -104,7 +116,7 @@ void Initialise()
 * a map load really does wipe the scheduler. If it does not, every map added
 * another poller and another loadout sweep on top of the last, and a session
 * spent hopping between missions would end up running the whole lot several times
-* a second -- which looks exactly like the server grinding to a halt.
+* a second: which looks exactly like the server grinding to a halt.
 *
 * Handles make that self-correcting either way. They live in globals alongside
 * the timers themselves: if a map load wipes the scheduler it wipes these too and
@@ -114,6 +126,7 @@ void Initialise()
 */
 CScheduledFunction@ g_pBridgeTimer = null;
 CScheduledFunction@ g_pSweepTimer = null;
+CScheduledFunction@ g_pFastTimer = null;
 
 void EnsureScheduled()
 {
@@ -129,6 +142,14 @@ void EnsureScheduled()
 		@g_pSweepTimer = null;
 	}
 
+	if( g_pFastTimer !is null )
+	{
+		g_Scheduler.RemoveTimer( g_pFastTimer );
+		@g_pFastTimer = null;
+	}
+
+	@g_pFastTimer = g_Scheduler.SetInterval(
+		"FastThink", FAST_INTERVAL, g_Scheduler.REPEAT_INFINITE_TIMES );
 	@g_pBridgeTimer = g_Scheduler.SetInterval(
 		"BridgePoll", POLL_INTERVAL, g_Scheduler.REPEAT_INFINITE_TIMES );
 	@g_pSweepTimer = g_Scheduler.SetInterval(
@@ -171,7 +192,7 @@ void MapInit()
 	Initialise();
 
 	// Strictly after Initialise, which clears the flag this sets. MapInit is the
-	// only place a precache is allowed -- see PrecacheTrapMonsters -- which is
+	// only place a precache is allowed, see PrecacheTrapMonsters, which is
 	// why this is here and not in Initialise alongside everything else: that runs
 	// on plugin load too, and precaching there is the Host_Error.
 	PrecacheTrapMonsters();
@@ -195,7 +216,7 @@ void MapStart()
 	// Is this the map we asked the engine for? Answered here, before the bounce,
 	// because it outranks one: a warp or a console button is a decision, and a
 	// queued return is the campaign's momentum. A pending flag that outlived
-	// what armed it -- a plugin reload, a write from a map we have since left --
+	// what armed it, a plugin reload, a write from a map we have since left:
 	// must not swallow the mission the player just chose.
 	bool bDeliberate = g_szIntendedMap == g_szCurrentMap;
 
@@ -270,7 +291,7 @@ void MapStart()
 		// Are we allowed to be here? Checked *before* anything is sent, not
 		// after. The campaign runs one mission straight into the next, so the
 		// engine will happily drop us on the first map of a mission we never
-		// unlocked -- and sending its "reached" check on the way through, then
+		// unlocked: and sending its "reached" check on the way through, then
 		// crediting its completion on the way back out, is exactly the run of
 		// phantom checks that produced a finished Office Complex nobody played.
 		//
@@ -292,7 +313,7 @@ void MapStart()
 		RegisterMapReached();
 
 		// A campaign's last map finishes with a game_end and never changes level
-		// again (hl_c18 for Half-Life, and the same shape in the others) -- so
+		// again (hl_c18 for Half-Life, and the same shape in the others): so
 		// MapChange can never see it finish. Arriving on a finale's last map is
 		// therefore what counts as finishing that campaign.
 		//
@@ -311,13 +332,20 @@ void MapStart()
 	}
 }
 
+void FastThink()
+{
+	BotsThink();
+	ThrownThink();
+	SweepHealingPools();
+}
+
 HookReturnCode PlayerSpawn( CBasePlayer@ pPlayer )
 {
 	// Whatever Butterfingers made them drop, the death already took.
 	ClearWithheldWeapons( pPlayer );
 
 	// The HL campaign .cfg files equip a full loadout on spawn, and that runs
-	// after this hook -- so defer a tick and take it all back off again.
+	// after this hook: so defer a tick and take it all back off again.
 	g_Scheduler.SetTimeout( "ApplyLoadoutDeferred", 0.5f, EHandle( pPlayer ) );
 	return HOOK_CONTINUE;
 }

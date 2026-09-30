@@ -5,8 +5,8 @@
 * with a physical console per Half-Life chapter. We use it as-is and gate it from
 * the outside, so no map file is modified:
 *
-*   - MapChange is the choke point. Every route into a mission -- a portal
-*     console, a console `changelevel`, the campaign's own end-of-map trigger --
+*   - MapChange is the choke point. Every route into a mission: a portal
+*     console, a console `changelevel`, the campaign's own end-of-map trigger:
 *     goes through it, so one check covers them all.
 *   - Mission travel is driven by the multiworld: `!ap` lists what is unlocked
 *     and `!warp` enters it. The portal consoles run the same code path.
@@ -31,13 +31,17 @@ void ShowHelp( CBasePlayer@ pPlayer )
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"  !warp <number or name>  travel to a mission, or \"name 2\" for a part\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+		"  !warp <game> <number>  a mission counted within one game: !warp of 3\n" );
+	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+		"  !menu  warp and tracker menus; !aphud  toggle the check counter\n" );
+	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"  !hub  return to the campaign portal\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"  !help  this list\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"Or press a mission console's button in the hub.\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-		"In console (mind the dot): .ap  .ap_tracker  .ap_find  .ap_warp\n" );
+		"In console (mind the dot): .ap  .ap_tracker  .ap_find  .ap_warp  .ap_menu\n" );
 }
 
 void ShowStatus( CBasePlayer@ pPlayer )
@@ -48,7 +52,7 @@ void ShowStatus( CBasePlayer@ pPlayer )
 	if( !g_State.connected )
 	{
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
-			"Not connected -- start the Half-Life (Sven Co-op) Client.\n" );
+			"Not connected: start the Half-Life (Sven Co-op) Client.\n" );
 	}
 
 	string szShown;
@@ -108,11 +112,22 @@ void ShowStatus( CBasePlayer@ pPlayer )
 			szShown = pChapter.campaign;
 			string szName;
 			if( g_CampaignNames.get( szShown, szName ) )
-				g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE, "-- " + szName + "\n" );
+			{
+				string szShort = CampaignShort( szShown );
+				g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE, "== " + szName
+					+ ( szShort.Length() > 0 ? " (" + szShort + ")" : "" ) + "\n" );
+			}
 		}
 
+		// The number within its own game as well, which is what `!warp of 3`
+		// takes and what the hub's console for it is numbered.
+		int iRelative = RelativeNumber( pChapter );
+		string szRelative = iRelative >= 0
+			? "  (" + CampaignShort( pChapter.campaign ) + " " + iRelative + ")" : "";
+
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
-			"  " + ( i < 10 ? " " : "" ) + i + ". " + pChapter.name + "  [" + szStatus + "]\n" );
+			"  " + ( i < 10 ? " " : "" ) + i + ". " + pChapter.name + szRelative
+			+ "  [" + szStatus + "]\n" );
 	}
 
 	// The arcade map is not a mission and has no number, so it is listed apart
@@ -124,14 +139,14 @@ void ShowStatus( CBasePlayer@ pPlayer )
 	// not in this seed is not a list anybody wants.
 	if( g_pArcade !is null && g_Suspension.enabled )
 	{
-		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE, "-- Arcade\n" );
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE, "== Arcade\n" );
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
 			"  " + g_pArcade.name + "  [open]  !warp " + g_pArcade.map + "\n" );
 	}
 
 	// One line per call: the print buffer is 128 bytes and silently truncates.
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
-		"Travel with !warp <number or name>, or !warp <name> <part>.\n" );
+		"Travel with !warp <number or name>, !warp <name> <part>, or !warp of 3.\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
 		"Mission 0 has no console in the portal room; !warp 0 is the only way there.\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
@@ -139,7 +154,7 @@ void ShowStatus( CBasePlayer@ pPlayer )
 }
 
 /*
-* `!tracker` -- every location in the seed, by map, found or not.
+* `!tracker`: every location in the seed, by map, found or not.
 *
 * Printed to console rather than chat: it is a couple of hundred lines on a full
 * seed, and chat holds five. A location the seed does not contain is skipped
@@ -157,7 +172,7 @@ void ShowTracker( CBasePlayer@ pPlayer, const string& in szFilter )
 	if( g_CheckedLocations.getSize() == 0 && g_MissingLocations.getSize() == 0 )
 	{
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
-			"No location data yet -- is the client connected?\n" );
+			"No location data yet: is the client connected?\n" );
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 			"[AP] No location data yet; check the client.\n" );
 		return;
@@ -217,7 +232,7 @@ void ShowTracker( CBasePlayer@ pPlayer, const string& in szFilter )
 				string szChapterLower = pChapter.name;
 				szChapterLower.ToLowercase();
 				// Find returns String::INVALID_INDEX rather than -1, and it is
-				// unsigned -- so it is taken as an int the way the rest of this
+				// unsigned: so it is taken as an int the way the rest of this
 				// file does, where a miss reads as negative.
 				int iInMap = szMapLower.Find( szWanted );
 				int iInChapter = szChapterLower.Find( szWanted );
@@ -227,7 +242,7 @@ void ShowTracker( CBasePlayer@ pPlayer, const string& in szFilter )
 
 			++uiShown;
 			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
-				"\n" + pChapter.name + " -- " + szMap
+				"\n" + pChapter.name + ": " + szMap
 				+ "  (" + uiMapFound + "/" + onMap.length() + ")\n" );
 
 			for( uint i = 0; i < onMap.length(); ++i )
@@ -273,7 +288,7 @@ bool LocationFound( APLocation@ pLocation )
 * Why a player cannot go somewhere yet.
 *
 * "Locked" means an item will open it, which is a lie about a mission sealed
-* behind its campaign's count -- there is no item, and telling someone to wait
+* behind its campaign's count: there is no item, and telling someone to wait
 * for one leaves them waiting for the whole run.
 */
 string LockedMessage( APChapter@ pChapter )
@@ -300,7 +315,7 @@ bool ChapterHasMap( APChapter@ pChapter, const string& in szMap )
 * Every location this mission has in this seed, already checked.
 *
 * False when it has none at all, which is both a mission excluded from the seed
-* and the state before the client has told us anything -- neither of which is
+* and the state before the client has told us anything: neither of which is
 * "nothing left to find here", however much the arithmetic agrees.
 *
 * Membership is by map rather than by a chapter field, because a location only
@@ -363,8 +378,8 @@ bool ChapterCompletionFound( APChapter@ pChapter )
 * Is there anything left to do in this mission?
 *
 * Either answer alone is incomplete. A mission can be emptied of everything the
-* seed put in it without its completion ever being sent -- `missions_required`
-* is off, so nothing was ever waiting on it -- and a completion can arrive from
+* seed put in it without its completion ever being sent: `missions_required`
+* is off, so nothing was ever waiting on it: and a completion can arrive from
 * the server with every weapon and charger in the mission still unfound.
 */
 bool ChapterFinished( APChapter@ pChapter )
@@ -377,7 +392,7 @@ bool ChapterFinished( APChapter@ pChapter )
 *
 * Deliberately a compass rather than a route: the direction is the straight line
 * to the thing, so in a corridor it can point through a wall. Run it again after
-* moving and it updates, which is what makes it work in practice -- hot and cold
+* moving and it updates, which is what makes it work in practice: hot and cold
 * rather than turn by turn. Anything better would want a navigation graph, which
 * AngelScript cannot reach and half these maps do not have.
 *
@@ -426,7 +441,7 @@ string BearingTo( CBasePlayer@ pPlayer, const Vector& in vecTarget )
 * Straight-line distance is a bad judge of that indoors. Height is the expensive
 * axis: 800 units across a floor is a walk, 800 units up is a hunt for the stairs
 * and usually a good deal of level in between. Ranking by the straight line put
-* Office Complex's shotgun -- 677 out but nearly 800 above -- ahead of two
+* Office Complex's shotgun, 677 out but nearly 800 above, ahead of two
 * chargers sitting on the player's own floor.
 *
 * So the flat distance, plus the height difference several times over. This is
@@ -490,6 +505,19 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"[AP] " + szPrefix + pLocation.name + "\n" );
 
+	// A weapon check is the first of that weapon anywhere in its campaign, so
+	// the anchor map is only the earliest place to look, not the only one.
+	if( pLocation.kind == TRIGGER_WEAPON_PICKUP )
+	{
+		APChapter@ pAnchor = ChapterForMap( pLocation.map );
+		string szCampaign;
+		if( pAnchor !is null && g_CampaignNames.get( pAnchor.campaign, szCampaign ) )
+		{
+			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+				"[AP] Any copy on " + szCampaign + "'s maps sends it; the first is here:\n" );
+		}
+	}
+
 	// Somewhere else entirely: say where, and how to get there.
 	if( pLocation.map != g_szCurrentMap )
 	{
@@ -527,13 +555,13 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 	if( !pLocation.hasPosition )
 	{
 		// Either the check is the map itself, or it is a weapon somebody hands
-		// over rather than one lying on the floor -- nothing to point at either
+		// over rather than one lying on the floor: nothing to point at either
 		// way, but they want different answers.
 		if( pLocation.kind == TRIGGER_MAP_REACHED
 		    || pLocation.kind == TRIGGER_CHAPTER_COMPLETE )
 		{
 			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-				"[AP] That is this map itself -- keep going.\n" );
+				"[AP] That is this map itself: keep going.\n" );
 		}
 		else
 		{
@@ -553,7 +581,7 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 }
 
 /*
-* `!find` -- point the player at a check.
+* `!find`: point the player at a check.
 *
 * With no argument, the nearest one on this map they have not found yet, which
 * is the question people actually have. With text, whatever matches by name.
@@ -626,7 +654,7 @@ void FindLocation( CBasePlayer@ pPlayer, const string& in szQuery )
 	}
 
 	// A single hit gets directions. Several, and naming them is more use than
-	// guessing which one was meant -- but prefer this map, since that is nearly
+	// guessing which one was meant: but prefer this map, since that is nearly
 	// always what a player means.
 	if( matches.length() == 1 )
 	{
@@ -707,8 +735,8 @@ int LastSpace( const string& in szText )
 * Pull a trailing part number off a query.
 *
 * Returns the part (1-based, 0 for none) and writes what is left to `szName`.
-* Accepts the three ways people write it -- `insecurity 2`, `insecurity part 2`,
-* `insecurity p2` -- because all three are what someone types when the mission
+* Accepts the three ways people write it: `insecurity 2`, `insecurity part 2`,
+* `insecurity p2`: because all three are what someone types when the mission
 * list says "Part 2" and they want to go there.
 *
 * Anything else leaves the query alone, so a mission with a number in its name is
@@ -746,7 +774,7 @@ int SplitPartSuffix( const string& in szQuery, string& out szName )
 	string szHead = APTrim( szQuery.SubString( 0, uint( iSplit ) ) );
 
 	// `insecurity part 2`: the number is off, now take the word that introduced
-	// it. Only when something is left over -- `!warp part 2` names no mission.
+	// it. Only when something is left over: `!warp part 2` names no mission.
 	int iWord = LastSpace( szHead );
 	if( iWord > 0 )
 	{
@@ -806,7 +834,7 @@ void MatchChapters( const string& in szWanted, array<int>@ matches )
 *
 * Numbers are exact and win outright. Text is matched against mission names the
 * way `!tracker` matches, because remembering that Office Complex is 3 is a
-* worse ask than typing "office" -- and with 40 missions across four campaigns,
+* worse ask than typing "office": and with 40 missions across four campaigns,
 * the numbers are no longer memorable at all.
 *
 * Four spellings, in the order they are tried:
@@ -838,6 +866,11 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 	}
 
 	szWanted.ToLowercase();
+
+	// `of 3`, `bs 2`, `th 1`: a mission counted within one game. With a part
+	// after it, `of 3 2`.
+	if( WarpRelative( pPlayer, szWanted ) )
+		return;
 
 	// The arcade map, named exactly. It is not a chapter and so is not in the
 	// list below, and it has no hub console either, which makes this the only way
@@ -872,12 +905,12 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 
 	// The whole query as a name first, trailing number and all. Three missions
 	// are called "They Hunger: Episode 1", 2 and 3, so a query ending in a digit
-	// is at least as likely to be a name as a name plus a part -- and taking the
+	// is at least as likely to be a name as a name plus a part: and taking the
 	// digit off first turns `!warp they hunger: episode 2` into three matches and
 	// a request to be more specific.
 	MatchChapters( szWanted, matches );
 
-	// Only now `!warp surface tension 3` -- a mission and a part of it. Nothing
+	// Only now `!warp surface tension 3`: a mission and a part of it. Nothing
 	// is called that, which is exactly why splitting is safe here.
 	if( matches.length() == 0 )
 	{
@@ -898,7 +931,7 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 		}
 	}
 
-	// The arcade is not a chapter, so it was never in `matches` -- but it answers
+	// The arcade is not a chapter, so it was never in `matches`: but it answers
 	// to a part of its name like everything else does. `!warp susp` had to be
 	// spelled out in full because the only test it ever got was equality.
 	bool bArcade = ArcadeMatchesQuery( szWanted );
@@ -958,6 +991,116 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 	}
 }
 
+/* A campaign's short name, as `!warp` takes it, or "" on an older data file. */
+string CampaignShort( const string& in szCampaign )
+{
+	array<string>@ shorts = g_CampaignShorts.getKeys();
+	for( uint i = 0; i < shorts.length(); ++i )
+	{
+		string szKey;
+		if( g_CampaignShorts.get( shorts[i], szKey ) && szKey == szCampaign )
+			return shorts[i];
+	}
+	return "";
+}
+
+/*
+* A mission's number within its own campaign, or -1 where there is none.
+*
+* A campaign that opens on an intro mission counts from 0, so the numbers line
+* up with the hub's consoles: Opposing Force's `of_ch03` is `of 3`. They Hunger
+* has no intro, and its episodes are 1 to 3.
+*/
+int RelativeNumber( APChapter@ pChapter )
+{
+	if( pChapter is null || CampaignShort( pChapter.campaign ).Length() == 0 )
+		return -1;
+
+	bool bIntro = false;
+	g_CampaignHasIntro.get( pChapter.campaign, bIntro );
+
+	int iCount = bIntro ? 0 : 1;
+	for( uint i = 0; i < g_Chapters.length(); ++i )
+	{
+		if( g_Chapters[i].campaign != pChapter.campaign )
+			continue;
+		if( g_Chapters[i] is pChapter )
+			return iCount;
+		++iCount;
+	}
+
+	return -1;
+}
+
+/* Global index of a campaign's mission by its relative number, or -1. */
+int RelativeChapterIndex( const string& in szCampaign, int iNumber )
+{
+	for( uint i = 0; i < g_Chapters.length(); ++i )
+	{
+		if( g_Chapters[i].campaign == szCampaign && RelativeNumber( g_Chapters[i] ) == iNumber )
+			return int( i );
+	}
+	return -1;
+}
+
+/*
+* `!warp of 3`, `!warp of 3 2`. True when the query was one of these, whether or
+* not the warp then went ahead: a relative query that names no mission says so
+* rather than falling through to a name search that would find something else.
+*/
+bool WarpRelative( CBasePlayer@ pPlayer, const string& in szWanted )
+{
+	array<string>@ words = szWanted.Split( " " );
+	array<string> parts;
+	for( uint i = 0; i < words.length(); ++i )
+	{
+		if( words[i].Length() > 0 )
+			parts.insertLast( words[i] );
+	}
+
+	if( parts.length() < 2 || parts.length() > 3 )
+		return false;
+
+	string szCampaign;
+	if( !g_CampaignShorts.get( parts[0], szCampaign ) )
+	{
+		// The campaign key works too: `!warp opposing_force 3`.
+		if( !g_CampaignNames.exists( parts[0] ) )
+			return false;
+		szCampaign = parts[0];
+	}
+
+	if( !IsNumeric( parts[1] ) || ( parts.length() == 3 && !IsNumeric( parts[2] ) ) )
+		return false;
+
+	int iIndex = RelativeChapterIndex( szCampaign, atoi( parts[1] ) );
+	if( iIndex < 0 )
+	{
+		string szName = szCampaign;
+		g_CampaignNames.get( szCampaign, szName );
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+			"[AP] " + szName + " has no mission " + parts[1] + ".\n" );
+		return true;
+	}
+
+	if( parts.length() == 3 )
+	{
+		APChapter@ pChapter = g_Chapters[iIndex];
+		int iPart = atoi( parts[2] );
+		if( iPart < 1 || uint( iPart ) > pChapter.maps.length() )
+		{
+			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+				"[AP] " + pChapter.name + " has only " + pChapter.maps.length() + " part(s).\n" );
+			return true;
+		}
+		WarpToMap( pPlayer, pChapter, pChapter.maps[iPart - 1] );
+		return true;
+	}
+
+	WarpToChapter( pPlayer, iIndex );
+	return true;
+}
+
 /*
 * Does this query name the arcade map without spelling it out?
 *
@@ -965,8 +1108,8 @@ void WarpToQuery( CBasePlayer@ pPlayer, const string& in szQuery )
 * alike, so `!warp susp` lands where `!warp suspension` does.
 *
 * Only while the seed contains it. A seed without the arcade answers a query
-* that names it exactly with "not in this seed" -- a direct answer to a direct
-* question -- and half a word is not that question.
+* that names it exactly with "not in this seed": a direct answer to a direct
+* question: and half a word is not that question.
 */
 bool ArcadeMatchesQuery( const string& in szWanted )
 {
@@ -1049,7 +1192,7 @@ string PartLabel( APChapter@ pChapter, const string& in szMap )
 * Travel to one map of a mission rather than its start.
 *
 * Only somewhere already reached. The point is going back for checks missed on
-* the way through, not skipping the parts between -- so the mission has to be
+* the way through, not skipping the parts between: so the mission has to be
 * unlocked *and* the part has to be one you have already stood in.
 */
 void WarpToMap( CBasePlayer@ pPlayer, APChapter@ pChapter, const string& in szMap )
@@ -1126,7 +1269,7 @@ void ReturnToHub()
 * that means "a different run, possibly a different seed". Every one of these is
 * derived from the client and will be rebuilt from the next snapshot; what must
 * not survive is anything that would let the old seed's answers leak into the
-* new one -- above all `g_SentChecks`, which is what stops a check being sent
+* new one: above all `g_SentChecks`, which is what stops a check being sent
 * twice and would otherwise silently swallow the new slot's first checks.
 *
 * The trip back to the hub is part of the reset rather than a courtesy: the map
@@ -1168,8 +1311,8 @@ const float LEVEL_CHANGE_DELAY = 0.5f;
 /*
 * Ask for a level change.
 *
-* Never performed inline. Every caller is a hook -- PlayerUse, MapChange,
-* MapStart -- and issuing a changelevel from inside one crashed the game on both
+* Never performed inline. Every caller is a hook: PlayerUse, MapChange,
+* MapStart: and issuing a changelevel from inside one crashed the game on both
 * mission completion and the hub buttons. Going through the scheduler means the
 * engine is idle by the time the command runs.
 */
@@ -1193,7 +1336,7 @@ void PerformLevelChange()
 	string szMap = g_szPendingLevel;
 	g_szPendingLevel = "";
 
-	// We are leaving under our own steam -- `!hub`, `!warp`, a portal button --
+	// We are leaving under our own steam, `!hub`, `!warp`, a portal button:
 	// so a mission waiting to be credited when its map ended is not owed one.
 	// Walking out of the outro is leaving it, however far in you got.
 	ClearPendingFinale();
@@ -1239,8 +1382,8 @@ void SetPendingHubReturn( bool bPending )
 *
 * Only missions marked `complete_on_endgame` in checkdata.txt use this, which is
 * one today: Blue Shift's outro. It is a single map that ends in a `game_end`,
-* so neither of the plugin's usual moments works -- arriving is not finishing it
-* and there is no changelevel to observe -- and the next map load is the first
+* so neither of the plugin's usual moments works: arriving is not finishing it
+* and there is no changelevel to observe: and the next map load is the first
 * thing that happens once it really is over.
 *
 * Written to disk for the same reason as the hub return: the globals do not
@@ -1261,7 +1404,7 @@ void SetPendingFinale( const string& in szChapter )
 
 	// The map it was armed on, so it cannot be consumed while we are still
 	// standing on it. MapStart runs more than once for a single load in some
-	// cases -- a `restart`, a plugin reload -- and without this the second run
+	// cases, a `restart`, a plugin reload, and without this the second run
 	// credited what the first had only just armed, which reads in game as a
 	// finale completing the instant you walk into it.
 	pFile.Write( szChapter + ( szChapter.Length() > 0 ? "|" + g_szCurrentMap : "" ) + "\n" );
@@ -1319,8 +1462,8 @@ void ConsumePendingFinale()
 		return;
 
 	// SendCheck refuses to fire while `g_bMissionActive` is false, which is right
-	// everywhere else -- it is what stops a map we are only passing through from
-	// sending its checks -- but this is a mission we genuinely played, being
+	// everywhere else: it is what stops a map we are only passing through from
+	// sending its checks: but this is a mission we genuinely played, being
 	// credited from wherever the endgame dropped us. Without this its "Complete"
 	// location is silently never sent, and `accessibility: full` means the seed
 	// then holds a check nobody can ever collect.
@@ -1494,7 +1637,7 @@ int PortalChapterIndex( const string& in szName )
 /*
 * PlayerUse tells us who pressed but not what they pressed, so trace where they
 * are looking. This fires whether or not the entity itself accepts the press,
-* which is the point in the hub -- the stock two-player lock never gets a say.
+* which is the point in the hub: the stock two-player lock never gets a say.
 *
 * Two things care about the result: the hub's mission consoles, and the health
 * and HEV chargers scattered through the campaign.
@@ -1648,7 +1791,7 @@ CClientCommand g_CmdHelp( "ap_help", "List the Archipelago commands", @ConsoleHe
 * Say out loud whether the console commands took.
 *
 * Registration happens when the module loads, which is server start or
-* `as_reloadplugins` -- copying new script files over a running server changes
+* `as_reloadplugins`: copying new script files over a running server changes
 * nothing until then. Without this line the only symptom is a command that does
 * not exist, which looks identical to a command that was never written.
 */
@@ -1659,7 +1802,7 @@ void ReportClientCommands()
 
 	array<CClientCommand@> commands = {
 		@g_CmdStatus, @g_CmdTracker, @g_CmdFind,
-		@g_CmdWarp, @g_CmdHub, @g_CmdHelp
+		@g_CmdWarp, @g_CmdHub, @g_CmdHelp, @g_CmdMenu, @g_CmdHud
 	};
 
 	for( uint i = 0; i < commands.length(); ++i )
@@ -1675,7 +1818,7 @@ void ReportClientCommands()
 			// The *qualified* name, which is what a player actually types. Sven
 			// namespaces a plugin's console commands using `concommandns` from
 			// default_plugins.txt, and with none set the separator dot is still
-			// there -- so these are `.ap`, not `ap`. Logging GetName() instead
+			// there: so these are `.ap`, not `ap`. Logging GetName() instead
 			// printed a list of commands that do not exist.
 			szNames += commands[i].GetFullyQualifiedName();
 		}
@@ -1703,6 +1846,20 @@ HookReturnCode ClientSay( SayParameters@ pParams )
 	{
 		pParams.ShouldHide = true;
 		ShowHelp( pPlayer );
+		return HOOK_HANDLED;
+	}
+
+	if( szCommand == "!menu" )
+	{
+		pParams.ShouldHide = true;
+		ShowMainMenu( pPlayer );
+		return HOOK_HANDLED;
+	}
+
+	if( szCommand == "!aphud" )
+	{
+		pParams.ShouldHide = true;
+		ToggleCheckHud( pPlayer );
 		return HOOK_HANDLED;
 	}
 

@@ -20,7 +20,7 @@ _CAMPAIGN_KEYS = ("half_life", "opposing_force", "blue_shift", "they_hunger")
 
 # Each campaign's own ceiling: the missions that can be finished before its seal
 # opens. That is everything except the finale, and except any mission sealed
-# alongside the finale -- Blue Shift's Power Struggle, which this very count
+# alongside the finale: Blue Shift's Power Struggle, which this very count
 # opens, so it can never be one of the missions counted toward it.
 #
 # Blue Shift's ceiling is therefore 5 where it used to be 6. A Range refuses an
@@ -110,12 +110,17 @@ class LogicDifficulty(Choice):
 
 
 class Chargesanity(DefaultOnToggle):
-    """Every health charger and HEV charge panel is a check.
+    """Every health charger, HEV charge panel and Xen healing pool is a check.
 
-    107 of them, spread through the campaign, sent the moment you press use on
-    one — an empty charger counts, so this is about finding them rather than
-    needing them. Turn it off and the seed drops to the 48 mission checks plus
-    the 13 weapon checks, which makes for a much shorter run with far less filler.
+    - Health chargers and HEV charge panels: sent the moment you press use on
+      one. An empty one counts, so this is about finding them rather than
+      needing them.
+    - Xen healing pools: the glowing pools on Xen that heal you while you stand
+      in them, in Half-Life's Xen missions, Opposing Force and Blue Shift's
+      Focal Point. Sent the moment you step into one.
+
+    Turn it off and the seed drops to the mission, map and weapon checks, which
+    makes for a much shorter run with far less filler.
     """
 
     display_name = "Chargesanity"
@@ -146,8 +151,8 @@ class IncludeOpposingForce(Toggle):
 class IncludeBlueShift(Toggle):
     """Include the Blue Shift campaign in the seed.
 
-    6 missions, ending at Power Struggle. It brings no weapons of its own -- in
-    Sven Co-op it uses Half-Life's, down to the crowbar -- so it is the campaign
+    6 missions, ending at Power Struggle. It brings no weapons of its own: in
+    Sven Co-op it uses Half-Life's, down to the crowbar: so it is the campaign
     that most wants another one enabled alongside it for variety.
     """
 
@@ -173,9 +178,9 @@ class ExcludeIntroMissions(DefaultOnToggle):
 
     One per campaign that has one, dropped together:
 
-    - **Black Mesa Inbound** (Half-Life) — the tram ride in.
-    - **Incoming** (Opposing Force) — the osprey ride in.
-    - **Living Quarters Outbound** (Blue Shift) — the tram ride the other way.
+    - **Black Mesa Inbound** (Half-Life): the tram ride in.
+    - **Incoming** (Opposing Force): the osprey ride in.
+    - **Living Quarters Outbound** (Blue Shift): the tram ride the other way.
 
     Note that these missions don't have terminals in the hub and can only be
     reached via the '!warp' command.
@@ -201,7 +206,7 @@ class IncludeBlackMesaInbound(Toggle):
     visibility = Visibility.none
 
 
-class RandomStartingWeapon(Toggle):
+class RandomStartingWeapon(DefaultOnToggle):
     """Start with a random melee weapon instead of the crowbar.
 
     Picked from the campaigns in your seed, so an Opposing Force run can open
@@ -236,29 +241,67 @@ class AllowRestrictedStartingWeapon(Toggle):
 
 
 class ShuffleHevSuit(Toggle):
-    """Shuffle the HEV suit into the item pool.
+    """Shuffle each campaign's armour into the item pool.
 
-    What the item controls is armour: until it arrives, armour is held at zero
-    from every source.
+    Exactly these three items, each only in a seed that includes a campaign it
+    belongs to:
 
-    The Xen missions expect that you have it.
+    - HEV Suit: Half-Life and They Hunger.
+    - PCV: Opposing Force.
+    - Security Armor: Blue Shift (its vests and helmets are refused until it
+      arrives).
+
+    What the item controls is armour on that campaign's maps: until it arrives,
+    armour there is held at zero from every source. The suit itself, and with it
+    the HUD, you always have.
+
+    The Xen missions expect that you have the HEV Suit.
+
+    When off, you have all three from the start.
     """
 
-    display_name = "Shuffle HEV Suit"
+    display_name = "Shuffle Armor (HEV Suit, PCV, Security Armor)"
 
 
 class ShuffleLongJump(Toggle):
-    """Shuffle the long jump module into the item pool.
+    """Shuffle the Long Jump Module into the item pool. That one item only.
 
     When on, the Xen missions expect that you have it, and you cannot long jump 
     until the item arrives.
 
-    When off, the module is left to Half-Life entirely: no long jump early on,
-    and you pick it up where the campaign hands it over, in Forget About Freeman
-    and everything after it.
+    When off, the module stays where the campaign hands it over, at the end of
+    Lambda Core: picking it up there sends it to you like any other item, so you
+    keep it into Xen however you get there.
     """
 
     display_name = "Shuffle Long Jump Module"
+
+
+class ShuffleFlashlight(Toggle):
+    """Shuffle the Flashlight into the item pool. That one item only: Sven Co-op
+    has no night vision, so Opposing Force uses the same Flashlight.
+
+    Until the Flashlight arrives, the flashlight key does nothing for anyone in
+    the lobby, on every campaign's maps. The hub is always lit.
+
+    When off, you have it from the start, as always.
+    """
+
+    display_name = "Shuffle Flashlight"
+
+
+class MeleeThrow(Toggle):
+    """Add Melee Throw to the item pool.
+
+    Once it arrives, secondary fire throws the crowbar (and its local faces: the
+    combat knife, the umbrella). It hits as hard as a swing and lands on the
+    floor; walk over it to pick it back up, or it returns to you by itself after
+    ten seconds.
+
+    When off, there is no throw at all.
+    """
+
+    display_name = "Add Melee Throw"
 
 
 class LobbyDeathLink(Choice):
@@ -270,7 +313,7 @@ class LobbyDeathLink(Choice):
 
       on           the lobby gibs wherever you are. The default, and what
                    DeathLink has always done here.
-      non_arcade   the lobby gibs in the campaigns, but never on Suspension —
+      non_arcade   the lobby gibs in the campaigns, but never on Suspension:
                    a bridge run is long, deaths there are the medal's business,
                    and one player's mistake need not end it for seven others.
       off          nobody else dies for your death. The DeathLink still goes
@@ -312,13 +355,16 @@ class DeathLinkAmnesty(Range):
 class TrapPercentage(Range):
     """Percentage of your filler items replaced by traps.
 
-    Three exist, all of them the whole lobby's problem:
+    Four exist, all of them the whole lobby's problem:
 
     - Scientist Trap: four scientists, one of each variant, appear around every
       player.
     - Headcrab Trap: four headcrabs each, same idea, considerably less friendly.
     - Butterfingers Trap: everyone drops the weapon they are holding. The suit
       reissues it after half a minute if you cannot find it again.
+    - Bot Swarm Trap: six crowbar-wielding bots appear around the lobby, run
+      about crouch-jumping over things, and swing at whatever they bump into:
+      players included.
     """
 
     display_name = "Trap Percentage"
@@ -408,7 +454,7 @@ class SuspensionRequiredAward(Choice):
 
     Medals roll down: earning one sends every easier one on that tier too, so
     nobody has to throw a run to collect the bad ones. This setting decides how
-    far up the ladder goes — pick platinum and a flawless run is a check.
+    far up the ladder goes: pick platinum and a flawless run is a check.
 
     It is also what `suspension_goal_requires_award` measures the goal against,
     so **above Silver is not recommended unless you know what you are asking
@@ -544,6 +590,8 @@ class HalfLifeSvenOptions(PerGameCommonOptions):
     allow_restricted_starting_weapon: AllowRestrictedStartingWeapon
     shuffle_hev_suit: ShuffleHevSuit
     shuffle_longjump: ShuffleLongJump
+    shuffle_flashlight: ShuffleFlashlight
+    melee_throw: MeleeThrow
     trap_percentage: TrapPercentage
     suspension: IncludeSuspension
     suspension_classanity: SuspensionClassanity

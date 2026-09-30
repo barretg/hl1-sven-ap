@@ -22,6 +22,8 @@ from worlds.LauncherComponents import Component, Type, components, launch_subpro
 from .client.settings import SETTINGS_KEY
 
 from .data import (
+    ABILITY_ITEM_NAMES,
+    ARMOUR_ITEMS,
     CAMPAIGNS,
     CAMPAIGN_MISSION_OPTIONS,
     CAMPAIGN_OPTIONS,
@@ -37,6 +39,7 @@ from .data import (
     SUSPENSION_AWARD,
     SUSPENSION_CLEAR,
     SUSPENSION_SECTION,
+    VANILLA_PLACEMENTS,
     melee_starters_for,
     suspension,
     suspension_victory_event,
@@ -60,7 +63,7 @@ from .items import (
     unlock_item_for_chapter,
     weapon_items,
 )
-from .locations import location_name_groups, location_name_to_id
+from .locations import location_name_groups, location_name_to_id, location_table
 from .options import HalfLifeSvenOptions
 from .regions import create_regions
 from .rules import chapter_is_startable
@@ -155,8 +158,11 @@ class HalfLifeSvenWorld(World):
         # Whatever these cover leaves the pool: you cannot be sent a wrench you
         # are already holding.
         self.starting_weapons: list[str] = list(STARTING_WEAPONS)
+        # Unshuffled equipment that is still a real item, locked to the check
+        # where the campaign hands it over: item -> location name.
+        self.vanilla_placements: dict[str, str] = {}
 
-        # -- Suspension, the arcade map. All inert while it is switched off.
+        #Suspension, the arcade map. All inert while it is switched off.
         self.suspension_enabled: bool = False
         # Its record from the data, or None in data built before it existed.
         self.suspension: dict[str, Any] | None = suspension()
@@ -174,15 +180,15 @@ class HalfLifeSvenWorld(World):
         self.suspension_goal_classes: list[str] = []
         self.suspension_difficulty_item: str = suspension_difficulty_item
 
-    # -- generation ------------------------------------------------------
+    #generation ------------------------------------------------------
 
     @property
     def tracker_passthrough(self) -> dict[str, Any] | None:
         """The real seed's slot data, when Universal Tracker is re-generating.
 
         UT runs this world's generation locally to work out what is in logic, but
-        two of our decisions are rolled rather than derived -- which mission each
-        campaign opens with, and which melee weapon the run starts with -- so a
+        two of our decisions are rolled rather than derived: which mission each
+        campaign opens with, and which melee weapon the run starts with: so a
         local roll would disagree with the server about both. `interpret_slot_data`
         hands the real answers back and UT re-runs generation with them here.
         """
@@ -210,7 +216,7 @@ class HalfLifeSvenWorld(World):
                 if key in set(passthrough["campaigns"])
             ]
         # A seed has to contain something. Rather than refuse to generate, fall
-        # back to the campaign this world started life as -- unless the arcade
+        # back to the campaign this world started life as: unless the arcade
         # map is on, which is content in its own right and has a goal of its own,
         # so `suspension: true` with every campaign off is a Suspension-only seed
         # rather than a Half-Life one with a bridge attached.
@@ -255,7 +261,7 @@ class HalfLifeSvenWorld(World):
         #
         # A weapon the seed opens with is not something to find. Matched by
         # classname rather than by item name, so it holds for every melee starter
-        # alike -- the crowbar included, which is an ordinary item that a default
+        # alike: the crowbar included, which is an ordinary item that a default
         # seed simply happens to hand you before the run begins.
         held = set(self.starting_weapons)
         starting_items = {
@@ -268,9 +274,53 @@ class HalfLifeSvenWorld(World):
             & set(self.included_campaigns)
             and name not in starting_items
         }
+        # Equipment and abilities. Under the tracker, the seed's own answers:
+        # it may be working without the YAML, and a seed rolled before an
+        # option existed has to read as that option off.
+        def toggled(option: str) -> bool:
+            if passthrough is not None:
+                return bool(passthrough.get(option, False))
+            return bool(getattr(self.options, option))
+
+        # A seed from before the per-campaign armour items had one HEV Suit for
+        # every campaign, and no flashlight or ability items at all.
+        legacy = passthrough is not None and "armour_items" not in passthrough
+        armoured = {ARMOUR_ITEMS[key] for key in self.included_campaigns}
+
         for name in optional_items:
-            if getattr(self.options, OPTIONAL_ITEM_NAMES[name]):
-                self.available_item_names.add(name)
+            if not toggled(OPTIONAL_ITEM_NAMES[name]):
+                continue
+            if name in ARMOUR_ITEMS.values():
+                if legacy:
+                    if name != "HEV Suit":
+                        continue
+                elif name not in armoured:
+                    continue  # armour for a campaign this seed does not have
+            elif legacy and name not in ("HEV Suit", "Long Jump Module"):
+                continue
+            if not self.included_campaigns:
+                continue  # an arcade-only seed has no campaign to wear it in
+            self.available_item_names.add(name)
+        if not legacy:
+            self.available_item_names.update(
+                name for name, option in ABILITY_ITEM_NAMES.items() if toggled(option)
+            )
+
+        # Unshuffled equipment that stays where the campaign puts it, as a real
+        # item. Only where that check is in the seed; otherwise the campaign
+        # simply hands it out ungated, as it always did.
+        if passthrough is not None:
+            placed = list(passthrough.get("placed_at_vanilla", ()))
+        else:
+            placed = [
+                name for name in VANILLA_PLACEMENTS
+                if not toggled(OPTIONAL_ITEM_NAMES[name])
+                and location_table[VANILLA_PLACEMENTS[name]]["chapter"]
+                not in self.excluded_chapters
+            ]
+        for name in placed:
+            self.available_item_names.add(name)
+            self.vanilla_placements[name] = VANILLA_PLACEMENTS[name]
         self.available_item_names.update(
             unlock_item_for_chapter[chapter["key"]]
             for chapter in self.included_chapters
@@ -337,7 +387,7 @@ class HalfLifeSvenWorld(World):
             ])
             self.missions_required_for[campaign_key] = min(option.value, available)
 
-    # -- Suspension ------------------------------------------------------
+    #Suspension ------------------------------------------------------
 
     def setup_suspension(self, passthrough: dict[str, Any] | None) -> None:
         """Decide which tiers, medals and classes this seed's arcade map has.
@@ -387,7 +437,7 @@ class HalfLifeSvenWorld(World):
             if entry["key"] != arcade["gated_class"]
         ]
         # The option is spelled for the lobby sign; the data is keyed by the map's
-        # entity name, and the two disagree -- the booth that hands out a shotgun
+        # entity name, and the two disagree: the booth that hands out a shotgun
         # is `shotty` and reads Pointman. Both spellings resolve here.
         by_option_key = {entry["key"]: entry["key"] for entry in arcade["classes"]}
         by_option_key.update({
@@ -420,7 +470,7 @@ class HalfLifeSvenWorld(World):
         # Seven of the eight. The Juggernaut is not an item at all: the map opens
         # it once a run has been cleared with each of the others, and putting a
         # copy in the pool would have meant an item that unlocks something
-        # already unlocked -- or worse, one that does not, if it arrived first.
+        # already unlocked: or worse, one that does not, if it arrived first.
         self.available_item_names.update(
             suspension_class_items[key] for key in startable
         )
@@ -484,7 +534,7 @@ class HalfLifeSvenWorld(World):
 
         Sections from the tank onward, and everything that depends on finishing
         a run: the clear and every medal. Sections before it are reachable with
-        any class -- section 3's detonation pack is a map item anybody can carry.
+        any class: section 3's detonation pack is a map item anybody can carry.
         """
         arcade = self.suspension
         if arcade is None:
@@ -523,13 +573,13 @@ class HalfLifeSvenWorld(World):
             return [suspension_class_items[class_key]]
         # The Juggernaut has no item. It opens once a run has been cleared with
         # each of the other seven, so in logic it stands behind all seven of
-        # theirs -- which is also the last thing the goal waits on.
+        # theirs: which is also the last thing the goal waits on.
         return self.suspension_shuffled_class_items()
 
     def suspension_goal_rule(self):
         """A run cleared with each class the goal names, at the hardest tier.
 
-        In items that is one per class named -- except the Juggernaut, which has
+        In items that is one per class named: except the Juggernaut, which has
         none and stands behind the other seven, so naming it asks for all seven.
         The medal the goal may also want is a matter of skill rather than of
         inventory. Both of those are the client's to judge from what has actually
@@ -617,6 +667,10 @@ class HalfLifeSvenWorld(World):
                 continue  # already in the starting inventory
             if name == self.suspension_difficulty_item:
                 continue  # progressive: several copies, added below
+            if name in self.vanilla_placements:
+                location = self.get_location(self.vanilla_placements[name])
+                location.place_locked_item(self.create_item(name))
+                continue
             pool.append(self.create_item(name))
 
         # One fewer than the number of tiers, since Easy needs none. Progressive,
@@ -653,7 +707,7 @@ class HalfLifeSvenWorld(World):
     def set_rules(self) -> None:
         # Entrance rules are attached in `create_regions`; only the win condition
         # is left. Every campaign in the seed has to be finished, so it is one
-        # Victory event per campaign rather than a single shared one -- with one
+        # Victory event per campaign rather than a single shared one: with one
         # name held four times, any finale would end the run.
         player = self.player
         victories = [victory_event(c["campaign"]) for c in self.goal_chapters]
@@ -665,7 +719,7 @@ class HalfLifeSvenWorld(World):
             lambda state, names=victories: all(state.has(name, player) for name in names)
         )
 
-    # -- runtime ---------------------------------------------------------
+    #runtime ---------------------------------------------------------
 
     def fill_slot_data(self) -> dict[str, Any]:
         """Everything the client needs to drive the game without shipping its own
@@ -703,6 +757,25 @@ class HalfLifeSvenWorld(World):
             "death_link_amnesty": self.options.death_link_amnesty.value,
             "shuffle_hev_suit": bool(self.options.shuffle_hev_suit),
             "shuffle_longjump": bool(self.options.shuffle_longjump),
+            "shuffle_flashlight": bool(self.options.shuffle_flashlight),
+            "melee_throw": bool(self.options.melee_throw),
+            # Unshuffled equipment that is a real item at its vanilla location,
+            # so the client must gate its pickup like any other. Seeds from
+            # before this existed left the long jump module ungated instead.
+            "placed_at_vanilla": sorted(self.vanilla_placements),
+            # Campaign -> the item that is armour on its maps. Its presence is
+            # also what tells a client this seed has per-campaign armour: a seed
+            # without it had the HEV Suit everywhere.
+            "armour_items": dict(ARMOUR_ITEMS),
+            # Equipment actually shuffled into this seed's pool. The options
+            # alone cannot say: `shuffle_hev_suit` shuffles only the armour of
+            # campaigns the seed includes, and everything else it names has to be
+            # treated as held from the start.
+            "shuffled_equipment": sorted(
+                name for name in optional_items
+                if name in self.available_item_names
+                and name not in self.vanilla_placements
+            ),
             # The arcade map. A client older than it sees `suspension: false` and
             # behaves exactly as it did; the plugin needs the rest to know which
             # tiers exist, which medals are checks, and how to score a run.

@@ -1,7 +1,7 @@
 """Hand-authored facts about Suspension, the arcade map.
 
-`suspension` ships with Sven Co-op -- it is an official Hezus release, not a
-download -- and is nothing like a campaign. It is one map: a class-based, wave
+`suspension` ships with Sven Co-op: it is an official Hezus release, not a
+download: and is nothing like a campaign. It is one map: a class-based, wave
 based push along a suspension bridge, in eight sections, at a difficulty the
 lobby votes for, ending in a medal scored on the team's total deaths.
 
@@ -31,7 +31,7 @@ OPTION = "suspension"
 #
 # Not a menu: the lobby votes on four buttons, and the winner sets the team's
 # shared ticket pool (`ticket_counter`'s `frags`). Fewer tickets is harder, and
-# the pool is the only difficulty knob the map has -- `suspension.cfg` pins
+# the pool is the only difficulty knob the map has: `suspension.cfg` pins
 # `skill 3` regardless.
 #
 # `vote` is the button the plugin has to refuse while a tier is locked. The
@@ -65,7 +65,7 @@ DIFFICULTIES: list[Difficulty] = [
 # --- Sections -------------------------------------------------------------
 #
 # Eight, fought in order along the bridge. The map has no uniform "section N
-# cleared" entity -- only s1 and s2 have a `sX_win` -- but every section past the
+# cleared" entity, only s1 and s2 have a `sX_win`, but every section past the
 # first announces itself by firing `sN_events`, so clearing section N is the same
 # event as section N+1 starting. The last section has no successor: it ends the
 # round at `final_end`, a `game_end`.
@@ -117,7 +117,7 @@ END_SIGNAL = "end_script"
 #
 # That targetname is how the plugin knows who is playing what, and it is
 # authoritative: single-valued, per player, and updated the moment they switch.
-# The map's `class_counter_*` entities look like the same answer and are not --
+# The map's `class_counter_*` entities look like the same answer and are not:
 # they only ever increment, so a player who walks through three booths counts
 # three times, and there is no counter for the Juggernaut at all.
 #
@@ -154,7 +154,7 @@ class Class:
 
 
 CLASSES: list[Class] = [
-    # Keys are the map's entity names and are permanent -- `data/ids.json` is
+    # Keys are the map's entity names and are permanent: `data/ids.json` is
     # keyed by them, so renaming one renumbers a location. The display names
     # beside them are the lobby's and are free to change.
     Class("soldier", "Assault", "class_soldier", "soldier", "pick_soldier"),
@@ -195,7 +195,7 @@ CLASSES: list[Class] = [
 #
 # Called the goal class once, which it no longer is and never quite was. The goal
 # is a run cleared with each class in `suspension_goal_classes`, which is all
-# eight by default -- this one among them, and last, because the map will not
+# eight by default: this one among them, and last, because the map will not
 # open it any sooner.
 GATED_CLASS = "jugger"
 
@@ -210,8 +210,8 @@ JUGGER_VOLUMES = {
 }
 
 # The eight portals are the eight faces of an octagon standing in the middle of
-# the lobby -- four axis-aligned slabs four units thick, four diagonal ones the
-# compiler records as squares -- and the booths are what they enclose. That is
+# the lobby: four axis-aligned slabs four units thick, four diagonal ones the
+# compiler records as squares: and the booths are what they enclose. That is
 # why the plugin is given the ring as one volume rather than a box per doorway:
 # reasoning outward from a single face points into the room, and the room is
 # where everybody is standing. See `suspension_booth_volumes` in
@@ -237,7 +237,7 @@ JUGGER_SEAL = {
 # `class_engineer` gets a satchel and a tripmine, `class_GL_soldier` AR
 # grenades, `class_shotty` hand grenades. Nothing equips `class_soldier`,
 # `class_saw`, `class_sniper` or `class_medic`, and their booth loadouts carry
-# no explosives either -- an Assault has a 9mmAR, a pistol, a Desert Eagle and a
+# no explosives either: an Assault has a 9mmAR, a pistol, a Desert Eagle and a
 # crowbar, and the tank is a 1500 health `func_breakable` shooting back with a
 # 50 damage mortar.
 #
@@ -248,7 +248,7 @@ JUGGER_SEAL = {
 EXPLOSIVE_CLASSES = ("gl_soldier", "shotty", "engineer")
 
 # The first section that needs them, by index. Section 2 is where the armour
-# first has to be dealt with -- the APC, and a tank behind it, which is why the
+# first has to be dealt with: the APC, and a tank behind it, which is why the
 # map puts an explosives crate (`s2_restock_explo`) in that section. Reported
 # from play; the entity list alone would have put this at section 4, where the
 # named tank fight is. Everything after is behind it, so the requirement carries

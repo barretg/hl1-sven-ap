@@ -1,7 +1,7 @@
 """How the client decides a seed is won.
 
-The client cannot be imported here -- it pulls in `CommonClient` and the rest of
-a real Archipelago install -- so these read its source, in the same style as
+The client cannot be imported here: it pulls in `CommonClient` and the rest of
+a real Archipelago install: so these read its source, in the same style as
 `test_tracker_support.py`. Blunt, and worth having: the fault they guard against
 left a finished seed sitting one phantom goal short of won, with nothing in the
 log to say so.

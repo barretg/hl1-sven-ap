@@ -7,7 +7,7 @@
 * because being killed by one is the whole of what receiving one means, and this
 * slot is eight people.
 *
-* `lobby_death_link` is "on" everywhere, "off" nowhere, or "non_arcade" -- every
+* `lobby_death_link` is "on" everywhere, "off" nowhere, or "non_arcade": every
 * campaign but Suspension, where a run is long and a death is already counted
 * against the medal. It is forced off wherever DeathLink itself is off: the
 * death is still reported to the client, which is how the client decides
@@ -145,7 +145,7 @@ HookReturnCode PlayerKilled( CBasePlayer@ pPlayer, CBaseEntity@ pAttacker, int i
 		return HOOK_CONTINUE;
 
 	// The arcade map scores its medal on the team's total deaths, so every one
-	// of them counts here -- including the ones DeathLink immunity swallows,
+	// of them counts here: including the ones DeathLink immunity swallows,
 	// since the medal is about the round rather than about the multiworld.
 	SuspensionCountDeath();
 
@@ -159,7 +159,7 @@ HookReturnCode PlayerKilled( CBasePlayer@ pPlayer, CBaseEntity@ pAttacker, int i
 
 	// Reported unconditionally, forgiven or not. Whether it becomes a DeathLink
 	// is the client's call, and the client is the only thing that actually knows
-	// -- gating here on our cached copy of its flags means any staleness silently
+	//gating here on our cached copy of its flags means any staleness silently
 	// swallows deaths, with nothing in either log to say why. The amnesty flag is
 	// advice the client applies on top of that.
 	BridgeSend( "DEATH|" + szName + "|" + szCause + "|" + ( bForgiven ? "1" : "0" ) );
@@ -167,7 +167,7 @@ HookReturnCode PlayerKilled( CBasePlayer@ pPlayer, CBaseEntity@ pAttacker, int i
 	// Taking the lobby with them is a separate question from sending a DeathLink
 	// out, and `lobby_death_link` is where a seed answers it: everywhere, nowhere,
 	// or everywhere but the arcade map, where a run is long and a death is
-	// already the medal's business. Never without DeathLink itself -- there is
+	// already the medal's business. Never without DeathLink itself: there is
 	// nothing for a wipe to mean when no DeathLink is going anywhere.
 	//
 	// Reporting the death above is unconditional because the client decides what
@@ -195,8 +195,8 @@ void ApplyIncomingDeathLink( const string& in szData, float flStamp )
 	string szSource = parts.length() > 0 ? parts[0] : "someone";
 	string szCause = parts.length() > 1 ? parts[1] : "an unknown fate";
 
-	// Both timestamps come from the client's clock -- the `now=` line written
-	// into the same snapshot we are reading -- so this needs no engine time and
+	// Both timestamps come from the client's clock: the `now=` line written
+	// into the same snapshot we are reading: so this needs no engine time and
 	// is immune to the map-load pause that g_Engine.time would hide.
 	float flAge = g_flSnapshotNow - flStamp;
 	if( flAge > DEATHLINK_MAX_AGE )
