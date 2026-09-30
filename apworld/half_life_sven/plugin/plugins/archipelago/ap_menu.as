@@ -451,7 +451,7 @@ void UpdateCheckHud()
 		szText += "This map: " + uiMapFound + "/" + uiMapTotal + "\n";
 		szText += g_CurrentChapter.name + ": " + uiFound + "/" + uiTotal + "\n";
 	}
-	szText += "Seed: " + uiSeedFound + "/" + uiSeedTotal;
+	szText += "Total: " + uiSeedFound + "/" + uiSeedTotal;
 
 	HUDTextParams params;
 	params.x = 0.02f;

@@ -161,6 +161,7 @@ class APTScenario
 	string give;                // ";"-separated, added to the base items
 	string take;                // ";"-separated, removed from them
 	bool legacy = false;        // old seed: no armour table
+	bool reached = false;       // every map's "Reached" pre-found, for !warp
 	string ungated;
 	bool suspension = false;
 	string spawn;               // classname put in front of the player on arrival
@@ -321,6 +322,7 @@ void BuildScenarios()
 		+ "(A CHECK line here is ignored by an old seed's client.)";
 
 	@s = Add( "Relative warps", APT_HUB );
+	s.reached = true;
 	s.steps =
 		"!warp of 3 -> " + RelativeTarget( "opposing_force", 3 ) + "\n"
 		+ "!warp of 0 -> " + RelativeTarget( "opposing_force", 0 ) + "\n"
@@ -331,6 +333,7 @@ void BuildScenarios()
 		+ "Also try .ap_warp of 3 in console.";
 
 	@s = Add( "Menu and HUD", APT_HUB );
+	s.reached = true;
 	s.steps =
 		"!menu (or .ap_menu): warp by game > mission > part; tracker by" + "\n"
 		+ "game > mission > missing checks; pick one to be pointed at it." + "\n"
@@ -398,6 +401,13 @@ string g_szUngated;
 bool g_bSuspension = false;
 bool g_bConnected = false;
 string g_szSession;
+// Checks sent during this scenario, reported back as found the way the client
+// would. Cleared on every scenario load, so each test starts from nothing.
+dictionary g_Found;
+// Whether every map's "Reached" check is reported found. Only the warp and menu
+// scenarios need it (a warp needs the map reached); elsewhere it filled the HUD
+// with 118 checks nobody made.
+bool g_bReached = false;
 int g_iSeq = 0;
 array<string> g_Events;    // "<seq>|<kind>|<data>|0"
 
@@ -407,13 +417,13 @@ void WriteSnapshot()
 	for( uint i = 0; i < g_Chapters.length(); ++i )
 		chapters.insertLast( g_Chapters[i].key );
 
-	// Every map counts as reached, so `!warp <map>` and the tracker have
-	// something to work with; every other location is missing.
+	// Only what this scenario sent counts as found, plus every map's
+	// "Reached" for the scenarios that warp; everything else is missing.
 	array<string> checked;
 	array<string> missing;
 	for( uint i = 0; i < g_Locs.length(); ++i )
 	{
-		if( g_Locs[i].kind == "map_reached" )
+		if( ( g_bReached && g_Locs[i].kind == "map_reached" ) || g_Found.exists( g_Locs[i].id ) )
 			checked.insertLast( g_Locs[i].id );
 		else
 			missing.insertLast( g_Locs[i].id );
@@ -516,6 +526,7 @@ void PollOut()
 		g_iOutRead = 0;
 
 	bool bAcked = false;
+	bool bFound = false;
 	for( uint i = uint( g_iOutRead ); i < lines.length(); ++i )
 	{
 		array<string>@ f = lines[i].Split( "|" );
@@ -530,12 +541,20 @@ void PollOut()
 				}
 			}
 		}
-		else if( f[0] == "CHECK" && f.length() >= 2 && g_bWatching )
-			JudgeCheck( f[1] );
+		else if( f[0] == "CHECK" && f.length() >= 2 )
+		{
+			if( !g_Found.exists( f[1] ) )
+			{
+				g_Found[ f[1] ] = true;
+				bFound = true;
+			}
+			if( g_bWatching )
+				JudgeCheck( f[1] );
+		}
 	}
 	g_iOutRead = int( lines.length() );
 
-	if( bAcked )
+	if( bAcked || bFound )
 		WriteSnapshot();
 }
 
@@ -623,12 +642,14 @@ void StartScenario( int iIndex )
 	ApplyItems( s );
 
 	g_bLegacy = s.legacy;
+	g_bReached = s.reached;
 	g_szUngated = s.ungated;
 	g_bSuspension = s.suspension;
 	g_bConnected = true;
 	g_Events.resize( 0 );
 	g_bWatching = false;
 	g_Seen.deleteAll();
+	g_Found.deleteAll();
 	WriteSnapshot();
 
 	Say( "Scenario " + iIndex + ": " + s.title + " -> " + s.map );
@@ -713,6 +734,7 @@ void RestoreSnapshotFor( APTScenario@ s )
 		return;
 	ApplyItems( s );
 	g_bLegacy = s.legacy;
+	g_bReached = s.reached;
 	g_szUngated = s.ungated;
 	g_bSuspension = s.suspension;
 	WriteSnapshot();

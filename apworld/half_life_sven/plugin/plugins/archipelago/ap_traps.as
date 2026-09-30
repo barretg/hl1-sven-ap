@@ -182,42 +182,108 @@ void ClearWithheldWeapons()
 	g_flWeaponHoldFor.deleteAll();
 	g_TrapDrops.resize( 0 );
 
-	for( uint i = 0; i < g_hLastActive.length(); ++i )
-		g_hLastActive[i] = EHandle();
+	g_PendingDrops.resize( 0 );
+	for( uint i = 0; i < g_szHeldWeapons.length(); ++i )
+		g_szHeldWeapons[i] = "";
 }
 
 /*
-* The weapon each player had in hand last frame, by entity index.
+* Weapons a player lets go of themselves (G, `drop`, or on death) were already
+* theirs, so the copy on the floor is booked with the trap drops: picking it up
+* again, or standing next to it, must not send its check.
 *
-* A weapon a player drops themselves (G, `drop`, or on death) is one they were
-* already carrying, so it is booked with the trap drops: picking it up again,
-* or standing next to it, must not send its check. Watching the hand rather than
-* the drop command covers every way a weapon leaves it, and the entity is the
-* same one that lands on the floor.
+* Watching the hand was not enough: the entity that lands on the floor is not
+* always the one that left the inventory, and First Crowbar went out for a
+* dropped weapon. So this compares each player's inventory frame to frame, and
+* for every weapon that vanished books the nearest loose copy of that class
+* around where they stood, retrying for a second while the drop spawns.
 */
-array<EHandle> g_hLastActive( 33 );
+array<string> g_szHeldWeapons( 33 );
+
+class PendingDrop
+{
+	string szClassname;
+	Vector vecOrigin;
+	float flUntil;
+}
+array<PendingDrop@> g_PendingDrops;
+
+// How far from the player a dropped copy may land, and how long to look for it.
+const float DROP_SEARCH_RADIUS = 160.0f;
+const float DROP_SEARCH_TIME = 1.0f;
+
+string HeldWeaponList( CBasePlayer@ pPlayer )
+{
+	string szList = "|";
+	for( size_t iSlot = 0; iSlot < MAX_ITEM_TYPES; ++iSlot )
+	{
+		CBasePlayerItem@ pItem = pPlayer.m_rgpPlayerItems( iSlot );
+		while( pItem !is null )
+		{
+			szList += pItem.GetClassname() + "|";
+			@pItem = cast<CBasePlayerItem@>( pItem.m_hNextItem.GetEntity() );
+		}
+	}
+	return szList;
+}
+
+/* The nearest loose, unbooked copy of the class; true once one is booked. */
+bool BookDrop( PendingDrop@ drop )
+{
+	CBaseEntity@ pBest = null;
+	float flBest = DROP_SEARCH_RADIUS;
+	CBaseEntity@ pEntity = null;
+
+	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname( pEntity, drop.szClassname ) ) !is null )
+	{
+		if( WeaponIsHeld( pEntity ) || IsTrapDrop( pEntity ) )
+			continue;
+		float flDist = ( pEntity.pev.origin - drop.vecOrigin ).Length();
+		if( flDist <= flBest )
+		{
+			flBest = flDist;
+			@pBest = pEntity;
+		}
+	}
+
+	if( pBest is null )
+		return false;
+	RegisterTrapDrop( pBest );
+	return true;
+}
 
 /* Per frame, per player, from PlayerPreThink. */
 void TrackPlayerDrops( CBasePlayer@ pPlayer )
 {
 	int iIndex = pPlayer.entindex();
-	if( iIndex < 0 || uint( iIndex ) >= g_hLastActive.length() )
+	if( iIndex < 0 || uint( iIndex ) >= g_szHeldWeapons.length() )
 		return;
 
-	CBaseEntity@ pActive = pPlayer.m_hActiveItem.GetEntity();
-	CBaseEntity@ pLast = g_hLastActive[iIndex].GetEntity();
+	string szNow = HeldWeaponList( pPlayer );
+	string szBefore = g_szHeldWeapons[iIndex];
+	g_szHeldWeapons[iIndex] = szNow;
 
-	if( pLast !is null && pLast !is pActive )
+	if( !szBefore.IsEmpty() && szBefore != szNow )
 	{
-		// Switching weapons leaves the old one in the inventory; only one that
-		// no longer belongs to this player has actually been let go.
-		CBasePlayerItem@ pItem = cast<CBasePlayerItem@>( pLast );
-		if( pItem !is null && ( !pItem.m_hPlayer.IsValid()
-		    || pItem.m_hPlayer.GetEntity() !is pPlayer ) )
-			RegisterTrapDrop( pLast );
+		array<string>@ before = szBefore.Split( "|" );
+		for( uint i = 0; i < before.length(); ++i )
+		{
+			if( before[i].IsEmpty() || szNow.Find( "|" + before[i] + "|" ) != String::INVALID_INDEX )
+				continue;
+			PendingDrop drop;
+			drop.szClassname = before[i];
+			drop.vecOrigin = pPlayer.pev.origin;
+			drop.flUntil = g_Engine.time + DROP_SEARCH_TIME;
+			g_PendingDrops.insertLast( drop );
+		}
 	}
 
-	g_hLastActive[iIndex] = pActive is null ? EHandle() : EHandle( pActive );
+	for( uint i = g_PendingDrops.length(); i > 0; --i )
+	{
+		PendingDrop@ drop = g_PendingDrops[i - 1];
+		if( BookDrop( drop ) || g_Engine.time > drop.flUntil )
+			g_PendingDrops.removeAt( i - 1 );
+	}
 }
 
 /*

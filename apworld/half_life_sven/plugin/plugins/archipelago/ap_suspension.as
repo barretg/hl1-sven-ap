@@ -1367,7 +1367,7 @@ void SuspensionWarnLockedBooths()
 
 			g_flSusBoothWarned[ szKey ] = g_Engine.time;
 			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCENTER,
-				"You have not found the " + pClass.name + " yet.\n" );
+				"You have not found the\n" + pClass.name + " yet." );
 		}
 	}
 }

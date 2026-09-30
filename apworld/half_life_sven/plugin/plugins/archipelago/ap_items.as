@@ -488,7 +488,7 @@ HookReturnCode PlayerPreThink( CBasePlayer@ pPlayer, uint& out uiFlags )
 			{
 				g_flFlashlightNagged[ szKey ] = g_Engine.time;
 				g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCENTER,
-					"You have not found the Flashlight yet.\n" );
+					"You have not found the\nFlashlight yet." );
 			}
 		}
 
@@ -734,7 +734,7 @@ HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool
 	bResult = false;
 	g_PlayerFuncs.ClientPrint(
 		pPlayer, HUD_PRINTCENTER,
-		"You have not found the " + LockedItemName( szClassname ) + " yet.\n" );
+		"You have not found the\n" + LockedItemName( szClassname ) + " yet." );
 	return HOOK_HANDLED;
 }
 
@@ -752,7 +752,7 @@ void NagArmourLocked( CBasePlayer@ pPlayer )
 		return;
 	g_flArmourNagged[ szKey ] = g_Engine.time;
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCENTER,
-		"You have not found the " + ArmourItemHere() + " yet.\n" );
+		"You have not found the\n" + ArmourItemHere() + " yet." );
 }
 
 string LockedItemName( const string& in szClassname )

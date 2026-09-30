@@ -143,7 +143,7 @@ void ThrownThink()
 			{
 				ReleaseWeapon( pThrower, THROWN_CLASSNAME );
 				g_PlayerFuncs.ClientPrint( pThrower, HUD_PRINTCENTER,
-					"Your crowbar comes back to you.\n" );
+					"Your crowbar comes back to you." );
 			}
 			g_Thrown.removeAt( i - 1 );
 			continue;
