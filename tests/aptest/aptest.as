@@ -360,6 +360,17 @@ void BuildScenarios()
 		"You are dropped over the pool. Step in: expect '" + l.name + "'." + "\n"
 		+ "If the drop misses, !apt_tp or walk in yourself.";
 	}
+
+	// Appended, not slotted in beside the other weapon tests: verdicts are kept
+	// by scenario number, and inserting would shift every recorded result.
+	@s = Add( "Weapons once per life", "hl_c02_a2" );
+	s.give = "Hand Grenade;Shotgun";
+	s.forbid = "First Hand Grenade;First Shotgun;First Crowbar";
+	s.steps =
+		"Throw every grenade, wait 5s: NO new grenade appears." + "\n"
+		+ "!apt_trap Butterfingers Trap holding the shotgun: it comes back after the hold." + "\n"
+		+ "!apt_give Melee Throw, throw the crowbar, leave it: it comes back after 10s." + "\n"
+		+ "Type kill in console: after respawn you have grenades again.";
 }
 
 string LocPos( const string& in szName )
