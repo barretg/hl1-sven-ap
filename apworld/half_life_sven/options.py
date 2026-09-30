@@ -266,8 +266,9 @@ class ShuffleHevSuit(Toggle):
 class ShuffleLongJump(Toggle):
     """Shuffle the Long Jump Module into the item pool. That one item only.
 
-    When on, the Xen missions expect that you have it, and you cannot long jump 
-    until the item arrives.
+    Either way, Half-Life's Xen missions expect that you have it.
+
+    When on, you cannot long jump until the item arrives.
 
     When off, the module stays where the campaign hands it over, at the end of
     Lambda Core: picking it up there sends it to you like any other item, so you

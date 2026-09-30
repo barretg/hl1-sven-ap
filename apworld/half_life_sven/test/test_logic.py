@@ -174,6 +174,20 @@ class TestEquipmentNotShuffled(StartingMissionMixin, HalfLifeSvenTestBase):
         state = self.multiworld.get_all_state(False)
         self.assertTrue(self.can_reach_entrance("Enter Xen", state))
 
+    def test_half_life_xen_still_requires_the_long_jump_module(self) -> None:
+        """Unshuffled only changes where it is, not that Xen asks for it."""
+        # No sweep: it would walk to Lambda Core and pick the module up.
+        state = self.multiworld.get_all_state(False)
+        module = self.multiworld.get_location("First Long Jump Module", self.player).item
+        if state.has(module.name, self.player):
+            state.remove(module)
+        for mission in ("Xen", "Gonarch's Lair", "Interloper", "Nihilanth"):
+            self.assertFalse(self.can_reach_entrance(f"Enter {mission}", state), mission)
+
+        state.collect(module, True)
+        for mission in ("Xen", "Gonarch's Lair", "Interloper", "Nihilanth"):
+            self.assertTrue(self.can_reach_entrance(f"Enter {mission}", state), mission)
+
     def test_the_long_jump_module_stays_at_its_vanilla_check(self) -> None:
         """Unshuffled, it is still an item, locked where Lambda Core hands it over."""
         location = self.multiworld.get_location("First Long Jump Module", self.player)

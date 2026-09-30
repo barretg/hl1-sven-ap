@@ -113,6 +113,15 @@ void SendCheck( APLocation@ pLocation )
 	if( g_SentChecks.exists( szKey ) )
 		return;
 
+	// Not a location this seed has: chargers with chargesanity off, or a
+	// healing pool in a seed from before pools were checks. The client would
+	// drop it anyway; this keeps the "[AP]" line from claiming a check. Only
+	// once the client has said what the seed holds, so nothing is lost while
+	// that snapshot is still on its way.
+	if( ( g_CheckedLocations.getSize() > 0 || g_MissingLocations.getSize() > 0 )
+	    && !LocationInSeed( pLocation ) )
+		return;
+
 	g_SentChecks[ szKey ] = true;
 	BridgeSend( "CHECK|" + pLocation.id );
 	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[AP] " + pLocation.name + "\n" );
