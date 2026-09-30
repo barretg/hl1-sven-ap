@@ -29,8 +29,8 @@ const float MELEE_THROW_LIFT = 120.0f;
 // to a stop, and a crowbar at walking pace hits nobody.
 const float MELEE_THROW_LETHAL_SPEED = 250.0f;
 
-// A swing's worth when the skill cvar cannot be read.
-const float MELEE_THROW_DAMAGE = 15.0f;
+// 4x a swing's worth when the skill cvar cannot be read.
+const float MELEE_THROW_DAMAGE = 60.0f;
 
 class APThrown
 {
@@ -50,7 +50,7 @@ bool MeleeThrowOwned()
 
 float MeleeThrowDamage()
 {
-	float flDamage = g_EngineFuncs.CVarGetFloat( "sk_plr_crowbar" );
+	float flDamage = g_EngineFuncs.CVarGetFloat( "sk_plr_crowbar" ) * 4.0f;
 	return flDamage > 0.0f ? flDamage : MELEE_THROW_DAMAGE;
 }
 
