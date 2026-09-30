@@ -279,6 +279,13 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		// Under *any* of its names. One gun with two classnames was being handed
 		// over once a second, a clip of ammo at a time.
 		if( HasWeaponUnderAnyName( pPlayer, szClassname ) )
+		{
+			MarkWeaponHadThisLife( pPlayer, szClassname );
+			continue;
+		}
+
+		// Once per life. See g_WeaponHadThisLife.
+		if( WeaponHadThisLife( pPlayer, szClassname ) )
 			continue;
 
 		// GiveNamedItem builds the weapon and touches the player with it inside
@@ -294,6 +301,7 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		// loose at their feet until the sweep sent it as found. Whatever was just
 		// made here is theirs, collected or not.
 		BookHandedOverCopies( pPlayer, szClassname );
+		MarkWeaponHadThisLife( pPlayer, szClassname );
 
 		granted.insertLast( szClassname );
 	}

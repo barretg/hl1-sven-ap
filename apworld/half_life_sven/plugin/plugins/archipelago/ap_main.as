@@ -350,6 +350,9 @@ HookReturnCode PlayerSpawn( CBasePlayer@ pPlayer )
 	// Whatever Butterfingers made them drop, the death already took.
 	ClearWithheldWeapons( pPlayer );
 
+	// A new life gets the whole loadout again.
+	ForgetWeaponsHadThisLife( pPlayer );
+
 	// The HL campaign .cfg files equip a full loadout on spawn, and that runs
 	// after this hook: so defer a tick and take it all back off again.
 	g_Scheduler.SetTimeout( "ApplyLoadoutDeferred", 0.5f, EHandle( pPlayer ) );

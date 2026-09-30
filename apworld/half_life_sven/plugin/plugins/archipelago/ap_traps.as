@@ -72,6 +72,23 @@ dictionary g_flWeaponDroppedAt;
 // Butterfingers default. A thrown crowbar comes back after ten seconds.
 dictionary g_flWeaponHoldFor;
 
+// Weapons each player has had this life, keyed like the two above. The sweep
+// hands a weapon over once per life and never again: it was refilling anything
+// used up (a last grenade thrown, a satchel placed) with a fresh one a second
+// later. Withholding a weapon clears its mark, which is what lets the thrown
+// crowbar and a Butterfingers drop still come back.
+dictionary g_WeaponHadThisLife;
+
+bool WeaponHadThisLife( CBasePlayer@ pPlayer, const string& in szClassname )
+{
+	return g_WeaponHadThisLife.exists( DroppedKey( pPlayer, szClassname ) );
+}
+
+void MarkWeaponHadThisLife( CBasePlayer@ pPlayer, const string& in szClassname )
+{
+	g_WeaponHadThisLife[ DroppedKey( pPlayer, szClassname ) ] = true;
+}
+
 /*
 * Weapons on the floor that a player was carrying a moment ago: Butterfingers'
 * drops and thrown crowbars. Picking one up, or standing near one, is not finding
@@ -117,6 +134,7 @@ void WithholdWeapon( CBasePlayer@ pPlayer, const string& in szClassname, float f
 	string szKey = DroppedKey( pPlayer, szClassname );
 	g_flWeaponDroppedAt[ szKey ] = g_Engine.time;
 	g_flWeaponHoldFor[ szKey ] = flSeconds;
+	g_WeaponHadThisLife.delete( szKey );
 }
 
 void ReleaseWeapon( CBasePlayer@ pPlayer, const string& in szClassname )
@@ -180,6 +198,7 @@ void ClearWithheldWeapons()
 {
 	g_flWeaponDroppedAt.deleteAll();
 	g_flWeaponHoldFor.deleteAll();
+	g_WeaponHadThisLife.deleteAll();
 	g_TrapDrops.resize( 0 );
 
 	g_PendingDrops.resize( 0 );
@@ -357,6 +376,19 @@ void ClearWithheldWeapons( CBasePlayer@ pPlayer )
 			g_flWeaponHoldFor.delete( keys[i] );
 		}
 	}
+}
+
+void ForgetWeaponsHadThisLife( CBasePlayer@ pPlayer )
+{
+	if( pPlayer is null )
+		return;
+
+	string szPrefix = "" + pPlayer.entindex() + "|";
+	array<string>@ keys = g_WeaponHadThisLife.getKeys();
+
+	for( uint i = 0; i < keys.length(); ++i )
+		if( keys[i].SubString( 0, szPrefix.Length() ) == szPrefix )
+			g_WeaponHadThisLife.delete( keys[i] );
 }
 
 /*
