@@ -221,7 +221,19 @@ array<PendingDrop@> g_PendingDrops;
 
 // How far from the player a dropped copy may land, and how long to look for it.
 const float DROP_SEARCH_RADIUS = 160.0f;
-const float DROP_SEARCH_TIME = 1.0f;
+const float DROP_SEARCH_TIME = 3.0f;
+
+/*
+* In somebody's inventory. Not WeaponIsHeld: that also counts `pev.owner`, and a
+* freshly dropped weapon keeps its dropper as owner for a moment so they cannot
+* grab it straight back. Judged that way, the drop looked held, was skipped, and
+* sent its check once the owner cleared.
+*/
+bool InInventory( CBaseEntity@ pEntity )
+{
+	CBasePlayerItem@ pItem = cast<CBasePlayerItem@>( pEntity );
+	return pItem !is null && pItem.m_hPlayer.IsValid();
+}
 
 string HeldWeaponList( CBasePlayer@ pPlayer, array<EHandle>@ entities )
 {
@@ -257,7 +269,7 @@ bool BookDrop( PendingDrop@ drop )
 
 	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname( pEntity, drop.szClassname ) ) !is null )
 	{
-		if( WeaponIsHeld( pEntity ) || IsTrapDrop( pEntity ) || WasAlreadyLoose( drop, pEntity ) )
+		if( InInventory( pEntity ) || IsTrapDrop( pEntity ) || WasAlreadyLoose( drop, pEntity ) )
 			continue;
 		float flDist = ( pEntity.pev.origin - drop.vecOrigin ).Length();
 		if( flDist <= flBest )
@@ -289,7 +301,7 @@ void TrackPlayerDrops( CBasePlayer@ pPlayer )
 	for( uint i = 0; i < before.length(); ++i )
 	{
 		CBaseEntity@ pWas = before[i].GetEntity();
-		if( pWas !is null && !WeaponIsHeld( pWas ) )
+		if( pWas !is null && !InInventory( pWas ) )
 			RegisterTrapDrop( pWas );
 	}
 
@@ -307,7 +319,7 @@ void TrackPlayerDrops( CBasePlayer@ pPlayer )
 			CBaseEntity@ pLoose = null;
 			while( ( @pLoose = g_EntityFuncs.FindEntityByClassname( pLoose, drop.szClassname ) ) !is null )
 			{
-				if( !WeaponIsHeld( pLoose ) && !IsTrapDrop( pLoose ) )
+				if( !InInventory( pLoose ) && !IsTrapDrop( pLoose ) )
 					drop.already.insertLast( EHandle( pLoose ) );
 			}
 			g_PendingDrops.insertLast( drop );
