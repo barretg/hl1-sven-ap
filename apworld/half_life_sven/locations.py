@@ -34,9 +34,6 @@ location_name_groups["Weapon Pickups"] = {
 location_name_groups["Chargers"] = {
     e["name"] for e in LOCATIONS if e["trigger"]["type"] == "charger"
 }
-location_name_groups["Kills"] = { # Unused for now
-    e["name"] for e in LOCATIONS if e["trigger"]["type"] in ("kill", "kill_count")
-}
 location_name_groups["Suspension"] = {
     e["name"] for e in LOCATIONS if e["trigger"]["type"] in SUSPENSION_TRIGGERS
 }
