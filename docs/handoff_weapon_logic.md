@@ -93,14 +93,17 @@ single `earliest_map_with` anchor:
 3. **Unreachable copies.** A per-campaign `unreachable_copies: {item: [maps]}`
    lists maps whose copies do not count; the mission moves on to its next map.
    Sven entries: Opposing Force Tripmine on `of2a4` (beside Sven's easter-egg
-   minigun, past a skylight, reachable only by stacking players); Displacer
-   Cannon on `of3a5` (a prop in a self-teleport area). Check whether retail has
-   the same props; the minigun is Sven-only.
+   minigun, past a skylight, reachable only by stacking players) and Shotgun on
+   `of2a4` (same room); Glock on `of1a5` (out of bounds, so Missing In Action's
+   source moves to `of1a5b`); Displacer Cannon on `of3a5` (a prop in a
+   self-teleport area). Check whether retail has the same props; the minigun
+   room is Sven-only, and the `of1a5` Glock may be Sven's placement.
 4. **Hand-placed anchors** (`weapon_anchors: {item: map}`, e.g. Blue Shift's
    Glock on `ba_security2`, handed over by the range guard) stand in for their
    own mission's source with no position. Other missions still contribute theirs.
 5. **Per-source gates.** `weapon_source_gates: {map: {item: gates}}`, copied onto
-   the source record.
+   the source record. Sven entries, both `{"always": ["displacer_cannon"]}`:
+   Crush Depth's Shotgun (`of3a2`) and The Package's Hand Grenade (`of6a2`).
 
 ## 5. Displacer-gated locations (Opposing Force)
 
@@ -112,6 +115,11 @@ with a one-item requirement group `displacer_cannon: ["Displacer Cannon"]`):
 | Crush Depth - Health Charger (Part 2) | of3a2 | `func_healthcharger *39` |
 | Vicarious Reality - Healing Pool (Part 1) | of3a4 | `trigger_hurt *247` |
 | Pit Worm's Nest - Healing Pool (Part 1) | of4a1 | `trigger_hurt *10` |
+| Foxtrot Uniform - Healing Pool (Part 1) | of5a1 | `trigger_hurt *160` |
+| Foxtrot Uniform - Healing Pool (Part 2) | of5a2 | `trigger_hurt *101` |
+| The Package - Healing Pool (Part 1) | of6a1 | `trigger_hurt *45` |
+| Worlds Collide - Healing Pool (Part 1) | of6a4 | `trigger_hurt *78` |
+| Worlds Collide - Healing Pool (Part 2) | of6a4b | `trigger_hurt *115` |
 
 **Important for the anniversary world:** the Pit Worm's Nest pool (`of4a1 *10`)
 was on the unreachable list as one of "Opposing Force's sealed healing volumes",
@@ -120,12 +128,11 @@ It is not sealed: it is the displacer's Xen room. Every map's
 `info_displacer_xen_target` sits about 320 units from that prefab pool (`of4a1`,
 `of5a1`, `of6a1`) or about 1100 units from it (`of5a2`, `of6a4`, `of6a4b`). The
 displacer's secondary fire teleports you there. A flood fill from the player
-start cannot see a teleport, which is why they read as sealed. In the Sven
-world, `of5a1 *160`, `of6a1 *45`, `of5a2 *101`, `of6a4 *78` and `of6a4b *115` are
-still excluded, waiting on in-game investigation (Foxtrot Uniform, The Package,
-Worlds Collide). Expect most or all of them to become displacer-gated checks
-rather than exclusions. Treat any flood-fill "sealed" verdict on a map that has
-an `info_displacer_xen_target` as suspect.
+start cannot see a teleport, which is why they read as sealed. In-game
+investigation in Sven confirmed every one of them is reached with the
+displacer, so all six are now displacer-gated checks (table above). Expect the
+same in retail, and treat any flood-fill "sealed" verdict on a map that has an
+`info_displacer_xen_target` as suspect.
 
 Vicarious Reality itself is traversable without the displacer in Sven Co-op, so
 the mission is not gated; only the spots above are. Verify for retail.
@@ -147,8 +154,9 @@ a player who just received it. The retail game side needs the equivalent.
 ## 7. Weapon drops
 
 Not modelled. The original games drop weapons from dead soldiers (grunt MP5 or
-shotgun, the shock trooper's shock roach). In Sven Co-op the shock roach has not
-been seen to drop. The Sven harness has investigative scenarios for this. If
+shotgun, the shock trooper's shock roach). Sven Co-op findings: the shock trooper
+drops a shock roach that can be picked up, the human grunt dropped his MP5, the
+male assassin dropped nothing. If
 retail drops do fire weapon checks, they are an extra way in that logic ignores,
 which is safe (logic only ever under-promises). Do not add drops as sources
 unless the drop is guaranteed.

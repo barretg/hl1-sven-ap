@@ -339,9 +339,20 @@ OPPOSING_FORCE = Campaign(
     unreachable_copies={
         # of2a4's tripmine sits beside the easter-egg minigun, past the skylight.
         "Tripmine": ["of2a4"],
+        # So is the shotgun: it is in the same minigun room.
+        "Shotgun": ["of2a4"],
+        # Missing In Action's first glock is out of bounds; the source moves on
+        # to the mission's next map. Reported from play 2026-09-30.
+        "Glock": ["of1a5"],
         # Vicarious Reality's displacer is a prop in a self-teleport area, out
         # of reach. Crush Depth's is the real one.
         "Displacer Cannon": ["of3a5"],
+    },
+    weapon_source_gates={
+        # Crush Depth's shotgun and The Package's grenades are past displacer
+        # teleports. Reported from play 2026-09-30.
+        "of3a2": {"Shotgun": {"always": ["displacer_cannon"]}},
+        "of6a2": {"Hand Grenade": {"always": ["displacer_cannon"]}},
     },
     weapons={
         "Desert Eagle": ["weapon_eagle"],
@@ -669,18 +680,6 @@ UNREACHABLE_CHARGERS: dict[str, set[str]] = {
     # the *other* one here: Part 3 drops you on the far side, so it is the
     # `-544` copy that cannot be reached rather than the `+544` one.
     "of4a3": {"func_healthcharger:*138"},
-    # Opposing Force's sealed healing volumes: two prefab rooms compiled into
-    # maps that never open them, the same box at the same size in each. Found by
-    # flood fill in the retail maps (hl1-anniversary-ap), and these are the same
-    # boxes in Sven Co-op's port. Each sits 320 or 1100 units from its map's
-    # `info_displacer_xen_target`, so they are likely the displacer's Xen rooms
-    # rather than sealed: Pit Worm's Nest's (of4a1) was, and is gated below.
-    # The rest wait on the aptest "Displacer:" investigation scenarios.
-    "of5a1": {"trigger_hurt:*160"},
-    "of6a1": {"trigger_hurt:*45"},
-    "of5a2": {"trigger_hurt:*101"},
-    "of6a4": {"trigger_hurt:*78"},
-    "of6a4b": {"trigger_hurt:*115"},
 }
 
 # Gates on a single location, `{map: {"classname:model": gates}}`, for a check
@@ -698,6 +697,14 @@ LOCATION_GATES: dict[str, dict[str, dict[str, list[str]]]] = {
     # Pit Worm's Nest, Part 1: the pool is in the displacer's Xen room, not the
     # biodome. Once listed as sealed; reported reachable from play 2026-09-30.
     "of4a1": {"trigger_hurt:*10": {"always": ["displacer_cannon"]}},
+    # Opposing Force's other displacer Xen rooms, once listed as sealed (a flood
+    # fill cannot see the displacer's teleport). Each pool is reached through
+    # its map's `info_displacer_xen_target`. Confirmed from play 2026-09-30.
+    "of5a1": {"trigger_hurt:*160": {"always": ["displacer_cannon"]}},
+    "of5a2": {"trigger_hurt:*101": {"always": ["displacer_cannon"]}},
+    "of6a1": {"trigger_hurt:*45": {"always": ["displacer_cannon"]}},
+    "of6a4": {"trigger_hurt:*78": {"always": ["displacer_cannon"]}},
+    "of6a4b": {"trigger_hurt:*115": {"always": ["displacer_cannon"]}},
 }
 
 # What you start with when nothing randomises it: the crowbar, as it always was.

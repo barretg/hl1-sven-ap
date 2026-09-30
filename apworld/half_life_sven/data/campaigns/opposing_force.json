@@ -972,6 +972,28 @@
    }
   },
   {
+   "id": 7720809,
+   "name": "Foxtrot Uniform - Healing Pool (Part 1)",
+   "chapter": "of_foxtrot_uniform",
+   "map": "of5a1",
+   "trigger": {
+    "type": "charger",
+    "map": "of5a1",
+    "classname": "trigger_hurt",
+    "model": "*160"
+   },
+   "gates": {
+    "always": [
+     "displacer_cannon"
+    ]
+   },
+   "position": [
+    2580,
+    1832,
+    -840
+   ]
+  },
+  {
    "id": 7720355,
    "name": "Foxtrot Uniform - Part 2 Reached",
    "chapter": "of_foxtrot_uniform",
@@ -980,6 +1002,28 @@
     "type": "map_reached",
     "map": "of5a2"
    }
+  },
+  {
+   "id": 7720810,
+   "name": "Foxtrot Uniform - Healing Pool (Part 2)",
+   "chapter": "of_foxtrot_uniform",
+   "map": "of5a2",
+   "trigger": {
+    "type": "charger",
+    "map": "of5a2",
+    "classname": "trigger_hurt",
+    "model": "*101"
+   },
+   "gates": {
+    "always": [
+     "displacer_cannon"
+    ]
+   },
+   "position": [
+    2504,
+    -3160,
+    1816
+   ]
   },
   {
    "id": 7720356,
@@ -1046,6 +1090,28 @@
    }
   },
   {
+   "id": 7720811,
+   "name": "The Package - Healing Pool (Part 1)",
+   "chapter": "of_the_package",
+   "map": "of6a1",
+   "trigger": {
+    "type": "charger",
+    "map": "of6a1",
+    "classname": "trigger_hurt",
+    "model": "*45"
+   },
+   "gates": {
+    "always": [
+     "displacer_cannon"
+    ]
+   },
+   "position": [
+    -3244,
+    -3352,
+    -840
+   ]
+  },
+  {
    "id": 7720406,
    "name": "The Package - Part 2 Reached",
    "chapter": "of_the_package",
@@ -1074,6 +1140,28 @@
     "type": "map_reached",
     "map": "of6a4"
    }
+  },
+  {
+   "id": 7720812,
+   "name": "Worlds Collide - Healing Pool (Part 1)",
+   "chapter": "of_worlds_collide",
+   "map": "of6a4",
+   "trigger": {
+    "type": "charger",
+    "map": "of6a4",
+    "classname": "trigger_hurt",
+    "model": "*78"
+   },
+   "gates": {
+    "always": [
+     "displacer_cannon"
+    ]
+   },
+   "position": [
+    2504,
+    -3160,
+    2840
+   ]
   },
   {
    "id": 7720227,
@@ -1120,6 +1208,28 @@
    ]
   },
   {
+   "id": 7720813,
+   "name": "Worlds Collide - Healing Pool (Part 2)",
+   "chapter": "of_worlds_collide",
+   "map": "of6a4b",
+   "trigger": {
+    "type": "charger",
+    "map": "of6a4b",
+    "classname": "trigger_hurt",
+    "model": "*115"
+   },
+   "gates": {
+    "always": [
+     "displacer_cannon"
+    ]
+   },
+   "position": [
+    2504,
+    -3160,
+    2840
+   ]
+  },
+  {
    "id": 7720311,
    "name": "Opposing Force: First Combat Knife",
    "chapter": "of_welcome_to_black_mesa",
@@ -1152,28 +1262,28 @@
    "id": 7720294,
    "name": "Opposing Force: First Glock",
    "chapter": "of_missing_in_action",
-   "map": "of1a5",
+   "map": "of1a5b",
    "trigger": {
     "type": "weapon_pickup",
-    "map": "of1a5",
+    "map": "of1a5b",
     "classnames": [
      "weapon_glock",
      "weapon_9mmhandgun"
     ]
    },
    "position": [
-    1824,
-    -3456,
-    1339
+    768,
+    -1872,
+    1344
    ],
    "sources": [
     {
      "chapter": "of_missing_in_action",
-     "map": "of1a5",
+     "map": "of1a5b",
      "position": [
-      1824,
-      -3456,
-      1339
+      768,
+      -1872,
+      1344
      ]
     },
     {
@@ -1309,11 +1419,11 @@
     },
     {
      "chapter": "of_we_are_not_alone",
-     "map": "of2a4",
+     "map": "of2a5",
      "position": [
-      104,
-      678,
-      58
+      2120,
+      -1068,
+      812
      ]
     },
     {
@@ -1323,7 +1433,12 @@
       1094,
       2426,
       -3372
-     ]
+     ],
+     "gates": {
+      "always": [
+       "displacer_cannon"
+      ]
+     }
     },
     {
      "chapter": "of_pit_worms_nest",
@@ -1576,7 +1691,12 @@
       1856,
       2064,
       -1504
-     ]
+     ],
+     "gates": {
+      "always": [
+       "displacer_cannon"
+      ]
+     }
     }
    ]
   },

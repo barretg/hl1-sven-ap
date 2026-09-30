@@ -555,6 +555,15 @@ APSource@ SourceHere( APLocation@ pLocation )
 
 void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 {
+	// A weapon check is sent by whichever copy is touched first, so once it is
+	// found no copy anywhere is still a place to find it.
+	if( pLocation.kind == TRIGGER_WEAPON_PICKUP && LocationFound( pLocation ) )
+	{
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+			"[AP] " + pLocation.name + ": already found.\n" );
+		return;
+	}
+
 	string szPrefix = LocationFound( pLocation ) ? "[found] " : "";
 
 	// Where to point: this map's source if there is one, else the check itself.
@@ -744,6 +753,9 @@ void FindLocation( CBasePlayer@ pPlayer, const string& in szQuery )
 	uint uiHere = 0;
 	for( uint i = 0; i < matches.length(); ++i )
 	{
+		// A found weapon check has nowhere left to point at.
+		if( matches[i].kind == TRIGGER_WEAPON_PICKUP && LocationFound( matches[i] ) )
+			continue;
 		if( matches[i].map == g_szCurrentMap || SourceHere( matches[i] ) !is null )
 		{
 			if( pHere is null )
