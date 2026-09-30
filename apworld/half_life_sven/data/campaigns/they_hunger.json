@@ -359,6 +359,35 @@
     64,
     344,
     267
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_1",
+     "map": "th_ep1_01",
+     "position": [
+      64,
+      344,
+      267
+     ]
+    },
+    {
+     "chapter": "th_episode_2",
+     "map": "th_ep2_00",
+     "position": [
+      2720,
+      -201,
+      82
+     ]
+    },
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_00",
+     "position": [
+      -594,
+      -3100,
+      2608
+     ]
+    }
    ]
   },
   {
@@ -377,6 +406,35 @@
     3484,
     -1708,
     193
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_1",
+     "map": "th_ep1_02",
+     "position": [
+      3484,
+      -1708,
+      193
+     ]
+    },
+    {
+     "chapter": "th_episode_2",
+     "map": "th_ep2_03",
+     "position": [
+      1170,
+      -1514,
+      945
+     ]
+    },
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_01",
+     "position": [
+      -9584,
+      7606,
+      -248
+     ]
+    }
    ]
   },
   {
@@ -395,6 +453,35 @@
     -4802,
     1980,
     -84
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_1",
+     "map": "th_ep1_03",
+     "position": [
+      -4802,
+      1980,
+      -84
+     ]
+    },
+    {
+     "chapter": "th_episode_2",
+     "map": "th_ep2_03",
+     "position": [
+      2580,
+      -524,
+      722
+     ]
+    },
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_01",
+     "position": [
+      -2672,
+      -16,
+      -208
+     ]
+    }
    ]
   },
   {
@@ -413,6 +500,26 @@
     -52,
     -461,
     -64
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_1",
+     "map": "th_ep1_01",
+     "position": [
+      -52,
+      -461,
+      -64
+     ]
+    },
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_00",
+     "position": [
+      -944,
+      -3616,
+      2076
+     ]
+    }
    ]
   },
   {
@@ -431,6 +538,35 @@
     1628,
     1848,
     278
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_1",
+     "map": "th_ep1_01",
+     "position": [
+      1628,
+      1848,
+      278
+     ]
+    },
+    {
+     "chapter": "th_episode_2",
+     "map": "th_ep2_00",
+     "position": [
+      2926,
+      -292,
+      50
+     ]
+    },
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_00",
+     "position": [
+      -758,
+      -4096,
+      2416
+     ]
+    }
    ]
   },
   {
@@ -449,6 +585,17 @@
     -805,
     -3630,
     2608
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_00",
+     "position": [
+      -805,
+      -3630,
+      2608
+     ]
+    }
    ]
   },
   {
@@ -467,6 +614,35 @@
     -715,
     239,
     264
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_1",
+     "map": "th_ep1_01",
+     "position": [
+      -715,
+      239,
+      264
+     ]
+    },
+    {
+     "chapter": "th_episode_2",
+     "map": "th_ep2_00",
+     "position": [
+      2818,
+      640,
+      76
+     ]
+    },
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_00",
+     "position": [
+      -1363,
+      -3084,
+      176
+     ]
+    }
    ]
   },
   {
@@ -485,6 +661,17 @@
     -2124,
     -802,
     -976
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_04",
+     "position": [
+      -2124,
+      -802,
+      -976
+     ]
+    }
    ]
   },
   {
@@ -503,6 +690,26 @@
     1106,
     750,
     156
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_1",
+     "map": "th_ep1_03",
+     "position": [
+      1106,
+      750,
+      156
+     ]
+    },
+    {
+     "chapter": "th_episode_2",
+     "map": "th_ep2_00",
+     "position": [
+      -1940,
+      6166,
+      -1388
+     ]
+    }
    ]
   },
   {
@@ -521,6 +728,35 @@
     411,
     -169,
     -88
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_1",
+     "map": "th_ep1_01",
+     "position": [
+      411,
+      -169,
+      -88
+     ]
+    },
+    {
+     "chapter": "th_episode_2",
+     "map": "th_ep2_01",
+     "position": [
+      -3252,
+      -318,
+      -288
+     ]
+    },
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_01",
+     "position": [
+      -240,
+      5380,
+      0
+     ]
+    }
    ]
   },
   {
@@ -539,6 +775,26 @@
     2652,
     -206,
     80
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_2",
+     "map": "th_ep2_00",
+     "position": [
+      2652,
+      -206,
+      80
+     ]
+    },
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_01",
+     "position": [
+      -152,
+      898,
+      -207
+     ]
+    }
    ]
   },
   {
@@ -557,6 +813,35 @@
     2637,
     -4784,
     -1216
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_1",
+     "map": "th_ep1_04",
+     "position": [
+      2637,
+      -4784,
+      -1216
+     ]
+    },
+    {
+     "chapter": "th_episode_2",
+     "map": "th_ep2_02",
+     "position": [
+      -2201,
+      -393,
+      -1920
+     ]
+    },
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_01",
+     "position": [
+      -438,
+      3988,
+      -694
+     ]
+    }
    ]
   },
   {
@@ -575,6 +860,26 @@
     -1362,
     200,
     34
+   ],
+   "sources": [
+    {
+     "chapter": "th_episode_2",
+     "map": "th_ep2_00",
+     "position": [
+      -1362,
+      200,
+      34
+     ]
+    },
+    {
+     "chapter": "th_episode_3",
+     "map": "th_ep3_01",
+     "position": [
+      -8460,
+      8660,
+      -270
+     ]
+    }
    ]
   },
   {

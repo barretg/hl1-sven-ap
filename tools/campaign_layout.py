@@ -86,10 +86,16 @@ class Campaign:
     # Items whose "First ..." check this campaign does not get, even though an
     # entity for it exists in its maps. Its id stays reserved in `ids.json`.
     no_first_check: list[str] = field(default_factory=list)
-    # `{item name: [maps]}` the derived "First ..." anchor passes over, for a
-    # copy that sits somewhere a lone player cannot reach. The check lands on
-    # the next map that holds one instead.
-    anchor_skip_maps: dict[str, list[str]] = field(default_factory=dict)
+    # `{item name: [maps]}` whose copies do not count toward its "First ..."
+    # check: an easter egg past a skylight, a prop behind glass. Each mission's
+    # source moves on to its next map that holds one.
+    unreachable_copies: dict[str, list[str]] = field(default_factory=dict)
+    # `{map: {item name: gates}}` for a mission's first copy of a weapon that
+    # sits past something its mission and map do not ask for. The same shape
+    # as `LOCATION_GATES`.
+    weapon_source_gates: dict[str, dict[str, dict[str, list[str]]]] = field(
+        default_factory=dict
+    )
     # What a shared weapon is called *here*, when this campaign reskins it into
     # something else. Sven Co-op does that with a `globalmodellist` in the map
     # .cfg: They Hunger's maps swap the pipe wrench's models for a shovel and the
@@ -330,8 +336,13 @@ OPPOSING_FORCE = Campaign(
     # part of its campaign at all: so it stays in, console-less, reached by
     # `!warp` like Crush Depth.
     intro_chapter="of_incoming",
-    # of2a4's tripmine sits beside the easter-egg minigun, past the skylight.
-    anchor_skip_maps={"Tripmine": ["of2a4"]},
+    unreachable_copies={
+        # of2a4's tripmine sits beside the easter-egg minigun, past the skylight.
+        "Tripmine": ["of2a4"],
+        # Vicarious Reality's displacer is a prop in a self-teleport area, out
+        # of reach. Crush Depth's is the real one.
+        "Displacer Cannon": ["of3a5"],
+    },
     weapons={
         "Desert Eagle": ["weapon_eagle"],
         "SAW": ["weapon_m249", "weapon_saw"],
@@ -661,8 +672,10 @@ UNREACHABLE_CHARGERS: dict[str, set[str]] = {
     # Opposing Force's sealed healing volumes: two prefab rooms compiled into
     # maps that never open them, the same box at the same size in each. Found by
     # flood fill in the retail maps (hl1-anniversary-ap), and these are the same
-    # boxes in Sven Co-op's port.
-    "of4a1": {"trigger_hurt:*10"},
+    # boxes in Sven Co-op's port. Each sits 320 or 1100 units from its map's
+    # `info_displacer_xen_target`, so they are likely the displacer's Xen rooms
+    # rather than sealed: Pit Worm's Nest's (of4a1) was, and is gated below.
+    # The rest wait on the aptest "Displacer:" investigation scenarios.
     "of5a1": {"trigger_hurt:*160"},
     "of6a1": {"trigger_hurt:*45"},
     "of5a2": {"trigger_hurt:*101"},
@@ -677,6 +690,14 @@ LOCATION_GATES: dict[str, dict[str, dict[str, list[str]]]] = {
     # Pit Worm's Nest, Part 2: the healing pool is across the gap the grapple
     # crosses, which part 3 is where you find it.
     "of4a2": {"trigger_hurt:*143": {"always": ["barnacle_grapple"]}},
+    # Vicarious Reality, Part 1: the healing pool is only reached by
+    # self-teleporting with the displacer. Reported from play 2026-09-30.
+    "of3a4": {"trigger_hurt:*247": {"always": ["displacer_cannon"]}},
+    # Crush Depth, Part 2: the health charger is past a displacer teleport.
+    "of3a2": {"func_healthcharger:*39": {"always": ["displacer_cannon"]}},
+    # Pit Worm's Nest, Part 1: the pool is in the displacer's Xen room, not the
+    # biodome. Once listed as sealed; reported reachable from play 2026-09-30.
+    "of4a1": {"trigger_hurt:*10": {"always": ["displacer_cannon"]}},
 }
 
 # What you start with when nothing randomises it: the crowbar, as it always was.
@@ -874,6 +895,7 @@ REQUIREMENT_GROUPS: dict[str, list[str]] = {
     "tau_cannon": ["Tau Cannon"],
     "rpg": ["RPG"],
     "barnacle_grapple": ["Barnacle Grapple"],
+    "displacer_cannon": ["Displacer Cannon"],
 }
 
 # --- Which location types to generate -------------------------------------

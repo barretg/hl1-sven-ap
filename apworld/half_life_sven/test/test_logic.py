@@ -724,3 +724,67 @@ class TestPairedFinale(StartingMissionMixin, HalfLifeSvenTestBase):
     def test_the_seed_is_still_winnable(self) -> None:
         state = self.multiworld.get_all_state(False)
         self.assertTrue(self.multiworld.completion_condition[self.player](state))
+
+
+class TestWeaponSources(HalfLifeSvenTestBase):
+    """A "First ..." check opens through any mission's first copy.
+
+    Missions are played in any order, so the earliest copy in campaign order is
+    not the one a player meets first. Loose logic, so no mission door asks for
+    a weapon and only the unlock items decide what is open.
+    """
+
+    options = {
+        "include_half_life": False,
+        "include_opposing_force": True,
+        "logic_difficulty": "loose",
+    }
+
+    def with_only(self, *chapter_keys: str):
+        """Everything, but with only these missions' unlocks held."""
+        world = self.multiworld.worlds[self.player]
+        state = self.multiworld.get_all_state(False)
+        for key, name in unlock_item_for_chapter.items():
+            if key not in chapter_keys and CHAPTERS_BY_KEY[key]["campaign"] == "opposing_force":
+                while state.has(name, self.player):
+                    state.remove(world.create_item(name))
+        state.sweep_for_advancements()
+        return state
+
+    def test_a_later_missions_copy_opens_it(self) -> None:
+        """First Glock is anchored in Missing In Action; Vicarious Reality has one too."""
+        location = self.multiworld.get_location("Opposing Force: First Glock", self.player)
+        self.assertTrue(location.can_reach(self.with_only("of_vicarious_reality")))
+
+    def test_a_mission_without_one_does_not(self) -> None:
+        location = self.multiworld.get_location("Opposing Force: First Glock", self.player)
+        self.assertFalse(location.can_reach(self.with_only("of_crush_depth")))
+
+    def test_every_weapon_check_has_its_sources(self) -> None:
+        for entry in LOCATIONS:
+            if entry["trigger"]["type"] == "weapon_pickup":
+                self.assertTrue(entry.get("sources"), entry["name"])
+                self.assertEqual(entry["sources"][0]["map"], entry["map"], entry["name"])
+
+    def test_the_displacer_gates_its_spots(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        state = self.multiworld.get_all_state(False)
+        state.remove(world.create_item("Displacer Cannon"))
+        state.sweep_for_advancements()
+        for name in (
+            "Crush Depth - Health Charger (Part 2)",
+            "Vicarious Reality - Healing Pool (Part 1)",
+            "Pit Worm's Nest - Healing Pool (Part 1)",
+        ):
+            location = self.multiworld.get_location(name, self.player)
+            self.assertFalse(location.can_reach(state), f"{name} without the displacer")
+        state.collect(world.create_item("Displacer Cannon"), True)
+        state.sweep_for_advancements()
+        for name in (
+            "Crush Depth - Health Charger (Part 2)",
+            "Vicarious Reality - Healing Pool (Part 1)",
+            "Pit Worm's Nest - Healing Pool (Part 1)",
+        ):
+            self.assertTrue(
+                self.multiworld.get_location(name, self.player).can_reach(state), name
+            )

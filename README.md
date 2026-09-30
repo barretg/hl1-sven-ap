@@ -122,7 +122,7 @@ against at most 71 progression items:
 | `weapon_pickup` | 58 | you find a weapon for the first time in that campaign |
 
 Weapon checks are per campaign, not per seed: each campaign has its own "first
-shotgun" at its own earliest map. Anchoring them once across everything would
+shotgun". Anchoring them once across everything would
 have stranded every shared weapon's check in a Half-Life map, so a seed without
 Half-Life would have lost them.
 
@@ -131,8 +131,13 @@ is the only per-entity identity the BSP and the running game agree on: they have
 no targetname. The check fires on the `+use`, not on draining the unit. They can
 be switched off wholesale with `chargesanity: false`.
 
-Weapon checks are anchored, for logic, at the earliest map in campaign order that
-contains that weapon, but any copy on any of that campaign's maps sends it. Not
+Missions are played in any order, so for logic a weapon check has one source per
+mission: that mission's first copy of the weapon. Any one reachable source opens
+the check, plus whatever that copy alone asks for (`weapon_source_gates`). Copies
+nobody can reach, such as props behind glass, are listed in `unreachable_copies`
+and the mission's next copy is used instead. The earliest source names the check
+and is where `!find` points, unless the map you are on has a source of its own.
+Any copy on any of that campaign's maps sends it. Not
 one on the hub or Suspension, not one the game hands you, and not one
 Butterfingers or a throw put on the floor. The crowbar has one too, despite
 being starting inventory.

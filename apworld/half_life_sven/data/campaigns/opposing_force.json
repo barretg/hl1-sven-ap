@@ -695,6 +695,11 @@
     "classname": "func_healthcharger",
     "model": "*39"
    },
+   "gates": {
+    "always": [
+     "displacer_cannon"
+    ]
+   },
    "position": [
     1204,
     2614,
@@ -756,6 +761,11 @@
     "classname": "trigger_hurt",
     "model": "*247"
    },
+   "gates": {
+    "always": [
+     "displacer_cannon"
+    ]
+   },
    "position": [
     -2504,
     -3296,
@@ -808,6 +818,28 @@
     "type": "map_reached",
     "map": "of4a1"
    }
+  },
+  {
+   "id": 7720808,
+   "name": "Pit Worm's Nest - Healing Pool (Part 1)",
+   "chapter": "of_pit_worms_nest",
+   "map": "of4a1",
+   "trigger": {
+    "type": "charger",
+    "map": "of4a1",
+    "classname": "trigger_hurt",
+    "model": "*10"
+   },
+   "gates": {
+    "always": [
+     "displacer_cannon"
+    ]
+   },
+   "position": [
+    -172,
+    -271,
+    -840
+   ]
   },
   {
    "id": 7720207,
@@ -1103,6 +1135,17 @@
     549,
     -2822,
     68
+   ],
+   "sources": [
+    {
+     "chapter": "of_welcome_to_black_mesa",
+     "map": "of1a2",
+     "position": [
+      549,
+      -2822,
+      68
+     ]
+    }
    ]
   },
   {
@@ -1122,6 +1165,44 @@
     1824,
     -3456,
     1339
+   ],
+   "sources": [
+    {
+     "chapter": "of_missing_in_action",
+     "map": "of1a5",
+     "position": [
+      1824,
+      -3456,
+      1339
+     ]
+    },
+    {
+     "chapter": "of_we_are_not_alone",
+     "map": "of2a4",
+     "position": [
+      -1008,
+      -382,
+      172
+     ]
+    },
+    {
+     "chapter": "of_vicarious_reality",
+     "map": "of3a4",
+     "position": [
+      -904,
+      -232,
+      40
+     ]
+    },
+    {
+     "chapter": "of_pit_worms_nest",
+     "map": "of4a4",
+     "position": [
+      -300,
+      -912,
+      416
+     ]
+    }
    ]
   },
   {
@@ -1141,6 +1222,53 @@
     -516,
     2300,
     -784
+   ],
+   "sources": [
+    {
+     "chapter": "of_friendly_fire",
+     "map": "of2a1b",
+     "position": [
+      -516,
+      2300,
+      -784
+     ]
+    },
+    {
+     "chapter": "of_we_are_not_alone",
+     "map": "of2a5",
+     "position": [
+      1762,
+      -1231,
+      836
+     ]
+    },
+    {
+     "chapter": "of_vicarious_reality",
+     "map": "of3a6",
+     "position": [
+      -2096,
+      2352,
+      -304
+     ]
+    },
+    {
+     "chapter": "of_pit_worms_nest",
+     "map": "of4a3",
+     "position": [
+      3438,
+      -1767,
+      496
+     ]
+    },
+    {
+     "chapter": "of_foxtrot_uniform",
+     "map": "of5a3",
+     "position": [
+      -708,
+      -752,
+      136
+     ]
+    }
    ]
   },
   {
@@ -1159,6 +1287,62 @@
     808,
     -2584,
     832
+   ],
+   "sources": [
+    {
+     "chapter": "of_we_are_pulling_out",
+     "map": "of1a3",
+     "position": [
+      808,
+      -2584,
+      832
+     ]
+    },
+    {
+     "chapter": "of_friendly_fire",
+     "map": "of2a1",
+     "position": [
+      1652,
+      1516,
+      52
+     ]
+    },
+    {
+     "chapter": "of_we_are_not_alone",
+     "map": "of2a4",
+     "position": [
+      104,
+      678,
+      58
+     ]
+    },
+    {
+     "chapter": "of_crush_depth",
+     "map": "of3a2",
+     "position": [
+      1094,
+      2426,
+      -3372
+     ]
+    },
+    {
+     "chapter": "of_pit_worms_nest",
+     "map": "of4a3",
+     "position": [
+      1888,
+      -1068,
+      593
+     ]
+    },
+    {
+     "chapter": "of_the_package",
+     "map": "of6a1",
+     "position": [
+      -3320,
+      2880,
+      272
+     ]
+    }
    ]
   },
   {
@@ -1177,6 +1361,26 @@
     2988,
     3084,
     -576
+   ],
+   "sources": [
+    {
+     "chapter": "of_we_are_not_alone",
+     "map": "of2a6",
+     "position": [
+      2988,
+      3084,
+      -576
+     ]
+    },
+    {
+     "chapter": "of_the_package",
+     "map": "of6a3",
+     "position": [
+      -2088,
+      532,
+      184
+     ]
+    }
    ]
   },
   {
@@ -1195,6 +1399,44 @@
     232,
     -1284,
     8
+   ],
+   "sources": [
+    {
+     "chapter": "of_missing_in_action",
+     "map": "of1a6",
+     "position": [
+      232,
+      -1284,
+      8
+     ]
+    },
+    {
+     "chapter": "of_friendly_fire",
+     "map": "of2a2",
+     "position": [
+      -3066,
+      1616,
+      640
+     ]
+    },
+    {
+     "chapter": "of_we_are_not_alone",
+     "map": "of2a5",
+     "position": [
+      200,
+      -320,
+      1184
+     ]
+    },
+    {
+     "chapter": "of_foxtrot_uniform",
+     "map": "of5a1",
+     "position": [
+      -2384,
+      2544,
+      76
+     ]
+    }
    ]
   },
   {
@@ -1213,6 +1455,17 @@
     1724,
     -1068,
     808
+   ],
+   "sources": [
+    {
+     "chapter": "of_we_are_not_alone",
+     "map": "of2a5",
+     "position": [
+      1724,
+      -1068,
+      808
+     ]
+    }
    ]
   },
   {
@@ -1231,6 +1484,17 @@
     -1768,
     760,
     417
+   ],
+   "sources": [
+    {
+     "chapter": "of_pit_worms_nest",
+     "map": "of4a2",
+     "position": [
+      -1768,
+      760,
+      417
+     ]
+    }
    ]
   },
   {
@@ -1249,6 +1513,71 @@
     -544,
     1856,
     -976
+   ],
+   "sources": [
+    {
+     "chapter": "of_we_are_pulling_out",
+     "map": "of1a4b",
+     "position": [
+      -544,
+      1856,
+      -976
+     ]
+    },
+    {
+     "chapter": "of_missing_in_action",
+     "map": "of1a6",
+     "position": [
+      232,
+      -1220,
+      8
+     ]
+    },
+    {
+     "chapter": "of_friendly_fire",
+     "map": "of2a1b",
+     "position": [
+      -528,
+      2416,
+      -720
+     ]
+    },
+    {
+     "chapter": "of_we_are_not_alone",
+     "map": "of2a5",
+     "position": [
+      2220,
+      372,
+      664
+     ]
+    },
+    {
+     "chapter": "of_pit_worms_nest",
+     "map": "of4a3",
+     "position": [
+      3144,
+      -1552,
+      496
+     ]
+    },
+    {
+     "chapter": "of_foxtrot_uniform",
+     "map": "of5a3",
+     "position": [
+      -1040,
+      -1984,
+      128
+     ]
+    },
+    {
+     "chapter": "of_the_package",
+     "map": "of6a2",
+     "position": [
+      1856,
+      2064,
+      -1504
+     ]
+    }
    ]
   },
   {
@@ -1267,6 +1596,35 @@
     365,
     -589,
     -156
+   ],
+   "sources": [
+    {
+     "chapter": "of_welcome_to_black_mesa",
+     "map": "of1a2",
+     "position": [
+      365,
+      -589,
+      -156
+     ]
+    },
+    {
+     "chapter": "of_we_are_not_alone",
+     "map": "of2a6",
+     "position": [
+      2984,
+      3348,
+      -584
+     ]
+    },
+    {
+     "chapter": "of_pit_worms_nest",
+     "map": "of4a1",
+     "position": [
+      -50,
+      2340,
+      296
+     ]
+    }
    ]
   },
   {
@@ -1286,6 +1644,35 @@
     -869,
     -151,
     220
+   ],
+   "sources": [
+    {
+     "chapter": "of_foxtrot_uniform",
+     "map": "of5a1",
+     "position": [
+      -869,
+      -151,
+      220
+     ]
+    },
+    {
+     "chapter": "of_the_package",
+     "map": "of6a2",
+     "position": [
+      776,
+      1368,
+      -248
+     ]
+    },
+    {
+     "chapter": "of_worlds_collide",
+     "map": "of6a4b",
+     "position": [
+      -250,
+      2471,
+      -575
+     ]
+    }
    ]
   },
   {
@@ -1304,24 +1691,46 @@
     -640,
     -1408,
     136
+   ],
+   "sources": [
+    {
+     "chapter": "of_foxtrot_uniform",
+     "map": "of5a1",
+     "position": [
+      -640,
+      -1408,
+      136
+     ]
+    }
    ]
   },
   {
    "id": 7720305,
    "name": "Opposing Force: First Displacer Cannon",
-   "chapter": "of_vicarious_reality",
-   "map": "of3a5",
+   "chapter": "of_crush_depth",
+   "map": "of3a2",
    "trigger": {
     "type": "weapon_pickup",
-    "map": "of3a5",
+    "map": "of3a2",
     "classnames": [
      "weapon_displacer"
     ]
    },
    "position": [
-    1414,
-    302,
-    240
+    424,
+    884,
+    1040
+   ],
+   "sources": [
+    {
+     "chapter": "of_crush_depth",
+     "map": "of3a2",
+     "position": [
+      424,
+      884,
+      1040
+     ]
+    }
    ]
   },
   {
@@ -1340,6 +1749,17 @@
     -1624,
     -432,
     384
+   ],
+   "sources": [
+    {
+     "chapter": "of_pit_worms_nest",
+     "map": "of4a2",
+     "position": [
+      -1624,
+      -432,
+      384
+     ]
+    }
    ]
   },
   {
@@ -1358,6 +1778,17 @@
     -338,
     -504,
     337
+   ],
+   "sources": [
+    {
+     "chapter": "of_pit_worms_nest",
+     "map": "of4a3",
+     "position": [
+      -338,
+      -504,
+      337
+     ]
+    }
    ]
   },
   {
@@ -1376,6 +1807,17 @@
     -1152,
     -560,
     -112
+   ],
+   "sources": [
+    {
+     "chapter": "of_welcome_to_black_mesa",
+     "map": "of1a1",
+     "position": [
+      -1152,
+      -560,
+      -112
+     ]
+    }
    ]
   },
   {
@@ -1394,6 +1836,17 @@
     367,
     2816,
     48
+   ],
+   "sources": [
+    {
+     "chapter": "of_welcome_to_black_mesa",
+     "map": "of1a1",
+     "position": [
+      367,
+      2816,
+      48
+     ]
+    }
    ]
   },
   {

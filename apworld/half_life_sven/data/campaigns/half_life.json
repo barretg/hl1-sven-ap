@@ -2947,6 +2947,35 @@
     1678,
     1943,
     -129
+   ],
+   "sources": [
+    {
+     "chapter": "unforeseen_consequences",
+     "map": "hl_c02_a1",
+     "position": [
+      1678,
+      1943,
+      -129
+     ]
+    },
+    {
+     "chapter": "blast_pit",
+     "map": "hl_c05_a1",
+     "position": [
+      -1699,
+      2539,
+      1020
+     ]
+    },
+    {
+     "chapter": "apprehension",
+     "map": "hl_c08_a2",
+     "position": [
+      -2880,
+      408,
+      -1080
+     ]
+    }
    ]
   },
   {
@@ -2966,6 +2995,26 @@
     2221,
     1976,
     914
+   ],
+   "sources": [
+    {
+     "chapter": "unforeseen_consequences",
+     "map": "hl_c02_a1",
+     "position": [
+      2221,
+      1976,
+      914
+     ]
+    },
+    {
+     "chapter": "surface_tension",
+     "map": "hl_c11_a4",
+     "position": [
+      -240,
+      744,
+      -1656
+     ]
+    }
    ]
   },
   {
@@ -2984,6 +3033,44 @@
     -1439,
     255,
     -1034
+   ],
+   "sources": [
+    {
+     "chapter": "blast_pit",
+     "map": "hl_c05_a3",
+     "position": [
+      -1439,
+      255,
+      -1034
+     ]
+    },
+    {
+     "chapter": "power_up",
+     "map": "hl_c06",
+     "position": [
+      -512,
+      16,
+      112
+     ]
+    },
+    {
+     "chapter": "on_a_rail",
+     "map": "hl_c07_a1",
+     "position": [
+      1444,
+      1208,
+      -2040
+     ]
+    },
+    {
+     "chapter": "residue_processing",
+     "map": "hl_c09",
+     "position": [
+      -3352,
+      1120,
+      -784
+     ]
+    }
    ]
   },
   {
@@ -3003,6 +3090,35 @@
     -888,
     -1080,
     64
+   ],
+   "sources": [
+    {
+     "chapter": "weve_got_hostiles",
+     "map": "hl_c04",
+     "position": [
+      -888,
+      -1080,
+      64
+     ]
+    },
+    {
+     "chapter": "on_a_rail",
+     "map": "hl_c07_a1",
+     "position": [
+      2908,
+      -816,
+      -1767
+     ]
+    },
+    {
+     "chapter": "surface_tension",
+     "map": "hl_c11_a4",
+     "position": [
+      -288,
+      744,
+      -1656
+     ]
+    }
    ]
   },
   {
@@ -3021,6 +3137,62 @@
     1690,
     -742,
     255
+   ],
+   "sources": [
+    {
+     "chapter": "office_complex",
+     "map": "hl_c03",
+     "position": [
+      1690,
+      -742,
+      255
+     ]
+    },
+    {
+     "chapter": "weve_got_hostiles",
+     "map": "hl_c04",
+     "position": [
+      140,
+      1082,
+      32
+     ]
+    },
+    {
+     "chapter": "power_up",
+     "map": "hl_c06",
+     "position": [
+      544,
+      848,
+      376
+     ]
+    },
+    {
+     "chapter": "apprehension",
+     "map": "hl_c08_a1",
+     "position": [
+      -880,
+      2009,
+      -204
+     ]
+    },
+    {
+     "chapter": "surface_tension",
+     "map": "hl_c11_a2",
+     "position": [
+      -4480,
+      2848,
+      -208
+     ]
+    },
+    {
+     "chapter": "lambda_core",
+     "map": "hl_c13_a4",
+     "position": [
+      1094,
+      -649,
+      -256
+     ]
+    }
    ]
   },
   {
@@ -3039,6 +3211,26 @@
     1420,
     288,
     -588
+   ],
+   "sources": [
+    {
+     "chapter": "apprehension",
+     "map": "hl_c08_a1",
+     "position": [
+      1420,
+      288,
+      -588
+     ]
+    },
+    {
+     "chapter": "questionable_ethics",
+     "map": "hl_c10",
+     "position": [
+      -464,
+      448,
+      256
+     ]
+    }
    ]
   },
   {
@@ -3057,6 +3249,35 @@
     -2888,
     -5008,
     -1256
+   ],
+   "sources": [
+    {
+     "chapter": "surface_tension",
+     "map": "hl_c11_a2",
+     "position": [
+      -2888,
+      -5008,
+      -1256
+     ]
+    },
+    {
+     "chapter": "forget_about_freeman",
+     "map": "hl_c12",
+     "position": [
+      -1976,
+      -1184,
+      384
+     ]
+    },
+    {
+     "chapter": "lambda_core",
+     "map": "hl_c13_a4",
+     "position": [
+      1000,
+      -368,
+      -208
+     ]
+    }
    ]
   },
   {
@@ -3075,6 +3296,26 @@
     -1184,
     432,
     464
+   ],
+   "sources": [
+    {
+     "chapter": "questionable_ethics",
+     "map": "hl_c10",
+     "position": [
+      -1184,
+      432,
+      464
+     ]
+    },
+    {
+     "chapter": "lambda_core",
+     "map": "hl_c13_a4",
+     "position": [
+      1608,
+      -744,
+      -208
+     ]
+    }
    ]
   },
   {
@@ -3093,6 +3334,17 @@
     -2534,
     310,
     -80
+   ],
+   "sources": [
+    {
+     "chapter": "lambda_core",
+     "map": "hl_c13_a1",
+     "position": [
+      -2534,
+      310,
+      -80
+     ]
+    }
    ]
   },
   {
@@ -3111,6 +3363,26 @@
     96,
     320,
     -1117
+   ],
+   "sources": [
+    {
+     "chapter": "surface_tension",
+     "map": "hl_c11_a3",
+     "position": [
+      96,
+      320,
+      -1117
+     ]
+    },
+    {
+     "chapter": "lambda_core",
+     "map": "hl_c13_a4",
+     "position": [
+      1480,
+      -744,
+      -208
+     ]
+    }
    ]
   },
   {
@@ -3129,6 +3401,71 @@
     1384,
     -2300,
     -860
+   ],
+   "sources": [
+    {
+     "chapter": "on_a_rail",
+     "map": "hl_c07_a1",
+     "position": [
+      1384,
+      -2300,
+      -860
+     ]
+    },
+    {
+     "chapter": "apprehension",
+     "map": "hl_c08_a1",
+     "position": [
+      -620,
+      1545,
+      -216
+     ]
+    },
+    {
+     "chapter": "residue_processing",
+     "map": "hl_c09",
+     "position": [
+      -3408,
+      1392,
+      -752
+     ]
+    },
+    {
+     "chapter": "surface_tension",
+     "map": "hl_c11_a4",
+     "position": [
+      -32,
+      744,
+      -1656
+     ]
+    },
+    {
+     "chapter": "lambda_core",
+     "map": "hl_c13_a3",
+     "position": [
+      1048,
+      -1140,
+      212
+     ]
+    },
+    {
+     "chapter": "interloper",
+     "map": "hl_c16_a3",
+     "position": [
+      768,
+      688,
+      -800
+     ]
+    },
+    {
+     "chapter": "nihilanth",
+     "map": "hl_c17",
+     "position": [
+      -144,
+      1072,
+      -3792
+     ]
+    }
    ]
   },
   {
@@ -3147,6 +3484,62 @@
     3060,
     -1896,
     -1780
+   ],
+   "sources": [
+    {
+     "chapter": "on_a_rail",
+     "map": "hl_c07_a1",
+     "position": [
+      3060,
+      -1896,
+      -1780
+     ]
+    },
+    {
+     "chapter": "apprehension",
+     "map": "hl_c08_a1",
+     "position": [
+      -544,
+      1761,
+      -216
+     ]
+    },
+    {
+     "chapter": "questionable_ethics",
+     "map": "hl_c10",
+     "position": [
+      -3232,
+      320,
+      16
+     ]
+    },
+    {
+     "chapter": "surface_tension",
+     "map": "hl_c11_a3",
+     "position": [
+      -328,
+      -224,
+      -216
+     ]
+    },
+    {
+     "chapter": "lambda_core",
+     "map": "hl_c13_a4",
+     "position": [
+      1528,
+      -600,
+      -248
+     ]
+    },
+    {
+     "chapter": "interloper",
+     "map": "hl_c16_a3",
+     "position": [
+      912,
+      880,
+      -488
+     ]
+    }
    ]
   },
   {
@@ -3165,6 +3558,44 @@
     -608,
     144,
     256
+   ],
+   "sources": [
+    {
+     "chapter": "questionable_ethics",
+     "map": "hl_c10",
+     "position": [
+      -608,
+      144,
+      256
+     ]
+    },
+    {
+     "chapter": "surface_tension",
+     "map": "hl_c11_a1",
+     "position": [
+      2928,
+      -1128,
+      -464
+     ]
+    },
+    {
+     "chapter": "forget_about_freeman",
+     "map": "hl_c12",
+     "position": [
+      -1888,
+      -1400,
+      396
+     ]
+    },
+    {
+     "chapter": "interloper",
+     "map": "hl_c16_a2",
+     "position": [
+      424,
+      36,
+      33
+     ]
+    }
    ]
   },
   {
@@ -3183,6 +3614,89 @@
     -1815,
     -2875,
     1509
+   ],
+   "sources": [
+    {
+     "chapter": "unforeseen_consequences",
+     "map": "hl_c02_a2",
+     "position": [
+      -1815,
+      -2875,
+      1509
+     ]
+    },
+    {
+     "chapter": "office_complex",
+     "map": "hl_c03",
+     "position": [
+      606,
+      698,
+      -22
+     ]
+    },
+    {
+     "chapter": "blast_pit",
+     "map": "hl_c05_a1",
+     "position": [
+      -1664,
+      2544,
+      1020
+     ]
+    },
+    {
+     "chapter": "power_up",
+     "map": "hl_c06",
+     "position": [
+      960,
+      1664,
+      176
+     ]
+    },
+    {
+     "chapter": "on_a_rail",
+     "map": "hl_c07_a1",
+     "position": [
+      3052,
+      -2828,
+      -1536
+     ]
+    },
+    {
+     "chapter": "surface_tension",
+     "map": "hl_c11_a4",
+     "position": [
+      -488,
+      744,
+      -1656
+     ]
+    },
+    {
+     "chapter": "forget_about_freeman",
+     "map": "hl_c12",
+     "position": [
+      -3172,
+      -1672,
+      -456
+     ]
+    },
+    {
+     "chapter": "lambda_core",
+     "map": "hl_c13_a1",
+     "position": [
+      760,
+      1436,
+      -80
+     ]
+    },
+    {
+     "chapter": "interloper",
+     "map": "hl_c16_a2",
+     "position": [
+      -2280,
+      -376,
+      -224
+     ]
+    }
    ]
   },
   {
@@ -3201,6 +3715,17 @@
     -3665,
     926,
     -280
+   ],
+   "sources": [
+    {
+     "chapter": "anomalous_materials",
+     "map": "hl_c01_a1",
+     "position": [
+      -3665,
+      926,
+      -280
+     ]
+    }
    ]
   },
   {
@@ -3219,6 +3744,17 @@
     1855,
     -297,
     -244
+   ],
+   "sources": [
+    {
+     "chapter": "lambda_core",
+     "map": "hl_c13_a4",
+     "position": [
+      1855,
+      -297,
+      -244
+     ]
+    }
    ]
   },
   {

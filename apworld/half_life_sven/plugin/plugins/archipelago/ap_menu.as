@@ -127,6 +127,8 @@ void RunMenuAction( CBasePlayer@ pPlayer, const string& in szAction )
 		ShowTrackMissions( pPlayer, szArg );
 	else if( szVerb == "trackm" )
 		ShowTrackMission( pPlayer, atoi( szArg ) );
+	else if( szVerb == "trackw" )
+		ShowTrackWeapons( pPlayer, szArg );
 	else if( szVerb == "find" )
 	{
 		APLocation@ pLocation = LocationById( atoi( szArg ) );
@@ -274,6 +276,40 @@ void ShowWarpParts( CBasePlayer@ pPlayer, int iIndex )
 	MenuOpen( pPlayer, pMenu );
 }
 
+/*
+* Weapon checks are tracked per game, not per mission: any mission's copy sends
+* one, so the mission its earliest copy sits in is not where it belongs.
+*/
+bool IsWeaponCheck( APLocation@ pLocation )
+{
+	return pLocation.kind == TRIGGER_WEAPON_PICKUP;
+}
+
+/* The game a weapon check belongs to, by the map its earliest copy is on. */
+string WeaponCampaign( APLocation@ pLocation )
+{
+	APChapter@ pChapter = ChapterForMap( pLocation.map );
+	return pChapter is null ? "" : pChapter.campaign;
+}
+
+/* Found and in-seed counts for a game's weapon checks. */
+void WeaponCounts( const string& in szCampaign, uint& out uiFound, uint& out uiTotal )
+{
+	uiFound = 0;
+	uiTotal = 0;
+
+	for( uint i = 0; i < g_Locations.length(); ++i )
+	{
+		APLocation@ pLocation = g_Locations[i];
+		if( !IsWeaponCheck( pLocation ) || !LocationInSeed( pLocation )
+		    || WeaponCampaign( pLocation ) != szCampaign )
+			continue;
+		++uiTotal;
+		if( LocationFound( pLocation ) )
+			++uiFound;
+	}
+}
+
 /* Found and in-seed counts for a mission, by map membership like `!tracker`. */
 void ChapterCounts( APChapter@ pChapter, uint& out uiFound, uint& out uiTotal )
 {
@@ -283,6 +319,8 @@ void ChapterCounts( APChapter@ pChapter, uint& out uiFound, uint& out uiTotal )
 	for( uint i = 0; i < g_Locations.length(); ++i )
 	{
 		APLocation@ pLocation = g_Locations[i];
+		if( IsWeaponCheck( pLocation ) )
+			continue;
 		if( !ChapterHasMap( pChapter, pLocation.map ) || !LocationInSeed( pLocation ) )
 			continue;
 		++uiTotal;
@@ -327,6 +365,10 @@ void ShowTrackCampaigns( CBasePlayer@ pPlayer )
 			uiFound += uiF;
 			uiTotal += uiT;
 		}
+		uint uiWF, uiWT;
+		WeaponCounts( keys[i], uiWF, uiWT );
+		uiFound += uiWF;
+		uiTotal += uiWT;
 		MenuAdd( pPlayer, pMenu,
 			CampaignDisplay( keys[i] ) + "  " + uiFound + "/" + uiTotal, "trackc|" + keys[i] );
 	}
@@ -336,6 +378,15 @@ void ShowTrackCampaigns( CBasePlayer@ pPlayer )
 void ShowTrackMissions( CBasePlayer@ pPlayer, const string& in szCampaign )
 {
 	CTextMenu@ pMenu = NewMenu( pPlayer, "Tracker: " + CampaignDisplay( szCampaign ) );
+
+	uint uiWFound, uiWTotal;
+	WeaponCounts( szCampaign, uiWFound, uiWTotal );
+	if( uiWTotal > 0 )
+	{
+		MenuAdd( pPlayer, pMenu,
+			"Weapons  " + uiWFound + "/" + uiWTotal + ( uiWFound == uiWTotal ? " (done)" : "" ),
+			"trackw|" + szCampaign );
+	}
 
 	for( uint i = 0; i < g_Chapters.length(); ++i )
 	{
@@ -374,6 +425,8 @@ void ShowTrackMission( CBasePlayer@ pPlayer, int iIndex )
 	for( uint i = 0; i < g_Locations.length(); ++i )
 	{
 		APLocation@ pLocation = g_Locations[i];
+		if( IsWeaponCheck( pLocation ) )
+			continue;
 		if( !ChapterHasMap( pChapter, pLocation.map ) || !LocationInSeed( pLocation ) )
 			continue;
 		if( LocationFound( pLocation ) )
@@ -400,6 +453,52 @@ void ShowTrackMission( CBasePlayer@ pPlayer, int iIndex )
 			"find|" + done[i].id );
 
 	MenuOpen( pPlayer, pMenu );
+}
+
+/* One game's weapon checks, laid out like a mission's. */
+void ShowTrackWeapons( CBasePlayer@ pPlayer, const string& in szCampaign )
+{
+	array<APLocation@> left;
+	array<APLocation@> done;
+	for( uint i = 0; i < g_Locations.length(); ++i )
+	{
+		APLocation@ pLocation = g_Locations[i];
+		if( !IsWeaponCheck( pLocation ) || !LocationInSeed( pLocation )
+		    || WeaponCampaign( pLocation ) != szCampaign )
+			continue;
+		if( LocationFound( pLocation ) )
+			done.insertLast( pLocation );
+		else
+			left.insertLast( pLocation );
+	}
+
+	string szGame = CampaignDisplay( szCampaign );
+	if( left.length() + done.length() == 0 )
+	{
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+			"[AP] No weapon checks in " + szGame + ".\n" );
+		return;
+	}
+
+	CTextMenu@ pMenu = NewMenu( pPlayer, szGame + " weapons: " + done.length() + "/"
+		+ ( left.length() + done.length() ) + " found" );
+
+	for( uint i = 0; i < left.length(); ++i )
+		MenuAdd( pPlayer, pMenu, WeaponLabel( szGame, left[i] ), "find|" + left[i].id );
+	for( uint i = 0; i < done.length(); ++i )
+		MenuAdd( pPlayer, pMenu, "[done] " + WeaponLabel( szGame, done[i] ), "find|" + done[i].id );
+
+	MenuOpen( pPlayer, pMenu );
+}
+
+/* `Opposing Force: First Glock` reads as `First Glock` under its game's title. */
+string WeaponLabel( const string& in szGame, APLocation@ pLocation )
+{
+	string szPrefix = szGame + ": ";
+	if( pLocation.name.Length() > szPrefix.Length()
+	    && pLocation.name.SubString( 0, szPrefix.Length() ) == szPrefix )
+		return pLocation.name.SubString( szPrefix.Length() );
+	return pLocation.name;
 }
 
 /*
@@ -458,7 +557,7 @@ void UpdateCheckHud()
 		if( bFound )
 			++uiSeedFound;
 
-		if( pLocation.map == g_szCurrentMap )
+		if( pLocation.map == g_szCurrentMap && !IsWeaponCheck( pLocation ) )
 		{
 			++uiMapTotal;
 			if( bFound )

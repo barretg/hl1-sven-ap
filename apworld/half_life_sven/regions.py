@@ -19,6 +19,7 @@ from BaseClasses import LocationProgressType, Region
 
 from .data import (
     GOAL_PREREQUISITES,
+    LOCATIONS,
     SUSPENSION_AWARD,
     chapter_cleared_event,
     mission_complete_event,
@@ -26,7 +27,13 @@ from .data import (
     victory_event,
 )
 from .locations import HalfLifeSvenLocation, locations_by_map
-from .rules import chapter_entry_rule, location_rule, map_entry_rule, suspension_rule
+from .rules import (
+    chapter_entry_rule,
+    location_rule,
+    map_entry_rule,
+    suspension_rule,
+    weapon_rule,
+)
 
 if TYPE_CHECKING:
     from . import HalfLifeSvenWorld
@@ -60,6 +67,9 @@ def create_regions(world: "HalfLifeSvenWorld") -> None:
                 # rather than placed and made unreachable.
                 if entry["trigger"]["type"] in world.excluded_triggers:
                     continue
+                # Placed in the Hub below, reachable through any of its sources.
+                if entry.get("sources"):
+                    continue
 
                 location = HalfLifeSvenLocation(
                     player, entry["name"], entry["id"], region
@@ -89,8 +99,30 @@ def create_regions(world: "HalfLifeSvenWorld") -> None:
         assert previous is not None
         add_event(world, previous, chapter)
 
+    add_weapon_checks(world, hub)
+
     if world.suspension_enabled:
         add_suspension(world, hub)
+
+
+def add_weapon_checks(world: "HalfLifeSvenWorld", hub: Region) -> None:
+    """Every "First ..." check with sources, hung on the Hub.
+
+    Its rule reaches into the map regions of each mission's first copy, so the
+    region it sits in only has to be one every source can be reached from. In
+    the seed if any source's mission is, which a left-out anchor mission no
+    longer takes away.
+    """
+    for entry in LOCATIONS:
+        sources = entry.get("sources")
+        if not sources or entry["trigger"]["type"] in world.excluded_triggers:
+            continue
+        sources = [s for s in sources if s["chapter"] not in world.excluded_chapters]
+        if not sources:
+            continue
+        location = HalfLifeSvenLocation(world.player, entry["name"], entry["id"], hub)
+        location.access_rule = weapon_rule(world, entry, sources)
+        hub.locations.append(location)
 
 
 def add_suspension(world: "HalfLifeSvenWorld", hub: Region) -> None:

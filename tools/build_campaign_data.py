@@ -53,7 +53,6 @@ from campaign_layout import (
     RESTRICTED_CLASSNAMES,
     UNREACHABLE_CHARGERS,
     WEAPON_ALIASES,
-    WEAPON_ANCHORS,
     STARTING_WEAPONS,
     WEAPON_CAMPAIGN,
     WEAPON_ITEMS,
@@ -328,6 +327,18 @@ class LocationBuilder:
         raise RuntimeError(f"could not make {name!r} unique")
 
 
+def holds_weapon(entity: dict[str, str], wanted: set[str]) -> bool:
+    """A copy of one of these weapons, lying about or spawned by a maker.
+
+    Crush Depth hands over the displacer from a `monstermaker`, which leaves no
+    `weapon_displacer` in the map until it fires.
+    """
+    classname = entity.get("classname", "")
+    if classname == "monstermaker":
+        return entity.get("monstertype", "") in wanted
+    return classname in wanted
+
+
 def campaigns_holding(
     chapters: list[dict], entities: dict[str, list[dict[str, str]]],
     classnames: list[str],
@@ -348,27 +359,63 @@ def campaigns_holding(
         if campaign in found:
             continue
         for map_name in chapter["maps"]:
-            if any(e.get("classname", "") in wanted for e in entities[map_name]):
+            if any(holds_weapon(e, wanted) for e in entities[map_name]):
                 found.append(campaign)
                 break
 
     return found
 
 
-def earliest_map_with(
-    chapters: list[dict], entities: dict[str, list[dict[str, str]]],
-    classnames: list[str], skip: Iterable[str] = (),
-) -> tuple[dict, str] | None:
-    """First `(chapter, map)` in campaign order that contains one of these."""
+def weapon_sources(
+    campaign, chapters: list[dict], entities: dict[str, list[dict[str, str]]],
+    item_name: str, classnames: list[str],
+) -> list[tuple[dict, str, dict | None]]:
+    """Every mission's first copy of this weapon, as `(chapter, map, entity)`.
+
+    Missions are played in any order, so the first copy in campaign order says
+    nothing about which one a player meets first. Each mission's own first copy
+    is a way to the check, and logic takes any of them. A hand-placed anchor
+    stands in for its mission's copy with no entity, since it is handed over;
+    copies nobody can reach are passed over for the next one in that mission.
+    """
     wanted = set(classnames)
-    skip = set(skip)
+    forced = campaign.weapon_anchors.get(item_name)
+    skip = set(campaign.unreachable_copies.get(item_name, ()))
+    found: list[tuple[dict, str, dict | None]] = []
     for chapter in chapters:
+        if forced in chapter["maps"]:
+            found.append((chapter, forced, None))
+            continue
         for map_name in chapter["maps"]:
             if map_name in skip:
                 continue
-            if any(e.get("classname", "") in wanted for e in entities[map_name]):
-                return chapter, map_name
-    return None
+            entity = next(
+                (e for e in entities[map_name] if holds_weapon(e, wanted)), None
+            )
+            if entity is not None:
+                found.append((chapter, map_name, entity))
+                break
+    if forced and not any(m == forced for _, m, _ in found):
+        raise SystemExit(
+            f"{campaign.key}: anchor map {forced} for {item_name} "
+            f"is not in any of its missions"
+        )
+    return found
+
+
+def source_record(
+    campaign, item_name: str, chapter: dict, map_name: str, entity: dict | None,
+) -> dict:
+    """One way to a weapon check, as the apworld and the plugin read it."""
+    record: dict = {"chapter": chapter["key"], "map": map_name}
+    if entity is not None:
+        record["position"] = [
+            int(round(v)) for v in entity_origin(entity.get("origin", ""))
+        ]
+    gates = campaign.weapon_source_gates.get(map_name, {}).get(item_name)
+    if gates:
+        record["gates"] = gates
+    return record
 
 
 def build(maps_dir: Path, registry: IdRegistry) -> dict:
@@ -578,11 +625,12 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                         )
                         by_map[map_name] += 1
 
-    # One check per weapon, at the place Half-Life would first have handed it to
-    # you: the earliest map in campaign order that contains one. Deliberately not
-    # "anywhere": finding a shotgun six missions later is not the moment the
-    # check is about, and the per-map `pickup` type that fired on every copy is
-    # what read as noise. The crowbar is here too even though you start with one.
+    # One check per weapon: the first one you pick up. Missions are played in
+    # any order, so each mission's own first copy is a source (see
+    # `weapon_sources`) and logic accepts any of them. The earliest in campaign
+    # order still names the check and is where `!find` points by default. The
+    # per-map `pickup` type that fired on every copy is what read as noise. The
+    # crowbar is here too even though you start with one.
     # Anchored per campaign, not once across all of them. A seed that leaves
     # Half-Life out would otherwise lose every check for a weapon the other
     # campaigns share with it, because the only anchor sat in a map it does not
@@ -599,29 +647,14 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
             }.items():
                 if item_name in campaign.no_first_check:
                     continue
-                # A hand-placed anchor wins: some weapons are handed over rather
-                # than left lying about, and those leave no entity to find.
-                forced = WEAPON_ANCHORS.get(campaign.key, {}).get(item_name)
-                if forced:
-                    chapter = next(
-                        (c for c in campaign_chapters if forced in c["maps"]), None
-                    )
-                    if chapter is None:
-                        raise SystemExit(
-                            f"{campaign.key}: anchor map {forced} for {item_name} "
-                            f"is not in any of its missions"
-                        )
-                    map_name = forced
-                    # No entity to stand next to, so `!find` cannot point at it.
-                    placed = None
-                else:
-                    anchor = earliest_map_with(
-                        campaign_chapters, entities, classnames,
-                        campaign.anchor_skip_maps.get(item_name, ()),
-                    )
-                    if anchor is None:
-                        continue  # not here; the check could never fire
-                    chapter, map_name = anchor
+                sources = weapon_sources(
+                    campaign, campaign_chapters, entities, item_name, classnames
+                )
+                if not sources:
+                    continue  # not here; the check could never fire
+                # The earliest source names the check and places it for
+                # `!find`; logic accepts any of them.
+                chapter, map_name, placed = sources[0]
                 # What this campaign actually puts in the player's hands. They
                 # Hunger reskins the pipe wrench into a shovel, and a check named
                 # after a wrench sends people looking for the wrong thing.
@@ -635,19 +668,7 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                     if campaign.key == DEFAULT_CAMPAIGN
                     else f"{campaign.name}: First {shown}"
                 )
-                # Where the earliest copy sits. There may be several in the map;
-                # the first is as good as any, and `!find` says "one of them".
-                # A forced anchor has none, because the point of forcing one is
-                # that the weapon is handed over rather than left lying about.
-                if not forced:
-                    wanted = set(classnames)
-                    placed = next(
-                        (e for e in entities[map_name]
-                         if e.get("classname", "") in wanted),
-                        None,
-                    )
                 position = entity_origin(placed.get("origin", "")) if placed else None
-
                 builder.add(
                     chapter,
                     map_name,
@@ -656,7 +677,10 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                      "classnames": list(classnames)},
                     prefixed=False,
                     position=position,
-                )
+                )["sources"] = [
+                    source_record(campaign, item_name, c, m, e)
+                    for c, m, e in sources
+                ]
 
     # Chapter completion always comes last so it reads last in the list.
     if "chapter_complete" in enabled:

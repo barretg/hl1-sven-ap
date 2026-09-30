@@ -86,6 +86,21 @@ class APLocation
 	// a map is not somewhere you can be pointed at, so those have none.
 	Vector position;
 	bool hasPosition = false;
+
+	// What reaching it always takes, as the item names to print. Empty for most.
+	string needs;
+
+	// A weapon check's other ways in: each mission's first copy, from F records.
+	// Empty for everything else and in an older data file.
+	array<APSource@> sources;
+}
+
+class APSource
+{
+	string map;
+	Vector position;
+	bool hasPosition = false;
+	string needs;
 }
 
 /*
@@ -574,7 +589,32 @@ void LoadCheckData()
 				}
 			}
 
+			// Optional eighth field, what the check needs to reach. The position
+			// before it may be empty.
+			if( parts.length() >= 8 )
+				location.needs = parts[7];
+
 			g_Locations.insertLast( @location );
+		}
+		else if( parts[0] == "F" && parts.length() >= 5 )
+		{
+			// Always after its L record, so the location is the last one read.
+			APLocation@ pOwner = g_Locations.length() > 0
+			    ? g_Locations[g_Locations.length() - 1] : null;
+			if( pOwner !is null && pOwner.id == atoi( parts[1] ) )
+			{
+				APSource source;
+				source.map = parts[2];
+				array<string>@ xyz = parts[3].Split( " " );
+				if( xyz.length() >= 3 )
+				{
+					source.position = Vector(
+						atoi( xyz[0] ), atoi( xyz[1] ), atoi( xyz[2] ) );
+					source.hasPosition = true;
+				}
+				source.needs = parts[4];
+				pOwner.sources.insertLast( @source );
+			}
 		}
 		else if( parts[0] == "K" && parts.length() >= 3 )
 		{

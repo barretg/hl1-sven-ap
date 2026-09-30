@@ -63,7 +63,12 @@ from .items import (
     unlock_item_for_chapter,
     weapon_items,
 )
-from .locations import location_name_groups, location_name_to_id, location_table
+from .locations import (
+    location_in_seed,
+    location_name_groups,
+    location_name_to_id,
+    location_table,
+)
 from .options import HalfLifeSvenOptions
 from .regions import create_regions
 from .rules import chapter_is_startable
@@ -315,8 +320,8 @@ class HalfLifeSvenWorld(World):
             placed = [
                 name for name in VANILLA_PLACEMENTS
                 if not toggled(OPTIONAL_ITEM_NAMES[name])
-                and location_table[VANILLA_PLACEMENTS[name]]["chapter"]
-                not in self.excluded_chapters
+                and location_in_seed(location_table[VANILLA_PLACEMENTS[name]],
+                                     self.excluded_chapters)
             ]
         for name in placed:
             self.available_item_names.add(name)

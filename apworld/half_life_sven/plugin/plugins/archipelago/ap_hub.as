@@ -162,7 +162,8 @@ void ShowStatus( CBasePlayer@ pPlayer )
 * that can never be ticked.
 *
 * Optionally filtered: `!tracker hl_c03` for one map, `!tracker office` for
-* anything whose mission or map name contains that.
+* anything whose mission or map name contains that, `!tracker weapons` for the
+* weapon checks, which are listed per game after the maps.
 */
 void ShowTracker( CBasePlayer@ pPlayer, const string& in szFilter )
 {
@@ -201,7 +202,7 @@ void ShowTracker( CBasePlayer@ pPlayer, const string& in szFilter )
 			for( uint i = 0; i < g_Locations.length(); ++i )
 			{
 				APLocation@ pLocation = g_Locations[i];
-				if( pLocation.map != szMap )
+				if( pLocation.map != szMap || IsWeaponCheck( pLocation ) )
 					continue;
 
 				string szId = "" + pLocation.id;
@@ -252,6 +253,49 @@ void ShowTracker( CBasePlayer@ pPlayer, const string& in szFilter )
 				g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
 					"    " + szMark + onMap[i].name + "\n" );
 			}
+		}
+	}
+
+	// Weapon checks, per game: any mission's copy sends one, so they belong to
+	// no single map.
+	array<string> games = SeedCampaigns();
+	for( uint iGame = 0; iGame < games.length(); ++iGame )
+	{
+		array<APLocation@> weapons;
+		uint uiWeaponsFound = 0;
+		for( uint i = 0; i < g_Locations.length(); ++i )
+		{
+			APLocation@ pLocation = g_Locations[i];
+			if( !IsWeaponCheck( pLocation ) || !LocationInSeed( pLocation )
+			    || WeaponCampaign( pLocation ) != games[iGame] )
+				continue;
+			weapons.insertLast( pLocation );
+			if( LocationFound( pLocation ) )
+				++uiWeaponsFound;
+		}
+		if( weapons.length() == 0 )
+			continue;
+
+		uiFound += uiWeaponsFound;
+		uiTotal += weapons.length();
+
+		string szGame = CampaignDisplay( games[iGame] );
+		if( szWanted.Length() > 0 )
+		{
+			string szHeading = szGame + " weapons";
+			szHeading.ToLowercase();
+			if( int( szHeading.Find( szWanted ) ) < 0 )
+				continue;
+		}
+
+		++uiShown;
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
+			"\n" + szGame + ": Weapons  (" + uiWeaponsFound + "/" + weapons.length() + ")\n" );
+		for( uint i = 0; i < weapons.length(); ++i )
+		{
+			string szMark = LocationFound( weapons[i] ) ? "[x] " : "[ ] ";
+			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
+				"    " + szMark + weapons[i].name + "\n" );
 		}
 	}
 
@@ -496,17 +540,43 @@ string SightTo( CBasePlayer@ pPlayer, const Vector& in vecTarget )
 	return "Something solid is in the way.";
 }
 
+/*
+* The copy of a weapon check on this map, if it has one. A weapon check can be
+* sent from any mission's first copy, so the one in front of the player is the
+* one worth pointing at, whatever the check's earliest source is.
+*/
+APSource@ SourceHere( APLocation@ pLocation )
+{
+	for( uint i = 0; i < pLocation.sources.length(); ++i )
+		if( pLocation.sources[i].map == g_szCurrentMap )
+			return pLocation.sources[i];
+	return null;
+}
+
 void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 {
 	string szPrefix = LocationFound( pLocation ) ? "[found] " : "";
+
+	// Where to point: this map's source if there is one, else the check itself.
+	APSource@ pSource = SourceHere( pLocation );
+	string szMap = pSource !is null ? pSource.map : pLocation.map;
+	bool bHasPosition = pSource !is null ? pSource.hasPosition : pLocation.hasPosition;
+	Vector vecPosition = pSource !is null ? pSource.position : pLocation.position;
+	string szNeeds = pSource !is null ? pSource.needs : pLocation.needs;
 
 	// A line at a time. The engine's print buffer is 128 bytes and truncates
 	// without saying so, and a location name plus a bearing is well past it.
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"[AP] " + szPrefix + pLocation.name + "\n" );
 
+	if( szNeeds.Length() > 0 )
+	{
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+			"[AP] Needs the " + szNeeds + " to reach.\n" );
+	}
+
 	// A weapon check is the first of that weapon anywhere in its campaign, so
-	// the anchor map is only the earliest place to look, not the only one.
+	// the map named is only one place to look, not the only one.
 	if( pLocation.kind == TRIGGER_WEAPON_PICKUP )
 	{
 		APChapter@ pAnchor = ChapterForMap( pLocation.map );
@@ -514,35 +584,35 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 		if( pAnchor !is null && g_CampaignNames.get( pAnchor.campaign, szCampaign ) )
 		{
 			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-				"[AP] Any copy on " + szCampaign + "'s maps sends it; the first is here:\n" );
+				"[AP] Any copy on " + szCampaign + "'s maps sends it; one is here:\n" );
 		}
 	}
 
 	// Somewhere else entirely: say where, and how to get there.
-	if( pLocation.map != g_szCurrentMap )
+	if( szMap != g_szCurrentMap )
 	{
-		APChapter@ pChapter = ChapterForMap( pLocation.map );
+		APChapter@ pChapter = ChapterForMap( szMap );
 		if( pChapter is null )
 		{
 			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-				"[AP] It is on " + pLocation.map + ".\n" );
+				"[AP] It is on " + szMap + ".\n" );
 			return;
 		}
 
 		// Name the part, and hand over the exact command that goes there. On a
 		// mission you have already been through that is a warp straight to the
 		// part, not back to its beginning.
-		string szPart = PartLabel( pChapter, pLocation.map );
+		string szPart = PartLabel( pChapter, szMap );
 
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 			"[AP] In " + pChapter.name
 			+ ( szPart.Length() > 0 ? ", " + szPart : "" )
-			+ " (" + pLocation.map + ").\n" );
+			+ " (" + szMap + ").\n" );
 
-		if( szPart.Length() > 0 && MapReached( pLocation.map ) )
+		if( szPart.Length() > 0 && MapReached( szMap ) )
 		{
 			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-				"[AP] Get there with !warp " + pLocation.map + "\n" );
+				"[AP] Get there with !warp " + szMap + "\n" );
 		}
 		else
 		{
@@ -552,7 +622,7 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 		return;
 	}
 
-	if( !pLocation.hasPosition )
+	if( !bHasPosition )
 	{
 		// Either the check is the map itself, or it is a weapon somebody hands
 		// over rather than one lying on the floor: nothing to point at either
@@ -571,13 +641,13 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 		return;
 	}
 
-	int iDistance = int( ( pLocation.position - pPlayer.pev.origin ).Length() );
+	int iDistance = int( ( vecPosition - pPlayer.pev.origin ).Length() );
 
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-		"[AP] About " + iDistance + " units " + BearingTo( pPlayer, pLocation.position )
-		+ HeightTo( pPlayer, pLocation.position ) + ".\n" );
+		"[AP] About " + iDistance + " units " + BearingTo( pPlayer, vecPosition )
+		+ HeightTo( pPlayer, vecPosition ) + ".\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-		"[AP] " + SightTo( pPlayer, pLocation.position ) + "\n" );
+		"[AP] " + SightTo( pPlayer, vecPosition ) + "\n" );
 }
 
 /*
@@ -603,12 +673,20 @@ void FindLocation( CBasePlayer@ pPlayer, const string& in szQuery )
 		for( uint i = 0; i < g_Locations.length(); ++i )
 		{
 			APLocation@ pLocation = g_Locations[i];
-			if( pLocation.map != g_szCurrentMap || !pLocation.hasPosition )
-				continue;
 			if( !LocationInSeed( pLocation ) || LocationFound( pLocation ) )
 				continue;
 
-			float flScore = TravelScore( pPlayer, pLocation.position );
+			// A weapon check's copy on this map counts as being on this map.
+			APSource@ pSource = SourceHere( pLocation );
+			Vector vecAt;
+			if( pSource !is null && pSource.hasPosition )
+				vecAt = pSource.position;
+			else if( pLocation.map == g_szCurrentMap && pLocation.hasPosition )
+				vecAt = pLocation.position;
+			else
+				continue;
+
+			float flScore = TravelScore( pPlayer, vecAt );
 			if( pNearest is null || flScore < flNearest )
 			{
 				@pNearest = pLocation;
@@ -666,7 +744,7 @@ void FindLocation( CBasePlayer@ pPlayer, const string& in szQuery )
 	uint uiHere = 0;
 	for( uint i = 0; i < matches.length(); ++i )
 	{
-		if( matches[i].map == g_szCurrentMap )
+		if( matches[i].map == g_szCurrentMap || SourceHere( matches[i] ) !is null )
 		{
 			if( pHere is null )
 				@pHere = matches[i];

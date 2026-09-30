@@ -312,6 +312,7 @@
   "of_missing_in_action|of2a1|map_reached|": 7720376,
   "of_missing_in_action|of2a2|chapter_complete|of_missing_in_action": 7720411,
   "of_missing_in_action|of2a2|map_reached|": 7720379,
+  "of_pit_worms_nest|of4a1|charger|trigger_hurt:*10": 7720808,
   "of_pit_worms_nest|of4a1|map_reached|": 7720206,
   "of_pit_worms_nest|of4a2|charger|func_healthcharger:*202": 7720210,
   "of_pit_worms_nest|of4a2|charger|func_healthcharger:*203": 7720211,

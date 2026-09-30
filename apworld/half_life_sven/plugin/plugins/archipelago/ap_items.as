@@ -326,6 +326,14 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 * be handing back the ammo a player had just fired, once a second, for as long
 * as they stood there.
 */
+const int DISPLACER_TELEPORT_AMMO = 60;
+
+/* Whether the displacer's secondary fire goes anywhere on this map. */
+bool DisplacerMap()
+{
+	return g_EntityFuncs.FindEntityByClassname( null, "info_displacer_xen_target" ) !is null;
+}
+
 bool ListHas( const array<string>& in list, const string& in szValue )
 {
 	for( uint i = 0; i < list.length(); ++i )
@@ -355,6 +363,12 @@ void SetLoadoutAmmo( CBasePlayer@ pPlayer, const array<string>& in granted )
 				if( szAmmo.Length() > 0 && iMax > 0 && iType >= 0 )
 				{
 					int iWanted = iMax / 2;
+					// Half of uranium is 50, and the displacer's self-teleport
+					// costs 60. Where the map has somewhere to teleport to, hand
+					// over enough for one, or its gated checks are a dead end.
+					if( pItem.GetClassname() == "weapon_displacer" && DisplacerMap()
+					    && iWanted < DISPLACER_TELEPORT_AMMO )
+						iWanted = DISPLACER_TELEPORT_AMMO;
 					int iHeld = pPlayer.m_rgAmmo( iType );
 					if( iHeld < iWanted )
 						pPlayer.GiveAmmo( iWanted - iHeld, szAmmo, iMax );

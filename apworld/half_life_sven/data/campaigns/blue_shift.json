@@ -857,6 +857,17 @@
     2080,
     288,
     56
+   ],
+   "sources": [
+    {
+     "chapter": "bs_duty_calls",
+     "map": "ba_canal1",
+     "position": [
+      2080,
+      288,
+      56
+     ]
+    }
    ]
   },
   {
@@ -871,7 +882,40 @@
      "weapon_glock",
      "weapon_9mmhandgun"
     ]
-   }
+   },
+   "sources": [
+    {
+     "chapter": "bs_insecurity",
+     "map": "ba_security2"
+    },
+    {
+     "chapter": "bs_captive_freight",
+     "map": "ba_yard3",
+     "position": [
+      1344,
+      440,
+      -560
+     ]
+    },
+    {
+     "chapter": "bs_focal_point",
+     "map": "ba_teleport1",
+     "position": [
+      -696,
+      -1204,
+      44
+     ]
+    },
+    {
+     "chapter": "bs_power_struggle",
+     "map": "ba_power1",
+     "position": [
+      -204,
+      772,
+      -512
+     ]
+    }
+   ]
   },
   {
    "id": 7720313,
@@ -889,6 +933,26 @@
     -72,
     -1765,
     0
+   ],
+   "sources": [
+    {
+     "chapter": "bs_captive_freight",
+     "map": "ba_yard1",
+     "position": [
+      -72,
+      -1765,
+      0
+     ]
+    },
+    {
+     "chapter": "bs_power_struggle",
+     "map": "ba_power2",
+     "position": [
+      -22,
+      -843,
+      144
+     ]
+    }
    ]
   },
   {
@@ -908,6 +972,17 @@
     -898,
     -1882,
     -112
+   ],
+   "sources": [
+    {
+     "chapter": "bs_power_struggle",
+     "map": "ba_power1",
+     "position": [
+      -898,
+      -1882,
+      -112
+     ]
+    }
    ]
   },
   {
@@ -926,6 +1001,35 @@
     400,
     2184,
     -88
+   ],
+   "sources": [
+    {
+     "chapter": "bs_duty_calls",
+     "map": "ba_canal2",
+     "position": [
+      400,
+      2184,
+      -88
+     ]
+    },
+    {
+     "chapter": "bs_captive_freight",
+     "map": "ba_yard4a",
+     "position": [
+      1670,
+      -1096,
+      216
+     ]
+    },
+    {
+     "chapter": "bs_focal_point",
+     "map": "ba_teleport1",
+     "position": [
+      -696,
+      -1164,
+      44
+     ]
+    }
    ]
   },
   {
@@ -944,6 +1048,17 @@
     -344,
     2000,
     93
+   ],
+   "sources": [
+    {
+     "chapter": "bs_captive_freight",
+     "map": "ba_yard5",
+     "position": [
+      -344,
+      2000,
+      93
+     ]
+    }
    ]
   },
   {
@@ -962,6 +1077,26 @@
     -2662,
     -1550,
     92
+   ],
+   "sources": [
+    {
+     "chapter": "bs_captive_freight",
+     "map": "ba_yard1",
+     "position": [
+      -2662,
+      -1550,
+      92
+     ]
+    },
+    {
+     "chapter": "bs_power_struggle",
+     "map": "ba_power1",
+     "position": [
+      1029,
+      -2475,
+      -487
+     ]
+    }
    ]
   },
   {
@@ -980,6 +1115,26 @@
     1160,
     3384,
     -3576
+   ],
+   "sources": [
+    {
+     "chapter": "bs_focal_point",
+     "map": "ba_xen2",
+     "position": [
+      1160,
+      3384,
+      -3576
+     ]
+    },
+    {
+     "chapter": "bs_power_struggle",
+     "map": "ba_power1",
+     "position": [
+      -890,
+      -1822,
+      -112
+     ]
+    }
    ]
   },
   {
@@ -998,6 +1153,26 @@
     -2635,
     -1550,
     92
+   ],
+   "sources": [
+    {
+     "chapter": "bs_captive_freight",
+     "map": "ba_yard1",
+     "position": [
+      -2635,
+      -1550,
+      92
+     ]
+    },
+    {
+     "chapter": "bs_power_struggle",
+     "map": "ba_power1",
+     "position": [
+      1007,
+      -2475,
+      -487
+     ]
+    }
    ]
   },
   {
@@ -1017,6 +1192,53 @@
     647,
     1352,
     263
+   ],
+   "sources": [
+    {
+     "chapter": "bs_insecurity",
+     "map": "ba_security2",
+     "position": [
+      647,
+      1352,
+      263
+     ]
+    },
+    {
+     "chapter": "bs_duty_calls",
+     "map": "ba_canal1b",
+     "position": [
+      -432,
+      584,
+      -192
+     ]
+    },
+    {
+     "chapter": "bs_captive_freight",
+     "map": "ba_yard1",
+     "position": [
+      -30,
+      -1784,
+      1
+     ]
+    },
+    {
+     "chapter": "bs_focal_point",
+     "map": "ba_teleport1",
+     "position": [
+      -828,
+      -1286,
+      70
+     ]
+    },
+    {
+     "chapter": "bs_power_struggle",
+     "map": "ba_power1",
+     "position": [
+      -112,
+      768,
+      -512
+     ]
+    }
    ]
   },
   {

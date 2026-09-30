@@ -1,5 +1,5 @@
 {
- "data_version": "44df5bf20b02",
+ "data_version": "8d90345d00ff",
  "files": [
   "campaigns/half_life.json",
   "campaigns/opposing_force.json",
@@ -633,6 +633,9 @@
   ],
   "barnacle_grapple": [
    "Barnacle Grapple"
+  ],
+  "displacer_cannon": [
+   "Displacer Cannon"
   ]
  },
  "starting_weapons": [

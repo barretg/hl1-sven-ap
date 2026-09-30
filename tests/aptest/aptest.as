@@ -14,6 +14,7 @@
 *   apt_info            repeat the current scenario's steps
 *   apt_pass [note]     record this scenario as passed and go to the next
 *   apt_fail [note]     record it as failed and go to the next
+*   apt_note <text>     record a finding for an investigative scenario and go on
 *   apt_status          verdict counts and the first untested scenario
 *   apt_give <item>     add an item to the emulated snapshot
 *   apt_take <item>     remove one
@@ -54,12 +55,23 @@ class APTLoc
 	string pos;
 }
 
+// A mission's first copy of a weapon, from an F record.
+class APTSource
+{
+	string id;      // the weapon check it sends
+	string map;
+	string pos;     // "" when the weapon is handed over
+	string needs;
+}
+
 array<APTChapter@> g_Chapters;
 array<APTLoc@> g_Locs;
 dictionary g_CampaignShort;   // campaign key -> short
 dictionary g_CampaignIntro;   // campaign key -> "1" / "0"
 array<string> g_CampaignOrder;
 array<string> g_KeyItems;       // every item name a K record gates on
+dictionary g_ClassItem;         // classname -> item name, from K records
+array<APTSource@> g_Sources;
 
 void LoadCheckdata()
 {
@@ -67,6 +79,8 @@ void LoadCheckdata()
 	g_Locs.resize( 0 );
 	g_CampaignOrder.resize( 0 );
 	g_KeyItems.resize( 0 );
+	g_ClassItem.deleteAll();
+	g_Sources.resize( 0 );
 
 	File@ pFile = g_FileSystem.OpenFile( APT_CHECKDATA, OpenFile::READ );
 	if( pFile is null || !pFile.IsOpen() )
@@ -102,6 +116,16 @@ void LoadCheckdata()
 		{
 			if( g_KeyItems.find( f[2] ) < 0 )
 				g_KeyItems.insertLast( f[2] );
+			g_ClassItem[ f[1] ] = f[2];
+		}
+		else if( f[0] == "F" && f.length() >= 5 )
+		{
+			APTSource@ src = APTSource();
+			src.id = f[1];
+			src.map = f[2];
+			src.pos = f[3];
+			src.needs = f[4];
+			g_Sources.insertLast( src );
 		}
 		else if( f[0] == "L" && f.length() >= 6 )
 		{
@@ -178,6 +202,7 @@ class APTScenario
 	bool forbidWeapons = false; // any weapon_pickup check is a failure
 	bool forbidAll = false;     // any check at all is a failure
 	string steps;               // "\n"-separated lines
+	bool note = false;          // investigative: answered with !apt_note
 }
 
 array<APTScenario@> g_Scenarios;
@@ -371,6 +396,111 @@ void BuildScenarios()
 		+ "!apt_trap Butterfingers Trap holding the shotgun: it comes back after the hold." + "\n"
 		+ "!apt_give Melee Throw, throw the crowbar, leave it: it comes back after 10s." + "\n"
 		+ "Type kill in console: after respawn you have grenades again.";
+
+	BuildDisplacerScenarios();
+	BuildDropScenarios();
+	BuildSourceScenarios();
+}
+
+/*
+* Investigative, not pass/fail: what the displacer's self-teleport reaches on
+* the maps nobody has walked with one yet. Record findings with !apt_note.
+* Each map's `info_displacer_xen_target`, and the healing pool that data calls
+* sealed where there is one, read from the BSPs; the pool is left out of the
+* seed until a note here says it can be reached.
+*/
+void BuildDisplacerScenarios()
+{
+	// map | Xen target | "sealed" pool centre, or ""
+	array<string> rows = {
+		"of5a1|2752 2104 -776|2580 1832 -840",
+		"of5a2|2556 -2068 1920|2504 -3160 1816",
+		"of5a3|2128 2488 1080|",
+		"of5a4|3256 2320 -2848|",
+		"of6a1|-3072 -3080 -784|-3244 -3352 -840",
+		"of6a2|2448 2680 -1032|",
+		"of6a3|1528 -2288 -2976|",
+		"of6a4|2556 -2068 2944|2504 -3160 2840",
+		"of6a4b|2556 -2068 2944|2504 -3160 2840"
+	};
+	for( uint i = 0; i < rows.length(); ++i )
+	{
+		array<string>@ f = rows[i].Split( "|" );
+		APTChapter@ c = ChapterOfMap( f[0] );
+		APTScenario@ s = Add( "Displacer: " + ( c is null ? f[0] : c.name ) + " (" + f[0] + ")", f[0] );
+		s.pos = f[1];
+		s.note = true;
+		s.steps =
+			"You are at the displacer's Xen target. Displacer held with 60 ammo." + "\n"
+			+ "Look around: pools, chargers, weapons, exits. Walk back out if you can." + "\n"
+			+ ( f[2].Length() > 0
+			    ? "Data has a 'sealed' healing pool at " + f[2] + ": can you reach it?" + "\n" : "" )
+			+ "Also walk from spawn and use secondary fire: note where it lands you." + "\n"
+			+ "!apt_note <what you found> records it and moves on.";
+	}
+}
+
+/*
+* Investigative: whether Sven Co-op drops weapons from the dead the way the
+* original games do. A drop would be another way to a weapon check.
+*/
+void BuildDropScenarios()
+{
+	APTScenario@ s = Add( "Drops: shock trooper", "of5a2" );
+	s.note = true;
+	s.spawn = "monster_shocktrooper";
+	s.steps =
+		"A shock trooper is spawned in front of you. Kill it." + "\n"
+		+ "Does a shock roach (weapon_shockrifle) or anything else drop?" + "\n"
+		+ "!apt_spawn monster_shocktrooper for another. !apt_note the result.";
+
+	@s = Add( "Drops: human grunt", "hl_c04" );
+	s.note = true;
+	s.spawn = "monster_human_grunt";
+	s.take = "MP5;Shotgun";
+	s.steps =
+		"A human grunt is spawned in front of you. Kill it." + "\n"
+		+ "Does its MP5 or shotgun drop, and does touching it send a check?" + "\n"
+		+ "!apt_note the result.";
+
+	@s = Add( "Drops: male assassin", "of5a1" );
+	s.note = true;
+	s.spawn = "monster_male_assassin";
+	s.steps =
+		"A male assassin is spawned in front of you. Kill it." + "\n"
+		+ "Does a weapon (MP5 or sniper rifle) drop? !apt_note the result.";
+}
+
+/*
+* One per mission's first copy of each weapon, straight from the F records:
+* every place logic now accepts for a "First ..." check. Pass if it can be
+* reached with the mission's own requirements; fail with what else it needs.
+*/
+void BuildSourceScenarios()
+{
+	for( uint i = 0; i < g_Sources.length(); ++i )
+	{
+		APTSource@ src = g_Sources[i];
+		APTLoc@ l = LocById( src.id );
+		if( l is null )
+			continue;
+		APTChapter@ c = ChapterOfMap( src.map );
+		APTScenario@ s = Add( "Source: " + l.name + " in " + ( c is null ? src.map : c.name ), src.map );
+		s.pos = src.pos;
+		s.expect = l.name;
+		// Locked, so touching it sends the check and it stays on the floor.
+		string szItem;
+		if( g_ClassItem.get( l.arg.Split( "," )[0], szItem ) )
+			s.take = szItem;
+		s.steps =
+			( src.pos.Length() > 0
+			  ? "You are dropped at the copy on " + src.map + ". Touch it: expect '" + l.name + "'."
+			  : "Handed over on " + src.map + ", not left lying: play to it: expect '" + l.name + "'." ) + "\n"
+			+ ( src.needs.Length() > 0 ? "Data says it needs: " + src.needs + "." + "\n" : "" )
+			+ "Nothing there? It may come from a monstermaker: find what triggers it." + "\n"
+			+ "Could a player walk here from the mission start with only its own" + "\n"
+			+ "requirements? !apt_pass, or !apt_fail <what else it needs>.";
+	}
 }
 
 string LocPos( const string& in szName )
@@ -947,6 +1077,8 @@ void ShowInfo()
 		Say( "Expected: " + Join( Items( s.expect ), ", " ) );
 	if( s.forbid.Length() > 0 )
 		Say( "FAIL if sent: " + Join( Items( s.forbid ), ", " ) );
+	if( s.note )
+		Say( "Investigative: answer with !apt_note <findings>." );
 	if( s.forbidAll )
 		Say( "Any check here is a FAIL." );
 	else if( s.forbidWeapons )
@@ -1002,6 +1134,7 @@ void ShowStatus()
 	dictionary verdicts = LoadVerdicts();
 	int iPass = 0;
 	int iFail = 0;
+	int iNote = 0;
 	int iFirstOpen = -1;
 	string szFailed;
 	for( uint i = 0; i < g_Scenarios.length(); ++i )
@@ -1015,6 +1148,8 @@ void ShowStatus()
 		}
 		if( szVerdict.SubString( 0, 4 ) == "PASS" )
 			++iPass;
+		else if( szVerdict.SubString( 0, 4 ) == "NOTE" )
+			++iNote;
 		else
 		{
 			++iFail;
@@ -1022,8 +1157,8 @@ void ShowStatus()
 		}
 	}
 	int iTotal = int( g_Scenarios.length() );
-	Say( "Progress: " + ( iPass + iFail ) + "/" + iTotal + " done, " + iPass + " pass, "
-	     + iFail + " fail" + ( iFail > 0 ? " (" + szFailed + ")" : "" ) + "." );
+	Say( "Progress: " + ( iPass + iFail + iNote ) + "/" + iTotal + " done, " + iPass + " pass, "
+	     + iFail + " fail" + ( iFail > 0 ? " (" + szFailed + ")" : "" ) + ", " + iNote + " noted." );
 	if( iFirstOpen >= 0 )
 		Say( "First untested: " + iFirstOpen + " " + g_Scenarios[iFirstOpen].title
 		     + ". !apt_go " + iFirstOpen );
@@ -1046,7 +1181,9 @@ void Dispatch( CBasePlayer@ pPlayer, const string& in szCmd, const string& in sz
 	else if( szCmd == "apt_redo" )
 		StartScenario( g_iCurrent < 0 ? 0 : g_iCurrent );
 	else if( szCmd == "apt_pass" || szCmd == "apt_fail" )
-		RecordResult( szCmd == "apt_pass", szArg );
+		RecordResult( szCmd == "apt_pass" ? "PASS" : "FAIL", szArg );
+	else if( szCmd == "apt_note" )
+		RecordResult( "NOTE", szArg );
 	else if( szCmd == "apt_status" )
 		ShowStatus();
 	else if( szCmd == "apt_info" )
@@ -1129,12 +1266,13 @@ CClientCommand g_CB( "apt_off", "APTest: stop emulating", @ConsoleCmd );
 CClientCommand g_CC( "apt_pass", "APTest: mark passed [note]", @ConsoleCmd );
 CClientCommand g_CD( "apt_fail", "APTest: mark failed [note]", @ConsoleCmd );
 CClientCommand g_CE( "apt_status", "APTest: progress so far", @ConsoleCmd );
+CClientCommand g_CF( "apt_note", "APTest: record a finding <text>", @ConsoleCmd );
 
 /*
 * A manual verdict, appended to aptest_results.txt so a whole run can be read
 * back afterwards. The file keeps every verdict; the last one per scenario wins.
 */
-void RecordResult( bool bPass, const string& in szNote )
+void RecordResult( const string& in szVerdict, const string& in szNote )
 {
 	APTScenario@ s = Current();
 	if( s is null )
@@ -1143,7 +1281,7 @@ void RecordResult( bool bPass, const string& in szNote )
 		return;
 	}
 
-	string szLine = ( bPass ? "PASS" : "FAIL" ) + "|" + g_iCurrent + "|" + s.title
+	string szLine = szVerdict + "|" + g_iCurrent + "|" + s.title
 	    + "|" + g_iPass + " auto pass, " + g_iFail + " auto fail|" + szNote + "\n";
 
 	// Read and rewrite: APPEND is not in every build's OpenFile flags.
@@ -1170,7 +1308,7 @@ void RecordResult( bool bPass, const string& in szNote )
 	pOut.Write( szOld + szLine );
 	pOut.Close();
 
-	Say( ( bPass ? "Marked PASS: " : "Marked FAIL: " ) + s.title );
+	Say( "Marked " + szVerdict + ": " + s.title );
 	StartScenario( g_iCurrent + 1 );
 }
 
