@@ -19,7 +19,7 @@
 #   G|<arcade>|<part>|<targetname>|<classname>   the Juggernaut seal
 #   E|<arcade>|<class>|<field>|<value>  how to grant a class without its booth
 V|5
-D|156f49e597ab
+D|44df5bf20b02
 M|half_life|Half-Life|nihilanth|hl|1
 M|opposing_force|Opposing Force|of_worlds_collide|of|1
 M|blue_shift|Blue Shift|bs_leap_of_faith|bs|1
@@ -375,7 +375,7 @@ L|7720295|of2a1b|weapon_pickup|weapon_9mmAR,weapon_m16|Opposing Force: First MP5
 L|7720296|of1a3|weapon_pickup|weapon_shotgun|Opposing Force: First Shotgun|808 -2584 832
 L|7720297|of2a6|weapon_pickup|weapon_rpg|Opposing Force: First RPG|2988 3084 -576
 L|7720298|of1a6|weapon_pickup|weapon_satchel|Opposing Force: First Satchel Charge|232 -1284 8
-L|7720299|of2a4|weapon_pickup|weapon_tripmine|Opposing Force: First Tripmine|64 678 22
+L|7720299|of2a5|weapon_pickup|weapon_tripmine|Opposing Force: First Tripmine|1724 -1068 808
 L|7720300|of4a2|weapon_pickup|weapon_snark|Opposing Force: First Snarks|-1768 760 417
 L|7720301|of1a4b|weapon_pickup|weapon_handgrenade|Opposing Force: First Hand Grenade|-544 1856 -976
 L|7720302|of1a2|weapon_pickup|weapon_eagle|Opposing Force: First Desert Eagle|365 -589 -156
@@ -385,7 +385,6 @@ L|7720305|of3a5|weapon_pickup|weapon_displacer|Opposing Force: First Displacer C
 L|7720306|of4a2|weapon_pickup|weapon_sporelauncher|Opposing Force: First Spore Launcher|-1624 -432 384
 L|7720307|of4a3|weapon_pickup|weapon_grapple|Opposing Force: First Barnacle Grapple|-338 -504 337
 L|7720309|of1a1|weapon_pickup|weapon_pipewrench|Opposing Force: First Pipe Wrench|-1152 -560 -112
-L|7720310|of2a4|weapon_pickup|weapon_minigun|Opposing Force: First Minigun|83 564 6
 L|7720311|of1a2|weapon_pickup|weapon_crowbar|Opposing Force: First Combat Knife|549 -2822 68
 L|7720312|ba_security2|weapon_pickup|weapon_glock,weapon_9mmhandgun|Blue Shift: First Glock
 L|7720313|ba_yard1|weapon_pickup|weapon_357|Blue Shift: First .357 Magnum|-72 -1765 0
@@ -450,7 +449,6 @@ L|7720428|of2a6|chapter_complete|of_we_are_not_alone|We Are Not Alone - Complete
 L|7720429|hl_c01_a1|weapon_pickup|item_suit|First HEV Suit|-3665 926 -280
 L|7720430|hl_c13_a4|weapon_pickup|item_longjump|First Long Jump Module|1855 -297 -244
 L|7720431|of1a1|weapon_pickup|item_suit|Opposing Force: First PCV|367 2816 48
-L|7720432|ba_tram1|weapon_pickup|item_suit|Blue Shift: First HEV Suit|80 -304 3088
 L|7720433|ba_outro|map_reached||A Leap Of Faith - Reached
 L|7720434|ba_power2|chapter_complete|bs_power_struggle|Power Struggle - Complete
 L|7720435|ba_outro|chapter_complete|bs_leap_of_faith|A Leap Of Faith - Complete
@@ -898,7 +896,6 @@ K|weapon_m14|M14
 K|weapon_m16|MP5
 K|weapon_m16a1|M16A1
 K|weapon_m249|SAW
-K|weapon_minigun|Minigun
 K|weapon_pipewrench|Pipe Wrench
 K|weapon_rpg|RPG
 K|weapon_satchel|Satchel Charge

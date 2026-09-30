@@ -1,5 +1,5 @@
 {
- "data_version": "156f49e597ab",
+ "data_version": "44df5bf20b02",
  "files": [
   "campaigns/half_life.json",
   "campaigns/opposing_force.json",
@@ -307,19 +307,6 @@
    ]
   },
   {
-   "id": 7710063,
-   "name": "Minigun",
-   "classification": "progression",
-   "group": "weapon",
-   "classnames": [
-    "weapon_minigun"
-   ],
-   "campaign": "opposing_force",
-   "campaigns": [
-    "opposing_force"
-   ]
-  },
-  {
    "id": 7710064,
    "name": "Colt 1911",
    "classification": "progression",
@@ -581,8 +568,7 @@
    "SAW",
    "Sniper Rifle",
    "Displacer Cannon",
-   "Spore Launcher",
-   "Minigun"
+   "Spore Launcher"
   ],
   "ranged_they_hunger": [
    "Glock",
@@ -600,7 +586,6 @@
    "Sniper Rifle",
    "Displacer Cannon",
    "Spore Launcher",
-   "Minigun",
    "Colt 1911",
    "Taurus",
    "Sawed-Off Shotgun",
@@ -621,7 +606,6 @@
    "SAW",
    "Displacer Cannon",
    "Spore Launcher",
-   "Minigun",
    "Sniper Rifle"
   ],
   "explosives": [

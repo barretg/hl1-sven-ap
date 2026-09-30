@@ -517,7 +517,7 @@ class TestBarnacleGrappleLoose(BarnacleGrappleMixin, HalfLifeSvenTestBase):
         """So the grapple is doing the work above, not the tier it sits beside."""
         world = self.multiworld.worlds[self.player]
         state = self.multiworld.get_all_state(False)
-        for name in ("RPG", "SAW", "Displacer Cannon", "Minigun",
+        for name in ("RPG", "SAW", "Displacer Cannon",
                      "Spore Launcher", "Sniper Rifle", "Shotgun", "MP5"):
             state.remove(world.create_item(name))
         state.sweep_for_advancements()

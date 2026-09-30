@@ -357,12 +357,15 @@ def campaigns_holding(
 
 def earliest_map_with(
     chapters: list[dict], entities: dict[str, list[dict[str, str]]],
-    classnames: list[str],
+    classnames: list[str], skip: Iterable[str] = (),
 ) -> tuple[dict, str] | None:
     """First `(chapter, map)` in campaign order that contains one of these."""
     wanted = set(classnames)
+    skip = set(skip)
     for chapter in chapters:
         for map_name in chapter["maps"]:
+            if map_name in skip:
+                continue
             if any(e.get("classname", "") in wanted for e in entities[map_name]):
                 return chapter, map_name
     return None
@@ -594,6 +597,8 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
             for item_name, classnames in {
                 **WEAPON_ITEMS, **OPTIONAL_ITEMS
             }.items():
+                if item_name in campaign.no_first_check:
+                    continue
                 # A hand-placed anchor wins: some weapons are handed over rather
                 # than left lying about, and those leave no entity to find.
                 forced = WEAPON_ANCHORS.get(campaign.key, {}).get(item_name)
@@ -610,7 +615,10 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                     # No entity to stand next to, so `!find` cannot point at it.
                     placed = None
                 else:
-                    anchor = earliest_map_with(campaign_chapters, entities, classnames)
+                    anchor = earliest_map_with(
+                        campaign_chapters, entities, classnames,
+                        campaign.anchor_skip_maps.get(item_name, ()),
+                    )
                     if anchor is None:
                         continue  # not here; the check could never fire
                     chapter, map_name = anchor

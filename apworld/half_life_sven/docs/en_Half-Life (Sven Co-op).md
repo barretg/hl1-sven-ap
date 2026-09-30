@@ -112,8 +112,8 @@ Everything else is filler: ammo caches, medkits and armour batteries.
 Half-Life brings 14 weapons (the crowbar, Glock, .357, MP5, shotgun, crossbow,
 RPG, Tau cannon, gluon gun, hivehand, satchel charges, tripmines, snarks, hand
 grenades).
-Opposing Force adds eight more: the desert eagle, SAW, sniper rifle, displacer,
-spore launcher, barnacle grapple, pipe wrench and minigun. They Hunger adds nine
+Opposing Force adds seven more: the desert eagle, SAW, sniper rifle, displacer,
+spore launcher, barnacle grapple and pipe wrench. They Hunger adds nine
 of its own, from the Colt 1911 and tommy gun to the tesla gun. Blue Shift adds
 none: in Sven Co-op it uses Half-Life's, down to the crowbar.
 

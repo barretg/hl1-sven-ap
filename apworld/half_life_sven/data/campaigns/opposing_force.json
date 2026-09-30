@@ -1201,18 +1201,18 @@
    "id": 7720299,
    "name": "Opposing Force: First Tripmine",
    "chapter": "of_we_are_not_alone",
-   "map": "of2a4",
+   "map": "of2a5",
    "trigger": {
     "type": "weapon_pickup",
-    "map": "of2a4",
+    "map": "of2a5",
     "classnames": [
      "weapon_tripmine"
     ]
    },
    "position": [
-    64,
-    678,
-    22
+    1724,
+    -1068,
+    808
    ]
   },
   {
@@ -1376,24 +1376,6 @@
     -1152,
     -560,
     -112
-   ]
-  },
-  {
-   "id": 7720310,
-   "name": "Opposing Force: First Minigun",
-   "chapter": "of_we_are_not_alone",
-   "map": "of2a4",
-   "trigger": {
-    "type": "weapon_pickup",
-    "map": "of2a4",
-    "classnames": [
-     "weapon_minigun"
-    ]
-   },
-   "position": [
-    83,
-    564,
-    6
    ]
   },
   {

@@ -83,6 +83,13 @@ class Campaign:
     # later in the yards. `{item name: map}` puts the check where the player
     # really gets it.
     weapon_anchors: dict[str, str] = field(default_factory=dict)
+    # Items whose "First ..." check this campaign does not get, even though an
+    # entity for it exists in its maps. Its id stays reserved in `ids.json`.
+    no_first_check: list[str] = field(default_factory=list)
+    # `{item name: [maps]}` the derived "First ..." anchor passes over, for a
+    # copy that sits somewhere a lone player cannot reach. The check lands on
+    # the next map that holds one instead.
+    anchor_skip_maps: dict[str, list[str]] = field(default_factory=dict)
     # What a shared weapon is called *here*, when this campaign reskins it into
     # something else. Sven Co-op does that with a `globalmodellist` in the map
     # .cfg: They Hunger's maps swap the pipe wrench's models for a shovel and the
@@ -323,6 +330,8 @@ OPPOSING_FORCE = Campaign(
     # part of its campaign at all: so it stays in, console-less, reached by
     # `!warp` like Crush Depth.
     intro_chapter="of_incoming",
+    # of2a4's tripmine sits beside the easter-egg minigun, past the skylight.
+    anchor_skip_maps={"Tripmine": ["of2a4"]},
     weapons={
         "Desert Eagle": ["weapon_eagle"],
         "SAW": ["weapon_m249", "weapon_saw"],
@@ -331,7 +340,9 @@ OPPOSING_FORCE = Campaign(
         "Spore Launcher": ["weapon_sporelauncher"],
         "Barnacle Grapple": ["weapon_grapple"],
         "Pipe Wrench": ["weapon_pipewrench"],
-        "Minigun": ["weapon_minigun"],
+        # No minigun either. Opposing Force never had one: Sven Co-op's copy in
+        # of2a4 is an easter egg past the skylight, reachable only by stacking
+        # players, and there is no other. It stays a vanilla pickup.
         # No combat knife. Opposing Force's maps still place `weapon_knife`, but
         # this build of Sven Co-op has no such weapon: it is in neither
         # server.dll nor any map script: so those entities never spawn. As an
@@ -432,6 +443,9 @@ BLUE_SHIFT = Campaign(
     # The gun range guard hands it over; there is no glock entity in either
     # security map, so the derived anchor landed in the yards instead.
     weapon_anchors={"Glock": "ba_security2"},
+    # Barney has no HEV suit. Sven Co-op leaves an `item_suit` at the tram
+    # spawn so the HUD works, which is not a moment worth a check.
+    no_first_check=["HEV Suit"],
     gates={
         # Insecurity and Duty Calls stay ungated for the same reason: Barney is
         # armed with a crowbar and a borrowed pistol for the early shift, and a
@@ -782,7 +796,6 @@ RANGED_WEAPONS = [
     "Sniper Rifle",
     "Displacer Cannon",
     "Spore Launcher",
-    "Minigun",
 ]
 
 # Enough punch to kill an armoured target in reasonable time.
@@ -797,7 +810,6 @@ HEAVY_WEAPONS = [
     "SAW",
     "Displacer Cannon",
     "Spore Launcher",
-    "Minigun",
     "Sniper Rifle",
 ]
 

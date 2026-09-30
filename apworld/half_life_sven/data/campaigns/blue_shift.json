@@ -1001,24 +1001,6 @@
    ]
   },
   {
-   "id": 7720432,
-   "name": "Blue Shift: First HEV Suit",
-   "chapter": "bs_living_quarters",
-   "map": "ba_tram1",
-   "trigger": {
-    "type": "weapon_pickup",
-    "map": "ba_tram1",
-    "classnames": [
-     "item_suit"
-    ]
-   },
-   "position": [
-    80,
-    -304,
-    3088
-   ]
-  },
-  {
    "id": 7720807,
    "name": "Blue Shift: First Security Armor",
    "chapter": "bs_insecurity",
