@@ -70,6 +70,16 @@ void MenuChosen( CTextMenu@ pMenu, CBasePlayer@ pPlayer, int iSlot, const CTextM
 	if( !g_MenuActions[pPlayer.entindex()].get( pItem.m_szName, szAction ) )
 		return;
 
+	// Not from inside the callback: the next menu unregisters this one, and
+	// unregistering the menu the engine is still handling crashed the game.
+	g_Scheduler.SetTimeout( "RunMenuActionLater", 0.0f, pPlayer.entindex(), szAction );
+}
+
+void RunMenuActionLater( int iIndex, string szAction )
+{
+	CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( iIndex );
+	if( pPlayer is null || !pPlayer.IsConnected() )
+		return;
 	RunMenuAction( pPlayer, szAction );
 }
 
@@ -85,7 +95,7 @@ void MenuChosen( CTextMenu@ pMenu, CBasePlayer@ pPlayer, int iSlot, const CTextM
 *   arcade               warp to the arcade map
 *   track                the campaigns, with counts
 *   trackc|<campaign>    one campaign's missions, with counts
-*   trackm|<index>       what is left in one mission
+*   trackm|<index>       one mission's checks, found ones marked
 *   find|<id>            point at one location
 *   near                 point at the nearest check on this map
 *   hub                  back to the hub
@@ -347,34 +357,47 @@ void ShowTrackMissions( CBasePlayer@ pPlayer, const string& in szCampaign )
 	MenuOpen( pPlayer, pMenu );
 }
 
-/* What is left in one mission; picking one points at it, as `!find` would. */
+/*
+* One mission's checks, unfound first. Found ones follow, marked `[done]`: a
+* text menu cannot grey out a single entry, so position and the mark say it.
+* Picking any of them points at it, as `!find` would.
+*/
 void ShowTrackMission( CBasePlayer@ pPlayer, int iIndex )
 {
 	if( iIndex < 0 || uint( iIndex ) >= g_Chapters.length() )
 		return;
 
 	APChapter@ pChapter = g_Chapters[iIndex];
-	CTextMenu@ pMenu = NewMenu( pPlayer, pChapter.name + ": still to find" );
 
-	uint uiShown = 0;
+	array<APLocation@> left;
+	array<APLocation@> done;
 	for( uint i = 0; i < g_Locations.length(); ++i )
 	{
 		APLocation@ pLocation = g_Locations[i];
-		if( !ChapterHasMap( pChapter, pLocation.map ) || !LocationInSeed( pLocation )
-		    || LocationFound( pLocation ) )
+		if( !ChapterHasMap( pChapter, pLocation.map ) || !LocationInSeed( pLocation ) )
 			continue;
-
-		MenuAdd( pPlayer, pMenu, MenuLocationLabel( pChapter, pLocation ),
-			"find|" + pLocation.id );
-		++uiShown;
+		if( LocationFound( pLocation ) )
+			done.insertLast( pLocation );
+		else
+			left.insertLast( pLocation );
 	}
 
-	if( uiShown == 0 )
+	if( left.length() + done.length() == 0 )
 	{
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-			"[AP] Nothing left to find in " + pChapter.name + ".\n" );
+			"[AP] No checks in " + pChapter.name + ".\n" );
 		return;
 	}
+
+	CTextMenu@ pMenu = NewMenu( pPlayer, pChapter.name + ": " + done.length() + "/"
+		+ ( left.length() + done.length() ) + " found" );
+
+	for( uint i = 0; i < left.length(); ++i )
+		MenuAdd( pPlayer, pMenu, MenuLocationLabel( pChapter, left[i] ),
+			"find|" + left[i].id );
+	for( uint i = 0; i < done.length(); ++i )
+		MenuAdd( pPlayer, pMenu, "[done] " + MenuLocationLabel( pChapter, done[i] ),
+			"find|" + done[i].id );
 
 	MenuOpen( pPlayer, pMenu );
 }
