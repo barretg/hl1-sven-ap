@@ -13,7 +13,8 @@
 *   apt_next / apt_prev / apt_redo
 *   apt_info            repeat the current scenario's steps
 *   apt_pass [note]     record this scenario as passed and go to the next
-*   apt_fail [note]     record it as failed (stays put so you can redo)
+*   apt_fail [note]     record it as failed and go to the next
+*   apt_status          verdict counts and the first untested scenario
 *   apt_give <item>     add an item to the emulated snapshot
 *   apt_take <item>     remove one
 *   apt_trap <name>     send a trap event (Bot Swarm Trap, Butterfingers Trap ...)
@@ -729,7 +730,7 @@ void Arrive()
 	if( pPlayer is null )
 	{
 		// Still loading in.
-		if( ++g_iArriveTries < 60 )
+		if( ++g_iArriveTries < 240 )
 			g_Scheduler.SetTimeout( "Arrive", 0.5f );
 		return;
 	}
@@ -745,7 +746,9 @@ void Arrive()
 	if( s.trap.Length() > 0 )
 		g_Scheduler.SetTimeout( "SendScenarioTrap", 4.0f );
 
-	ShowInfo();
+	// Not straight away: a player counts as alive a moment before their client
+	// is drawing chat, and the steps were scrolling past unseen.
+	g_Scheduler.SetTimeout( "ShowInfo", 2.5f );
 }
 
 void SpawnScenarioThing()
@@ -771,7 +774,7 @@ void Teleport()
 	array<string>@ p = s.pos.Split( " " );
 	if( p.length() < 3 )
 		return;
-	Vector vec( atof( p[0] ), atof( p[1] ), atof( p[2] ) + 48.0f );
+	Vector vec = FindStandSpot( Vector( atof( p[0] ), atof( p[1] ), atof( p[2] ) ) );
 
 	for( int i = 1; i <= g_Engine.maxClients; ++i )
 	{
@@ -781,6 +784,53 @@ void Teleport()
 		g_EntityFuncs.SetOrigin( pPlayer, vec );
 		pPlayer.pev.velocity = g_vecZero;
 	}
+}
+
+/*
+* Somewhere a standing player fits, as near the point as possible. Item origins
+* sit in lockers, on shelves and against walls, and dropping a player on the
+* exact spot put them inside the geometry. Rings outward and upward, each spot
+* checked with the player hull and then settled onto the floor below it.
+*/
+bool HullFree( const Vector& in vec )
+{
+	TraceResult tr;
+	g_Utility.TraceHull( vec, vec, ignore_monsters, human_hull, null, tr );
+	return tr.fStartSolid == 0 && tr.fAllSolid == 0;
+}
+
+Vector FindStandSpot( const Vector& in vecPoint )
+{
+	// The hull centre sits 36 above the feet; start with the feet on the point.
+	Vector vecBase = vecPoint + Vector( 0, 0, 37 );
+	array<float> heights = { 0.0f, 16.0f, 32.0f, 64.0f };
+	for( int ring = 0; ring <= 6; ++ring )
+	{
+		float r = ring * 24.0f;
+		int iSteps = ring == 0 ? 1 : 8 * ring;
+		for( uint h = 0; h < heights.length(); ++h )
+		{
+			for( int k = 0; k < iSteps; ++k )
+			{
+				Math.MakeVectors( Vector( 0.0f, 360.0f * k / iSteps, 0.0f ) );
+				Vector vec = vecBase + g_Engine.v_forward * r + Vector( 0, 0, heights[h] );
+				if( !HullFree( vec ) )
+					continue;
+				// Nothing solid between the point and here, or it is the next room.
+				TraceResult trSeen;
+				g_Utility.TraceLine( vecPoint + Vector( 0, 0, 8 ), vec, ignore_monsters, null, trSeen );
+				if( trSeen.flFraction < 1.0f )
+					continue;
+				// Down onto the floor, so nobody lands from a height.
+				TraceResult trDown;
+				g_Utility.TraceHull( vec, vec - Vector( 0, 0, 128 ), ignore_monsters, human_hull,
+				                     null, trDown );
+				return trDown.fStartSolid == 0 ? trDown.vecEndPos : vec;
+			}
+		}
+	}
+	Say( "no open space found near the spot; dropping you on it anyway (!apt_tp to retry)." );
+	return vecPoint + Vector( 0, 0, 48 );
 }
 
 void SpawnInFront( CBasePlayer@ pPlayer, const string& in szClassname )
@@ -828,14 +878,81 @@ void ShowInfo()
 	Say( "!apt_next when done. Tally so far: " + g_iPass + " pass, " + g_iFail + " fail." );
 }
 
+/*
+* The latest recorded verdict per scenario index, "PASS" or "FAIL" plus note.
+* Read from aptest_results.txt, where a later line overrides an earlier one.
+*/
+dictionary LoadVerdicts()
+{
+	dictionary verdicts;
+	File@ pFile = g_FileSystem.OpenFile( APT_RESULTS, OpenFile::READ );
+	if( pFile is null || !pFile.IsOpen() )
+		return verdicts;
+	while( !pFile.EOFReached() )
+	{
+		string szLine;
+		pFile.ReadLine( szLine );
+		array<string>@ f = szLine.Split( "|" );
+		if( f.length() < 5 )
+			continue;
+		string szNote = f[4];
+		verdicts[ f[1] ] = f[0] + ( szNote.Length() > 0 ? " (" + szNote + ")" : "" );
+	}
+	pFile.Close();
+	return verdicts;
+}
+
 void ListScenarios( CBasePlayer@ pPlayer )
 {
+	dictionary verdicts = LoadVerdicts();
 	// Console, since the list is long.
 	for( uint i = 0; i < g_Scenarios.length(); ++i )
+	{
+		string szVerdict = "----";
+		verdicts.get( "" + i, szVerdict );
+		string szMark = int( i ) == g_iCurrent ? ">" : " ";
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
-			"  " + i + ": " + g_Scenarios[i].title + " (" + g_Scenarios[i].map + ")\n" );
+			szMark + " " + i + ": [" + szVerdict + "] " + g_Scenarios[i].title
+			+ " (" + g_Scenarios[i].map + ")\n" );
+	}
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"[APT] " + g_Scenarios.length() + " scenarios listed in console. !apt_go <n>\n" );
+	ShowStatus();
+}
+
+/* Counts, and the first scenario with no verdict yet. */
+void ShowStatus()
+{
+	dictionary verdicts = LoadVerdicts();
+	int iPass = 0;
+	int iFail = 0;
+	int iFirstOpen = -1;
+	string szFailed;
+	for( uint i = 0; i < g_Scenarios.length(); ++i )
+	{
+		string szVerdict;
+		if( !verdicts.get( "" + i, szVerdict ) )
+		{
+			if( iFirstOpen < 0 )
+				iFirstOpen = int( i );
+			continue;
+		}
+		if( szVerdict.SubString( 0, 4 ) == "PASS" )
+			++iPass;
+		else
+		{
+			++iFail;
+			szFailed += ( szFailed.Length() > 0 ? ", " : "" ) + i;
+		}
+	}
+	int iTotal = int( g_Scenarios.length() );
+	Say( "Progress: " + ( iPass + iFail ) + "/" + iTotal + " done, " + iPass + " pass, "
+	     + iFail + " fail" + ( iFail > 0 ? " (" + szFailed + ")" : "" ) + "." );
+	if( iFirstOpen >= 0 )
+		Say( "First untested: " + iFirstOpen + " " + g_Scenarios[iFirstOpen].title
+		     + ". !apt_go " + iFirstOpen );
+	else
+		Say( "All scenarios have a verdict." );
 }
 
 // ---------------------------------------------------------------- commands
@@ -854,6 +971,8 @@ void Dispatch( CBasePlayer@ pPlayer, const string& in szCmd, const string& in sz
 		StartScenario( g_iCurrent < 0 ? 0 : g_iCurrent );
 	else if( szCmd == "apt_pass" || szCmd == "apt_fail" )
 		RecordResult( szCmd == "apt_pass", szArg );
+	else if( szCmd == "apt_status" )
+		ShowStatus();
 	else if( szCmd == "apt_info" )
 		ShowInfo();
 	else if( szCmd == "apt_tp" )
@@ -933,6 +1052,7 @@ CClientCommand g_CA( "apt_take", "APTest: remove an item", @ConsoleCmd );
 CClientCommand g_CB( "apt_off", "APTest: stop emulating", @ConsoleCmd );
 CClientCommand g_CC( "apt_pass", "APTest: mark passed [note]", @ConsoleCmd );
 CClientCommand g_CD( "apt_fail", "APTest: mark failed [note]", @ConsoleCmd );
+CClientCommand g_CE( "apt_status", "APTest: progress so far", @ConsoleCmd );
 
 /*
 * A manual verdict, appended to aptest_results.txt so a whole run can be read
@@ -975,8 +1095,7 @@ void RecordResult( bool bPass, const string& in szNote )
 	pOut.Close();
 
 	Say( ( bPass ? "Marked PASS: " : "Marked FAIL: " ) + s.title );
-	if( bPass )
-		StartScenario( g_iCurrent + 1 );
+	StartScenario( g_iCurrent + 1 );
 }
 
 // ---------------------------------------------------------------- util

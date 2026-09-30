@@ -304,10 +304,18 @@ void BotsThink()
 		}
 
 		BotMoveThink( bot, pBody, flDt, flYaw, bFighting );
+		BotUnstick( pBody );
 
 		pBody.pev.angles.y = bFighting ? flYaw : bot.flYaw;
 		pBody.pev.ideal_yaw = pBody.pev.angles.y;
 		BotAnimate( bot, pBody, !bFighting );
+
+		// Moves the frame on and stamps animtime with now. The client smooths a
+		// stepping monster's position between updates by that stamp: left at the
+		// time the sequence was set, every update arrived as a jump.
+		CBaseAnimating@ pAnimating = cast<CBaseAnimating@>( pBody );
+		if( pAnimating !is null )
+			pAnimating.StudioFrameAdvance( 0.0f );
 	}
 }
 
@@ -364,6 +372,46 @@ void BotSetDucked( CBaseEntity@ pBody, bool bDucked )
 	if( bOnGround )
 		g_EntityFuncs.SetOrigin( pBody, vecFeet + Vector( 0.0f, 0.0f, flHalf ) );
 	pBody.pev.view_ofs = Vector( 0, 0, bDucked ? 12 : 28 );
+}
+
+/*
+* Out of the floor or a wall, if a move or a change of height left the hull in
+* one. Tries straight up first, a step at a time, then the four sides. A bot that
+* is wedged solid is removed rather than left sunk in the world.
+*/
+const float BOT_UNSTICK_STEP = 4.0f;
+const int BOT_UNSTICK_TRIES = 9;
+
+bool BotHullFree( CBaseEntity@ pBody, const Vector& in vecOrigin )
+{
+	HULL_NUMBER hull = BotDucked( pBody ) ? head_hull : human_hull;
+	TraceResult tr;
+	g_Utility.TraceHull( vecOrigin, vecOrigin, ignore_monsters, hull, pBody.edict(), tr );
+	return tr.fStartSolid == 0 && tr.fAllSolid == 0;
+}
+
+void BotUnstick( CBaseEntity@ pBody )
+{
+	Vector vecOrigin = pBody.pev.origin;
+	if( BotHullFree( pBody, vecOrigin ) )
+		return;
+
+	for( int i = 1; i <= BOT_UNSTICK_TRIES; ++i )
+	{
+		float d = BOT_UNSTICK_STEP * i;
+		array<Vector> tries = {
+			Vector( 0, 0, d ), Vector( d, 0, 0 ), Vector( -d, 0, 0 ),
+			Vector( 0, d, 0 ), Vector( 0, -d, 0 )
+		};
+		for( uint j = 0; j < tries.length(); ++j )
+		{
+			if( BotHullFree( pBody, vecOrigin + tries[j] ) )
+			{
+				g_EntityFuncs.SetOrigin( pBody, vecOrigin + tries[j] );
+				return;
+			}
+		}
+	}
 }
 
 bool BotCanStand( CBaseEntity@ pBody )

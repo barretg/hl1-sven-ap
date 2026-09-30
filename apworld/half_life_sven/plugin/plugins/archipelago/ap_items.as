@@ -497,6 +497,11 @@ HookReturnCode PlayerPreThink( CBasePlayer@ pPlayer, uint& out uiFlags )
 	}
 
 	MeleeThrowThink( pPlayer );
+
+	// Every frame rather than on the one-second sweep, so armour from a charger
+	// or a map's own grant is gone before the HUD shows it for more than a blink.
+	// Batteries are refused outright in PickupCanCollect.
+	EnforceArmour( pPlayer );
 	return HOOK_CONTINUE;
 }
 
@@ -700,6 +705,15 @@ HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool
 		return HOOK_HANDLED;
 	}
 
+	// A battery with nowhere to go. Refused rather than drained afterwards, so it
+	// stays on the floor for when the armour item arrives.
+	if( szClassname == BATTERY_CLASSNAME && !ArmourAllowed() )
+	{
+		bResult = false;
+		NagArmourLocked( pPlayer );
+		return HOOK_HANDLED;
+	}
+
 	// The suit's pickup is armour on this campaign's maps: an Opposing Force
 	// `item_suit` is the PCV, and waits on the PCV rather than the HEV Suit.
 	bool bAllowed = szClassname == SUIT_CLASSNAME
@@ -722,6 +736,23 @@ HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool
 		pPlayer, HUD_PRINTCENTER,
 		"You have not found the " + LockedItemName( szClassname ) + " yet.\n" );
 	return HOOK_HANDLED;
+}
+
+const string BATTERY_CLASSNAME = "item_battery";
+
+// A player standing on a battery is touched by it every frame.
+dictionary g_flArmourNagged;
+
+void NagArmourLocked( CBasePlayer@ pPlayer )
+{
+	string szKey = "" + pPlayer.entindex();
+	float flLast = 0.0f;
+	g_flArmourNagged.get( szKey, flLast );
+	if( g_Engine.time - flLast <= 1.0f && g_Engine.time >= flLast )
+		return;
+	g_flArmourNagged[ szKey ] = g_Engine.time;
+	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCENTER,
+		"You have not found the " + ArmourItemHere() + " yet.\n" );
 }
 
 string LockedItemName( const string& in szClassname )
