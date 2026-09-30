@@ -1743,7 +1743,10 @@ HookReturnCode PlayerUse( CBasePlayer@ pPlayer, uint& out uiFlags )
 
 	if( g_szCurrentMap != HUB_MAP )
 	{
-		RegisterChargerCheck( pHit );
+		// This hook runs every frame for every player, not only on a press, so
+		// without this a charger counted as used by being looked at in reach.
+		if( ( pPlayer.pev.button & IN_USE ) != 0 )
+			RegisterChargerCheck( pHit );
 		// Held down, so this fires every tick of an HEV charge: the armour it
 		// pours in is taken back as fast as the charger supplies it, rather than
 		// climbing for a second and then dropping to zero.

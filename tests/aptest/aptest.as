@@ -710,6 +710,8 @@ void DoChangeLevel( string szMap )
 
 void MapInit()
 {
+	g_flClientInAt = -1.0f;
+	g_bInfoPending = false;
 	if( g_pPoll !is null )
 		g_Scheduler.RemoveTimer( g_pPoll );
 	@g_pPoll = g_Scheduler.SetInterval( "PollOut", 0.25f, g_Scheduler.REPEAT_INFINITE_TIMES );
@@ -789,9 +791,40 @@ void Arrive()
 	if( s.trap.Length() > 0 )
 		g_Scheduler.SetTimeout( "SendScenarioTrap", 4.0f );
 
-	// Not straight away: a player counts as alive a moment before their client
-	// is drawing chat, and the steps were scrolling past unseen.
-	g_Scheduler.SetTimeout( "ShowInfo", 2.5f );
+	// Not until the client is actually in the game (see ShowInfoWhenIn): a
+	// player counts as alive well before their client is drawing chat.
+	g_bInfoPending = true;
+	g_iInfoTries = 0;
+	g_Scheduler.SetTimeout( "ShowInfoWhenIn", 1.0f );
+}
+
+// Set by ClientPutInServer, the engine's word that a client has finished
+// loading the map. Cleared each map.
+float g_flClientInAt = -1.0f;
+bool g_bInfoPending = false;
+int g_iInfoTries = 0;
+
+HookReturnCode ClientPutInServer( CBasePlayer@ pPlayer )
+{
+	g_flClientInAt = g_Engine.time;
+	return HOOK_CONTINUE;
+}
+
+void ShowInfoWhenIn()
+{
+	if( !g_bInfoPending )
+		return;
+
+	// 3s after the client is in, or give up waiting for the signal after 30s.
+	bool bIn = g_flClientInAt >= 0.0f && g_Engine.time - g_flClientInAt >= 3.0f;
+	if( !bIn && ++g_iInfoTries < 60 )
+	{
+		g_Scheduler.SetTimeout( "ShowInfoWhenIn", 0.5f );
+		return;
+	}
+
+	g_bInfoPending = false;
+	ShowInfo();
 }
 
 void SpawnScenarioThing()
@@ -1193,6 +1226,7 @@ void PluginInit()
 	g_Module.ScriptInfo.SetContactInfo( "local" );
 
 	g_Hooks.RegisterHook( Hooks::Player::ClientSay, @ClientSay );
+	g_Hooks.RegisterHook( Hooks::Player::ClientPutInServer, @ClientPutInServer );
 
 	g_szSession = "aptest-" + Math.RandomLong( 1, 999999999 );
 	LoadCheckdata();
