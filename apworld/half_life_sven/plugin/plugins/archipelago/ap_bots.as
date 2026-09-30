@@ -525,8 +525,11 @@ void BotSwing( APBot@ bot, CBaseEntity@ pBody, CBaseEntity@ pVictim )
 * view belongs to the fight. `flYaw` is turned to face the victim; the heading is
 * left alone, so the bot carries on its way when the fight is over.
 */
-bool BotMeleeThink( APBot@ bot, CBaseEntity@ pBody, float& inout flYaw )
+bool BotMeleeThink( APBot@ bot, CBaseEntity@ pBody, float& out flYaw )
 {
+	// `&out` rather than `&inout`, which script only allows on handle types:
+	// so the starting value is the bot's heading, set here instead of passed in.
+	flYaw = bot.flYaw;
 	CBaseEntity@ pVictim = BotFindVictim( bot, pBody );
 
 	if( bot.iMelee == BOT_MELEE_IDLE )

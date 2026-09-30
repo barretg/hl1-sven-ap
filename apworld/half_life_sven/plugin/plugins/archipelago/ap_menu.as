@@ -95,7 +95,7 @@ void RunMenuAction( CBasePlayer@ pPlayer, const string& in szAction )
 {
 	int iBar = szAction.Find( "|" );
 	string szVerb = iBar >= 0 ? szAction.SubString( 0, iBar ) : szAction;
-	string szArg = iBar >= 0 ? szAction.SubString( iBar + 1 ) : "";
+	string szArg = iBar >= 0 ? szAction.SubString( iBar + 1, szAction.Length() - iBar - 1 ) : "";
 
 	if( szVerb == "main" )
 		ShowMainMenu( pPlayer );

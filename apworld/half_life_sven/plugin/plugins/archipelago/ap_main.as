@@ -101,6 +101,9 @@ void Initialise()
 	LoadAmnesty();
 	// Whatever level change was queued has happened; we are here.
 	g_szPendingLevel = "";
+	// Plugin globals outlive the map; the new map's players have not settled.
+	g_flLevelChangeWaitStart = -1.0f;
+	g_flPlayerInSince = -1.0f;
 	g_bSelfChange = false;
 	// Earned back in MapStart, once we know this map is one we are meant to be
 	// on. Until then nothing here counts as progress.

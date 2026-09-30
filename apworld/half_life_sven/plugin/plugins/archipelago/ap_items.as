@@ -259,6 +259,13 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		if( szClassname == LONGJUMP_CLASSNAME )
 			continue;
 
+		// Blue Shift's armour pickups are gated, not granted: the Security Armor
+		// item is what lets them be collected. Building one here would also
+		// precache its model mid-map on any map without one, which is a
+		// Host_Error.
+		if( szClassname == "item_armorvest" || szClassname == "item_helmet" )
+			continue;
+
 		// Owned, but not a thing this map knows how to build. See
 		// ClassnameGrantableHere.
 		if( !ClassnameGrantableHere( szClassname ) )
@@ -557,6 +564,9 @@ void EnforceLoadouts()
 
 	// And the check counter, for whoever has it on.
 	UpdateCheckHud();
+
+	// So a level change knows whether anyone is still loading in.
+	TrackPlayerInGame();
 }
 
 /*

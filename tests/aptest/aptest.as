@@ -12,6 +12,8 @@
 *   apt_go <n>          start scenario n
 *   apt_next / apt_prev / apt_redo
 *   apt_info            repeat the current scenario's steps
+*   apt_pass [note]     record this scenario as passed and go to the next
+*   apt_fail [note]     record it as failed (stays put so you can redo)
 *   apt_give <item>     add an item to the emulated snapshot
 *   apt_take <item>     remove one
 *   apt_trap <name>     send a trap event (Bot Swarm Trap, Butterfingers Trap ...)
@@ -27,6 +29,7 @@ const string APT_CHECKDATA = APT_DIR + "checkdata.txt";
 const string APT_IN = APT_DIR + "ap_in.txt";
 const string APT_OUT = APT_DIR + "ap_out.txt";
 const string APT_STATE = APT_DIR + "aptest_state.txt";
+const string APT_RESULTS = APT_DIR + "aptest_results.txt";
 const string APT_HUB = "-sp_campaign_portal";
 const string APT_ARCADE = "suspension";
 
@@ -184,7 +187,7 @@ void BuildScenarios()
 	g_Scenarios.resize( 0 );
 	APTScenario@ s;
 
-	@s = Add( "Bot Swarm", "hl_c02_a1" );
+	@s = Add( "Bot Swarm", "hl_c02_a2" );
 	s.trap = "Bot Swarm Trap";
 	s.steps =
 		"Six crowbar bots appear around you a few seconds after arrival." + "\n"
@@ -246,12 +249,12 @@ void BuildScenarios()
 		+ "!apt_give Melee Throw, right-click: crowbar flies, hurts what it hits," + "\n"
 		+ "returns after 10s. Picking the thrown crowbar up sends NO check.";
 
-	@s = Add( "Weapon check: campaign-wide", "hl_c02_a1" );
+	@s = Add( "Weapon check: campaign-wide", "hl_c02_a2" );
 	s.spawn = "weapon_shotgun";
 	s.expect = "First Shotgun";
 	s.forbid = "Opposing Force: First Shotgun;Blue Shift: First Shotgun";
 	s.steps =
-		"A shotgun is spawned in front of you on hl_c02_a1 (anchored hl_c03)." + "\n"
+		"A shotgun is spawned in front of you on hl_c02_a2 (anchored hl_c03)." + "\n"
 		+ "Expect 'First Shotgun' on sight/pickup, not a per-map name.";
 
 	@s = Add( "Weapon check: per campaign", "ba_security1" );
@@ -276,14 +279,14 @@ void BuildScenarios()
 		"Shotgun spawned on the arcade map. Pick it up: no weapon check." + "\n"
 		+ "Class loadouts containing weapons must not send checks either.";
 
-	@s = Add( "Granted weapon sends nothing", "hl_c02_a1" );
+	@s = Add( "Granted weapon sends nothing", "hl_c02_a2" );
 	s.give = "Shotgun";
 	s.forbid = "First Shotgun";
 	s.steps =
 		"The Shotgun item is held, so it is put in your hands." + "\n"
 		+ "Wait ~5s and switch to it: no 'First Shotgun' check.";
 
-	@s = Add( "Butterfingers drop sends nothing", "hl_c02_a1" );
+	@s = Add( "Butterfingers drop sends nothing", "hl_c02_a2" );
 	s.give = "Shotgun";
 	s.forbid = "First Shotgun";
 	s.steps =
@@ -291,7 +294,7 @@ void BuildScenarios()
 		+ "It lands on the floor. Stand by it, pick it up after the" + "\n"
 		+ "withhold ends (or wait 30s for reissue): no weapon check.";
 
-	@s = Add( "Player drop (G) sends nothing", "hl_c02_a1" );
+	@s = Add( "Player drop (G) sends nothing", "hl_c02_a2" );
 	s.give = "Shotgun";
 	s.forbid = "First Shotgun";
 	s.steps =
@@ -586,7 +589,7 @@ void SaveState()
 	File@ pFile = g_FileSystem.OpenFile( APT_STATE, OpenFile::WRITE );
 	if( pFile is null || !pFile.IsOpen() )
 		return;
-	pFile.Write( g_iCurrent + "\n" + g_szPhase + "\n" + ( g_bConnected ? "1" : "0" ) + "\n" );
+	pFile.Write( "" + g_iCurrent + "\n" + g_szPhase + "\n" + ( g_bConnected ? "1" : "0" ) + "\n" );
 	pFile.Close();
 }
 
@@ -643,6 +646,18 @@ void StartScenario( int iIndex )
 	g_Scheduler.SetTimeout( "DoChangeLevel", 1.0f, bDirect ? s.map : APT_HUB );
 }
 
+int g_iHopTries = 0;
+
+void HopWhenReady( string szMap )
+{
+	if( FirstAlive() is null && ++g_iHopTries < 120 )
+	{
+		g_Scheduler.SetTimeout( "HopWhenReady", 0.5f, szMap );
+		return;
+	}
+	g_Scheduler.SetTimeout( "DoChangeLevel", 2.0f, szMap );
+}
+
 void DoChangeLevel( string szMap )
 {
 	g_EngineFuncs.ServerCommand( "changelevel " + szMap + "\n" );
@@ -671,7 +686,11 @@ void MapStart()
 	{
 		g_szPhase = "target";
 		SaveState();
-		g_Scheduler.SetTimeout( "DoChangeLevel", 3.0f, s.map );
+		// Not until someone is in the game. A changelevel while the listen
+		// server's own client is still connecting has ended in svc_bad and a
+		// Host_Error on a precache (sprites/voiceicon.spr).
+		g_iHopTries = 0;
+		g_Scheduler.SetTimeout( "HopWhenReady", 1.0f, s.map );
 		return;
 	}
 
@@ -833,6 +852,8 @@ void Dispatch( CBasePlayer@ pPlayer, const string& in szCmd, const string& in sz
 		StartScenario( g_iCurrent - 1 );
 	else if( szCmd == "apt_redo" )
 		StartScenario( g_iCurrent < 0 ? 0 : g_iCurrent );
+	else if( szCmd == "apt_pass" || szCmd == "apt_fail" )
+		RecordResult( szCmd == "apt_pass", szArg );
 	else if( szCmd == "apt_info" )
 		ShowInfo();
 	else if( szCmd == "apt_tp" )
@@ -910,6 +931,53 @@ CClientCommand g_C8( "apt_trap", "APTest: send a trap", @ConsoleCmd );
 CClientCommand g_C9( "apt_give", "APTest: add an item", @ConsoleCmd );
 CClientCommand g_CA( "apt_take", "APTest: remove an item", @ConsoleCmd );
 CClientCommand g_CB( "apt_off", "APTest: stop emulating", @ConsoleCmd );
+CClientCommand g_CC( "apt_pass", "APTest: mark passed [note]", @ConsoleCmd );
+CClientCommand g_CD( "apt_fail", "APTest: mark failed [note]", @ConsoleCmd );
+
+/*
+* A manual verdict, appended to aptest_results.txt so a whole run can be read
+* back afterwards. The file keeps every verdict; the last one per scenario wins.
+*/
+void RecordResult( bool bPass, const string& in szNote )
+{
+	APTScenario@ s = Current();
+	if( s is null )
+	{
+		Say( "no scenario running." );
+		return;
+	}
+
+	string szLine = ( bPass ? "PASS" : "FAIL" ) + "|" + g_iCurrent + "|" + s.title
+	    + "|" + g_iPass + " auto pass, " + g_iFail + " auto fail|" + szNote + "\n";
+
+	// Read and rewrite: APPEND is not in every build's OpenFile flags.
+	string szOld;
+	File@ pIn = g_FileSystem.OpenFile( APT_RESULTS, OpenFile::READ );
+	if( pIn !is null && pIn.IsOpen() )
+	{
+		while( !pIn.EOFReached() )
+		{
+			string szRow;
+			pIn.ReadLine( szRow );
+			if( szRow.Length() > 0 )
+				szOld += szRow + "\n";
+		}
+		pIn.Close();
+	}
+
+	File@ pOut = g_FileSystem.OpenFile( APT_RESULTS, OpenFile::WRITE );
+	if( pOut is null || !pOut.IsOpen() )
+	{
+		Say( "could not write aptest_results.txt" );
+		return;
+	}
+	pOut.Write( szOld + szLine );
+	pOut.Close();
+
+	Say( ( bPass ? "Marked PASS: " : "Marked FAIL: " ) + s.title );
+	if( bPass )
+		StartScenario( g_iCurrent + 1 );
+}
 
 // ---------------------------------------------------------------- util
 

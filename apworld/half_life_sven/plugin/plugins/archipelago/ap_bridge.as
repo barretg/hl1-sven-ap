@@ -313,7 +313,7 @@ void BridgePoll()
 				int iColon = pairs[i].Find( ":" );
 				if( iColon > 0 )
 					armour[ pairs[i].SubString( 0, iColon ) ] =
-						pairs[i].SubString( iColon + 1 );
+						pairs[i].SubString( iColon + 1, pairs[i].Length() - iColon - 1 );
 			}
 		}
 		// The arcade map. Absent from a seed that has none, and from a client too

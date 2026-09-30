@@ -1328,10 +1328,72 @@ void ChangeLevel( const string& in szMap )
 	g_Scheduler.SetTimeout( "PerformLevelChange", LEVEL_CHANGE_DELAY );
 }
 
+/*
+* How long someone has to have been in the game before we change level under
+* them, and how long we wait for anyone at all.
+*
+* A changelevel while the listen server's own client was still connecting ended
+* in svc_bad and then a Host_Error on a precache (sprites/voiceicon.spr): the
+* engine was still sending that client the map when it was told to load another.
+* The cap is for a dedicated server with nobody on it, which has no one to wait
+* for.
+*/
+const float LEVEL_CHANGE_SETTLE = 2.0f;
+const float LEVEL_CHANGE_WAIT_MAX = 60.0f;
+const float LEVEL_CHANGE_RETRY = 0.5f;
+
+float g_flLevelChangeWaitStart = -1.0f;
+float g_flPlayerInSince = -1.0f;
+
+/* Is any player fully in the game, rather than still connecting? */
+bool AnyPlayerInGame()
+{
+	for( int i = 1; i <= g_Engine.maxClients; ++i )
+	{
+		CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( i );
+		if( pPlayer !is null && pPlayer.IsConnected() && pPlayer.IsAlive() )
+			return true;
+	}
+	return false;
+}
+
+/*
+* Keep `g_flPlayerInSince` current. Called from the one-second sweep too, so a
+* level change mid-map finds the clock already running and goes without delay.
+*/
+void TrackPlayerInGame()
+{
+	if( !AnyPlayerInGame() )
+	{
+		g_flPlayerInSince = -1.0f;
+		return;
+	}
+	if( g_flPlayerInSince < 0.0f || g_Engine.time < g_flPlayerInSince )
+		g_flPlayerInSince = g_Engine.time;
+}
+
 void PerformLevelChange()
 {
 	if( g_szPendingLevel.Length() == 0 )
 		return;
+
+	// The clock can go backwards across a map load; start the wait over if so.
+	if( g_flLevelChangeWaitStart < 0.0f || g_Engine.time < g_flLevelChangeWaitStart )
+		g_flLevelChangeWaitStart = g_Engine.time;
+
+	TrackPlayerInGame();
+
+	bool bSettled = g_flPlayerInSince >= 0.0f
+	    && g_Engine.time - g_flPlayerInSince >= LEVEL_CHANGE_SETTLE;
+	bool bGaveUp = g_Engine.time - g_flLevelChangeWaitStart >= LEVEL_CHANGE_WAIT_MAX;
+
+	if( !bSettled && !bGaveUp )
+	{
+		g_Scheduler.SetTimeout( "PerformLevelChange", LEVEL_CHANGE_RETRY );
+		return;
+	}
+
+	g_flLevelChangeWaitStart = -1.0f;
 
 	string szMap = g_szPendingLevel;
 	g_szPendingLevel = "";
