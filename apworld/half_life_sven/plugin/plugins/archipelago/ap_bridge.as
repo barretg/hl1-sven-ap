@@ -366,11 +366,13 @@ void BridgePoll()
 	// slot is connected from the client already running, which is the case that
 	// matters. An empty slot is a disconnected client rather than a new run, so
 	// the last one we were told about stands.
+	bool bSlotChanged = false;
 	if( bHasSlot )
 	{
 		if( szSlot.Length() > 0 && szSlot != g_szSlot )
 		{
 			bool bWasSlot = g_szSlot.Length() > 0;
+			bSlotChanged = bWasSlot;
 			g_szSlot = szSlot;
 			if( bWasSlot )
 			{
@@ -388,6 +390,16 @@ void BridgePoll()
 	}
 
 	bool bWasConnected = g_State.connected;
+
+	// The first snapshot after a load, a new session or a new slot is everything
+	// at once, and announcing it would be a wall of text on every connect. A map
+	// change reparses the snapshot too, but against unchanged state, so it finds
+	// nothing new to say.
+	bool bAnnounce = g_bSnapshotSeen && !bNewSession && !bSlotChanged
+	    && bWasConnected && bConnected;
+	g_bSnapshotSeen = true;
+	if( bAnnounce )
+		AnnounceArrivals( items, chapters, goalsOpen, armour );
 
 	g_State.unlockedChapters = chapters;
 	g_State.excludedChapters = excluded;
@@ -436,6 +448,54 @@ void BridgePoll()
 
 	for( uint i = 0; i < events.length(); ++i )
 		HandleEvent( events[i] );
+}
+
+/*
+* Say what a snapshot brought that the last one did not: items, missions and
+* unsealed finales. Called before the new state is stored.
+*
+* Filler and traps never reach `items` (they are events, with lines of their
+* own), and armour items are left to AnnounceArmour.
+*/
+bool g_bSnapshotSeen = false;
+
+void AnnounceArrivals( dictionary@ items, dictionary@ chapters, dictionary@ goalsOpen,
+	dictionary@ armour )
+{
+	dictionary armourNames;
+	armourNames[ DEFAULT_ARMOUR_ITEM ] = true;
+	array<string>@ armourKeys = armour.getKeys();
+	for( uint i = 0; i < armourKeys.length(); ++i )
+	{
+		string szItem;
+		if( armour.get( armourKeys[i], szItem ) )
+			armourNames[ szItem ] = true;
+	}
+
+	array<string>@ itemNames = items.getKeys();
+	itemNames.sortAsc();
+	for( uint i = 0; i < itemNames.length(); ++i )
+	{
+		if( g_State.unlockedItems.exists( itemNames[i] ) || armourNames.exists( itemNames[i] ) )
+			continue;
+		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[AP] Received " + itemNames[i] + "\n" );
+	}
+
+	for( uint i = 0; i < g_Chapters.length(); ++i )
+	{
+		APChapter@ pChapter = g_Chapters[i];
+		if( chapters.exists( pChapter.key ) && !g_State.unlockedChapters.exists( pChapter.key ) )
+			g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[AP] " + pChapter.name
+				+ " unlocked. !warp " + pChapter.index + " to travel there.\n" );
+	}
+
+	for( uint i = 0; i < g_Chapters.length(); ++i )
+	{
+		APChapter@ pChapter = g_Chapters[i];
+		if( goalsOpen.exists( pChapter.key ) && !g_State.goalsOpen.exists( pChapter.key ) )
+			g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+				"[AP] " + pChapter.name + " is open. Finish it to win.\n" );
+	}
 }
 
 /*

@@ -303,6 +303,18 @@ With `death_link_amnesty: 2`:
   still reported to the client, which is what lets it decide, but the lobby wipe
   is the DeathLink and a seed without one must not have it.
 
+### 4a. Arrival announcements
+
+- [ ] `/send` a weapon → chat says "[AP] Received <weapon>", once.
+- [ ] `/send` a mission unlock → its "Received" line, then "<mission> unlocked.
+  !warp <n> to travel there."
+- [ ] Complete enough missions to unseal a finale → "<finale> is open. Finish it
+  to win."
+- [ ] Reconnect the client, or reload the plugin → no announcements for what is
+  already held.
+- [ ] Cross a map boundary → nothing re-announced.
+- [ ] Receive the HEV Suit → only the suit's own line, no "Received" line.
+
 ### 4b. HEV suit
 
 With `shuffle_hev_suit: true` and the item not yet received:
