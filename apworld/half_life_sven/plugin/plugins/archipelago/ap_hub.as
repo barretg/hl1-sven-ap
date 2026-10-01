@@ -1365,9 +1365,10 @@ bool MapReached( const string& in szMap )
 			return g_CheckedLocations.exists( "" + pLocation.id );
 	}
 
-	// No "reached" check for it at all, so nothing to go on; let the mission's
-	// own lock be the only gate.
-	return true;
+	// No "reached" check for it at all, so nothing says it was ever stood in.
+	// Every later map of every mission has one, and WarpToMap lets a first map
+	// through on its own, so this only turns away a map outside any mission.
+	return false;
 }
 
 /* `Part 3`, or "" for a mission that is one map. */
