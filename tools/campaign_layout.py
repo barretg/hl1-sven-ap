@@ -842,8 +842,6 @@ HEAVY_WEAPONS = [
     "Shotgun",
     "MP5",
     "SAW",
-    "Displacer Cannon",
-    "Spore Launcher",
     "Sniper Rifle",
 ]
 
