@@ -114,8 +114,10 @@ Everything else is filler: ammo caches, medkits and armour batteries.
 Half-Life brings 14 weapons (the crowbar, Glock, .357, MP5, shotgun, crossbow,
 RPG, Tau cannon, gluon gun, hivehand, satchel charges, tripmines, snarks, hand
 grenades).
-Opposing Force adds seven more: the desert eagle, SAW, sniper rifle, displacer,
-spore launcher, barnacle grapple and pipe wrench. They Hunger adds nine
+Opposing Force adds eight more: the desert eagle, SAW, sniper rifle, displacer,
+spore launcher, shock roach, barnacle grapple and pipe wrench. The shock roach
+lies nowhere: shock troopers carry it and drop it when killed, and that drop is
+refused until the item arrives. They Hunger adds nine
 of its own, from the Colt 1911 and tommy gun to the tesla gun. Blue Shift adds
 none: in Sven Co-op it uses Half-Life's, down to the crowbar.
 
@@ -148,7 +150,7 @@ Optional items, each behind its own option:
 - **Melee Throw** (`melee_throw`): secondary fire throws the crowbar, which
   hits four times as hard as a swing and comes back after ten seconds.
 
-**Locations**: 189 in Half-Life alone, 378 with all four campaigns:
+**Locations**: 189 in Half-Life alone, 383 with all four campaigns:
 
 - reaching each part of a mission (Surface Tension has five, Office Complex one)
 - completing each mission

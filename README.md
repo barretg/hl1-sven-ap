@@ -112,14 +112,14 @@ See [docs/protocol.md](docs/protocol.md).
 
 ## Locations
 
-Three kinds of location, 378 across all four campaigns (189 of them Half-Life's)
+Three kinds of location, 383 across all four campaigns (189 of them Half-Life's)
 against at most 71 progression items:
 
 | Type | Count | Fires when |
 | --- | --- | --- |
-| `map_reached` / `chapter_complete` | 160 | you reach a map division, or finish a mission |
-| `charger` | 162 | you press use on a health or HEV wall unit, or step into a Xen healing pool |
-| `weapon_pickup` | 58 | you find a weapon for the first time in that campaign |
+| `map_reached` / `chapter_complete` | 158 | you reach a map division, or finish a mission |
+| `charger` | 168 | you press use on a health or HEV wall unit, or step into a Xen healing pool |
+| `weapon_pickup` | 57 | you find a weapon for the first time in that campaign |
 
 Weapon checks are per campaign, not per seed: each campaign has its own "first
 shotgun". Anchoring them once across everything would

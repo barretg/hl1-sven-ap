@@ -5,7 +5,7 @@
 #   C|<index>|<key>|<name>|<map,map,...>|<is_goal>|<campaign key>|<requires chapter>|<complete on endgame>
 #   P|<console>|<chapter key>      hub console button -> the mission it enters
 #   L|<id>|<map>|<type>|<arg>|<name>[|<x y z>[|<needs>]]
-#   F|<location id>|<map>|<x y z>|<needs>  a mission's first copy of a weapon
+#   F|<location id>|<map>|<x y z>|<needs>[|<drop>]  a mission's first copy of a weapon
 #   K|<classname>|<item name>      weapon pickup that must be unlocked
 #   S|<classname>                  always granted, never randomised
 #   R|<classname>|<campaign,...>   grantable only on those campaigns' maps
@@ -20,7 +20,7 @@
 #   G|<arcade>|<part>|<targetname>|<classname>   the Juggernaut seal
 #   E|<arcade>|<class>|<field>|<value>  how to grant a class without its booth
 V|5
-D|8e4e02574fc3
+D|ac779f8dc499
 M|half_life|Half-Life|nihilanth|hl|1
 M|opposing_force|Opposing Force|of_worlds_collide|of|1
 M|blue_shift|Blue Shift|bs_leap_of_faith|bs|1
@@ -984,6 +984,12 @@ L|7720810|of5a2|charger|trigger_hurt:*101|Foxtrot Uniform: Healing Pool (Part 2)
 L|7720811|of6a1|charger|trigger_hurt:*45|The Package: Healing Pool (Part 1)|-3244 -3352 -840|Displacer Cannon
 L|7720812|of6a4|charger|trigger_hurt:*78|Worlds Collide: Healing Pool (Part 1)|2504 -3160 2840|Displacer Cannon
 L|7720813|of6a4b|charger|trigger_hurt:*115|Worlds Collide: Healing Pool (Part 2)|2504 -3160 2840|Displacer Cannon
+L|7720814|of3a6|weapon_pickup|weapon_shockrifle|Opposing Force: First Shock Roach|-2154 1238 -288
+F|7720814|of3a6|-2154 1238 -288||hostile
+F|7720814|of4a1|-2009 3635 392||hostile
+F|7720814|of5a2|-320 3168 64||hostile
+F|7720814|of6a2|-354 -1200 90||hostile
+F|7720814|of6a4b|-152 -1512 -592||hostile
 X|suspension|Suspension|suspension|jugger|start_events|end_script
 Y|suspension|easy|Easy|50|vote_button4|win_red_tickets
 Y|suspension|medium|Medium|25|vote_button3|win_blue_tickets
@@ -1061,6 +1067,7 @@ K|weapon_rpg|RPG
 K|weapon_satchel|Satchel Charge
 K|weapon_saw|SAW
 K|weapon_sawedoff|Sawed-Off Shotgun
+K|weapon_shockrifle|Shock Roach
 K|weapon_shotgun|Shotgun
 K|weapon_snark|Snarks
 K|weapon_sniperrifle|Sniper Rifle

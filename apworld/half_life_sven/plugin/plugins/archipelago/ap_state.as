@@ -101,6 +101,9 @@ class APSource
 	Vector position;
 	bool hasPosition = false;
 	string needs;
+	// How the copy is come by: "hostile" when an enemy carries it and drops it
+	// on death, empty when it is lying about.
+	string drop;
 }
 
 /*
@@ -634,6 +637,9 @@ void LoadCheckData()
 					source.hasPosition = true;
 				}
 				source.needs = parts[4];
+				// Optional sixth field: `hostile` for a copy an enemy drops.
+				if( parts.length() >= 6 )
+					source.drop = parts[5];
 				pOwner.sources.insertLast( @source );
 			}
 		}

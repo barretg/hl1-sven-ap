@@ -1,5 +1,5 @@
 {
- "data_version": "8e4e02574fc3",
+ "data_version": "ac779f8dc499",
  "files": [
   "campaigns/half_life.json",
   "campaigns/opposing_force.json",
@@ -307,6 +307,19 @@
    ]
   },
   {
+   "id": 7710098,
+   "name": "Shock Roach",
+   "classification": "progression",
+   "group": "weapon",
+   "classnames": [
+    "weapon_shockrifle"
+   ],
+   "campaign": "opposing_force",
+   "campaigns": [
+    "opposing_force"
+   ]
+  },
+  {
    "id": 7710064,
    "name": "Colt 1911",
    "classification": "progression",
@@ -567,7 +580,8 @@
    "SAW",
    "Sniper Rifle",
    "Displacer Cannon",
-   "Spore Launcher"
+   "Spore Launcher",
+   "Shock Roach"
   ],
   "ranged_they_hunger": [
    "Glock",
@@ -584,6 +598,7 @@
    "Sniper Rifle",
    "Displacer Cannon",
    "Spore Launcher",
+   "Shock Roach",
    "Colt 1911",
    "Taurus",
    "Sawed-Off Shotgun",
@@ -642,6 +657,7 @@
    "Sniper Rifle",
    "Displacer Cannon",
    "Spore Launcher",
+   "Shock Roach",
    "RPG"
   ],
   "barnacle_grapple": [

@@ -753,6 +753,13 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 	// The walk score, as Half-Life: Anniversary reports it: height costs extra.
 	int iDistance = int( TravelScore( pPlayer, vecPosition ) );
 
+	// Where the carrier stands or is spawned, not where the weapon will lie.
+	if( pSource !is null && pSource.drop == "hostile" )
+	{
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+			"[AP] Carried by an enemy here, dropped when killed.\n" );
+	}
+
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"[AP] About " + iDistance + " units " + BearingTo( pPlayer, vecPosition )
 		+ HeightTo( pPlayer, vecPosition ) + ".\n" );

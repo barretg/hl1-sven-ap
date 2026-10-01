@@ -1941,6 +1941,76 @@
    ]
   },
   {
+   "id": 7720814,
+   "name": "Opposing Force: First Shock Roach",
+   "chapter": "of_vicarious_reality",
+   "map": "of3a6",
+   "trigger": {
+    "type": "weapon_pickup",
+    "map": "of3a6",
+    "classnames": [
+     "weapon_shockrifle"
+    ]
+   },
+   "position": [
+    -2154,
+    1238,
+    -288
+   ],
+   "sources": [
+    {
+     "chapter": "of_vicarious_reality",
+     "map": "of3a6",
+     "position": [
+      -2154,
+      1238,
+      -288
+     ],
+     "drop": "hostile"
+    },
+    {
+     "chapter": "of_pit_worms_nest",
+     "map": "of4a1",
+     "position": [
+      -2009,
+      3635,
+      392
+     ],
+     "drop": "hostile"
+    },
+    {
+     "chapter": "of_foxtrot_uniform",
+     "map": "of5a2",
+     "position": [
+      -320,
+      3168,
+      64
+     ],
+     "drop": "hostile"
+    },
+    {
+     "chapter": "of_the_package",
+     "map": "of6a2",
+     "position": [
+      -354,
+      -1200,
+      90
+     ],
+     "drop": "hostile"
+    },
+    {
+     "chapter": "of_worlds_collide",
+     "map": "of6a4b",
+     "position": [
+      -152,
+      -1512,
+      -592
+     ],
+     "drop": "hostile"
+    }
+   ]
+  },
+  {
    "id": 7720431,
    "name": "Opposing Force: First PCV",
    "chapter": "of_welcome_to_black_mesa",

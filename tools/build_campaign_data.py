@@ -55,6 +55,7 @@ from campaign_layout import (
     WEAPON_ALIASES,
     STARTING_WEAPONS,
     WEAPON_CAMPAIGN,
+    WEAPON_CARRIERS,
     WEAPON_ITEMS,
     CHAPTER_GATES,
 )
@@ -327,16 +328,32 @@ class LocationBuilder:
         raise RuntimeError(f"could not make {name!r} unique")
 
 
+MAKER_CLASSNAMES = {"monstermaker", "squadmaker"}
+
+
+def spawned_classname(entity: dict[str, str]) -> str:
+    """What the entity puts in the map: a maker's monster, else itself."""
+    classname = entity.get("classname", "")
+    if classname in MAKER_CLASSNAMES:
+        return entity.get("monstertype", "")
+    return classname
+
+
+def carried_by_hostile(entity: dict[str, str], wanted: set[str]) -> bool:
+    """A monster (or a maker of one) that drops one of these weapons on death."""
+    spawned = spawned_classname(entity)
+    return any(spawned in WEAPON_CARRIERS.get(c, ()) for c in wanted)
+
+
 def holds_weapon(entity: dict[str, str], wanted: set[str]) -> bool:
-    """A copy of one of these weapons, lying about or spawned by a maker.
+    """A copy of one of these weapons, lying about, spawned by a maker, or
+    carried by an enemy that drops it.
 
     Crush Depth hands over the displacer from a `monstermaker`, which leaves no
-    `weapon_displacer` in the map until it fires.
+    `weapon_displacer` in the map until it fires. No map places a shock roach at
+    all: shock troopers carry them.
     """
-    classname = entity.get("classname", "")
-    if classname == "monstermaker":
-        return entity.get("monstertype", "") in wanted
-    return classname in wanted
+    return spawned_classname(entity) in wanted or carried_by_hostile(entity, wanted)
 
 
 def campaigns_holding(
@@ -412,6 +429,10 @@ def source_record(
         record["position"] = [
             int(round(v)) for v in entity_origin(entity.get("origin", ""))
         ]
+        # Only an enemy's drop is marked; anything else is lying about. Absent
+        # from data built before carriers counted.
+        if carried_by_hostile(entity, set(WEAPON_ITEMS.get(item_name, ()))):
+            record["drop"] = "hostile"
     gates = campaign.weapon_source_gates.get(map_name, {}).get(item_name)
     if gates:
         record["gates"] = gates

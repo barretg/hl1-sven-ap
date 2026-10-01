@@ -347,6 +347,9 @@ OPPOSING_FORCE = Campaign(
         # Vicarious Reality's displacer is a prop in a self-teleport area, out
         # of reach. Crush Depth's is the real one.
         "Displacer Cannon": ["of3a5"],
+        # Missing In Action's one trooper waits on a script that never lets it
+        # be fought; the mission has no other.
+        "Shock Roach": ["of1a5b"],
     },
     weapon_source_gates={
         # Crush Depth's shotgun and The Package's grenades are past displacer
@@ -362,6 +365,9 @@ OPPOSING_FORCE = Campaign(
         "Spore Launcher": ["weapon_sporelauncher"],
         "Barnacle Grapple": ["weapon_grapple"],
         "Pipe Wrench": ["weapon_pipewrench"],
+        # No map places one: every shock roach is carried by a shock trooper
+        # and dropped when it dies. See `WEAPON_CARRIERS`.
+        "Shock Roach": ["weapon_shockrifle"],
         # No minigun either. Opposing Force never had one: Sven Co-op's copy in
         # of2a4 is an easter egg past the skylight, reachable only by stacking
         # players, and there is no other. It stays a vanilla pickup.
@@ -830,6 +836,7 @@ RANGED_WEAPONS = [
     "Sniper Rifle",
     "Displacer Cannon",
     "Spore Launcher",
+    "Shock Roach",
 ]
 
 # Enough punch to kill an armoured target in reasonable time.
@@ -893,6 +900,14 @@ NOTABLE_MONSTERS: dict[str, tuple[str, str | None]] = {
     "monster_sentry": ("Sentry Turret", "ranged"),
     "monster_turret": ("Ceiling Turret", "ranged"),
     "monster_miniturret": ("Mini Turret", "ranged"),
+}
+
+# Weapons no map places, only a monster that carries one and drops it when it
+# dies: `{weapon classname: [monster classnames]}`. A carrier, or a maker that
+# spawns one, counts as a copy of the weapon, and its source is marked as an
+# enemy's drop so `!find` can say so.
+WEAPON_CARRIERS: dict[str, list[str]] = {
+    "weapon_shockrifle": ["monster_shocktrooper", "monster_shocktrooper_repel"],
 }
 
 # Single-weapon groups. A gate naming several groups requires one item from each,

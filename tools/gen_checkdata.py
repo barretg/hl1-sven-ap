@@ -165,7 +165,7 @@ def render(campaign: dict) -> str:
         "|<requires chapter>|<complete on endgame>",
         "#   P|<console>|<chapter key>      hub console button -> the mission it enters",
         "#   L|<id>|<map>|<type>|<arg>|<name>[|<x y z>[|<needs>]]",
-        "#   F|<location id>|<map>|<x y z>|<needs>  a mission's first copy of a weapon",
+        "#   F|<location id>|<map>|<x y z>|<needs>[|<drop>]  a mission's first copy of a weapon",
         "#   K|<classname>|<item name>      weapon pickup that must be unlocked",
         "#   S|<classname>                  always granted, never randomised",
         "#   R|<classname>|<campaign,...>   grantable only on those campaigns' maps",
@@ -263,13 +263,19 @@ def render(campaign: dict) -> str:
             record += "|" + needs
         lines.append(record)
         # Every mission's first copy of a weapon, any of which sends its check.
+        # An optional sixth field says how the copy is come by, today only
+        # `hostile` (an enemy drops it); absent for one lying about, so an older
+        # plugin reads the same five fields it always did.
         for source in location.get("sources", ()):
-            lines.append("F|{id}|{map}|{pos}|{needs}".format(
+            record = "F|{id}|{map}|{pos}|{needs}".format(
                 id=location["id"],
                 map=source["map"],
                 pos=" ".join(str(v) for v in source.get("position", ())),
                 needs=location_needs(source),
-            ))
+            )
+            if source.get("drop"):
+                record += "|" + source["drop"]
+            lines.append(record)
 
     lines.extend(arcade_records(campaign.get("arcades", ())))
 
