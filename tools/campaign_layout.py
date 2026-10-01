@@ -813,7 +813,6 @@ RANGED_WEAPONS = [
     "MP5",
     "Shotgun",
     "Crossbow",
-    "RPG",
     "Tau Cannon",
     "Gluon Gun",
     "Hivehand",

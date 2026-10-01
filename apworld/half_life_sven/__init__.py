@@ -372,7 +372,11 @@ class HalfLifeSvenWorld(World):
         # Each campaign's own setting, clamped to the missions it actually has in
         # this seed: excluding Black Mesa Inbound leaves Half-Life one short, and
         # asking for more than exist would seal a finale permanently.
-        given = (passthrough or {}).get("campaign_missions_required", {})
+        # The older key is read too, for a seed generated before the rename.
+        given = (
+            (passthrough or {}).get("missions_required_by_campaign")
+            or (passthrough or {}).get("campaign_missions_required", {})
+        )
         for campaign_key in self.included_campaigns:
             if campaign_key in given:
                 # The server's number. A tracker running without the YAML would
@@ -742,8 +746,13 @@ class HalfLifeSvenWorld(World):
             "campaigns": list(self.included_campaigns),
             # What each campaign's finale is waiting on. The client counts
             # completions per campaign and tells the game which finales are open.
+            # Named as Half-Life: Anniversary's world names it. The older key
+            # carries the same value for a client from before the rename.
+            "missions_required_by_campaign": dict(self.missions_required_for),
             "campaign_missions_required": dict(self.missions_required_for),
-            "goal_chapters": sorted(c["key"] for c in self.goal_chapters),
+            # Campaign -> its finale. Older seeds sent a sorted list of finales;
+            # the client reads both.
+            "goal_chapters": {c["campaign"]: c["key"] for c in self.goal_chapters},
             "starting_chapters": sorted(self.starting_chapters),
             # Missions that are not in this seed. The client tells the plugin, so
             # the in-game list says "not in this seed" rather than showing a

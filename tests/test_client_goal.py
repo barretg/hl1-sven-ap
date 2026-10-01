@@ -26,11 +26,14 @@ def test_an_empty_goal_chapter_is_never_a_goal() -> None:
     """
     block = CLIENT.split('if "goal_chapters" in slot_data:', 1)
     assert len(block) == 2, "the goal chapter set is no longer read from slot data"
-    body = block[1][:400]
+    body = block[1][:600]
 
-    assert re.search(r"for key in slot_data\[.goal_chapters.\] if key", body), (
+    assert re.search(r"for key in finales if key", body), (
         "empty chapter keys are believed again"
     )
+    # Campaign -> finale now; a plain list in older seeds. The finales are the
+    # values, never the campaign keys.
+    assert "goals.values() if isinstance(goals, dict) else goals" in body
     # An empty list means an empty list. Only a seed that mentions neither key
     # falls back to the finales the data declares.
     assert "elif slot_data.get(" in body

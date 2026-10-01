@@ -517,13 +517,23 @@ class HalfLifeSvenContext(SuperContext):
             # of nothing but the arcade map means. Only a seed that mentions
             # neither key, one generated before campaigns existed, falls back
             # to the finales the data itself declares.
+            #
+            # `goal_chapters` is campaign -> finale; a seed from before that was
+            # a plain list of finales. Either way the finales are the values.
             if "goal_chapters" in slot_data:
-                self.goal_chapters = {key for key in slot_data["goal_chapters"] if key}
+                goals = slot_data["goal_chapters"]
+                finales = goals.values() if isinstance(goals, dict) else goals
+                self.goal_chapters = {key for key in finales if key}
             elif slot_data.get("goal_chapter"):
                 self.goal_chapters = {slot_data["goal_chapter"]}
+            # The per-campaign seal, under its current name or the one older
+            # seeds used.
+            required = (
+                slot_data.get("missions_required_by_campaign")
+                or slot_data.get("campaign_missions_required", {})
+            )
             self.missions_required_for = {
-                key: int(value)
-                for key, value in slot_data.get("campaign_missions_required", {}).items()
+                key: int(value) for key, value in required.items()
             }
             if not self.missions_required_for:
                 self.missions_required_for = {
