@@ -488,9 +488,10 @@ string BearingTo( CBasePlayer@ pPlayer, const Vector& in vecTarget )
 * Office Complex's shotgun, 677 out but nearly 800 above, ahead of two
 * chargers sitting on the player's own floor.
 *
-* So the flat distance, plus the height difference several times over. This is
-* only ever used to rank candidates; the distance reported to the player stays
-* the honest straight line.
+* So the flat distance, plus the height difference several times over. It ranks
+* candidates and is also the distance `!find` reports, so "about 600 units" means
+* the same thing here as in Half-Life: Anniversary, where it reads as effort
+* rather than as the crow flies.
 */
 const float FIND_VERTICAL_PENALTY = 3.0f;
 
@@ -553,6 +554,76 @@ APSource@ SourceHere( APLocation@ pLocation )
 	return null;
 }
 
+/*
+* Every item named in a source's needs ("A or B and C") is held: each " and "
+* group has at least one of its " or " items.
+*/
+bool NeedsMet( const string& in szNeeds )
+{
+	if( szNeeds.Length() == 0 )
+		return true;
+
+	array<string>@ groups = szNeeds.Split( " and " );
+	for( uint i = 0; i < groups.length(); ++i )
+	{
+		array<string>@ options = groups[i].Split( " or " );
+		bool bAny = false;
+		for( uint j = 0; j < options.length() && !bAny; ++j )
+			bAny = g_State.ItemUnlocked( APTrim( options[j] ) );
+		if( !bAny )
+			return false;
+	}
+	return true;
+}
+
+// A map's 1-based place in its mission, or 0 for a mission of one map.
+int PartNumber( APChapter@ pChapter, const string& in szMap )
+{
+	if( pChapter is null || pChapter.maps.length() < 2 )
+		return 0;
+	for( uint i = 0; i < pChapter.maps.length(); ++i )
+		if( pChapter.maps[i] == szMap )
+			return int( i ) + 1;
+	return 0;
+}
+
+/*
+* The earliest copy of a weapon check in campaign order, preferring one the
+* player can reach now: its mission open and its needs held. `bAvailable` says
+* which it was. Null if every copy is in a mission left out of the seed.
+*/
+APSource@ EarliestSource( APLocation@ pLocation, bool &out bAvailable )
+{
+	APSource@ pBestOpen = null;
+	APSource@ pBestAny = null;
+	int iOpenRank = 0;
+	int iAnyRank = 0;
+
+	for( uint i = 0; i < pLocation.sources.length(); ++i )
+	{
+		APSource@ pSource = pLocation.sources[i];
+		APChapter@ pChapter = ChapterForMap( pSource.map );
+		if( pChapter is null || g_State.ChapterExcluded( pChapter.key ) )
+			continue;
+
+		int iRank = pChapter.index * 1000 + PartNumber( pChapter, pSource.map );
+		if( pBestAny is null || iRank < iAnyRank )
+		{
+			@pBestAny = pSource;
+			iAnyRank = iRank;
+		}
+		if( ChapterPlayable( pChapter ) && NeedsMet( pSource.needs )
+		    && ( pBestOpen is null || iRank < iOpenRank ) )
+		{
+			@pBestOpen = pSource;
+			iOpenRank = iRank;
+		}
+	}
+
+	bAvailable = pBestOpen !is null;
+	return bAvailable ? pBestOpen : pBestAny;
+}
+
 void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 {
 	// A weapon check is sent by whichever copy is touched first, so once it is
@@ -566,8 +637,14 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 
 	string szPrefix = LocationFound( pLocation ) ? "[found] " : "";
 
-	// Where to point: this map's source if there is one, else the check itself.
+	// Where to point: this map's copy if there is one, else the earliest one
+	// the player can get to now, else the earliest at all. Not a weapon check:
+	// the check itself.
 	APSource@ pSource = SourceHere( pLocation );
+	bool bHere = pSource !is null;
+	bool bAvailable = true;
+	if( pSource is null && pLocation.sources.length() > 0 )
+		@pSource = EarliestSource( pLocation, bAvailable );
 	string szMap = pSource !is null ? pSource.map : pLocation.map;
 	bool bHasPosition = pSource !is null ? pSource.hasPosition : pLocation.hasPosition;
 	Vector vecPosition = pSource !is null ? pSource.position : pLocation.position;
@@ -578,7 +655,13 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"[AP] " + szPrefix + pLocation.name + "\n" );
 
-	if( szNeeds.Length() > 0 )
+	// No copy reachable now: say why the earliest is not, a locked mission or
+	// an item the player does not hold.
+	APChapter@ pSourceChapter = ChapterForMap( szMap );
+	bool bLocked = !bAvailable && pSourceChapter !is null && !ChapterPlayable( pSourceChapter );
+	bool bMissingItem = !bAvailable && !bLocked && szNeeds.Length() > 0;
+
+	if( szNeeds.Length() > 0 && !bMissingItem )
 	{
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 			"[AP] Needs the " + szNeeds + " to reach.\n" );
@@ -586,14 +669,27 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 
 	// A weapon check is the first of that weapon anywhere in its campaign, so
 	// the map named is only one place to look, not the only one.
-	if( pLocation.kind == TRIGGER_WEAPON_PICKUP )
+	if( pLocation.kind == TRIGGER_WEAPON_PICKUP && pLocation.sources.length() > 0 )
 	{
 		APChapter@ pAnchor = ChapterForMap( pLocation.map );
 		string szCampaign;
 		if( pAnchor !is null && g_CampaignNames.get( pAnchor.campaign, szCampaign ) )
 		{
+			string szWhich;
+			if( bHere )
+				szWhich = "One is here:";
+			else if( bAvailable )
+				szWhich = "The earliest available is in:";
+			else if( bLocked )
+				szWhich = "The earliest is in a locked map:";
+			else if( bMissingItem )
+				szWhich = "The earliest needs the " + szNeeds + ", which you do not have:";
+			else
+				szWhich = "The earliest is in:";
 			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-				"[AP] Any copy on " + szCampaign + "'s maps sends it; one is here:\n" );
+				"[AP] Any copy on " + szCampaign + "'s maps sends it.\n" );
+			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+				"[AP] " + szWhich + "\n" );
 		}
 	}
 
@@ -617,6 +713,10 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 			"[AP] In " + pChapter.name
 			+ ( szPart.Length() > 0 ? ", " + szPart : "" )
 			+ " (" + szMap + ").\n" );
+
+		// A locked mission's door would refuse the warp.
+		if( !ChapterPlayable( pChapter ) )
+			return;
 
 		if( szPart.Length() > 0 && MapReached( szMap ) )
 		{
@@ -650,7 +750,8 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 		return;
 	}
 
-	int iDistance = int( ( vecPosition - pPlayer.pev.origin ).Length() );
+	// The walk score, as Half-Life: Anniversary reports it: height costs extra.
+	int iDistance = int( TravelScore( pPlayer, vecPosition ) );
 
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"[AP] About " + iDistance + " units " + BearingTo( pPlayer, vecPosition )
