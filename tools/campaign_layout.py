@@ -926,8 +926,11 @@ REQUIREMENT_GROUPS: dict[str, list[str]] = {
     "underwater": UNDERWATER_WEAPONS,
     "tau_cannon": ["Tau Cannon"],
     "rpg": ["RPG"],
-    # Anything that can set off an explosive barrel from a distance.
-    "barrel_shooter": RANGED_WEAPONS + ["RPG"],
+    # Anything that sets off Duty Calls' explosive barrel, checked in play
+    # 2026-10-01: guns, the RPG, grenades, satchels and snarks do; the
+    # hivehand, the grapple and tripmines do not.
+    "barrel_shooter": [w for w in RANGED_WEAPONS if w != "Hivehand"]
+    + ["RPG", "Hand Grenade", "Satchel Charge"],
     "barnacle_grapple": ["Barnacle Grapple"],
     "displacer_cannon": ["Displacer Cannon"],
 }

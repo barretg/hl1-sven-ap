@@ -648,14 +648,15 @@
    "Crossbow",
    "Tau Cannon",
    "Gluon Gun",
-   "Hivehand",
    "Snarks",
    "Desert Eagle",
    "SAW",
    "Sniper Rifle",
    "Displacer Cannon",
    "Spore Launcher",
-   "RPG"
+   "RPG",
+   "Hand Grenade",
+   "Satchel Charge"
   ],
   "barnacle_grapple": [
    "Barnacle Grapple"

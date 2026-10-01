@@ -21,8 +21,9 @@ const string THROWN_CLASSNAME = "weapon_crowbar";
 // How long before a thrown crowbar comes back on its own.
 const float MELEE_THROW_RETURN = 10.0f;
 
-// How hard it leaves the hand, and how much of that is lift.
-const float MELEE_THROW_SPEED = 1100.0f;
+// How hard it leaves the hand, and how much of that is lift. Faster than
+// Half-Life: Anniversary's 1100: tuned up for Sven.
+const float MELEE_THROW_SPEED = 1300.0f;
 const float MELEE_THROW_LIFT = 100.0f;
 
 // The share of world gravity it falls under while thrown: a longer, flatter arc

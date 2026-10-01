@@ -727,6 +727,60 @@ bool PickupWasHandedOver( CBaseEntity@ pPickup, CBasePlayer@ pPlayer )
 	return ( pPickup.pev.origin - pPlayer.pev.origin ).Length() <= HANDOVER_EPSILON;
 }
 
+/*
+* The shock roach is picked up with +use, not by walking over it, and that path
+* never reaches PickupCanCollect. A dead shock trooper leaves a live
+* `monster_shockroach` that hops at you, and +use on it is the pickup; a
+* `weapon_shockrifle` lying loose is handled the same way. So the press is caught
+* here: a roach in reach sends its check, and is refused until the item arrives.
+*
+* True when the press must be swallowed. Called from PlayerUse every frame the
+* hook runs; only a frame with +use held does anything.
+*/
+const float USE_PICKUP_RANGE = 96.0f;
+array<string> USE_PICKUP_CLASSNAMES = { "monster_shockroach", SHOCKROACH_CLASSNAME };
+
+bool BlockUsePickup( CBasePlayer@ pPlayer )
+{
+	if( ( pPlayer.pev.button & IN_USE ) == 0 || SuspensionManaged() )
+		return false;
+
+	for( uint i = 0; i < USE_PICKUP_CLASSNAMES.length(); ++i )
+	{
+		if( UsePickupInReach( pPlayer, USE_PICKUP_CLASSNAMES[i] ) is null )
+			continue;
+
+		if( !WeaponWithheld( pPlayer, SHOCKROACH_CLASSNAME ) )
+			RegisterPickupCheck( SHOCKROACH_CLASSNAME );
+
+		if( ClassnameAllowed( SHOCKROACH_CLASSNAME ) )
+			return false;
+
+		// Once per press, not once per frame it is held.
+		if( ( pPlayer.pev.oldbuttons & IN_USE ) == 0 )
+			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCENTER,
+				"You have not found the\n" + LockedItemName( SHOCKROACH_CLASSNAME ) + " yet." );
+		return true;
+	}
+	return false;
+}
+
+/* A loose, living one of these within +use reach, or null. */
+CBaseEntity@ UsePickupInReach( CBasePlayer@ pPlayer, const string& in szClassname )
+{
+	CBaseEntity@ pEntity = null;
+	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname( pEntity, szClassname ) ) !is null )
+	{
+		if( InInventory( pEntity ) || IsTrapDrop( pEntity ) )
+			continue;
+		if( pEntity.IsMonster() && !pEntity.IsAlive() )
+			continue;
+		if( ( pEntity.pev.origin - pPlayer.pev.origin ).Length() <= USE_PICKUP_RANGE )
+			return pEntity;
+	}
+	return null;
+}
+
 /* Refuse to hand over a weapon the multiworld has not granted yet. */
 HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool& out bResult )
 {

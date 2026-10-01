@@ -509,7 +509,7 @@ void BuildSourceScenarios()
 			s.spawn = "monster_shocktrooper";
 		s.steps =
 			( src.hostile
-			  ? "Carried by an enemy on " + src.map + ": one is spawned in front of you. Kill it, touch the drop." + "\n"
+			  ? "Carried by an enemy on " + src.map + ": one is spawned in front of you. Kill it, press E on its roach." + "\n"
 			    + "Also find the map's own trooper: can it be reached and fought?" + "\n"
 			  : "" )
 			+ ( src.pos.Length() > 0
@@ -546,7 +546,7 @@ void BuildParityScenarios()
 	s.forbid = "First Crowbar";
 	s.steps =
 		"Crowbar out, right-click across a long room: it flies fast and flat," + "\n"
-		+ "dropping late (speed 1100, low gravity in flight)." + "\n"
+		+ "dropping late (speed 1300, low gravity in flight)." + "\n"
 		+ "!apt_spawn monster_headcrab: one throw does four swings' damage." + "\n"
 		+ "Pick it up, then type drop in console: it falls like any dropped weapon.";
 
@@ -586,12 +586,13 @@ void BuildParityScenarios()
 		+ "then Crush Depth, part 2 (of3a2) and a !warp line, and NO separate" + "\n"
 		+ "'Needs the Displacer Cannon to reach.' line.";
 
-	@s = Add( "Duty Calls part 2 barrel", "ba_canal1b" );
-	s.note = true;
+	// Title kept so its recorded verdicts line up; the barrel is on part 1.
+	@s = Add( "Duty Calls part 2 barrel", "ba_canal1" );
 	s.steps =
-		"Investigative. Play to the explosive barrel that opens the way on." + "\n"
-		+ "Can it be set off without a gun (crowbar, grenade, satchel)?" + "\n"
-		+ "Does the RPG set it off? !apt_note what works.";
+		"Play to the barrel that opens the way to part 2 (ba_canal1b)." + "\n"
+		+ "Logic: reaching part 2 needs a ranged weapon or the RPG." + "\n"
+		+ "Pass if the crowbar cannot set it off and a gun (or the RPG) can," + "\n"
+		+ "and there is no other way on. Grenades or satchels working: !apt_fail and say which.";
 
 	@s = Add( "Shock Roach item grants nothing", "hl_c02_a1" );
 	s.take = "Shock Roach";
@@ -604,8 +605,8 @@ void BuildParityScenarios()
 	s.spawn = "monster_shocktrooper";
 	s.expect = "Opposing Force: First Shock Roach";
 	s.steps =
-		"A shock trooper is spawned in front of you. Kill it, walk over its roach:" + "\n"
-		+ "refused (touch and E), and 'Opposing Force: First Shock Roach' is sent." + "\n"
+		"A shock trooper is spawned in front of you. Kill it; it leaves a live roach." + "\n"
+		+ "Press E on the roach: refused, and 'Opposing Force: First Shock Roach' is sent." + "\n"
 		+ "!apt_give Shock Roach, press E on it: picked up. Drop it: you can switch again.";
 
 	@s = Add( "Shock Roach: find line", "of5a2" );
@@ -637,7 +638,7 @@ void BuildParityScenarios()
 	s.steps =
 		"!apt_give Tau Cannon: '[AP] Received Tau Cannon'." + "\n"
 		+ "!apt_unlock on_a_rail: '[AP] On A Rail unlocked. !warp 7 to travel there.'" + "\n"
-		+ "!apt_unlock nihilanth: its unlocked line only. !apt_unseal nihilanth:" + "\n"
+		+ "!apt_unlock nihilanth: nothing (a finale has no unlock). !apt_unseal nihilanth:" + "\n"
 		+ "'[AP] Nihilanth is open. Finish it to win.' !apt_reload: nothing repeats." + "\n"
 		+ "!apt_slot aptest:2: nothing printed. !apt_take HEV Suit, then !apt_give HEV Suit:" + "\n"
 		+ "only the armour line, no 'Received HEV Suit'.";
@@ -738,6 +739,7 @@ array<string> g_HeldGoals;  // finale keys whose seal stays on
 array<string> g_Excluded;
 string g_szSlot = "aptest:1";
 string g_szOnly;
+string g_szGoalsWritten;    // the last goals_open written, for apt_unseal to show
 int g_iSeq = 0;
 array<string> g_Events;    // "<seq>|<kind>|<data>|0"
 
@@ -789,7 +791,8 @@ void WriteSnapshot()
 	s += "death_link=0\n";
 	s += "lobby_death_link=off\n";
 	s += "death_link_amnesty=0\n";
-	s += "goals_open=" + Join( goals, "," ) + "\n";
+	g_szGoalsWritten = Join( goals, "," );
+	s += "goals_open=" + g_szGoalsWritten + "\n";
 	s += "chapters=" + Join( chapters, "," ) + "\n";
 	s += "excluded=" + Join( g_Excluded, "," ) + "\n";
 	s += "items=" + Join( g_Items, ";" ) + "\n";
@@ -1403,7 +1406,7 @@ void Dispatch( CBasePlayer@ pPlayer, const string& in szCmd, const string& in sz
 		if( k >= 0 )
 			g_Held.removeAt( k );
 		WriteSnapshot();
-		Say( "unlocked: " + szArg );
+		Say( k >= 0 ? "unlocked: " + szArg : "not held back, nothing changed: " + szArg );
 	}
 	else if( szCmd == "apt_unseal" )
 	{
@@ -1411,7 +1414,8 @@ void Dispatch( CBasePlayer@ pPlayer, const string& in szCmd, const string& in sz
 		if( k >= 0 )
 			g_HeldGoals.removeAt( k );
 		WriteSnapshot();
-		Say( "unsealed: " + szArg );
+		Say( k >= 0 ? "unsealed: " + szArg : "not sealed, nothing changed: " + szArg );
+		Say( "goals_open=" + g_szGoalsWritten );
 	}
 	else if( szCmd == "apt_slot" )
 	{

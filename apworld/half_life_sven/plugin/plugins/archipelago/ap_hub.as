@@ -1909,6 +1909,11 @@ HookReturnCode PlayerUse( CBasePlayer@ pPlayer, uint& out uiFlags )
 	if( pPlayer is null )
 		return HOOK_CONTINUE;
 
+	// A locked shock roach in reach. Before the early outs: it can be on any
+	// campaign map, charger or not.
+	if( BlockUsePickup( pPlayer ) )
+		return HOOK_HANDLED;
+
 	// Nothing on this map is worth a trace on every +use tick. The arcade map is
 	// the exception: its difficulty vote is a row of buttons, and a locked tier
 	// has to be refused at the button.

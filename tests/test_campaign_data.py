@@ -957,4 +957,8 @@ def test_duty_calls_part_2_needs_a_barrel_shooter(campaign: dict) -> None:
     assert "ba_canal1b" in gates, chapter.keys()
     assert "barrel_shooter" in str(gates["ba_canal1b"])
     groups = campaign["requirement_groups"]
-    assert set(groups["ranged"]) | {"RPG"} == set(groups["barrel_shooter"])
+    assert set(groups["ranged"]) - {"Hivehand"} | {"RPG", "Hand Grenade", "Satchel Charge"} == set(
+        groups["barrel_shooter"]
+    )
+    for name in ("Hivehand", "Barnacle Grapple", "Tripmine"):
+        assert name not in groups["barrel_shooter"]

@@ -610,6 +610,9 @@ def test_arrivals_are_announced_only_on_a_live_change(sources: dict[str, str]) -
         r"bAnnounce = g_bSnapshotSeen && !bNewSession && !bSlotChanged\s*&& bWasConnected && bConnected",
         bridge,
     )
+    # A finale's news is its seal lifting, not an unlock.
+    announce = function_body(bridge, "AnnounceArrivals")
+    assert "if( pChapter.isGoal )" in announce
     # Compared against the state before it is replaced.
     assert bridge.index("AnnounceArrivals( items, chapters, goalsOpen, armour )") < bridge.index(
         "g_State.unlockedItems = items;"
@@ -638,3 +641,14 @@ def test_aptest_reads_source_records_of_five_or_six_fields() -> None:
     aptest = (REPO / "tests" / "aptest" / "aptest.as").read_text(encoding="utf-8")
     assert 'f[0] == "F" && f.length() >= 5' in aptest
     assert 'src.hostile = f.length() >= 6 && f[5] == "hostile";' in aptest
+
+
+def test_a_use_key_roach_pickup_is_gated(sources: dict[str, str]) -> None:
+    """+use never reaches CanCollect, so PlayerUse gates the roach itself, before
+    the early outs for maps with no chargers."""
+    use = function_body(sources["ap_hub.as"], "PlayerUse")
+    assert use.index("BlockUsePickup( pPlayer )") < use.index("g_MapChargers.length() == 0")
+    block = function_body(sources["ap_items.as"], "BlockUsePickup")
+    assert "RegisterPickupCheck( SHOCKROACH_CLASSNAME )" in block
+    assert block.index("RegisterPickupCheck") < block.index("ClassnameAllowed( SHOCKROACH_CLASSNAME )")
+    assert '"monster_shockroach"' in sources["ap_items.as"]

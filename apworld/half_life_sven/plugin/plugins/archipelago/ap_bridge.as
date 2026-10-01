@@ -481,9 +481,12 @@ void AnnounceArrivals( dictionary@ items, dictionary@ chapters, dictionary@ goal
 		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[AP] Received " + itemNames[i] + "\n" );
 	}
 
+	// A finale has no unlock item: its seal lifting is the news, said below.
 	for( uint i = 0; i < g_Chapters.length(); ++i )
 	{
 		APChapter@ pChapter = g_Chapters[i];
+		if( pChapter.isGoal )
+			continue;
 		if( chapters.exists( pChapter.key ) && !g_State.unlockedChapters.exists( pChapter.key ) )
 			g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[AP] " + pChapter.name
 				+ " unlocked. !warp " + pChapter.index + " to travel there.\n" );
