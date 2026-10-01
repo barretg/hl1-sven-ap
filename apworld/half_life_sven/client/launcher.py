@@ -328,7 +328,14 @@ class HalfLifeSvenContext(SuperContext):
         # "on", "non_arcade" or "off": whether one player's death takes the rest
         # of the lobby with it, and where. Off whenever DeathLink itself is off.
         self.lobby_death_link = "on"
+        # Both are per slot: connecting a different slot from the same client
+        # clears them.
         self.goal_sent = False
+        # A Suspension clear sent from this client for this slot. The arcade has
+        # no finale event, so this is what makes its goal one finished in play
+        # rather than one handed over by a collect or release.
+        self.suspension_played = False
+        self.session_slot = ""
         self.chat_relay = True
         self.bridge_failures = 0
         # How far through the server's item history we have got. Guards against
@@ -496,6 +503,10 @@ class HalfLifeSvenContext(SuperContext):
 
         if cmd == "Connected":
             slot_data = args.get("slot_data", {})
+            if self.slot_identity != self.session_slot:
+                self.goal_sent = False
+                self.suspension_played = False
+                self.session_slot = self.slot_identity
             self.missions_required = slot_data.get(
                 "missions_required", self.missions_required
             )
@@ -744,6 +755,13 @@ class HalfLifeSvenContext(SuperContext):
         for entry in self.campaign["locations"]:
             if entry["id"] == location_id:
                 return entry["trigger"]["type"] == "chapter_complete"
+        return False
+
+    def is_suspension_location(self, location_id: int) -> bool:
+        """Is this one of the arcade map's locations?"""
+        for entry in self.campaign["locations"]:
+            if entry["id"] == location_id:
+                return entry["trigger"]["type"].startswith("suspension_")
         return False
 
     @property
@@ -1131,9 +1149,10 @@ async def game_watcher(ctx: HalfLifeSvenContext) -> None:
 async def report_goal(ctx: HalfLifeSvenContext) -> None:
     """Tell the server the slot is won, once and only once.
 
-    Reached from two directions now. A campaign finale arrives as an event, but
-    Suspension's goal is a set of checks with no event behind it: the eighth
-    class clear simply lands, and the run is over: so every poll asks as well.
+    Only for a goal finished in play: a campaign finale's `GOAL` event, or a
+    Suspension clear sent from here. A finale that arrives by collect or release
+    still counts as done, for the seals and for `run_complete`, but never sends
+    the goal on its own.
     """
     if ctx.goal_sent or not ctx.run_complete:
         return
@@ -1242,11 +1261,16 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
             for location_id in unseen:
                 logger.info(f"Check: {ctx.location_name_by_id.get(location_id, location_id)}")
             await ctx.send_msgs([{"cmd": "LocationChecks", "locations": unseen}])
+            if any(ctx.is_suspension_location(cid) for cid in unseen):
+                ctx.suspension_played = True
 
     # The last class clear of a Suspension goal is a check like any other, and
     # nothing announces it, so this is where the run is noticed as finished.
+    # Only once a clear has been sent from here: collected clears alone do not
+    # win the slot, the same as a collected finale.
     ctx.sync_completed_missions()
-    await report_goal(ctx)
+    if ctx.suspension_enabled and ctx.suspension_played:
+        await report_goal(ctx)
 
     # Always published, even if reading failed: the snapshot is how the game
     # learns about unlocks, and it must not be skipped just because ap_out.txt

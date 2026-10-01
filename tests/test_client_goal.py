@@ -39,11 +39,40 @@ def test_an_empty_goal_chapter_is_never_a_goal() -> None:
     assert "elif slot_data.get(" in body
 
 
-def test_the_goal_is_reported_from_the_poll_as_well_as_from_an_event() -> None:
-    """Suspension's goal is a set of checks with no event behind it: the last
-    clear simply lands. Waiting for a `GOAL` line from the game would wait for
-    ever, because the plugin sends none for the arcade."""
-    assert "async def report_goal" in CLIENT
+def test_a_collected_finale_never_sends_the_goal() -> None:
+    """The goal is for a run finished in play. A finale that arrives by collect
+    or release still counts as done, for the seals and for `run_complete`, but
+    the poll does not report the goal for it."""
     pump = CLIENT.split("async def pump", 1)[1]
-    assert "await report_goal(ctx)" in pump
-    assert "ctx.sync_completed_missions()" in pump
+    tail = pump.split("ctx.sync_completed_missions()", 1)
+    assert len(tail) == 2, "the poll no longer syncs completed missions"
+    after = tail[1][:400]
+    assert "if ctx.suspension_enabled and ctx.suspension_played:" in after
+    assert after.index("if ctx.suspension_enabled and ctx.suspension_played:") < after.index(
+        "await report_goal(ctx)"
+    ), "the poll reports the goal unconditionally again"
+
+
+def test_a_goal_event_completing_the_run_sends_the_goal() -> None:
+    pump = CLIENT.split("async def pump", 1)[1]
+    goal = pump.split('elif event.kind == "GOAL":', 1)[1].split("elif event.kind", 1)[0]
+    assert "await report_goal(ctx)" in goal
+
+
+def test_a_suspension_clear_sent_this_session_sends_the_goal() -> None:
+    """Suspension has no finale event: a clear sent from this client, for this
+    slot, is what marks its goal as played."""
+    pump = CLIENT.split("async def pump", 1)[1]
+    sent = pump.split('"cmd": "LocationChecks"', 1)[1][:300]
+    assert "is_suspension_location" in sent
+    assert "ctx.suspension_played = True" in sent
+    assert "def is_suspension_location" in CLIENT
+    connected = CLIENT.split('if cmd == "Connected":', 1)[1][:400]
+    assert "self.suspension_played = False" in connected
+
+
+def test_a_different_slot_can_send_its_own_goal() -> None:
+    """`goal_sent` is per slot: a second slot connected from the same client
+    must not inherit the first one's sent goal."""
+    connected = CLIENT.split('if cmd == "Connected":', 1)[1][:400]
+    assert "self.goal_sent = False" in connected
