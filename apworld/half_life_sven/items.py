@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from BaseClasses import Item, ItemClassification
 
-from .data import EVENT_ITEM_NAMES, GOAL_COMPANIONS, ITEMS
+from .data import EVENT_ITEM_NAMES, GOAL_COMPANIONS, ITEMS, MELEE_STARTERS
 
 if TYPE_CHECKING:
     from . import HalfLifeSvenWorld
@@ -76,6 +76,12 @@ item_campaigns: dict[str, list[str]] = {
 
 item_name_groups: dict[str, set[str]] = {
     "Weapons": set(weapon_items),
+    # Every weapon any campaign can start a run with: the crowbar, the pipe
+    # wrench and the spanner. Read off the data so a new one joins on its own.
+    "Melee Weapons": {
+        name for starters in MELEE_STARTERS.values() for name in starters
+        if name in weapon_items
+    },
     "Mission Unlocks": set(chapter_unlock_items),
     "Equipment": set(optional_items),
     "Abilities": set(ability_items),
