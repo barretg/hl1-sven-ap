@@ -119,7 +119,9 @@ spore launcher, shock roach, barnacle grapple and pipe wrench. The shock roach
 lies nowhere: shock troopers carry it and drop it when killed, and that drop is
 refused until the item arrives. They Hunger adds nine
 of its own, from the Colt 1911 and tommy gun to the tesla gun. Blue Shift adds
-none: in Sven Co-op it uses Half-Life's, down to the crowbar.
+none: in Sven Co-op it uses Half-Life's, down to the crowbar. Half-Life's
+weapons are in every seed with a campaign in it, even one without Half-Life,
+so a Blue Shift run can still find a crossbow or a Tau cannon.
 
 They Hunger's are the one set that cannot travel. They are custom entities its
 own maps register rather than weapons the game ships, so they exist only while

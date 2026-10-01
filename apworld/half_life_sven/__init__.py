@@ -265,6 +265,13 @@ class HalfLifeSvenWorld(World):
         # left an Opposing Force seed with shotguns and no shotgun item, which
         # meant every one of them refused for the whole run.
         #
+        # Half-Life's weapons are in any seed with a campaign, contained or not.
+        # They are built into the game and work on every campaign's maps, and
+        # without them a Blue Shift seed never sees a crossbow, Tau cannon,
+        # gluon gun or hivehand. They Hunger's stay with They Hunger: they exist
+        # only on its own maps. A seed of nothing but the arcade map has no
+        # campaign map to use any of them on.
+        #
         # A weapon the seed opens with is not something to find. Matched by
         # classname rather than by item name, so it holds for every melee starter
         # alike: the crowbar included, which is an ordinary item that a default
@@ -276,8 +283,11 @@ class HalfLifeSvenWorld(World):
         }
         self.available_item_names = {
             name for name in weapon_items
-            if set(item_campaigns.get(name, [item_campaign.get(name, DEFAULT_CAMPAIGN)]))
-            & set(self.included_campaigns)
+            if (
+                set(item_campaigns.get(name, [item_campaign.get(name, DEFAULT_CAMPAIGN)]))
+                & set(self.included_campaigns)
+                or (self.included_campaigns and item_campaign.get(name) == DEFAULT_CAMPAIGN)
+            )
             and name not in starting_items
         }
         # Equipment and abilities. Under the tracker, the seed's own answers:
