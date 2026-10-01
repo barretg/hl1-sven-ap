@@ -22,3 +22,11 @@ LEGACY_LOCATIONS: dict[int, str] = {
 LEGACY_WEAPONS: dict[str, tuple[int, str]] = {
     "Minigun": (7710063, "weapon_minigun"),
 }
+
+# Location names an older release used, `{old name: current name}`, for YAMLs
+# that still spell them the old way. Weapon checks took ": " in place of " - "
+# after v0.3 ("Opposing Force: First Glock"); those are derived in
+# `locations.py`, so only the renames that rule does not cover are listed here.
+LEGACY_LOCATION_NAMES: dict[str, str] = {
+    "Opposing Force - First HEV Suit": "Opposing Force: First PCV",
+}

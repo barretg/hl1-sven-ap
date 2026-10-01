@@ -791,3 +791,30 @@ class TestWeaponSources(HalfLifeSvenTestBase):
             self.assertTrue(
                 self.multiworld.get_location(name, self.player).can_reach(state), name
             )
+
+
+class TestLegacyLocationNames(HalfLifeSvenTestBase):
+    """A YAML written for an older release still names locations its way."""
+
+    options = {"include_opposing_force": True}
+
+    def test_old_names_resolve_to_the_current_ones(self) -> None:
+        groups = self.multiworld.worlds[self.player].location_name_groups
+        self.assertEqual(groups["Opposing Force - First Glock"], {"Opposing Force: First Glock"})
+        self.assertEqual(groups["Opposing Force - First HEV Suit"], {"Opposing Force: First PCV"})
+        # An alias that is also a real name would shadow that location.
+        self.assertFalse(set(self.multiworld.worlds[self.player].location_names) & set(groups))
+
+    def test_old_names_are_accepted_in_exclude_locations(self) -> None:
+        """What generation does to the option: verified, then groups expanded."""
+        from BaseClasses import PlandoOptions
+        from Options import ExcludeLocations
+
+        world = type(self.multiworld.worlds[self.player])
+        option = ExcludeLocations.from_any(
+            ["Opposing Force - First Glock", "Opposing Force - First HEV Suit"]
+        )
+        option.verify(world, "Player1", PlandoOptions.bosses)
+        excluded = option.value
+        self.assertIn("Opposing Force: First Glock", excluded)
+        self.assertIn("Opposing Force: First PCV", excluded)
