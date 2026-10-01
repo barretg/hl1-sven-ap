@@ -113,7 +113,7 @@ See [docs/protocol.md](docs/protocol.md).
 ## Locations
 
 Three kinds of location, 383 across all four campaigns (189 of them Half-Life's)
-against at most 71 progression items:
+against at most 70 progression items:
 
 | Type | Count | Fires when |
 | --- | --- | --- |
