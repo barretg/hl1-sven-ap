@@ -295,9 +295,9 @@ class MeleeThrow(Toggle):
     """Add Melee Throw to the item pool.
 
     Once it arrives, secondary fire throws the crowbar (and its local faces: the
-    combat knife, the umbrella). It hits as hard as a swing and lands on the
-    floor; walk over it to pick it back up, or it returns to you by itself after
-    ten seconds.
+    combat knife, the umbrella). It hits four times as hard as a swing and lands
+    on the floor; walk over it to pick it back up, or it returns to you by itself
+    after ten seconds.
 
     When off, there is no throw at all.
     """

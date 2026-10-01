@@ -3,9 +3,9 @@
 *
 * Once the item arrives, secondary fire throws the crowbar: which is also
 * Opposing Force's combat knife and They Hunger's umbrella, since those are the
-* crowbar wearing another model. It hits as hard as a swing, lands on the floor,
-* and can be walked over to pick back up; otherwise it comes back by itself after
-* ten seconds.
+* crowbar wearing another model. It hits four times as hard as a swing, lands on
+* the floor, and can be walked over to pick back up; otherwise it comes back by
+* itself after ten seconds.
 *
 * Built out of the pieces Butterfingers already uses. The throw is a drop with a
 * great deal of velocity behind it, the ten seconds is the same withholding that
@@ -22,8 +22,12 @@ const string THROWN_CLASSNAME = "weapon_crowbar";
 const float MELEE_THROW_RETURN = 10.0f;
 
 // How hard it leaves the hand, and how much of that is lift.
-const float MELEE_THROW_SPEED = 900.0f;
-const float MELEE_THROW_LIFT = 120.0f;
+const float MELEE_THROW_SPEED = 1100.0f;
+const float MELEE_THROW_LIFT = 100.0f;
+
+// The share of world gravity it falls under while thrown: a longer, flatter arc
+// than a dropped item's at the same speed.
+const float MELEE_THROW_GRAVITY = 0.6f;
 
 // Only while it is still flying fast enough to hurt. Below this it is sliding
 // to a stop, and a crowbar at walking pace hits nobody.
@@ -96,6 +100,8 @@ void ThrowMelee( CBasePlayer@ pPlayer )
 	g_EntityFuncs.SetOrigin( pThrown, vecStart );
 	pThrown.pev.velocity = g_Engine.v_forward * MELEE_THROW_SPEED
 		+ Vector( 0.0f, 0.0f, MELEE_THROW_LIFT );
+	// MOVETYPE_TOSS reads it; ThrownThink puts it back once picked up.
+	pThrown.pev.gravity = MELEE_THROW_GRAVITY;
 	// Tumbling end over end, which is how everyone expects a thrown crowbar to
 	// fly and what makes it read as a throw rather than a drop.
 	pThrown.pev.avelocity = Vector( -720.0f, 0.0f, 0.0f );
@@ -128,6 +134,10 @@ void ThrownThink()
 		// Picked back up, or gone with the map.
 		if( pWeapon is null || WeaponIsHeld( pWeapon ) )
 		{
+			// Back to full gravity, so a later drop of the same crowbar falls
+			// like any other weapon. 0 is the engine's "unset", which reads as 1.
+			if( pWeapon !is null )
+				pWeapon.pev.gravity = 0.0f;
 			if( pThrower !is null )
 				ReleaseWeapon( pThrower, THROWN_CLASSNAME );
 			g_Thrown.removeAt( i - 1 );

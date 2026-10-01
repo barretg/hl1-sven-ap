@@ -144,7 +144,7 @@ Optional items, each behind its own option:
 - **Flashlight** (`shuffle_flashlight`): the flashlight key does nothing until
   it arrives.
 - **Melee Throw** (`melee_throw`): secondary fire throws the crowbar, which
-  hits as hard as a swing and comes back after ten seconds.
+  hits four times as hard as a swing and comes back after ten seconds.
 
 **Locations**: 189 in Half-Life alone, 378 with all four campaigns:
 
