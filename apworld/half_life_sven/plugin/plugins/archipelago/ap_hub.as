@@ -2151,9 +2151,14 @@ HookReturnCode ClientSay( SayParameters@ pParams )
 	if( szCommand == "!tracker" )
 	{
 		pParams.ShouldHide = true;
+		// Everything after the command, as `!find` does: `!tracker on a rail`.
 		string szFilter;
-		if( pArguments.ArgC() >= 2 )
-			szFilter = pArguments[1];
+		for( int i = 1; i < pArguments.ArgC(); ++i )
+		{
+			if( szFilter.Length() > 0 )
+				szFilter += " ";
+			szFilter += pArguments[i];
+		}
 		ShowTracker( pPlayer, szFilter );
 		return HOOK_HANDLED;
 	}
