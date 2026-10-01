@@ -38,6 +38,7 @@ except ModuleNotFoundError:
 
 from .. import plugin
 from . import settings
+from ..data.legacy import LEGACY_LOCATIONS, LEGACY_WEAPONS
 from .bridge import Bridge, find_store_dir, is_game_dir
 
 GAME_NAME = "Half-Life (Sven Co-op)"
@@ -233,9 +234,13 @@ class HalfLifeSvenContext(SuperContext):
             if entry.get("group") == "chapter"
         }
         self.item_by_id = {entry["id"]: entry for entry in self.campaign["items"]}
+        for name, (item_id, _) in LEGACY_WEAPONS.items():
+            self.item_by_id.setdefault(item_id, {"id": item_id, "name": name, "group": "weapon"})
         self.location_name_by_id = {
             entry["id"]: entry["name"] for entry in self.campaign["locations"]
         }
+        for location_id, name in LEGACY_LOCATIONS.items():
+            self.location_name_by_id.setdefault(location_id, name)
         self.campaign_of_chapter = {
             c["key"]: c.get("campaign", "") for c in self.campaign["chapters"]
         }
@@ -549,6 +554,7 @@ class HalfLifeSvenContext(SuperContext):
             # one; only equipment left entirely to the campaign goes ungated.
             placed = set(slot_data.get("placed_at_vanilla", ()))
             self.ungated_classnames = unshuffled_vanilla_classnames(unshuffled - placed)
+            self.send_legacy_checks()
             self.armour_items = dict(slot_data.get("armour_items", {}))
             self.starting_weapons = list(
                 slot_data.get("starting_weapons", self.starting_weapons)
@@ -667,6 +673,26 @@ class HalfLifeSvenContext(SuperContext):
                 f"Delivering {self.bridge.queued_count} items to the game; "
                 f"this drains over a few seconds."
             )
+
+    def send_legacy_checks(self) -> None:
+        """Send every removed check an older seed still has, as soon as it connects.
+
+        Nothing in the game fires them any more (see `data/legacy.py`), so this
+        is the only way such a seed gets them.
+        """
+        due = sorted(LEGACY_LOCATIONS.keys() & self.missing_locations)
+        if not due:
+            return
+        for location_id in due:
+            logger.info(f"Check (removed location, sent automatically): {LEGACY_LOCATIONS[location_id]}")
+        asyncio.create_task(self.send_msgs([{"cmd": "LocationChecks", "locations": due}]))
+
+    def effective_ungated_classnames(self) -> set[str]:
+        """`ungated_classnames`, plus every legacy weapon not yet received."""
+        return self.ungated_classnames | {
+            classname for name, (_, classname) in LEGACY_WEAPONS.items()
+            if name not in self.unlocked_items
+        }
 
     def apply_item(self, item_id: int, deliver_filler: bool = True) -> None:
         entry = self.item_by_id.get(item_id)
@@ -1180,7 +1206,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
                 death_link_amnesty=ctx.death_link_amnesty,
                 lobby_death_link=ctx.lobby_death_link,
                 excluded=sorted(ctx.excluded_chapters),
-                ungated=sorted(ctx.ungated_classnames),
+                ungated=sorted(ctx.effective_ungated_classnames()),
                 starting=list(ctx.starting_weapons),
                 checked=sorted(ctx.checked_locations),
                 missing=sorted(ctx.missing_locations),
@@ -1225,7 +1251,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
         death_link_amnesty=ctx.death_link_amnesty,
         lobby_death_link=ctx.lobby_death_link,
         excluded=sorted(ctx.excluded_chapters),
-        ungated=sorted(ctx.ungated_classnames),
+        ungated=sorted(ctx.effective_ungated_classnames()),
         starting=list(ctx.starting_weapons),
         checked=sorted(ctx.checked_locations),
         missing=sorted(ctx.missing_locations),

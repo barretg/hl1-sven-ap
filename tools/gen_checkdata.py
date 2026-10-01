@@ -24,6 +24,7 @@ WORLD_DIR = REPO_ROOT / "apworld" / "half_life_sven"
 sys.path.insert(0, str(WORLD_DIR))
 
 from data import load_campaign  # noqa: E402
+from data.legacy import LEGACY_WEAPONS  # noqa: E402
 # The plugin tree is bundled inside the world package so a zipped .apworld can
 # install itself. Plugins may only read and write under scripts/plugins/store/,
 # so the data file sits there rather than next to the .as sources.
@@ -274,6 +275,10 @@ def render(campaign: dict) -> str:
 
     # Every classname the plugin must refuse until the matching item arrives.
     for classname, item in sorted(CLASSNAME_TO_ITEM.items()):
+        lines.append(f"K|{classname}|{item}")
+    # Weapons only older seeds still send. The client leaves each one ungated
+    # until it arrives, so a new seed never sees the lock.
+    for item, (_, classname) in sorted(LEGACY_WEAPONS.items()):
         lines.append(f"K|{classname}|{item}")
 
     for classname in STARTING_WEAPONS:

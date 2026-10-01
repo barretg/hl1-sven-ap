@@ -1070,6 +1070,7 @@ K|weapon_teslagun|Tesla Gun
 K|weapon_th_taurus|Taurus
 K|weapon_tommygun|Tommy Gun
 K|weapon_tripmine|Tripmine
+K|weapon_minigun|Minigun
 S|weapon_crowbar
 S|weapon_medkit
 R|weapon_colt1911|they_hunger

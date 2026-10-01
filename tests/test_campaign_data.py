@@ -18,6 +18,7 @@ sys.path.insert(0, str(REPO / "tools"))
 sys.path.insert(0, str(REPO / "apworld" / "half_life_sven"))
 
 from data import load_campaign  # noqa: E402
+from data.legacy import LEGACY_LOCATIONS, LEGACY_WEAPONS  # noqa: E402
 
 CHECKDATA_PATH = (
     REPO / "apworld" / "half_life_sven" / "plugin"
@@ -266,8 +267,8 @@ def test_checkdata_has_every_chapter(campaign: dict, checkdata: list[list[str]])
 def test_checkdata_locked_classnames_map_to_real_items(
     campaign: dict, checkdata: list[list[str]]
 ) -> None:
-    """Every gate names an item that can actually arrive."""
-    names = {item["name"] for item in campaign["items"]}
+    """Every gate names an item that can actually arrive, in a new seed or an old one."""
+    names = {item["name"] for item in campaign["items"]} | set(LEGACY_WEAPONS)
     locked = [(r[1], r[2]) for r in checkdata if r[0] == "K"]
     assert locked
     for classname, item_name in locked:
@@ -882,3 +883,18 @@ def test_checkdata_carries_the_pairing_and_the_endgame_flag(
         assert len(parts) >= 9, f"{chapter['key']} is missing the new fields"
         assert parts[7] == chapter.get("requires_chapter", "")
         assert parts[8] == ("1" if chapter.get("complete_on_endgame") else "0")
+
+
+def test_legacy_ids_stay_reserved_and_out_of_new_seeds(campaign: dict) -> None:
+    """Old seeds name these ids: none may be reused or come back as a live check."""
+    import json
+
+    ids = json.loads((REPO / "apworld" / "half_life_sven" / "data" / "ids.json").read_text())
+    live_locations = {entry["id"] for entry in campaign["locations"]}
+    live_items = {entry["id"] for entry in campaign["items"]}
+    for location_id, name in LEGACY_LOCATIONS.items():
+        assert location_id not in live_locations, name
+        assert location_id in ids["locations"].values(), name
+    for name, (item_id, _) in LEGACY_WEAPONS.items():
+        assert item_id not in live_items, name
+        assert ids["items"].get(name) == item_id, name
