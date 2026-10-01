@@ -503,11 +503,11 @@ string WeaponLabel( const string& in szGame, APLocation@ pLocation )
 
 /*
 * A location's name without its mission, which the menu title already says.
-* `Surface Tension - Health Charger (Part 2)` reads as `Health Charger (Part 2)`.
+* `Surface Tension: Health Charger (Part 2)` reads as `Health Charger (Part 2)`.
 */
 string MenuLocationLabel( APChapter@ pChapter, APLocation@ pLocation )
 {
-	string szPrefix = pChapter.name + " - ";
+	string szPrefix = pChapter.name + ": ";
 	if( pLocation.name.Length() > szPrefix.Length()
 	    && pLocation.name.SubString( 0, szPrefix.Length() ) == szPrefix )
 		return pLocation.name.SubString( szPrefix.Length() );

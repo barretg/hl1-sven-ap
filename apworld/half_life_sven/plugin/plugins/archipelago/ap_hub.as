@@ -714,21 +714,20 @@ void FindLocation( CBasePlayer@ pPlayer, const string& in szQuery )
 		return;
 	}
 
-	string szWanted = szQuery;
-	szWanted.ToLowercase();
+	// Letters and digits only on both sides, so the punctuation an older
+	// release's names used (` - ` where they now have `: `) still matches.
+	string szWanted = APSimplify( szQuery );
 
 	array<APLocation@> matches;
-	for( uint i = 0; i < g_Locations.length(); ++i )
+	for( uint i = 0; i < g_Locations.length() && szWanted.Length() > 0; ++i )
 	{
 		APLocation@ pLocation = g_Locations[i];
 		if( !LocationInSeed( pLocation ) )
 			continue;
 
-		string szName = pLocation.name;
-		szName.ToLowercase();
 		// Find returns String::INVALID_INDEX rather than -1, and it is unsigned;
 		// read as an int, a miss comes out negative.
-		int iAt = szName.Find( szWanted );
+		int iAt = APSimplify( pLocation.name ).Find( szWanted );
 		if( iAt >= 0 )
 			matches.insertLast( pLocation );
 	}

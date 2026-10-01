@@ -121,7 +121,7 @@
  "locations": [
   {
    "id": 7720273,
-   "name": "They Hunger: Episode 1 - Part 1 Reached",
+   "name": "They Hunger: Episode 1: Part 1 Reached",
    "chapter": "th_episode_1",
    "map": "th_ep1_00",
    "trigger": {
@@ -131,7 +131,7 @@
   },
   {
    "id": 7720274,
-   "name": "They Hunger: Episode 1 - Part 2 Reached",
+   "name": "They Hunger: Episode 1: Part 2 Reached",
    "chapter": "th_episode_1",
    "map": "th_ep1_01",
    "trigger": {
@@ -141,7 +141,7 @@
   },
   {
    "id": 7720275,
-   "name": "They Hunger: Episode 1 - Part 3 Reached",
+   "name": "They Hunger: Episode 1: Part 3 Reached",
    "chapter": "th_episode_1",
    "map": "th_ep1_02",
    "trigger": {
@@ -151,7 +151,7 @@
   },
   {
    "id": 7720276,
-   "name": "They Hunger: Episode 1 - Part 4 Reached",
+   "name": "They Hunger: Episode 1: Part 4 Reached",
    "chapter": "th_episode_1",
    "map": "th_ep1_03",
    "trigger": {
@@ -161,7 +161,7 @@
   },
   {
    "id": 7720277,
-   "name": "They Hunger: Episode 1 - Part 5 Reached",
+   "name": "They Hunger: Episode 1: Part 5 Reached",
    "chapter": "th_episode_1",
    "map": "th_ep1_04",
    "trigger": {
@@ -171,7 +171,7 @@
   },
   {
    "id": 7720278,
-   "name": "They Hunger: Episode 1 - Part 6 Reached",
+   "name": "They Hunger: Episode 1: Part 6 Reached",
    "chapter": "th_episode_1",
    "map": "th_ep1_05",
    "trigger": {
@@ -181,7 +181,7 @@
   },
   {
    "id": 7720279,
-   "name": "They Hunger: Episode 2 - Part 1 Reached",
+   "name": "They Hunger: Episode 2: Part 1 Reached",
    "chapter": "th_episode_2",
    "map": "th_ep2_00",
    "trigger": {
@@ -191,7 +191,7 @@
   },
   {
    "id": 7720280,
-   "name": "They Hunger: Episode 2 - Part 2 Reached",
+   "name": "They Hunger: Episode 2: Part 2 Reached",
    "chapter": "th_episode_2",
    "map": "th_ep2_01",
    "trigger": {
@@ -201,7 +201,7 @@
   },
   {
    "id": 7720281,
-   "name": "They Hunger: Episode 2 - Part 3 Reached",
+   "name": "They Hunger: Episode 2: Part 3 Reached",
    "chapter": "th_episode_2",
    "map": "th_ep2_02",
    "trigger": {
@@ -211,7 +211,7 @@
   },
   {
    "id": 7720282,
-   "name": "They Hunger: Episode 2 - Part 4 Reached",
+   "name": "They Hunger: Episode 2: Part 4 Reached",
    "chapter": "th_episode_2",
    "map": "th_ep2_03",
    "trigger": {
@@ -221,7 +221,7 @@
   },
   {
    "id": 7720283,
-   "name": "They Hunger: Episode 2 - Part 5 Reached",
+   "name": "They Hunger: Episode 2: Part 5 Reached",
    "chapter": "th_episode_2",
    "map": "th_ep2_04",
    "trigger": {
@@ -231,7 +231,7 @@
   },
   {
    "id": 7720284,
-   "name": "They Hunger: Episode 3 - Part 1 Reached",
+   "name": "They Hunger: Episode 3: Part 1 Reached",
    "chapter": "th_episode_3",
    "map": "th_ep3_00",
    "trigger": {
@@ -241,7 +241,7 @@
   },
   {
    "id": 7720285,
-   "name": "They Hunger: Episode 3 - Health Charger 1 (Part 1)",
+   "name": "They Hunger: Episode 3: Health Charger 1 (Part 1)",
    "chapter": "th_episode_3",
    "map": "th_ep3_00",
    "trigger": {
@@ -258,7 +258,7 @@
   },
   {
    "id": 7720286,
-   "name": "They Hunger: Episode 3 - Health Charger 2 (Part 1)",
+   "name": "They Hunger: Episode 3: Health Charger 2 (Part 1)",
    "chapter": "th_episode_3",
    "map": "th_ep3_00",
    "trigger": {
@@ -275,7 +275,7 @@
   },
   {
    "id": 7720287,
-   "name": "They Hunger: Episode 3 - Part 2 Reached",
+   "name": "They Hunger: Episode 3: Part 2 Reached",
    "chapter": "th_episode_3",
    "map": "th_ep3_01",
    "trigger": {
@@ -285,7 +285,7 @@
   },
   {
    "id": 7720288,
-   "name": "They Hunger: Episode 3 - Part 3 Reached",
+   "name": "They Hunger: Episode 3: Part 3 Reached",
    "chapter": "th_episode_3",
    "map": "th_ep3_02",
    "trigger": {
@@ -295,7 +295,7 @@
   },
   {
    "id": 7720289,
-   "name": "They Hunger: Episode 3 - Part 4 Reached",
+   "name": "They Hunger: Episode 3: Part 4 Reached",
    "chapter": "th_episode_3",
    "map": "th_ep3_03",
    "trigger": {
@@ -305,7 +305,7 @@
   },
   {
    "id": 7720290,
-   "name": "They Hunger: Episode 3 - Part 5 Reached",
+   "name": "They Hunger: Episode 3: Part 5 Reached",
    "chapter": "th_episode_3",
    "map": "th_ep3_04",
    "trigger": {
@@ -315,7 +315,7 @@
   },
   {
    "id": 7720291,
-   "name": "They Hunger: Episode 3 - Part 6 Reached",
+   "name": "They Hunger: Episode 3: Part 6 Reached",
    "chapter": "th_episode_3",
    "map": "th_ep3_05",
    "trigger": {
@@ -325,7 +325,7 @@
   },
   {
    "id": 7720292,
-   "name": "They Hunger: Episode 3 - Part 7 Reached",
+   "name": "They Hunger: Episode 3: Part 7 Reached",
    "chapter": "th_episode_3",
    "map": "th_ep3_06",
    "trigger": {
@@ -335,7 +335,7 @@
   },
   {
    "id": 7720293,
-   "name": "They Hunger: Episode 3 - Part 8 Reached",
+   "name": "They Hunger: Episode 3: Part 8 Reached",
    "chapter": "th_episode_3",
    "map": "th_ep3_07",
    "trigger": {
@@ -884,7 +884,7 @@
   },
   {
    "id": 7720350,
-   "name": "They Hunger: Episode 1 - Complete",
+   "name": "They Hunger: Episode 1: Complete",
    "chapter": "th_episode_1",
    "map": "th_ep1_05",
    "trigger": {
@@ -895,7 +895,7 @@
   },
   {
    "id": 7720351,
-   "name": "They Hunger: Episode 2 - Complete",
+   "name": "They Hunger: Episode 2: Complete",
    "chapter": "th_episode_2",
    "map": "th_ep2_04",
    "trigger": {
@@ -906,7 +906,7 @@
   },
   {
    "id": 7720352,
-   "name": "They Hunger: Episode 3 - Complete",
+   "name": "They Hunger: Episode 3: Complete",
    "chapter": "th_episode_3",
    "map": "th_ep3_07",
    "trigger": {

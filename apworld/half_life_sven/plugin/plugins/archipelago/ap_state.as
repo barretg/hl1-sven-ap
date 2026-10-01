@@ -391,6 +391,27 @@ string APTrim( const string& in szValue )
 }
 
 /*
+* Lowercase letters and digits only, so a search matches whatever punctuation
+* and spacing the name uses: `office complex - health` and `office complex:
+* health` are the same search.
+*/
+string APSimplify( const string& in szValue )
+{
+	const string szKeep = "abcdefghijklmnopqrstuvwxyz0123456789";
+	string szLower = szValue;
+	szLower.ToLowercase();
+
+	string szOut;
+	for( uint i = 0; i < szLower.Length(); ++i )
+	{
+		string szChar = szLower.SubString( i, 1 );
+		if( int( szKeep.Find( szChar ) ) >= 0 )
+			szOut += szChar;
+	}
+	return szOut;
+}
+
+/*
 * Strip the bridge's field separators out of free text.
 *
 * Player names and chat messages are the only values in the protocol that a

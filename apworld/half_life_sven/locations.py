@@ -45,6 +45,15 @@ location_name_groups["Suspension"] = {
 for _entry in LOCATIONS:
     if _entry["trigger"]["type"] in ("pickup", "weapon_pickup") and ": " in _entry["name"]:
         location_name_groups[_entry["name"].replace(": ", " - ", 1)] = {_entry["name"]}
+# Mission checks took ": " after the mission name in place of " - ". The old name
+# is rebuilt from the mission's name rather than by swapping the first ": ",
+# since a mission name can hold one itself (They Hunger's do).
+_chapter_names = {c["key"]: c["name"] for c in CHAPTERS}
+for _entry in LOCATIONS:
+    _chapter_name = _chapter_names.get(_entry["chapter"])
+    if _chapter_name and _entry["name"].startswith(_chapter_name + ": "):
+        _rest = _entry["name"][len(_chapter_name) + 2:]
+        location_name_groups[f"{_chapter_name} - {_rest}"] = {_entry["name"]}
 for _old, _new in LEGACY_LOCATION_NAMES.items():
     location_name_groups[_old] = {_new}
 

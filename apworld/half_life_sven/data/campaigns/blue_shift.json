@@ -226,7 +226,7 @@
  "locations": [
   {
    "id": 7720231,
-   "name": "Living Quarters Outbound - Part 1 Reached",
+   "name": "Living Quarters Outbound: Part 1 Reached",
    "chapter": "bs_living_quarters",
    "map": "ba_tram1",
    "trigger": {
@@ -236,7 +236,7 @@
   },
   {
    "id": 7720232,
-   "name": "Living Quarters Outbound - Part 2 Reached",
+   "name": "Living Quarters Outbound: Part 2 Reached",
    "chapter": "bs_living_quarters",
    "map": "ba_tram2",
    "trigger": {
@@ -246,7 +246,7 @@
   },
   {
    "id": 7720233,
-   "name": "Living Quarters Outbound - Part 3 Reached",
+   "name": "Living Quarters Outbound: Part 3 Reached",
    "chapter": "bs_living_quarters",
    "map": "ba_tram3",
    "trigger": {
@@ -256,7 +256,7 @@
   },
   {
    "id": 7720234,
-   "name": "Insecurity - Part 1 Reached",
+   "name": "Insecurity: Part 1 Reached",
    "chapter": "bs_insecurity",
    "map": "ba_security1",
    "trigger": {
@@ -266,7 +266,7 @@
   },
   {
    "id": 7720235,
-   "name": "Insecurity - Part 2 Reached",
+   "name": "Insecurity: Part 2 Reached",
    "chapter": "bs_insecurity",
    "map": "ba_security2",
    "trigger": {
@@ -276,7 +276,7 @@
   },
   {
    "id": 7720236,
-   "name": "Insecurity - Health Charger (Part 2)",
+   "name": "Insecurity: Health Charger (Part 2)",
    "chapter": "bs_insecurity",
    "map": "ba_security2",
    "trigger": {
@@ -293,7 +293,7 @@
   },
   {
    "id": 7720237,
-   "name": "Insecurity - Part 3 Reached",
+   "name": "Insecurity: Part 3 Reached",
    "chapter": "bs_insecurity",
    "map": "ba_maint",
    "trigger": {
@@ -303,7 +303,7 @@
   },
   {
    "id": 7720238,
-   "name": "Insecurity - Part 4 Reached",
+   "name": "Insecurity: Part 4 Reached",
    "chapter": "bs_insecurity",
    "map": "ba_elevator",
    "trigger": {
@@ -313,7 +313,7 @@
   },
   {
    "id": 7720239,
-   "name": "Duty Calls - Part 1 Reached",
+   "name": "Duty Calls: Part 1 Reached",
    "chapter": "bs_duty_calls",
    "map": "ba_canal1",
    "trigger": {
@@ -323,7 +323,7 @@
   },
   {
    "id": 7720353,
-   "name": "Duty Calls - Health Charger 1 (Part 1)",
+   "name": "Duty Calls: Health Charger 1 (Part 1)",
    "chapter": "bs_duty_calls",
    "map": "ba_canal1",
    "trigger": {
@@ -341,7 +341,7 @@
   },
   {
    "id": 7720240,
-   "name": "Duty Calls - Health Charger 2 (Part 1)",
+   "name": "Duty Calls: Health Charger 2 (Part 1)",
    "chapter": "bs_duty_calls",
    "map": "ba_canal1",
    "trigger": {
@@ -358,7 +358,7 @@
   },
   {
    "id": 7720241,
-   "name": "Duty Calls - Part 2 Reached",
+   "name": "Duty Calls: Part 2 Reached",
    "chapter": "bs_duty_calls",
    "map": "ba_canal1b",
    "trigger": {
@@ -368,7 +368,7 @@
   },
   {
    "id": 7720242,
-   "name": "Duty Calls - Part 3 Reached",
+   "name": "Duty Calls: Part 3 Reached",
    "chapter": "bs_duty_calls",
    "map": "ba_canal2",
    "trigger": {
@@ -378,7 +378,7 @@
   },
   {
    "id": 7720243,
-   "name": "Duty Calls - Health Charger (Part 3)",
+   "name": "Duty Calls: Health Charger (Part 3)",
    "chapter": "bs_duty_calls",
    "map": "ba_canal2",
    "trigger": {
@@ -395,7 +395,7 @@
   },
   {
    "id": 7720244,
-   "name": "Duty Calls - Part 4 Reached",
+   "name": "Duty Calls: Part 4 Reached",
    "chapter": "bs_duty_calls",
    "map": "ba_canal3",
    "trigger": {
@@ -405,7 +405,7 @@
   },
   {
    "id": 7720245,
-   "name": "Duty Calls - Health Charger (Part 4)",
+   "name": "Duty Calls: Health Charger (Part 4)",
    "chapter": "bs_duty_calls",
    "map": "ba_canal3",
    "trigger": {
@@ -422,7 +422,7 @@
   },
   {
    "id": 7720246,
-   "name": "Captive Freight - Part 1 Reached",
+   "name": "Captive Freight: Part 1 Reached",
    "chapter": "bs_captive_freight",
    "map": "ba_yard1",
    "trigger": {
@@ -432,7 +432,7 @@
   },
   {
    "id": 7720247,
-   "name": "Captive Freight - Part 2 Reached",
+   "name": "Captive Freight: Part 2 Reached",
    "chapter": "bs_captive_freight",
    "map": "ba_yard2",
    "trigger": {
@@ -442,7 +442,7 @@
   },
   {
    "id": 7720248,
-   "name": "Captive Freight - Part 3 Reached",
+   "name": "Captive Freight: Part 3 Reached",
    "chapter": "bs_captive_freight",
    "map": "ba_yard3",
    "trigger": {
@@ -452,7 +452,7 @@
   },
   {
    "id": 7720249,
-   "name": "Captive Freight - Part 4 Reached",
+   "name": "Captive Freight: Part 4 Reached",
    "chapter": "bs_captive_freight",
    "map": "ba_yard3a",
    "trigger": {
@@ -462,7 +462,7 @@
   },
   {
    "id": 7720250,
-   "name": "Captive Freight - Health Charger (Part 4)",
+   "name": "Captive Freight: Health Charger (Part 4)",
    "chapter": "bs_captive_freight",
    "map": "ba_yard3a",
    "trigger": {
@@ -479,7 +479,7 @@
   },
   {
    "id": 7720251,
-   "name": "Captive Freight - Part 5 Reached",
+   "name": "Captive Freight: Part 5 Reached",
    "chapter": "bs_captive_freight",
    "map": "ba_yard3b",
    "trigger": {
@@ -489,7 +489,7 @@
   },
   {
    "id": 7720252,
-   "name": "Captive Freight - Part 6 Reached",
+   "name": "Captive Freight: Part 6 Reached",
    "chapter": "bs_captive_freight",
    "map": "ba_yard4",
    "trigger": {
@@ -499,7 +499,7 @@
   },
   {
    "id": 7720253,
-   "name": "Captive Freight - Part 7 Reached",
+   "name": "Captive Freight: Part 7 Reached",
    "chapter": "bs_captive_freight",
    "map": "ba_yard4a",
    "trigger": {
@@ -509,7 +509,7 @@
   },
   {
    "id": 7720254,
-   "name": "Captive Freight - Part 8 Reached",
+   "name": "Captive Freight: Part 8 Reached",
    "chapter": "bs_captive_freight",
    "map": "ba_yard5",
    "trigger": {
@@ -519,7 +519,7 @@
   },
   {
    "id": 7720255,
-   "name": "Captive Freight - Part 9 Reached",
+   "name": "Captive Freight: Part 9 Reached",
    "chapter": "bs_captive_freight",
    "map": "ba_yard5a",
    "trigger": {
@@ -529,7 +529,7 @@
   },
   {
    "id": 7720256,
-   "name": "Focal Point - Part 1 Reached",
+   "name": "Focal Point: Part 1 Reached",
    "chapter": "bs_focal_point",
    "map": "ba_teleport1",
    "trigger": {
@@ -539,7 +539,7 @@
   },
   {
    "id": 7720257,
-   "name": "Focal Point - Health Charger (Part 1)",
+   "name": "Focal Point: Health Charger (Part 1)",
    "chapter": "bs_focal_point",
    "map": "ba_teleport1",
    "trigger": {
@@ -556,7 +556,7 @@
   },
   {
    "id": 7720258,
-   "name": "Focal Point - Part 2 Reached",
+   "name": "Focal Point: Part 2 Reached",
    "chapter": "bs_focal_point",
    "map": "ba_xen1",
    "trigger": {
@@ -566,7 +566,7 @@
   },
   {
    "id": 7720801,
-   "name": "Focal Point - Healing Pool (Part 2)",
+   "name": "Focal Point: Healing Pool (Part 2)",
    "chapter": "bs_focal_point",
    "map": "ba_xen1",
    "trigger": {
@@ -583,7 +583,7 @@
   },
   {
    "id": 7720259,
-   "name": "Focal Point - Part 3 Reached",
+   "name": "Focal Point: Part 3 Reached",
    "chapter": "bs_focal_point",
    "map": "ba_xen2",
    "trigger": {
@@ -593,7 +593,7 @@
   },
   {
    "id": 7720802,
-   "name": "Focal Point - Healing Pool (Part 3)",
+   "name": "Focal Point: Healing Pool (Part 3)",
    "chapter": "bs_focal_point",
    "map": "ba_xen2",
    "trigger": {
@@ -610,7 +610,7 @@
   },
   {
    "id": 7720260,
-   "name": "Focal Point - Part 4 Reached",
+   "name": "Focal Point: Part 4 Reached",
    "chapter": "bs_focal_point",
    "map": "ba_xen3",
    "trigger": {
@@ -620,7 +620,7 @@
   },
   {
    "id": 7720803,
-   "name": "Focal Point - Healing Pool (Part 4)",
+   "name": "Focal Point: Healing Pool (Part 4)",
    "chapter": "bs_focal_point",
    "map": "ba_xen3",
    "trigger": {
@@ -637,7 +637,7 @@
   },
   {
    "id": 7720261,
-   "name": "Focal Point - Part 5 Reached",
+   "name": "Focal Point: Part 5 Reached",
    "chapter": "bs_focal_point",
    "map": "ba_xen4",
    "trigger": {
@@ -647,7 +647,7 @@
   },
   {
    "id": 7720804,
-   "name": "Focal Point - Healing Pool (Part 5)",
+   "name": "Focal Point: Healing Pool (Part 5)",
    "chapter": "bs_focal_point",
    "map": "ba_xen4",
    "trigger": {
@@ -664,7 +664,7 @@
   },
   {
    "id": 7720262,
-   "name": "Focal Point - Part 6 Reached",
+   "name": "Focal Point: Part 6 Reached",
    "chapter": "bs_focal_point",
    "map": "ba_xen5",
    "trigger": {
@@ -674,7 +674,7 @@
   },
   {
    "id": 7720805,
-   "name": "Focal Point - Healing Pool (Part 6)",
+   "name": "Focal Point: Healing Pool (Part 6)",
    "chapter": "bs_focal_point",
    "map": "ba_xen5",
    "trigger": {
@@ -691,7 +691,7 @@
   },
   {
    "id": 7720263,
-   "name": "Focal Point - Part 7 Reached",
+   "name": "Focal Point: Part 7 Reached",
    "chapter": "bs_focal_point",
    "map": "ba_xen6",
    "trigger": {
@@ -701,7 +701,7 @@
   },
   {
    "id": 7720806,
-   "name": "Focal Point - Healing Pool (Part 7)",
+   "name": "Focal Point: Healing Pool (Part 7)",
    "chapter": "bs_focal_point",
    "map": "ba_xen6",
    "trigger": {
@@ -718,7 +718,7 @@
   },
   {
    "id": 7720264,
-   "name": "Power Struggle - Part 1 Reached",
+   "name": "Power Struggle: Part 1 Reached",
    "chapter": "bs_power_struggle",
    "map": "ba_teleport2",
    "trigger": {
@@ -728,7 +728,7 @@
   },
   {
    "id": 7720265,
-   "name": "Power Struggle - Health Charger (Part 1)",
+   "name": "Power Struggle: Health Charger (Part 1)",
    "chapter": "bs_power_struggle",
    "map": "ba_teleport2",
    "trigger": {
@@ -745,7 +745,7 @@
   },
   {
    "id": 7720266,
-   "name": "Power Struggle - Part 2 Reached",
+   "name": "Power Struggle: Part 2 Reached",
    "chapter": "bs_power_struggle",
    "map": "ba_power1",
    "trigger": {
@@ -755,7 +755,7 @@
   },
   {
    "id": 7720267,
-   "name": "Power Struggle - Health Charger 1 (Part 2)",
+   "name": "Power Struggle: Health Charger 1 (Part 2)",
    "chapter": "bs_power_struggle",
    "map": "ba_power1",
    "trigger": {
@@ -772,7 +772,7 @@
   },
   {
    "id": 7720268,
-   "name": "Power Struggle - Health Charger 2 (Part 2)",
+   "name": "Power Struggle: Health Charger 2 (Part 2)",
    "chapter": "bs_power_struggle",
    "map": "ba_power1",
    "trigger": {
@@ -789,7 +789,7 @@
   },
   {
    "id": 7720269,
-   "name": "Power Struggle - Part 3 Reached",
+   "name": "Power Struggle: Part 3 Reached",
    "chapter": "bs_power_struggle",
    "map": "ba_power2",
    "trigger": {
@@ -799,7 +799,7 @@
   },
   {
    "id": 7720271,
-   "name": "Power Struggle - Health Charger 1 (Part 3)",
+   "name": "Power Struggle: Health Charger 1 (Part 3)",
    "chapter": "bs_power_struggle",
    "map": "ba_power2",
    "trigger": {
@@ -816,7 +816,7 @@
   },
   {
    "id": 7720270,
-   "name": "Power Struggle - Health Charger 2 (Part 3)",
+   "name": "Power Struggle: Health Charger 2 (Part 3)",
    "chapter": "bs_power_struggle",
    "map": "ba_power2",
    "trigger": {
@@ -833,7 +833,7 @@
   },
   {
    "id": 7720433,
-   "name": "A Leap Of Faith - Reached",
+   "name": "A Leap Of Faith: Reached",
    "chapter": "bs_leap_of_faith",
    "map": "ba_outro",
    "trigger": {
@@ -1243,7 +1243,7 @@
   },
   {
    "id": 7720344,
-   "name": "Living Quarters Outbound - Complete",
+   "name": "Living Quarters Outbound: Complete",
    "chapter": "bs_living_quarters",
    "map": "ba_tram3",
    "trigger": {
@@ -1254,7 +1254,7 @@
   },
   {
    "id": 7720345,
-   "name": "Insecurity - Complete",
+   "name": "Insecurity: Complete",
    "chapter": "bs_insecurity",
    "map": "ba_elevator",
    "trigger": {
@@ -1265,7 +1265,7 @@
   },
   {
    "id": 7720346,
-   "name": "Duty Calls - Complete",
+   "name": "Duty Calls: Complete",
    "chapter": "bs_duty_calls",
    "map": "ba_canal3",
    "trigger": {
@@ -1276,7 +1276,7 @@
   },
   {
    "id": 7720347,
-   "name": "Captive Freight - Complete",
+   "name": "Captive Freight: Complete",
    "chapter": "bs_captive_freight",
    "map": "ba_yard5a",
    "trigger": {
@@ -1287,7 +1287,7 @@
   },
   {
    "id": 7720348,
-   "name": "Focal Point - Complete",
+   "name": "Focal Point: Complete",
    "chapter": "bs_focal_point",
    "map": "ba_xen6",
    "trigger": {
@@ -1298,7 +1298,7 @@
   },
   {
    "id": 7720434,
-   "name": "Power Struggle - Complete",
+   "name": "Power Struggle: Complete",
    "chapter": "bs_power_struggle",
    "map": "ba_power2",
    "trigger": {
@@ -1309,7 +1309,7 @@
   },
   {
    "id": 7720435,
-   "name": "A Leap Of Faith - Complete",
+   "name": "A Leap Of Faith: Complete",
    "chapter": "bs_leap_of_faith",
    "map": "ba_outro",
    "trigger": {

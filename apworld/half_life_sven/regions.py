@@ -180,7 +180,7 @@ def add_event(world: "HalfLifeSvenWorld", region: Region, chapter: dict) -> None
     campaign = chapter["campaign"]
     name = victory_event(campaign) if chapter["is_goal"] else mission_complete_event(campaign)
     location = HalfLifeSvenLocation(
-        world.player, f"{chapter['name']} - Mission Cleared", None, region
+        world.player, f"{chapter['name']}: Mission Cleared", None, region
     )
     location.place_locked_item(world.create_item(name))
     region.locations.append(location)
@@ -190,7 +190,7 @@ def add_event(world: "HalfLifeSvenWorld", region: Region, chapter: dict) -> None
     # Shift's Power Struggle has one today.
     if chapter["key"] in GOAL_PREREQUISITES.values():
         named = HalfLifeSvenLocation(
-            world.player, f"{chapter['name']} - Cleared", None, region
+            world.player, f"{chapter['name']}: Cleared", None, region
         )
         named.place_locked_item(world.create_item(chapter_cleared_event(chapter["key"])))
         region.locations.append(named)

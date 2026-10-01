@@ -208,7 +208,7 @@ button in the hub." Anything ending mid-word means a print grew past the limit
 again.
 
 Worth the same glance at `!find` on a location with a long name, since
-"They Hunger: Episode 1 - Health Charger 1 (Part 2)" plus a bearing is well over
+"They Hunger: Episode 1: Health Charger 1 (Part 2)" plus a bearing is well over
 128 on its own. It prints the name, the bearing and the line of sight as three
 separate messages for exactly that reason.
 

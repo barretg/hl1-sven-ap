@@ -543,7 +543,7 @@
  "locations": [
   {
    "id": 7720000,
-   "name": "Black Mesa Inbound - Reached",
+   "name": "Black Mesa Inbound: Reached",
    "chapter": "black_mesa_inbound",
    "map": "hl_c00",
    "trigger": {
@@ -553,7 +553,7 @@
   },
   {
    "id": 7720001,
-   "name": "Anomalous Materials - Part 1 Reached",
+   "name": "Anomalous Materials: Part 1 Reached",
    "chapter": "anomalous_materials",
    "map": "hl_c01_a1",
    "trigger": {
@@ -563,7 +563,7 @@
   },
   {
    "id": 7720053,
-   "name": "Anomalous Materials - Health Charger 1 (Part 1)",
+   "name": "Anomalous Materials: Health Charger 1 (Part 1)",
    "chapter": "anomalous_materials",
    "map": "hl_c01_a1",
    "trigger": {
@@ -580,7 +580,7 @@
   },
   {
    "id": 7720054,
-   "name": "Anomalous Materials - Health Charger 2 (Part 1)",
+   "name": "Anomalous Materials: Health Charger 2 (Part 1)",
    "chapter": "anomalous_materials",
    "map": "hl_c01_a1",
    "trigger": {
@@ -597,7 +597,7 @@
   },
   {
    "id": 7720055,
-   "name": "Anomalous Materials - Health Charger 3 (Part 1)",
+   "name": "Anomalous Materials: Health Charger 3 (Part 1)",
    "chapter": "anomalous_materials",
    "map": "hl_c01_a1",
    "trigger": {
@@ -614,7 +614,7 @@
   },
   {
    "id": 7720002,
-   "name": "Anomalous Materials - Part 2 Reached",
+   "name": "Anomalous Materials: Part 2 Reached",
    "chapter": "anomalous_materials",
    "map": "hl_c01_a2",
    "trigger": {
@@ -624,7 +624,7 @@
   },
   {
    "id": 7720003,
-   "name": "Unforeseen Consequences - Part 1 Reached",
+   "name": "Unforeseen Consequences: Part 1 Reached",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a1",
    "trigger": {
@@ -634,7 +634,7 @@
   },
   {
    "id": 7720056,
-   "name": "Unforeseen Consequences - Health Charger 1 (Part 1)",
+   "name": "Unforeseen Consequences: Health Charger 1 (Part 1)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a1",
    "trigger": {
@@ -651,7 +651,7 @@
   },
   {
    "id": 7720058,
-   "name": "Unforeseen Consequences - Health Charger 2 (Part 1)",
+   "name": "Unforeseen Consequences: Health Charger 2 (Part 1)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a1",
    "trigger": {
@@ -668,7 +668,7 @@
   },
   {
    "id": 7720057,
-   "name": "Unforeseen Consequences - Health Charger 3 (Part 1)",
+   "name": "Unforeseen Consequences: Health Charger 3 (Part 1)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a1",
    "trigger": {
@@ -685,7 +685,7 @@
   },
   {
    "id": 7720004,
-   "name": "Unforeseen Consequences - Part 2 Reached",
+   "name": "Unforeseen Consequences: Part 2 Reached",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -695,7 +695,7 @@
   },
   {
    "id": 7720062,
-   "name": "Unforeseen Consequences - Health Charger 1 (Part 2)",
+   "name": "Unforeseen Consequences: Health Charger 1 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -712,7 +712,7 @@
   },
   {
    "id": 7720060,
-   "name": "Unforeseen Consequences - Health Charger 2 (Part 2)",
+   "name": "Unforeseen Consequences: Health Charger 2 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -729,7 +729,7 @@
   },
   {
    "id": 7720061,
-   "name": "Unforeseen Consequences - Health Charger 3 (Part 2)",
+   "name": "Unforeseen Consequences: Health Charger 3 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -746,7 +746,7 @@
   },
   {
    "id": 7720064,
-   "name": "Unforeseen Consequences - Health Charger 4 (Part 2)",
+   "name": "Unforeseen Consequences: Health Charger 4 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -763,7 +763,7 @@
   },
   {
    "id": 7720063,
-   "name": "Unforeseen Consequences - Health Charger 5 (Part 2)",
+   "name": "Unforeseen Consequences: Health Charger 5 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -780,7 +780,7 @@
   },
   {
    "id": 7720066,
-   "name": "Unforeseen Consequences - Health Charger 6 (Part 2)",
+   "name": "Unforeseen Consequences: Health Charger 6 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -797,7 +797,7 @@
   },
   {
    "id": 7720065,
-   "name": "Unforeseen Consequences - Health Charger 7 (Part 2)",
+   "name": "Unforeseen Consequences: Health Charger 7 (Part 2)",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -814,7 +814,7 @@
   },
   {
    "id": 7720005,
-   "name": "Office Complex - Reached",
+   "name": "Office Complex: Reached",
    "chapter": "office_complex",
    "map": "hl_c03",
    "trigger": {
@@ -824,7 +824,7 @@
   },
   {
    "id": 7720071,
-   "name": "Office Complex - Health Charger 1",
+   "name": "Office Complex: Health Charger 1",
    "chapter": "office_complex",
    "map": "hl_c03",
    "trigger": {
@@ -841,7 +841,7 @@
   },
   {
    "id": 7720068,
-   "name": "Office Complex - Health Charger 2",
+   "name": "Office Complex: Health Charger 2",
    "chapter": "office_complex",
    "map": "hl_c03",
    "trigger": {
@@ -858,7 +858,7 @@
   },
   {
    "id": 7720072,
-   "name": "Office Complex - Health Charger 3",
+   "name": "Office Complex: Health Charger 3",
    "chapter": "office_complex",
    "map": "hl_c03",
    "trigger": {
@@ -875,7 +875,7 @@
   },
   {
    "id": 7720067,
-   "name": "Office Complex - Health Charger 4",
+   "name": "Office Complex: Health Charger 4",
    "chapter": "office_complex",
    "map": "hl_c03",
    "trigger": {
@@ -892,7 +892,7 @@
   },
   {
    "id": 7720070,
-   "name": "Office Complex - Health Charger 5",
+   "name": "Office Complex: Health Charger 5",
    "chapter": "office_complex",
    "map": "hl_c03",
    "trigger": {
@@ -909,7 +909,7 @@
   },
   {
    "id": 7720069,
-   "name": "Office Complex - Health Charger 6",
+   "name": "Office Complex: Health Charger 6",
    "chapter": "office_complex",
    "map": "hl_c03",
    "trigger": {
@@ -926,7 +926,7 @@
   },
   {
    "id": 7720073,
-   "name": "Office Complex - Health Charger 7",
+   "name": "Office Complex: Health Charger 7",
    "chapter": "office_complex",
    "map": "hl_c03",
    "trigger": {
@@ -943,7 +943,7 @@
   },
   {
    "id": 7720006,
-   "name": "We've Got Hostiles - Reached",
+   "name": "We've Got Hostiles: Reached",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -953,7 +953,7 @@
   },
   {
    "id": 7720075,
-   "name": "We've Got Hostiles - Health Charger 1",
+   "name": "We've Got Hostiles: Health Charger 1",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -970,7 +970,7 @@
   },
   {
    "id": 7720077,
-   "name": "We've Got Hostiles - Health Charger 2",
+   "name": "We've Got Hostiles: Health Charger 2",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -987,7 +987,7 @@
   },
   {
    "id": 7720078,
-   "name": "We've Got Hostiles - Health Charger 3",
+   "name": "We've Got Hostiles: Health Charger 3",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1004,7 +1004,7 @@
   },
   {
    "id": 7720074,
-   "name": "We've Got Hostiles - Health Charger 4",
+   "name": "We've Got Hostiles: Health Charger 4",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1021,7 +1021,7 @@
   },
   {
    "id": 7720076,
-   "name": "We've Got Hostiles - Health Charger 5",
+   "name": "We've Got Hostiles: Health Charger 5",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1038,7 +1038,7 @@
   },
   {
    "id": 7720079,
-   "name": "We've Got Hostiles - Health Charger 6",
+   "name": "We've Got Hostiles: Health Charger 6",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1055,7 +1055,7 @@
   },
   {
    "id": 7720082,
-   "name": "We've Got Hostiles - Health Charger 7",
+   "name": "We've Got Hostiles: Health Charger 7",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1072,7 +1072,7 @@
   },
   {
    "id": 7720080,
-   "name": "We've Got Hostiles - Health Charger 8",
+   "name": "We've Got Hostiles: Health Charger 8",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1089,7 +1089,7 @@
   },
   {
    "id": 7720084,
-   "name": "We've Got Hostiles - Health Charger 9",
+   "name": "We've Got Hostiles: Health Charger 9",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1106,7 +1106,7 @@
   },
   {
    "id": 7720081,
-   "name": "We've Got Hostiles - Health Charger 10",
+   "name": "We've Got Hostiles: Health Charger 10",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1123,7 +1123,7 @@
   },
   {
    "id": 7720085,
-   "name": "We've Got Hostiles - Health Charger 11",
+   "name": "We've Got Hostiles: Health Charger 11",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1140,7 +1140,7 @@
   },
   {
    "id": 7720083,
-   "name": "We've Got Hostiles - Health Charger 12",
+   "name": "We've Got Hostiles: Health Charger 12",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1157,7 +1157,7 @@
   },
   {
    "id": 7720086,
-   "name": "We've Got Hostiles - Health Charger 13",
+   "name": "We've Got Hostiles: Health Charger 13",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1174,7 +1174,7 @@
   },
   {
    "id": 7720087,
-   "name": "We've Got Hostiles - HEV Charger 1",
+   "name": "We've Got Hostiles: HEV Charger 1",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1191,7 +1191,7 @@
   },
   {
    "id": 7720088,
-   "name": "We've Got Hostiles - HEV Charger 2",
+   "name": "We've Got Hostiles: HEV Charger 2",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1208,7 +1208,7 @@
   },
   {
    "id": 7720089,
-   "name": "We've Got Hostiles - HEV Charger 3",
+   "name": "We've Got Hostiles: HEV Charger 3",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1225,7 +1225,7 @@
   },
   {
    "id": 7720090,
-   "name": "We've Got Hostiles - HEV Charger 4",
+   "name": "We've Got Hostiles: HEV Charger 4",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -1242,7 +1242,7 @@
   },
   {
    "id": 7720007,
-   "name": "Blast Pit - Part 1 Reached",
+   "name": "Blast Pit: Part 1 Reached",
    "chapter": "blast_pit",
    "map": "hl_c05_a1",
    "trigger": {
@@ -1252,7 +1252,7 @@
   },
   {
    "id": 7720008,
-   "name": "Blast Pit - Part 2 Reached",
+   "name": "Blast Pit: Part 2 Reached",
    "chapter": "blast_pit",
    "map": "hl_c05_a2",
    "trigger": {
@@ -1262,7 +1262,7 @@
   },
   {
    "id": 7720093,
-   "name": "Blast Pit - Health Charger 1 (Part 2)",
+   "name": "Blast Pit: Health Charger 1 (Part 2)",
    "chapter": "blast_pit",
    "map": "hl_c05_a2",
    "trigger": {
@@ -1279,7 +1279,7 @@
   },
   {
    "id": 7720091,
-   "name": "Blast Pit - Health Charger 2 (Part 2)",
+   "name": "Blast Pit: Health Charger 2 (Part 2)",
    "chapter": "blast_pit",
    "map": "hl_c05_a2",
    "trigger": {
@@ -1296,7 +1296,7 @@
   },
   {
    "id": 7720092,
-   "name": "Blast Pit - Health Charger 3 (Part 2)",
+   "name": "Blast Pit: Health Charger 3 (Part 2)",
    "chapter": "blast_pit",
    "map": "hl_c05_a2",
    "trigger": {
@@ -1313,7 +1313,7 @@
   },
   {
    "id": 7720094,
-   "name": "Blast Pit - HEV Charger (Part 2)",
+   "name": "Blast Pit: HEV Charger (Part 2)",
    "chapter": "blast_pit",
    "map": "hl_c05_a2",
    "trigger": {
@@ -1330,7 +1330,7 @@
   },
   {
    "id": 7720009,
-   "name": "Blast Pit - Part 3 Reached",
+   "name": "Blast Pit: Part 3 Reached",
    "chapter": "blast_pit",
    "map": "hl_c05_a3",
    "trigger": {
@@ -1340,7 +1340,7 @@
   },
   {
    "id": 7720095,
-   "name": "Blast Pit - Health Charger (Part 3)",
+   "name": "Blast Pit: Health Charger (Part 3)",
    "chapter": "blast_pit",
    "map": "hl_c05_a3",
    "trigger": {
@@ -1357,7 +1357,7 @@
   },
   {
    "id": 7720096,
-   "name": "Blast Pit - HEV Charger (Part 3)",
+   "name": "Blast Pit: HEV Charger (Part 3)",
    "chapter": "blast_pit",
    "map": "hl_c05_a3",
    "trigger": {
@@ -1374,7 +1374,7 @@
   },
   {
    "id": 7720010,
-   "name": "Power Up - Reached",
+   "name": "Power Up: Reached",
    "chapter": "power_up",
    "map": "hl_c06",
    "trigger": {
@@ -1384,7 +1384,7 @@
   },
   {
    "id": 7720098,
-   "name": "Power Up - Health Charger 1",
+   "name": "Power Up: Health Charger 1",
    "chapter": "power_up",
    "map": "hl_c06",
    "trigger": {
@@ -1401,7 +1401,7 @@
   },
   {
    "id": 7720097,
-   "name": "Power Up - Health Charger 2",
+   "name": "Power Up: Health Charger 2",
    "chapter": "power_up",
    "map": "hl_c06",
    "trigger": {
@@ -1418,7 +1418,7 @@
   },
   {
    "id": 7720099,
-   "name": "Power Up - Health Charger 3",
+   "name": "Power Up: Health Charger 3",
    "chapter": "power_up",
    "map": "hl_c06",
    "trigger": {
@@ -1435,7 +1435,7 @@
   },
   {
    "id": 7720100,
-   "name": "Power Up - Health Charger 4",
+   "name": "Power Up: Health Charger 4",
    "chapter": "power_up",
    "map": "hl_c06",
    "trigger": {
@@ -1452,7 +1452,7 @@
   },
   {
    "id": 7720101,
-   "name": "Power Up - HEV Charger 1",
+   "name": "Power Up: HEV Charger 1",
    "chapter": "power_up",
    "map": "hl_c06",
    "trigger": {
@@ -1469,7 +1469,7 @@
   },
   {
    "id": 7720102,
-   "name": "Power Up - HEV Charger 2",
+   "name": "Power Up: HEV Charger 2",
    "chapter": "power_up",
    "map": "hl_c06",
    "trigger": {
@@ -1486,7 +1486,7 @@
   },
   {
    "id": 7720011,
-   "name": "On A Rail - Part 1 Reached",
+   "name": "On A Rail: Part 1 Reached",
    "chapter": "on_a_rail",
    "map": "hl_c07_a1",
    "trigger": {
@@ -1496,7 +1496,7 @@
   },
   {
    "id": 7720103,
-   "name": "On A Rail - Health Charger 1 (Part 1)",
+   "name": "On A Rail: Health Charger 1 (Part 1)",
    "chapter": "on_a_rail",
    "map": "hl_c07_a1",
    "trigger": {
@@ -1513,7 +1513,7 @@
   },
   {
    "id": 7720104,
-   "name": "On A Rail - Health Charger 2 (Part 1)",
+   "name": "On A Rail: Health Charger 2 (Part 1)",
    "chapter": "on_a_rail",
    "map": "hl_c07_a1",
    "trigger": {
@@ -1530,7 +1530,7 @@
   },
   {
    "id": 7720105,
-   "name": "On A Rail - HEV Charger (Part 1)",
+   "name": "On A Rail: HEV Charger (Part 1)",
    "chapter": "on_a_rail",
    "map": "hl_c07_a1",
    "trigger": {
@@ -1547,7 +1547,7 @@
   },
   {
    "id": 7720012,
-   "name": "On A Rail - Part 2 Reached",
+   "name": "On A Rail: Part 2 Reached",
    "chapter": "on_a_rail",
    "map": "hl_c07_a2",
    "trigger": {
@@ -1557,7 +1557,7 @@
   },
   {
    "id": 7720110,
-   "name": "On A Rail - Health Charger 1 (Part 2)",
+   "name": "On A Rail: Health Charger 1 (Part 2)",
    "chapter": "on_a_rail",
    "map": "hl_c07_a2",
    "trigger": {
@@ -1574,7 +1574,7 @@
   },
   {
    "id": 7720106,
-   "name": "On A Rail - Health Charger 2 (Part 2)",
+   "name": "On A Rail: Health Charger 2 (Part 2)",
    "chapter": "on_a_rail",
    "map": "hl_c07_a2",
    "trigger": {
@@ -1591,7 +1591,7 @@
   },
   {
    "id": 7720108,
-   "name": "On A Rail - Health Charger 3 (Part 2)",
+   "name": "On A Rail: Health Charger 3 (Part 2)",
    "chapter": "on_a_rail",
    "map": "hl_c07_a2",
    "trigger": {
@@ -1608,7 +1608,7 @@
   },
   {
    "id": 7720107,
-   "name": "On A Rail - Health Charger 4 (Part 2)",
+   "name": "On A Rail: Health Charger 4 (Part 2)",
    "chapter": "on_a_rail",
    "map": "hl_c07_a2",
    "trigger": {
@@ -1625,7 +1625,7 @@
   },
   {
    "id": 7720109,
-   "name": "On A Rail - Health Charger 5 (Part 2)",
+   "name": "On A Rail: Health Charger 5 (Part 2)",
    "chapter": "on_a_rail",
    "map": "hl_c07_a2",
    "trigger": {
@@ -1642,7 +1642,7 @@
   },
   {
    "id": 7720112,
-   "name": "On A Rail - HEV Charger 1 (Part 2)",
+   "name": "On A Rail: HEV Charger 1 (Part 2)",
    "chapter": "on_a_rail",
    "map": "hl_c07_a2",
    "trigger": {
@@ -1659,7 +1659,7 @@
   },
   {
    "id": 7720111,
-   "name": "On A Rail - HEV Charger 2 (Part 2)",
+   "name": "On A Rail: HEV Charger 2 (Part 2)",
    "chapter": "on_a_rail",
    "map": "hl_c07_a2",
    "trigger": {
@@ -1676,7 +1676,7 @@
   },
   {
    "id": 7720013,
-   "name": "Apprehension - Part 1 Reached",
+   "name": "Apprehension: Part 1 Reached",
    "chapter": "apprehension",
    "map": "hl_c08_a1",
    "trigger": {
@@ -1686,7 +1686,7 @@
   },
   {
    "id": 7720114,
-   "name": "Apprehension - Health Charger 1 (Part 1)",
+   "name": "Apprehension: Health Charger 1 (Part 1)",
    "chapter": "apprehension",
    "map": "hl_c08_a1",
    "trigger": {
@@ -1703,7 +1703,7 @@
   },
   {
    "id": 7720113,
-   "name": "Apprehension - Health Charger 2 (Part 1)",
+   "name": "Apprehension: Health Charger 2 (Part 1)",
    "chapter": "apprehension",
    "map": "hl_c08_a1",
    "trigger": {
@@ -1720,7 +1720,7 @@
   },
   {
    "id": 7720115,
-   "name": "Apprehension - HEV Charger (Part 1)",
+   "name": "Apprehension: HEV Charger (Part 1)",
    "chapter": "apprehension",
    "map": "hl_c08_a1",
    "trigger": {
@@ -1737,7 +1737,7 @@
   },
   {
    "id": 7720014,
-   "name": "Apprehension - Part 2 Reached",
+   "name": "Apprehension: Part 2 Reached",
    "chapter": "apprehension",
    "map": "hl_c08_a2",
    "trigger": {
@@ -1747,7 +1747,7 @@
   },
   {
    "id": 7720119,
-   "name": "Apprehension - Health Charger 1 (Part 2)",
+   "name": "Apprehension: Health Charger 1 (Part 2)",
    "chapter": "apprehension",
    "map": "hl_c08_a2",
    "trigger": {
@@ -1764,7 +1764,7 @@
   },
   {
    "id": 7720117,
-   "name": "Apprehension - Health Charger 2 (Part 2)",
+   "name": "Apprehension: Health Charger 2 (Part 2)",
    "chapter": "apprehension",
    "map": "hl_c08_a2",
    "trigger": {
@@ -1781,7 +1781,7 @@
   },
   {
    "id": 7720116,
-   "name": "Apprehension - Health Charger 3 (Part 2)",
+   "name": "Apprehension: Health Charger 3 (Part 2)",
    "chapter": "apprehension",
    "map": "hl_c08_a2",
    "trigger": {
@@ -1798,7 +1798,7 @@
   },
   {
    "id": 7720118,
-   "name": "Apprehension - Health Charger 4 (Part 2)",
+   "name": "Apprehension: Health Charger 4 (Part 2)",
    "chapter": "apprehension",
    "map": "hl_c08_a2",
    "trigger": {
@@ -1815,7 +1815,7 @@
   },
   {
    "id": 7720120,
-   "name": "Apprehension - HEV Charger 1 (Part 2)",
+   "name": "Apprehension: HEV Charger 1 (Part 2)",
    "chapter": "apprehension",
    "map": "hl_c08_a2",
    "trigger": {
@@ -1832,7 +1832,7 @@
   },
   {
    "id": 7720121,
-   "name": "Apprehension - HEV Charger 2 (Part 2)",
+   "name": "Apprehension: HEV Charger 2 (Part 2)",
    "chapter": "apprehension",
    "map": "hl_c08_a2",
    "trigger": {
@@ -1849,7 +1849,7 @@
   },
   {
    "id": 7720015,
-   "name": "Residue Processing - Reached",
+   "name": "Residue Processing: Reached",
    "chapter": "residue_processing",
    "map": "hl_c09",
    "trigger": {
@@ -1859,7 +1859,7 @@
   },
   {
    "id": 7720125,
-   "name": "Residue Processing - Health Charger 1",
+   "name": "Residue Processing: Health Charger 1",
    "chapter": "residue_processing",
    "map": "hl_c09",
    "trigger": {
@@ -1876,7 +1876,7 @@
   },
   {
    "id": 7720126,
-   "name": "Residue Processing - Health Charger 2",
+   "name": "Residue Processing: Health Charger 2",
    "chapter": "residue_processing",
    "map": "hl_c09",
    "trigger": {
@@ -1893,7 +1893,7 @@
   },
   {
    "id": 7720122,
-   "name": "Residue Processing - Health Charger 3",
+   "name": "Residue Processing: Health Charger 3",
    "chapter": "residue_processing",
    "map": "hl_c09",
    "trigger": {
@@ -1910,7 +1910,7 @@
   },
   {
    "id": 7720124,
-   "name": "Residue Processing - Health Charger 4",
+   "name": "Residue Processing: Health Charger 4",
    "chapter": "residue_processing",
    "map": "hl_c09",
    "trigger": {
@@ -1927,7 +1927,7 @@
   },
   {
    "id": 7720123,
-   "name": "Residue Processing - Health Charger 5",
+   "name": "Residue Processing: Health Charger 5",
    "chapter": "residue_processing",
    "map": "hl_c09",
    "trigger": {
@@ -1944,7 +1944,7 @@
   },
   {
    "id": 7720127,
-   "name": "Residue Processing - HEV Charger",
+   "name": "Residue Processing: HEV Charger",
    "chapter": "residue_processing",
    "map": "hl_c09",
    "trigger": {
@@ -1961,7 +1961,7 @@
   },
   {
    "id": 7720016,
-   "name": "Questionable Ethics - Reached",
+   "name": "Questionable Ethics: Reached",
    "chapter": "questionable_ethics",
    "map": "hl_c10",
    "trigger": {
@@ -1971,7 +1971,7 @@
   },
   {
    "id": 7720133,
-   "name": "Questionable Ethics - Health Charger 1",
+   "name": "Questionable Ethics: Health Charger 1",
    "chapter": "questionable_ethics",
    "map": "hl_c10",
    "trigger": {
@@ -1988,7 +1988,7 @@
   },
   {
    "id": 7720132,
-   "name": "Questionable Ethics - Health Charger 2",
+   "name": "Questionable Ethics: Health Charger 2",
    "chapter": "questionable_ethics",
    "map": "hl_c10",
    "trigger": {
@@ -2005,7 +2005,7 @@
   },
   {
    "id": 7720131,
-   "name": "Questionable Ethics - Health Charger 3",
+   "name": "Questionable Ethics: Health Charger 3",
    "chapter": "questionable_ethics",
    "map": "hl_c10",
    "trigger": {
@@ -2022,7 +2022,7 @@
   },
   {
    "id": 7720130,
-   "name": "Questionable Ethics - Health Charger 4",
+   "name": "Questionable Ethics: Health Charger 4",
    "chapter": "questionable_ethics",
    "map": "hl_c10",
    "trigger": {
@@ -2039,7 +2039,7 @@
   },
   {
    "id": 7720129,
-   "name": "Questionable Ethics - Health Charger 5",
+   "name": "Questionable Ethics: Health Charger 5",
    "chapter": "questionable_ethics",
    "map": "hl_c10",
    "trigger": {
@@ -2056,7 +2056,7 @@
   },
   {
    "id": 7720128,
-   "name": "Questionable Ethics - Health Charger 6",
+   "name": "Questionable Ethics: Health Charger 6",
    "chapter": "questionable_ethics",
    "map": "hl_c10",
    "trigger": {
@@ -2073,7 +2073,7 @@
   },
   {
    "id": 7720134,
-   "name": "Questionable Ethics - Health Charger 7",
+   "name": "Questionable Ethics: Health Charger 7",
    "chapter": "questionable_ethics",
    "map": "hl_c10",
    "trigger": {
@@ -2090,7 +2090,7 @@
   },
   {
    "id": 7720135,
-   "name": "Questionable Ethics - HEV Charger",
+   "name": "Questionable Ethics: HEV Charger",
    "chapter": "questionable_ethics",
    "map": "hl_c10",
    "trigger": {
@@ -2107,7 +2107,7 @@
   },
   {
    "id": 7720017,
-   "name": "Surface Tension - Part 1 Reached",
+   "name": "Surface Tension: Part 1 Reached",
    "chapter": "surface_tension",
    "map": "hl_c11_a1",
    "trigger": {
@@ -2117,7 +2117,7 @@
   },
   {
    "id": 7720136,
-   "name": "Surface Tension - Health Charger (Part 1)",
+   "name": "Surface Tension: Health Charger (Part 1)",
    "chapter": "surface_tension",
    "map": "hl_c11_a1",
    "trigger": {
@@ -2134,7 +2134,7 @@
   },
   {
    "id": 7720018,
-   "name": "Surface Tension - Part 2 Reached",
+   "name": "Surface Tension: Part 2 Reached",
    "chapter": "surface_tension",
    "map": "hl_c11_a2",
    "trigger": {
@@ -2144,7 +2144,7 @@
   },
   {
    "id": 7720138,
-   "name": "Surface Tension - Health Charger 1 (Part 2)",
+   "name": "Surface Tension: Health Charger 1 (Part 2)",
    "chapter": "surface_tension",
    "map": "hl_c11_a2",
    "trigger": {
@@ -2161,7 +2161,7 @@
   },
   {
    "id": 7720137,
-   "name": "Surface Tension - Health Charger 2 (Part 2)",
+   "name": "Surface Tension: Health Charger 2 (Part 2)",
    "chapter": "surface_tension",
    "map": "hl_c11_a2",
    "trigger": {
@@ -2178,7 +2178,7 @@
   },
   {
    "id": 7720019,
-   "name": "Surface Tension - Part 3 Reached",
+   "name": "Surface Tension: Part 3 Reached",
    "chapter": "surface_tension",
    "map": "hl_c11_a3",
    "trigger": {
@@ -2188,7 +2188,7 @@
   },
   {
    "id": 7720020,
-   "name": "Surface Tension - Part 4 Reached",
+   "name": "Surface Tension: Part 4 Reached",
    "chapter": "surface_tension",
    "map": "hl_c11_a4",
    "trigger": {
@@ -2198,7 +2198,7 @@
   },
   {
    "id": 7720139,
-   "name": "Surface Tension - Health Charger (Part 4)",
+   "name": "Surface Tension: Health Charger (Part 4)",
    "chapter": "surface_tension",
    "map": "hl_c11_a4",
    "trigger": {
@@ -2215,7 +2215,7 @@
   },
   {
    "id": 7720140,
-   "name": "Surface Tension - HEV Charger (Part 4)",
+   "name": "Surface Tension: HEV Charger (Part 4)",
    "chapter": "surface_tension",
    "map": "hl_c11_a4",
    "trigger": {
@@ -2232,7 +2232,7 @@
   },
   {
    "id": 7720021,
-   "name": "Surface Tension - Part 5 Reached",
+   "name": "Surface Tension: Part 5 Reached",
    "chapter": "surface_tension",
    "map": "hl_c11_a5",
    "trigger": {
@@ -2242,7 +2242,7 @@
   },
   {
    "id": 7720143,
-   "name": "Surface Tension - Health Charger 1 (Part 5)",
+   "name": "Surface Tension: Health Charger 1 (Part 5)",
    "chapter": "surface_tension",
    "map": "hl_c11_a5",
    "trigger": {
@@ -2259,7 +2259,7 @@
   },
   {
    "id": 7720142,
-   "name": "Surface Tension - Health Charger 2 (Part 5)",
+   "name": "Surface Tension: Health Charger 2 (Part 5)",
    "chapter": "surface_tension",
    "map": "hl_c11_a5",
    "trigger": {
@@ -2276,7 +2276,7 @@
   },
   {
    "id": 7720144,
-   "name": "Surface Tension - Health Charger 3 (Part 5)",
+   "name": "Surface Tension: Health Charger 3 (Part 5)",
    "chapter": "surface_tension",
    "map": "hl_c11_a5",
    "trigger": {
@@ -2293,7 +2293,7 @@
   },
   {
    "id": 7720141,
-   "name": "Surface Tension - Health Charger 4 (Part 5)",
+   "name": "Surface Tension: Health Charger 4 (Part 5)",
    "chapter": "surface_tension",
    "map": "hl_c11_a5",
    "trigger": {
@@ -2310,7 +2310,7 @@
   },
   {
    "id": 7720022,
-   "name": "Forget About Freeman - Reached",
+   "name": "Forget About Freeman: Reached",
    "chapter": "forget_about_freeman",
    "map": "hl_c12",
    "trigger": {
@@ -2320,7 +2320,7 @@
   },
   {
    "id": 7720145,
-   "name": "Forget About Freeman - Health Charger 1",
+   "name": "Forget About Freeman: Health Charger 1",
    "chapter": "forget_about_freeman",
    "map": "hl_c12",
    "trigger": {
@@ -2337,7 +2337,7 @@
   },
   {
    "id": 7720146,
-   "name": "Forget About Freeman - Health Charger 2",
+   "name": "Forget About Freeman: Health Charger 2",
    "chapter": "forget_about_freeman",
    "map": "hl_c12",
    "trigger": {
@@ -2354,7 +2354,7 @@
   },
   {
    "id": 7720147,
-   "name": "Forget About Freeman - HEV Charger",
+   "name": "Forget About Freeman: HEV Charger",
    "chapter": "forget_about_freeman",
    "map": "hl_c12",
    "trigger": {
@@ -2371,7 +2371,7 @@
   },
   {
    "id": 7720023,
-   "name": "Lambda Core - Part 1 Reached",
+   "name": "Lambda Core: Part 1 Reached",
    "chapter": "lambda_core",
    "map": "hl_c13_a1",
    "trigger": {
@@ -2381,7 +2381,7 @@
   },
   {
    "id": 7720148,
-   "name": "Lambda Core - Health Charger 1 (Part 1)",
+   "name": "Lambda Core: Health Charger 1 (Part 1)",
    "chapter": "lambda_core",
    "map": "hl_c13_a1",
    "trigger": {
@@ -2398,7 +2398,7 @@
   },
   {
    "id": 7720150,
-   "name": "Lambda Core - Health Charger 2 (Part 1)",
+   "name": "Lambda Core: Health Charger 2 (Part 1)",
    "chapter": "lambda_core",
    "map": "hl_c13_a1",
    "trigger": {
@@ -2415,7 +2415,7 @@
   },
   {
    "id": 7720149,
-   "name": "Lambda Core - Health Charger 3 (Part 1)",
+   "name": "Lambda Core: Health Charger 3 (Part 1)",
    "chapter": "lambda_core",
    "map": "hl_c13_a1",
    "trigger": {
@@ -2432,7 +2432,7 @@
   },
   {
    "id": 7720151,
-   "name": "Lambda Core - HEV Charger 1 (Part 1)",
+   "name": "Lambda Core: HEV Charger 1 (Part 1)",
    "chapter": "lambda_core",
    "map": "hl_c13_a1",
    "trigger": {
@@ -2449,7 +2449,7 @@
   },
   {
    "id": 7720152,
-   "name": "Lambda Core - HEV Charger 2 (Part 1)",
+   "name": "Lambda Core: HEV Charger 2 (Part 1)",
    "chapter": "lambda_core",
    "map": "hl_c13_a1",
    "trigger": {
@@ -2466,7 +2466,7 @@
   },
   {
    "id": 7720024,
-   "name": "Lambda Core - Part 2 Reached",
+   "name": "Lambda Core: Part 2 Reached",
    "chapter": "lambda_core",
    "map": "hl_c13_a2",
    "trigger": {
@@ -2476,7 +2476,7 @@
   },
   {
    "id": 7720153,
-   "name": "Lambda Core - Health Charger (Part 2)",
+   "name": "Lambda Core: Health Charger (Part 2)",
    "chapter": "lambda_core",
    "map": "hl_c13_a2",
    "trigger": {
@@ -2493,7 +2493,7 @@
   },
   {
    "id": 7720155,
-   "name": "Lambda Core - HEV Charger 1 (Part 2)",
+   "name": "Lambda Core: HEV Charger 1 (Part 2)",
    "chapter": "lambda_core",
    "map": "hl_c13_a2",
    "trigger": {
@@ -2510,7 +2510,7 @@
   },
   {
    "id": 7720154,
-   "name": "Lambda Core - HEV Charger 2 (Part 2)",
+   "name": "Lambda Core: HEV Charger 2 (Part 2)",
    "chapter": "lambda_core",
    "map": "hl_c13_a2",
    "trigger": {
@@ -2527,7 +2527,7 @@
   },
   {
    "id": 7720025,
-   "name": "Lambda Core - Part 3 Reached",
+   "name": "Lambda Core: Part 3 Reached",
    "chapter": "lambda_core",
    "map": "hl_c13_a3",
    "trigger": {
@@ -2537,7 +2537,7 @@
   },
   {
    "id": 7720156,
-   "name": "Lambda Core - Health Charger (Part 3)",
+   "name": "Lambda Core: Health Charger (Part 3)",
    "chapter": "lambda_core",
    "map": "hl_c13_a3",
    "trigger": {
@@ -2554,7 +2554,7 @@
   },
   {
    "id": 7720157,
-   "name": "Lambda Core - HEV Charger (Part 3)",
+   "name": "Lambda Core: HEV Charger (Part 3)",
    "chapter": "lambda_core",
    "map": "hl_c13_a3",
    "trigger": {
@@ -2571,7 +2571,7 @@
   },
   {
    "id": 7720026,
-   "name": "Lambda Core - Part 4 Reached",
+   "name": "Lambda Core: Part 4 Reached",
    "chapter": "lambda_core",
    "map": "hl_c13_a4",
    "trigger": {
@@ -2581,7 +2581,7 @@
   },
   {
    "id": 7720158,
-   "name": "Lambda Core - Health Charger (Part 4)",
+   "name": "Lambda Core: Health Charger (Part 4)",
    "chapter": "lambda_core",
    "map": "hl_c13_a4",
    "trigger": {
@@ -2598,7 +2598,7 @@
   },
   {
    "id": 7720159,
-   "name": "Lambda Core - HEV Charger (Part 4)",
+   "name": "Lambda Core: HEV Charger (Part 4)",
    "chapter": "lambda_core",
    "map": "hl_c13_a4",
    "trigger": {
@@ -2615,7 +2615,7 @@
   },
   {
    "id": 7720027,
-   "name": "Xen - Reached",
+   "name": "Xen: Reached",
    "chapter": "xen",
    "map": "hl_c14",
    "trigger": {
@@ -2625,7 +2625,7 @@
   },
   {
    "id": 7720785,
-   "name": "Xen - Healing Pool",
+   "name": "Xen: Healing Pool",
    "chapter": "xen",
    "map": "hl_c14",
    "trigger": {
@@ -2642,7 +2642,7 @@
   },
   {
    "id": 7720028,
-   "name": "Gonarch's Lair - Reached",
+   "name": "Gonarch's Lair: Reached",
    "chapter": "gonarchs_lair",
    "map": "hl_c15",
    "trigger": {
@@ -2652,7 +2652,7 @@
   },
   {
    "id": 7720786,
-   "name": "Gonarch's Lair - Healing Pool 1",
+   "name": "Gonarch's Lair: Healing Pool 1",
    "chapter": "gonarchs_lair",
    "map": "hl_c15",
    "trigger": {
@@ -2669,7 +2669,7 @@
   },
   {
    "id": 7720787,
-   "name": "Gonarch's Lair - Healing Pool 2",
+   "name": "Gonarch's Lair: Healing Pool 2",
    "chapter": "gonarchs_lair",
    "map": "hl_c15",
    "trigger": {
@@ -2686,7 +2686,7 @@
   },
   {
    "id": 7720788,
-   "name": "Gonarch's Lair - Healing Pool 3",
+   "name": "Gonarch's Lair: Healing Pool 3",
    "chapter": "gonarchs_lair",
    "map": "hl_c15",
    "trigger": {
@@ -2703,7 +2703,7 @@
   },
   {
    "id": 7720029,
-   "name": "Interloper - Part 1 Reached",
+   "name": "Interloper: Part 1 Reached",
    "chapter": "interloper",
    "map": "hl_c16_a1",
    "trigger": {
@@ -2713,7 +2713,7 @@
   },
   {
    "id": 7720789,
-   "name": "Interloper - Healing Pool (Part 1)",
+   "name": "Interloper: Healing Pool (Part 1)",
    "chapter": "interloper",
    "map": "hl_c16_a1",
    "trigger": {
@@ -2730,7 +2730,7 @@
   },
   {
    "id": 7720030,
-   "name": "Interloper - Part 2 Reached",
+   "name": "Interloper: Part 2 Reached",
    "chapter": "interloper",
    "map": "hl_c16_a2",
    "trigger": {
@@ -2740,7 +2740,7 @@
   },
   {
    "id": 7720790,
-   "name": "Interloper - Healing Pool 1 (Part 2)",
+   "name": "Interloper: Healing Pool 1 (Part 2)",
    "chapter": "interloper",
    "map": "hl_c16_a2",
    "trigger": {
@@ -2757,7 +2757,7 @@
   },
   {
    "id": 7720791,
-   "name": "Interloper - Healing Pool 2 (Part 2)",
+   "name": "Interloper: Healing Pool 2 (Part 2)",
    "chapter": "interloper",
    "map": "hl_c16_a2",
    "trigger": {
@@ -2774,7 +2774,7 @@
   },
   {
    "id": 7720031,
-   "name": "Interloper - Part 3 Reached",
+   "name": "Interloper: Part 3 Reached",
    "chapter": "interloper",
    "map": "hl_c16_a3",
    "trigger": {
@@ -2784,7 +2784,7 @@
   },
   {
    "id": 7720792,
-   "name": "Interloper - Healing Pool 1 (Part 3)",
+   "name": "Interloper: Healing Pool 1 (Part 3)",
    "chapter": "interloper",
    "map": "hl_c16_a3",
    "trigger": {
@@ -2801,7 +2801,7 @@
   },
   {
    "id": 7720793,
-   "name": "Interloper - Healing Pool 2 (Part 3)",
+   "name": "Interloper: Healing Pool 2 (Part 3)",
    "chapter": "interloper",
    "map": "hl_c16_a3",
    "trigger": {
@@ -2818,7 +2818,7 @@
   },
   {
    "id": 7720794,
-   "name": "Interloper - Healing Pool 3 (Part 3)",
+   "name": "Interloper: Healing Pool 3 (Part 3)",
    "chapter": "interloper",
    "map": "hl_c16_a3",
    "trigger": {
@@ -2835,7 +2835,7 @@
   },
   {
    "id": 7720795,
-   "name": "Interloper - Healing Pool 4 (Part 3)",
+   "name": "Interloper: Healing Pool 4 (Part 3)",
    "chapter": "interloper",
    "map": "hl_c16_a3",
    "trigger": {
@@ -2852,7 +2852,7 @@
   },
   {
    "id": 7720032,
-   "name": "Interloper - Part 4 Reached",
+   "name": "Interloper: Part 4 Reached",
    "chapter": "interloper",
    "map": "hl_c16_a4",
    "trigger": {
@@ -2862,7 +2862,7 @@
   },
   {
    "id": 7720033,
-   "name": "Nihilanth - Part 1 Reached",
+   "name": "Nihilanth: Part 1 Reached",
    "chapter": "nihilanth",
    "map": "hl_c17",
    "trigger": {
@@ -2872,7 +2872,7 @@
   },
   {
    "id": 7720796,
-   "name": "Nihilanth - Healing Pool 1 (Part 1)",
+   "name": "Nihilanth: Healing Pool 1 (Part 1)",
    "chapter": "nihilanth",
    "map": "hl_c17",
    "trigger": {
@@ -2889,7 +2889,7 @@
   },
   {
    "id": 7720797,
-   "name": "Nihilanth - Healing Pool 2 (Part 1)",
+   "name": "Nihilanth: Healing Pool 2 (Part 1)",
    "chapter": "nihilanth",
    "map": "hl_c17",
    "trigger": {
@@ -2906,7 +2906,7 @@
   },
   {
    "id": 7720798,
-   "name": "Nihilanth - Healing Pool 3 (Part 1)",
+   "name": "Nihilanth: Healing Pool 3 (Part 1)",
    "chapter": "nihilanth",
    "map": "hl_c17",
    "trigger": {
@@ -2923,7 +2923,7 @@
   },
   {
    "id": 7720034,
-   "name": "Nihilanth - Part 2 Reached",
+   "name": "Nihilanth: Part 2 Reached",
    "chapter": "nihilanth",
    "map": "hl_c18",
    "trigger": {
@@ -3759,7 +3759,7 @@
   },
   {
    "id": 7720035,
-   "name": "Black Mesa Inbound - Complete",
+   "name": "Black Mesa Inbound: Complete",
    "chapter": "black_mesa_inbound",
    "map": "hl_c00",
    "trigger": {
@@ -3770,7 +3770,7 @@
   },
   {
    "id": 7720036,
-   "name": "Anomalous Materials - Complete",
+   "name": "Anomalous Materials: Complete",
    "chapter": "anomalous_materials",
    "map": "hl_c01_a2",
    "trigger": {
@@ -3781,7 +3781,7 @@
   },
   {
    "id": 7720037,
-   "name": "Unforeseen Consequences - Complete",
+   "name": "Unforeseen Consequences: Complete",
    "chapter": "unforeseen_consequences",
    "map": "hl_c02_a2",
    "trigger": {
@@ -3792,7 +3792,7 @@
   },
   {
    "id": 7720038,
-   "name": "Office Complex - Complete",
+   "name": "Office Complex: Complete",
    "chapter": "office_complex",
    "map": "hl_c03",
    "trigger": {
@@ -3803,7 +3803,7 @@
   },
   {
    "id": 7720039,
-   "name": "We've Got Hostiles - Complete",
+   "name": "We've Got Hostiles: Complete",
    "chapter": "weve_got_hostiles",
    "map": "hl_c04",
    "trigger": {
@@ -3814,7 +3814,7 @@
   },
   {
    "id": 7720040,
-   "name": "Blast Pit - Complete",
+   "name": "Blast Pit: Complete",
    "chapter": "blast_pit",
    "map": "hl_c05_a3",
    "trigger": {
@@ -3825,7 +3825,7 @@
   },
   {
    "id": 7720041,
-   "name": "Power Up - Complete",
+   "name": "Power Up: Complete",
    "chapter": "power_up",
    "map": "hl_c06",
    "trigger": {
@@ -3836,7 +3836,7 @@
   },
   {
    "id": 7720042,
-   "name": "On A Rail - Complete",
+   "name": "On A Rail: Complete",
    "chapter": "on_a_rail",
    "map": "hl_c07_a2",
    "trigger": {
@@ -3847,7 +3847,7 @@
   },
   {
    "id": 7720043,
-   "name": "Apprehension - Complete",
+   "name": "Apprehension: Complete",
    "chapter": "apprehension",
    "map": "hl_c08_a2",
    "trigger": {
@@ -3858,7 +3858,7 @@
   },
   {
    "id": 7720044,
-   "name": "Residue Processing - Complete",
+   "name": "Residue Processing: Complete",
    "chapter": "residue_processing",
    "map": "hl_c09",
    "trigger": {
@@ -3869,7 +3869,7 @@
   },
   {
    "id": 7720045,
-   "name": "Questionable Ethics - Complete",
+   "name": "Questionable Ethics: Complete",
    "chapter": "questionable_ethics",
    "map": "hl_c10",
    "trigger": {
@@ -3880,7 +3880,7 @@
   },
   {
    "id": 7720046,
-   "name": "Surface Tension - Complete",
+   "name": "Surface Tension: Complete",
    "chapter": "surface_tension",
    "map": "hl_c11_a5",
    "trigger": {
@@ -3891,7 +3891,7 @@
   },
   {
    "id": 7720047,
-   "name": "Forget About Freeman - Complete",
+   "name": "Forget About Freeman: Complete",
    "chapter": "forget_about_freeman",
    "map": "hl_c12",
    "trigger": {
@@ -3902,7 +3902,7 @@
   },
   {
    "id": 7720048,
-   "name": "Lambda Core - Complete",
+   "name": "Lambda Core: Complete",
    "chapter": "lambda_core",
    "map": "hl_c13_a4",
    "trigger": {
@@ -3913,7 +3913,7 @@
   },
   {
    "id": 7720049,
-   "name": "Xen - Complete",
+   "name": "Xen: Complete",
    "chapter": "xen",
    "map": "hl_c14",
    "trigger": {
@@ -3924,7 +3924,7 @@
   },
   {
    "id": 7720050,
-   "name": "Gonarch's Lair - Complete",
+   "name": "Gonarch's Lair: Complete",
    "chapter": "gonarchs_lair",
    "map": "hl_c15",
    "trigger": {
@@ -3935,7 +3935,7 @@
   },
   {
    "id": 7720051,
-   "name": "Interloper - Complete",
+   "name": "Interloper: Complete",
    "chapter": "interloper",
    "map": "hl_c16_a4",
    "trigger": {
@@ -3946,7 +3946,7 @@
   },
   {
    "id": 7720052,
-   "name": "Nihilanth - Complete",
+   "name": "Nihilanth: Complete",
    "chapter": "nihilanth",
    "map": "hl_c18",
    "trigger": {

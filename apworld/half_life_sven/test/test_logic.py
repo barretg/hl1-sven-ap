@@ -248,7 +248,7 @@ class TestHealingPools(HalfLifeSvenTestBase):
         names = {
             location.name for location in self.multiworld.get_locations(self.player)
         }
-        self.assertIn("Xen - Healing Pool", names)
+        self.assertIn("Xen: Healing Pool", names)
 
 
 class TestTraps(HalfLifeSvenTestBase):
@@ -304,7 +304,7 @@ class TestChargesanityOff(StartingMissionMixin, HalfLifeSvenTestBase):
             location.name for location in self.multiworld.get_locations(self.player)
         }
         self.assertIn("First Shotgun", names)
-        self.assertIn("Office Complex - Reached", names)
+        self.assertIn("Office Complex: Reached", names)
 
     def test_the_pool_shrinks_with_the_location_set(self) -> None:
         """Filler is sized from this slot's locations, so both drop together."""
@@ -325,7 +325,7 @@ class TestChargesanityOn(HalfLifeSvenTestBase):
         names = {
             location.name for location in self.multiworld.get_locations(self.player)
         }
-        self.assertIn("Office Complex - Health Charger 1", names)
+        self.assertIn("Office Complex: Health Charger 1", names)
 
 
 class TestBlackMesaInboundExcluded(StartingMissionMixin, HalfLifeSvenTestBase):
@@ -462,7 +462,7 @@ class BarnacleGrappleMixin:
         """Across the gap the grapple crosses, under either logic."""
         state = self.without_the_grapple()
         location = self.multiworld.get_location(
-            "Pit Worm's Nest - Healing Pool (Part 2)", self.player
+            "Pit Worm's Nest: Healing Pool (Part 2)", self.player
         )
         self.assertFalse(location.can_reach(state))
 
@@ -722,7 +722,7 @@ class TestPairedFinale(StartingMissionMixin, HalfLifeSvenTestBase):
         names = {
             location.name for location in self.multiworld.get_locations(self.player)
         }
-        self.assertIn("Power Struggle - Cleared", names)
+        self.assertIn("Power Struggle: Cleared", names)
 
     def test_the_seed_is_still_winnable(self) -> None:
         state = self.multiworld.get_all_state(False)
@@ -775,18 +775,18 @@ class TestWeaponSources(HalfLifeSvenTestBase):
         state.remove(world.create_item("Displacer Cannon"))
         state.sweep_for_advancements()
         for name in (
-            "Crush Depth - Health Charger (Part 2)",
-            "Vicarious Reality - Healing Pool (Part 1)",
-            "Pit Worm's Nest - Healing Pool (Part 1)",
+            "Crush Depth: Health Charger (Part 2)",
+            "Vicarious Reality: Healing Pool (Part 1)",
+            "Pit Worm's Nest: Healing Pool (Part 1)",
         ):
             location = self.multiworld.get_location(name, self.player)
             self.assertFalse(location.can_reach(state), f"{name} without the displacer")
         state.collect(world.create_item("Displacer Cannon"), True)
         state.sweep_for_advancements()
         for name in (
-            "Crush Depth - Health Charger (Part 2)",
-            "Vicarious Reality - Healing Pool (Part 1)",
-            "Pit Worm's Nest - Healing Pool (Part 1)",
+            "Crush Depth: Health Charger (Part 2)",
+            "Vicarious Reality: Healing Pool (Part 1)",
+            "Pit Worm's Nest: Healing Pool (Part 1)",
         ):
             self.assertTrue(
                 self.multiworld.get_location(name, self.player).can_reach(state), name
@@ -804,6 +804,25 @@ class TestLegacyLocationNames(HalfLifeSvenTestBase):
         self.assertEqual(groups["Opposing Force - First HEV Suit"], {"Opposing Force: First PCV"})
         # An alias that is also a real name would shadow that location.
         self.assertFalse(set(self.multiworld.worlds[self.player].location_names) & set(groups))
+
+    def test_every_old_mission_check_name_resolves_to_one_location(self) -> None:
+        """Mission checks once read `Mission - Thing`; they now read `Mission: Thing`."""
+        groups = self.multiworld.worlds[self.player].location_name_groups
+        chapter_names = {c["key"]: c["name"] for c in CHAPTERS}
+        prefixed = [
+            e for e in LOCATIONS
+            if e["name"].startswith(chapter_names.get(e["chapter"], "\0") + ": ")
+        ]
+        self.assertTrue(prefixed)
+        for entry in prefixed:
+            name = chapter_names[entry["chapter"]]
+            old = f"{name} - {entry['name'][len(name) + 2:]}"
+            self.assertEqual(groups.get(old), {entry["name"]}, old)
+        # A mission name holding ": " itself keeps it in the old name.
+        self.assertEqual(
+            groups["They Hunger: Episode 1 - Part 2 Reached"],
+            {"They Hunger: Episode 1: Part 2 Reached"},
+        )
 
     def test_old_names_are_accepted_in_exclude_locations(self) -> None:
         """What generation does to the option: verified, then groups expanded."""

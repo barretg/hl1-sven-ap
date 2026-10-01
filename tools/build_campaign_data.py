@@ -293,7 +293,7 @@ class LocationBuilder:
             gates: dict | None = None) -> dict:
         # Campaign-wide locations skip the mission prefix: the mission is only
         # where logic hangs them, not where the player will find the thing.
-        name = self._unique(f"{chapter['name']} - {base_name}" if prefixed else base_name)
+        name = self._unique(f"{chapter['name']}: {base_name}" if prefixed else base_name)
         key = location_key(chapter["key"], map_name, trigger)
         location = {
             "id": self.registry.get("locations", key, LOCATION_ID_BASE),
