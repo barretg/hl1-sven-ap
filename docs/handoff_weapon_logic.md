@@ -142,6 +142,18 @@ displacer with at least 60 ammo on any map that has an
 `info_displacer_xen_target`, so a displacer-gated check is never a dead end for
 a player who just received it. The retail game side needs the equivalent.
 
+### Explosive-gated mission: On a Rail (Half-Life, retail only)
+
+From `c2a2e` onward, On a Rail has boxes that block the way and can only be
+cleared with an explosive. The retail world needs a mission gate on the rest of
+On a Rail from `c2a2e`:
+
+- **Loose logic:** Hand Grenade, Satchel Charge, or the MP5's grenade launcher.
+- **Strict logic:** Hand Grenade or Satchel Charge.
+
+The Sven world does not gate this. In Sven Co-op a player can die at the boxes
+and respawn past them, so no explosive is needed there.
+
 ## 6. Game-side changes (Sven plugin, for reference)
 
 - `checkdata.txt` gained `F|<location id>|<map>|<x y z>|<needs>` records, one

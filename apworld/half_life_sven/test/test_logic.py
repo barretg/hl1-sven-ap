@@ -6,6 +6,7 @@ Run these from an Archipelago source checkout:
     pytest worlds/half_life_sven/test
 """
 
+from BaseClasses import CollectionState
 from . import HalfLifeSvenTestBase
 from ..data import (
     CHAPTERS,
@@ -29,7 +30,7 @@ class StartingMissionMixin:
 
     def test_the_starting_missions_are_reachable_from_nothing(self) -> None:
         world = self.multiworld.worlds[self.player]
-        state = self.multiworld.get_state(self.multiworld)
+        state = CollectionState(self.multiworld)
 
         for key in world.starting_chapters:
             chapter = CHAPTERS_BY_KEY[key]
@@ -45,7 +46,7 @@ class StartingMissionMixin:
         self.assertEqual(started, set(world.included_campaigns))
 
     def test_something_is_reachable_at_the_start(self) -> None:
-        state = self.multiworld.get_state(self.multiworld)
+        state = CollectionState(self.multiworld)
         reachable = [
             location for location in self.multiworld.get_locations(self.player)
             if location.can_reach(state)
@@ -411,7 +412,7 @@ class TestOpposingForceOnly(StartingMissionMixin, HalfLifeSvenTestBase):
             location.name for location in self.multiworld.get_locations(self.player)
         }
         self.assertFalse([n for n in names if n.startswith("Office Complex")])
-        self.assertTrue([n for n in names if n.startswith("Boot Camp")])
+        self.assertTrue([n for n in names if n.startswith("Welcome To Black Mesa")])
 
     def test_it_keeps_its_own_weapon_checks(self) -> None:
         """A shared weapon's only check used to sit in a Half-Life map."""
@@ -439,7 +440,9 @@ class BarnacleGrappleMixin:
 
     def without_the_grapple(self):
         world = self.multiworld.worlds[self.player]
-        state = self.multiworld.get_all_state(False)
+        # Unswept until the grapple is gone, or the sweep collects the events
+        # it opens and removing it afterwards takes none of them back.
+        state = self.multiworld.get_all_state(perform_sweep=False)
         state.remove(world.create_item("Barnacle Grapple"))
         state.sweep_for_advancements()
         return state
@@ -634,7 +637,7 @@ class TestIndependentMissionCounts(HalfLifeSvenTestBase):
         from ..data import mission_complete_event
 
         world = self.multiworld.worlds[self.player]
-        state = self.multiworld.get_state(self.multiworld)
+        state = CollectionState(self.multiworld)
         # Nine Half-Life missions is more than enough for Nihilanth and nothing
         # at all for Worlds Collide.
         for _ in range(9):
@@ -650,7 +653,7 @@ class TestLooseLogic(StartingMissionMixin, HalfLifeSvenTestBase):
     def test_weapon_gates_are_dropped(self) -> None:
         """Loose logic lets you into a late mission on its unlock alone."""
         world = self.multiworld.worlds[self.player]
-        state = self.multiworld.get_state(self.multiworld)
+        state = CollectionState(self.multiworld)
         state.collect(world.create_item(unlock_item_for_chapter["surface_tension"]), True)
 
         self.assertTrue(self.can_reach_entrance("Enter Surface Tension", state))
@@ -675,17 +678,17 @@ class TestPairedFinale(StartingMissionMixin, HalfLifeSvenTestBase):
         from ..data import chapter_cleared_event, mission_complete_event
 
         world = self.multiworld.worlds[self.player]
-        state = self.multiworld.get_state(self.multiworld)
+        state = CollectionState(self.multiworld)
         # Far more missions than the one it asks for, and none of them the one.
+        # Not swept: the count opens Power Struggle itself, and a sweep would
+        # clear it, which is the very event this asks to be missing.
         for _ in range(6):
             state.collect(world.create_item(mission_complete_event("blue_shift")), True)
-        state.sweep_for_advancements()
         self.assertFalse(self.can_reach_entrance("Enter A Leap Of Faith", state))
 
         state.collect(
             world.create_item(chapter_cleared_event("bs_power_struggle")), True
         )
-        state.sweep_for_advancements()
         self.assertTrue(self.can_reach_entrance("Enter A Leap Of Faith", state))
 
     def test_power_struggle_has_no_unlock_item(self) -> None:
@@ -704,7 +707,7 @@ class TestPairedFinale(StartingMissionMixin, HalfLifeSvenTestBase):
         from ..data import mission_complete_event
 
         world = self.multiworld.worlds[self.player]
-        state = self.multiworld.get_state(self.multiworld)
+        state = CollectionState(self.multiworld)
 
         # Nothing finished yet: sealed, however many unlock items are held.
         self.assertFalse(self.can_reach_entrance("Enter Power Struggle", state))
