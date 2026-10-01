@@ -362,7 +362,7 @@ void SetLoadoutAmmo( CBasePlayer@ pPlayer, const array<string>& in granted )
 
 				if( szAmmo.Length() > 0 && iMax > 0 && iType >= 0 )
 				{
-					int iWanted = iMax / 2;
+					int iWanted = ( iMax + 1 ) / 2;
 					// Half of uranium is 50, and the displacer's self-teleport
 					// costs 60. Where the map has somewhere to teleport to, hand
 					// over enough for one, or its gated checks are a dead end.

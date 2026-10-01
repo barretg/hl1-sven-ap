@@ -359,8 +359,9 @@ the campaign rather than granted, so on a seed with it off:
   spawn. Then walk over the map's own shotgun and First Shotgun lands. Same test
   with the item arriving mid-map from `/send`: the grant is silent, the copy on
   the floor is not.
-- [x] **Loadout ammo arrives in one step**, at half of each weapon's maximum, and
-  a respawn is one pickup sound per weapon rather than a long crawl.
+- [x] **Loadout ammo arrives in one step**, at half of each weapon's maximum
+  (rounded up), and a respawn is one pickup sound per weapon rather than a long
+  crawl.
 - [x] **Standing still costs nothing.** Fire a few shots, then stand about for a
   minute, then reload. No ammo arrives. Two separate faults did this:
   the loadout topped up every weapon held rather than the ones it had just
