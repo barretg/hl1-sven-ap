@@ -619,16 +619,20 @@ void GrantFillerItem( const string& in szItemName )
 
 		// TakeHealth/TakeArmor add when given a positive amount; they are the
 		// API's grant path despite the names.
-		if( szItemName == "Medkit" || szItemName == "Health Charge" )
+		if( szItemName == "Medkit" )
 		{
 			pPlayer.TakeHealth( 25.0f, DMG_GENERIC );
+		}
+		else if( szItemName == "Health Charge" )
+		{
+			pPlayer.TakeHealth( 15.0f, DMG_GENERIC );
 		}
 		else if( szItemName == "Armor Battery" )
 		{
 			// Nothing to put it in yet. Granting it anyway would show a number
 			// that the next sweep takes straight back off again.
 			if( ArmourAllowed() )
-				pPlayer.TakeArmor( 20.0f, DMG_GENERIC, 100 );
+				pPlayer.TakeArmor( 15.0f, DMG_GENERIC, 100 );
 		}
 		else if( szItemName == "Ammo Cache" )
 		{

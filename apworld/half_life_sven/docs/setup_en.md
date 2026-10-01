@@ -182,8 +182,8 @@ campaign almost all of its checks come from reaching maps.
 
 ## Playing the randomizer
 
-You start with the crowbar, the medkit, and **one random mission unlock per
-campaign in the seed**.
+You start with the crowbar, the medkit, and **one random mission unlock**,
+drawn from every campaign in the seed.
 
 **`random_starting_weapon`** swaps the crowbar for a random melee weapon from the
 campaigns you enabled: Opposing Force's pipe wrench or combat knife, They
