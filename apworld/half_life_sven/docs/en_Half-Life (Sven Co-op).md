@@ -29,9 +29,10 @@ Sven Co-op ships four single-player conversions and the campaign portal fronts
 all of them, so a YAML picks any combination of Half-Life, Opposing Force, Blue
 Shift and They Hunger. Half-Life alone is the default.
 
-Enable several and they run in parallel rather than in sequence: each hands you
-one of its own missions at the start, each has its own "how many missions open my
-finale" setting, and the seed is won only when every campaign's finale is done.
+Enable several and they run in parallel rather than in sequence: the seed opens
+one mission from any of them, the rest open through items, each has its own "how
+many missions open my finale" setting, and the seed is won only when every
+campaign's finale is done.
 Their weapons go into one pool, so Opposing Force's displacer and They Hunger's
 tommy gun turn up in Black Mesa and the Tau cannon turns up in theirs.
 
@@ -78,8 +79,9 @@ There is no hub console for it. Type `!warp suspension`.
 ## What does randomization do to this game?
 
 The Sven Co-op campaign portal becomes a hub. Every mission is sealed until its
-unlock item arrives from the multiworld, and each campaign in the seed begins
-with exactly one random mission open: so no two runs start in the same place.
+unlock item arrives from the multiworld, and the seed begins with exactly one
+random mission open, from any campaign in it: so no two runs start in the same
+place.
 
 Every weapon except the one you start with is also an item. Weapons lying in the
 levels can still be walked over (that is what sends the check), but Gordon will

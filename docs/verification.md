@@ -52,8 +52,8 @@ that have never run in-game at all.
   `tools/campaign_layout.py` followed by a regenerate.
 - [x] **The intro missions have no console at all** and are reached only by `!warp`:
   0 Black Mesa Inbound, 18 Incoming, 30 Living Quarters Outbound.
-- [x] **Four missions are open at the start**, one per campaign, and `!ap` lists all
-  40 missions grouped under campaign headings.
+- [ ] **One mission is open at the start**, from any of the four campaigns, and
+  `!ap` lists all 40 missions grouped under campaign headings.
 - [x] **Weapons cross over.** This is the untested engine question: receive an
   Opposing Force weapon (displacer, sniper rifle, spore launcher) while standing
   in a Half-Life map and confirm it arrives, draws, and fires rather than erroring

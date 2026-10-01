@@ -70,7 +70,7 @@ are in logic right now. Nothing to configure: the client uses Universal Tracker'
 window when it finds it and its own when it does not.
 
 Two of this world's decisions are rolled at generation rather than derived from
-your YAML: which mission each campaign opens with, and what the run starts you
+your YAML: which mission the seed opens with, and what the run starts you
 holding: so the world hands the real seed's answers back to the tracker rather
 than letting it roll its own. Without that its view would drift from the server's
 by a whole starting mission.

@@ -40,10 +40,14 @@ class StartingMissionMixin:
                 f"cannot be entered with only its unlock item",
             )
 
-    def test_every_included_campaign_starts_somewhere(self) -> None:
+    def test_the_seed_starts_with_one_mission(self) -> None:
+        """One for the whole seed, from any included campaign, as long as one
+        of them has a mission an item can open."""
         world = self.multiworld.worlds[self.player]
-        started = {CHAPTERS_BY_KEY[key]["campaign"] for key in world.starting_chapters}
-        self.assertEqual(started, set(world.included_campaigns))
+        if world.included_campaigns:
+            self.assertEqual(len(world.starting_chapters), 1)
+            (key,) = world.starting_chapters
+            self.assertIn(CHAPTERS_BY_KEY[key]["campaign"], world.included_campaigns)
 
     def test_something_is_reachable_at_the_start(self) -> None:
         state = CollectionState(self.multiworld)
@@ -57,13 +61,12 @@ class StartingMissionMixin:
 class TestDefaults(StartingMissionMixin, HalfLifeSvenTestBase):
     options = {}
 
-    def test_one_mission_per_campaign_is_precollected(self) -> None:
-        world = self.multiworld.worlds[self.player]
+    def test_one_mission_is_precollected(self) -> None:
         precollected = [
             item for item in self.multiworld.precollected_items[self.player]
             if item.name in chapter_unlock_items
         ]
-        self.assertEqual(len(precollected), len(world.included_campaigns))
+        self.assertEqual(len(precollected), 1)
 
     def test_precollected_unlock_is_not_also_in_the_pool(self) -> None:
         starting = {
