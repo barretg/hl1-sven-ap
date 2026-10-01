@@ -79,6 +79,12 @@ dictionary g_flWeaponHoldFor;
 // crowbar and a Butterfingers drop still come back.
 dictionary g_WeaponHadThisLife;
 
+// Keys of weapons on the floor because of Butterfingers, as opposed to a thrown
+// crowbar. When one of these runs out the key moves to g_ReissueDue, and the
+// loadout sweep that hands the weapon back says so.
+dictionary g_ButterfingersDrop;
+dictionary g_ReissueDue;
+
 bool WeaponHadThisLife( CBasePlayer@ pPlayer, const string& in szClassname )
 {
 	return g_WeaponHadThisLife.exists( DroppedKey( pPlayer, szClassname ) );
@@ -135,6 +141,8 @@ void WithholdWeapon( CBasePlayer@ pPlayer, const string& in szClassname, float f
 	g_flWeaponDroppedAt[ szKey ] = g_Engine.time;
 	g_flWeaponHoldFor[ szKey ] = flSeconds;
 	g_WeaponHadThisLife.delete( szKey );
+	g_ButterfingersDrop.delete( szKey );
+	g_ReissueDue.delete( szKey );
 }
 
 void ReleaseWeapon( CBasePlayer@ pPlayer, const string& in szClassname )
@@ -142,6 +150,18 @@ void ReleaseWeapon( CBasePlayer@ pPlayer, const string& in szClassname )
 	string szKey = DroppedKey( pPlayer, szClassname );
 	g_flWeaponDroppedAt.delete( szKey );
 	g_flWeaponHoldFor.delete( szKey );
+	g_ButterfingersDrop.delete( szKey );
+}
+
+/* Was this weapon just reissued after a Butterfingers drop ran out? Asks once. */
+bool TakeReissueDue( CBasePlayer@ pPlayer, const string& in szClassname )
+{
+	string szKey = DroppedKey( pPlayer, szClassname );
+	if( !g_ReissueDue.exists( szKey ) )
+		return false;
+
+	g_ReissueDue.delete( szKey );
+	return true;
 }
 
 string DroppedKey( CBasePlayer@ pPlayer, const string& in szClassname )
@@ -171,6 +191,10 @@ bool WeaponWithheld( CBasePlayer@ pPlayer, const string& in szClassname )
 
 	if( flAge >= flHold )
 	{
+		string szKey = DroppedKey( pPlayer, szClassname );
+		if( g_ButterfingersDrop.exists( szKey ) )
+			g_ReissueDue[ szKey ] = true;
+
 		ReleaseWeapon( pPlayer, szClassname );
 		return false;
 	}
@@ -199,6 +223,8 @@ void ClearWithheldWeapons()
 	g_flWeaponDroppedAt.deleteAll();
 	g_flWeaponHoldFor.deleteAll();
 	g_WeaponHadThisLife.deleteAll();
+	g_ButterfingersDrop.deleteAll();
+	g_ReissueDue.deleteAll();
 	g_TrapDrops.resize( 0 );
 
 	g_PendingDrops.resize( 0 );
@@ -374,7 +400,16 @@ void ClearWithheldWeapons( CBasePlayer@ pPlayer )
 		{
 			g_flWeaponDroppedAt.delete( keys[i] );
 			g_flWeaponHoldFor.delete( keys[i] );
+			g_ButterfingersDrop.delete( keys[i] );
 		}
+	}
+
+	// A reissue due from before the death would be announced on respawn.
+	@keys = g_ReissueDue.getKeys();
+	for( uint i = 0; i < keys.length(); ++i )
+	{
+		if( keys[i].SubString( 0, szPrefix.Length() ) == szPrefix )
+			g_ReissueDue.delete( keys[i] );
 	}
 }
 
@@ -809,6 +844,7 @@ void Butterfingers()
 		// Booked before the drop: the loadout sweep runs every second and would
 		// put it straight back in their hands.
 		WithholdWeapon( pPlayer, szClassname, BUTTERFINGERS_SECONDS );
+		g_ButterfingersDrop[ DroppedKey( pPlayer, szClassname ) ] = true;
 
 		// DropItem with no position throws the held weapon the way the engine's
 		// own drop does. It is `DropItem`, not `DropPlayerItem`: the latter is

@@ -280,6 +280,8 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		// over once a second, a clip of ammo at a time.
 		if( HasWeaponUnderAnyName( pPlayer, szClassname ) )
 		{
+			// Picked back up off the floor: nothing for the suit to reissue.
+			TakeReissueDue( pPlayer, szClassname );
 			MarkWeaponHadThisLife( pPlayer, szClassname );
 			continue;
 		}
@@ -295,6 +297,10 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		g_bHandingOver = true;
 		pPlayer.GiveNamedItem( szClassname );
 		g_bHandingOver = false;
+
+		if( TakeReissueDue( pPlayer, szClassname ) )
+			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+				"[AP] The suit reissues your weapon.\n" );
 
 		// Not always collected on the spot: right after a drop Sven will not let
 		// the player pick that weapon straight back up, and the fresh copy sat
