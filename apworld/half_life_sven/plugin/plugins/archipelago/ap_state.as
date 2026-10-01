@@ -23,6 +23,10 @@ const string AP_PENDING_FINALE = AP_DIR + "ap_finale.txt";
 // allowance is spent across a whole run, not a single map.
 const string AP_AMNESTY = AP_DIR + "ap_amnesty.txt";
 
+// Player models bots may wear, one path per line, listed by the client from the
+// server's model folders. Missing or empty: the built-in list in ap_bots.as.
+const string AP_BOT_MODELS = AP_DIR + "bot_models.txt";
+
 const string HUB_MAP = "-sp_campaign_portal";
 
 // Location trigger kinds, as emitted by gen_checkdata.py.

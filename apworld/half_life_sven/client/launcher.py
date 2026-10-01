@@ -39,7 +39,7 @@ except ModuleNotFoundError:
 from .. import plugin
 from . import settings
 from ..data.legacy import LEGACY_LOCATIONS, LEGACY_WEAPONS
-from .bridge import Bridge, find_store_dir, is_game_dir
+from .bridge import Bridge, find_store_dir, is_game_dir, write_bot_models
 
 GAME_NAME = "Half-Life (Sven Co-op)"
 POLL_INTERVAL = 0.2
@@ -460,6 +460,12 @@ class HalfLifeSvenContext(SuperContext):
         store.mkdir(parents=True, exist_ok=True)
         self.bridge = Bridge(store)
         self.bridge.clear_log()
+        # Rewritten on every start, so models added since are picked up.
+        try:
+            count = write_bot_models(path, store)
+            logger.info(f"Bots may wear any of {count} player models.")
+        except OSError as error:
+            logger.warning(f"Could not list player models for bots: {error}")
         if remember:
             self.save_game_dir(path)
         logger.info(f"Bridging through {store}")

@@ -9,6 +9,9 @@ Directions:
                 left for the next poll.
     ap_in.txt   here -> game, a full snapshot rewritten on every change. One-shot
                 deliveries ride along as `event=` lines until the game ACKs them.
+    bot_models.txt
+                here -> game, the player models bots may wear. Written once per
+                client start; read by the plugin at each map start.
 """
 
 from __future__ import annotations
@@ -359,3 +362,90 @@ def is_game_dir(path: str | os.PathLike[str]) -> bool:
     else:
         candidates = [root / "svencoop", root]
     return any((c / "maps" / "hl_c00.bsp").is_file() for c in candidates)
+
+
+# Folders under the install root whose `models/player` the game loads from.
+PLAYER_MODEL_ROOTS = ("svencoop", "svencoop_addon", "svencoop_downloads")
+
+# Every sequence the plugin's bots play (`ap_bots.as`). A model without one of
+# them would T-pose or freeze, so it is not offered.
+BOT_SEQUENCES = (
+    "ref_aim_crowbar", "ref_shoot_crowbar", "crouch_aim_crowbar",
+    "crouch_shoot_crowbar", "run2", "crawl", "jump",
+    "die_simple", "die_backwards", "die_forwards", "die_spin", "gutshot",
+)
+
+BOT_MODELS_FILE = "bot_models.txt"
+
+
+def model_sequences(path: Path) -> set[str] | None:
+    """The sequence names of a GoldSrc studio model, lower-cased, or None if the
+    file is not one."""
+    try:
+        data = path.read_bytes()
+    except OSError:
+        return None
+    if len(data) < 172 or data[:4] != b"IDST":
+        return None
+    count = int.from_bytes(data[164:168], "little", signed=True)
+    index = int.from_bytes(data[168:172], "little", signed=True)
+    # mstudioseqdesc_t is 176 bytes, starting with a 32-byte label.
+    if count < 0 or index < 0 or index + count * 176 > len(data):
+        return None
+    return {
+        data[index + i * 176: index + i * 176 + 32].split(b"\0", 1)[0].decode("latin-1").lower()
+        for i in range(count)
+    }
+
+
+def find_bot_models(game_dir: str | os.PathLike[str]) -> list[str]:
+    """Every player model the server has that the bots can wear.
+
+    A player model is `models/player/<dir>/<file>.mdl` with `<file>` matching
+    `<dir>` ignoring case, in any of `PLAYER_MODEL_ROOTS`. Paths keep their case
+    as found on disk, which Linux needs: three stock models' files differ from
+    their folders (`OP4_Scientist_Einstein/OP4_scientist_Einstein.mdl`). A model
+    lacking any of `BOT_SEQUENCES` is skipped. The first copy of a path wins, as
+    the game's own search order does.
+    """
+    root = Path(game_dir)
+    if root.name.lower() == "svencoop":
+        root = root.parent
+    found: dict[str, str] = {}
+    for folder in PLAYER_MODEL_ROOTS:
+        players = root / folder / "models" / "player"
+        try:
+            dirs = sorted(d for d in players.iterdir() if d.is_dir())
+        except OSError:
+            continue
+        for model_dir in dirs:
+            wanted = model_dir.name.lower() + ".mdl"
+            for model in sorted(model_dir.iterdir()):
+                if model.name.lower() != wanted or not model.is_file():
+                    continue
+                relative = f"models/player/{model_dir.name}/{model.name}"
+                if relative.lower() in found:
+                    break
+                sequences = model_sequences(model)
+                if sequences is not None and all(s in sequences for s in BOT_SEQUENCES):
+                    found[relative.lower()] = relative
+                break
+    return sorted(found.values(), key=str.lower)
+
+
+def write_bot_models(game_dir: str | os.PathLike[str], store_dir: str | os.PathLike[str]) -> int:
+    """Write `bot_models.txt` for the plugin; returns how many models it lists.
+    An empty list leaves the plugin on its built-in models."""
+    models = find_bot_models(game_dir)
+    target = Path(store_dir) / BOT_MODELS_FILE
+    text = "".join(m + "\n" for m in models)
+    temp = target.with_suffix(".tmp")
+    try:
+        temp.write_text(text, encoding="utf-8")
+        os.replace(temp, target)
+    except OSError:
+        # The plugin may have it open; it is only read at map start, so a
+        # write in place is safe enough.
+        target.write_text(text, encoding="utf-8")
+        temp.unlink(missing_ok=True)
+    return len(models)

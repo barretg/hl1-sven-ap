@@ -140,6 +140,11 @@ of them are nuisances rather than punishments: none can cost you a run:
 - **Bot Swarm Trap**: six crowbar-wielding bots appear around the lobby, run
   about crouch-jumping over things, and swing at whatever they bump into,
   players included.
+  Bots wear player models found on the server: the stock ones, plus any
+  custom ones in `svencoop_addon` or `svencoop_downloads`. Each map uses up
+  to eight of them. A player who lacks one of those models has to download
+  it, so a server with custom models but downloads turned off should remove
+  them. A custom model missing the player animations the bots use is skipped.
 
 Optional items, each behind its own option:
 

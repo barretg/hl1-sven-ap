@@ -70,8 +70,8 @@ const float BOT_CORPSE_SECONDS = 5.0f;
 const float BOT_AI_SNOOZE = 1.0f;
 
 // Player skins Sven Co-op ships, all on the player skeleton so the crowbar pose
-// and the animation names below fit every one. Each is a precache slot on every
-// map, so the list is short.
+// and the animation names below fit every one. The fallback when the client has
+// not listed the server's models (AP_BOT_MODELS).
 array<string> g_BotModels = {
 	"models/player/barney/barney.mdl",
 	"models/player/gordon/gordon.mdl",
@@ -81,6 +81,37 @@ array<string> g_BotModels = {
 	"models/player/robo/robo.mdl"
 };
 
+// How many models one map precaches for bots. Each is a model precache slot, so
+// a long list is sampled per map rather than loaded whole.
+const uint BOT_SKINS_PER_MAP = 8;
+
+// This map's sample, chosen in PrecacheBots. Spawning picks from these.
+array<string> g_MapBotModels;
+
+/* The client's list of the server's player models, or the built-in one. */
+array<string>@ BotModelCandidates()
+{
+	array<string> models;
+	File@ pFile = g_FileSystem.OpenFile( AP_BOT_MODELS, OpenFile::READ );
+
+	if( pFile !is null && pFile.IsOpen() )
+	{
+		while( !pFile.EOFReached() )
+		{
+			string szLine;
+			pFile.ReadLine( szLine );
+			szLine = APTrim( szLine );
+			if( szLine.Length() > 0 )
+				models.insertLast( szLine );
+		}
+		pFile.Close();
+	}
+
+	if( models.length() == 0 )
+		return g_BotModels;
+	return models;
+}
+
 const string BOT_CROWBAR_MODEL = "models/p_crowbar.mdl";
 
 // Set in MapInit alongside the trap monsters, for the same reason: a precache
@@ -89,8 +120,18 @@ bool g_bBotsPrecached = false;
 
 void PrecacheBots()
 {
-	for( uint i = 0; i < g_BotModels.length(); ++i )
-		g_Game.PrecacheModel( g_BotModels[i] );
+	array<string>@ candidates = BotModelCandidates();
+	array<int> order;
+	for( uint i = 0; i < candidates.length(); ++i )
+		order.insertLast( int( i ) );
+	ShuffleVariants( order );
+
+	g_MapBotModels.resize( 0 );
+	for( uint i = 0; i < order.length() && i < BOT_SKINS_PER_MAP; ++i )
+	{
+		g_MapBotModels.insertLast( candidates[ order[i] ] );
+		g_Game.PrecacheModel( candidates[ order[i] ] );
+	}
 	g_Game.PrecacheModel( BOT_CROWBAR_MODEL );
 
 	g_SoundSystem.PrecacheSound( "weapons/cbar_hit1.wav" );
@@ -203,7 +244,7 @@ bool SpawnBot( const Vector& in vecFeet, float flYaw )
 	Vector vecOrigin = vecFeet + Vector( 0.0f, 0.0f, BOT_STAND_HALF );
 	keys[ "origin" ] = "" + vecOrigin.x + " " + vecOrigin.y + " " + vecOrigin.z;
 	keys[ "angles" ] = "0 " + flYaw + " 0";
-	keys[ "model" ] = g_BotModels[ Math.RandomLong( 0, g_BotModels.length() - 1 ) ];
+	keys[ "model" ] = g_MapBotModels[ Math.RandomLong( 0, g_MapBotModels.length() - 1 ) ];
 	keys[ "health" ] = "" + int( BOT_HEALTH );
 	// Hostile to everyone, players included, which is the whole joke. The
 	// game's own monsters return the favour.
