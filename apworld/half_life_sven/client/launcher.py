@@ -341,6 +341,8 @@ class HalfLifeSvenContext(SuperContext):
         # How far through the server's item history we have got. Guards against
         # re-delivering filler when it resends everything on reconnect.
         self.items_seen = 0
+        # False until the first item batch after connecting has been applied.
+        self.items_synced = False
 
         self.resolve_game_dir()
 
@@ -503,6 +505,7 @@ class HalfLifeSvenContext(SuperContext):
 
         if cmd == "Connected":
             slot_data = args.get("slot_data", {})
+            self.items_synced = False
             if self.slot_identity != self.session_slot:
                 self.goal_sent = False
                 self.suspension_played = False
@@ -670,6 +673,12 @@ class HalfLifeSvenContext(SuperContext):
         an ammo top-up: and re-delivering it on reconnect both floods the
         bridge and means nothing in the game. Two reconnects used to double the
         backlog each time, which is how a few dozen items became hundreds.
+
+        The first batch after connecting is the backlog, and none of its filler
+        or traps are delivered, whatever `items_seen` says. A freshly started
+        client has `items_seen` at 0, so without this it would hand over every
+        filler and trap the slot ever received, all at once, on the next spawn.
+        Anything that arrives in a later batch is new and is delivered.
         """
         start = int(args.get("index", 0))
         items = args["items"]
@@ -682,12 +691,19 @@ class HalfLifeSvenContext(SuperContext):
             # Recounted from the batch, or a reconnect would open every tier.
             self.suspension_open = 0
 
+        backlog = not self.items_synced
         for offset, item in enumerate(items):
             # Only genuinely new items earn a filler delivery.
-            is_new = (start + offset) >= self.items_seen
+            is_new = not backlog and (start + offset) >= self.items_seen
             self.apply_item(item.item, deliver_filler=is_new)
 
-        self.items_seen = max(self.items_seen, start + len(items))
+        if backlog:
+            # The backlog is the whole history, so it sets the count outright: a
+            # count left over from another slot must not swallow this one's items.
+            self.items_seen = start + len(items)
+        else:
+            self.items_seen = max(self.items_seen, start + len(items))
+        self.items_synced = True
 
         if self.bridge is not None and self.bridge.queued_count > 50:
             logger.info(

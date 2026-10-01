@@ -76,3 +76,20 @@ def test_a_different_slot_can_send_its_own_goal() -> None:
     must not inherit the first one's sent goal."""
     connected = CLIENT.split('if cmd == "Connected":', 1)[1][:400]
     assert "self.goal_sent = False" in connected
+
+
+def test_the_first_batch_after_connecting_delivers_no_filler_or_traps() -> None:
+    """A freshly started client must not redeliver the slot's whole filler and
+    trap history: the first batch after connecting is backlog. A later batch
+    still delivers."""
+    init = CLIENT.split("def __init__", 1)[1].split("\n    def ", 1)[0]
+    assert "self.items_synced = False" in init
+    connected = CLIENT.split('if cmd == "Connected":', 1)[1][:400]
+    assert "self.items_synced = False" in connected
+    receive = CLIENT.split("def receive_items", 1)[1].split("\n    def ", 1)[0]
+    assert "backlog = not self.items_synced" in receive
+    assert "is_new = not backlog and" in receive
+    assert "self.items_synced = True" in receive
+    assert receive.index("is_new = not backlog and") < receive.index(
+        "self.items_synced = True"
+    ), "the batch is marked synced before its items are judged"
