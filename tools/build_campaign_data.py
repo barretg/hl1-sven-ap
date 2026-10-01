@@ -27,6 +27,7 @@ from pathlib import Path
 import suspension_layout as sus
 from bsp_entities import brush_model_bounds, brush_model_centres, load_map
 from campaign_layout import (
+    PICKUP_ONLY_WEAPONS,
     CAMPAIGNS,
     CAMPAIGN_OF_CHAPTER,
     CHAPTERS,
@@ -819,7 +820,7 @@ def build_items(
     for name, classnames in WEAPON_ITEMS.items():
         add(
             name,
-            "progression",
+            "useful" if name in PICKUP_ONLY_WEAPONS else "progression",
             group="weapon",
             classnames=classnames,
             campaign=WEAPON_CAMPAIGN[name],

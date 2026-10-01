@@ -904,3 +904,57 @@ def test_legacy_ids_stay_reserved_and_out_of_new_seeds(campaign: dict) -> None:
     for name, (item_id, _) in LEGACY_WEAPONS.items():
         assert item_id not in live_items, name
         assert ids["items"].get(name) == item_id, name
+
+
+def test_every_later_map_has_a_reached_record_in_checkdata(
+    checkdata: list[list[str]],
+) -> None:
+    """The plugin treats a map with no "Reached" record as never reached, so a
+    warp to any part after a mission's first needs one."""
+    reached = {r[2] for r in checkdata if r[0] == "L" and r[3] == "map_reached"}
+    for record in (r for r in checkdata if r[0] == "C"):
+        for map_name in record[4].split(",")[1:]:
+            assert map_name in reached, f"{record[3]}: {map_name}"
+
+
+def test_the_shock_roach_only_unlocks_a_pickup(campaign: dict) -> None:
+    """Never granted (Sven's roach blocks weapon switching), so it can open no
+    gate and is not progression."""
+    item = next(i for i in campaign["items"] if i["name"] == "Shock Roach")
+    assert item["campaigns"] == ["opposing_force"]
+    assert item["classnames"] == ["weapon_shockrifle"]
+    assert item["classification"] == "useful"
+    for name, members in campaign["requirement_groups"].items():
+        assert "Shock Roach" not in members, name
+
+
+def test_shock_roach_sources_are_enemy_drops(
+    campaign: dict, checkdata: list[list[str]],
+) -> None:
+    location = next(
+        l for l in campaign["locations"] if l["name"] == "Opposing Force: First Shock Roach"
+    )
+    assert location["sources"]
+    assert all(s.get("drop") == "hostile" for s in location["sources"])
+    # Missing In Action's trooper waits on a script and is never fought.
+    assert "of1a5b" not in {s["map"] for s in location["sources"]}
+    records = [r for r in checkdata if r[0] == "F" and r[1] == str(location["id"])]
+    assert len(records) == len(location["sources"])
+    assert all(len(r) == 6 and r[5] == "hostile" for r in records)
+
+
+def test_only_dropped_sources_carry_the_sixth_field(checkdata: list[list[str]]) -> None:
+    """Older plugins read five fields; a sixth is only ever `hostile`."""
+    for record in (r for r in checkdata if r[0] == "F"):
+        assert len(record) in (5, 6), record
+        if len(record) == 6:
+            assert record[5] == "hostile", record
+
+
+def test_duty_calls_part_2_needs_a_barrel_shooter(campaign: dict) -> None:
+    chapter = next(c for c in campaign["chapters"] if c["key"] == "bs_duty_calls")
+    gates = chapter.get("map_gates", {})
+    assert "ba_canal1b" in gates, chapter.keys()
+    assert "barrel_shooter" in str(gates["ba_canal1b"])
+    groups = campaign["requirement_groups"]
+    assert set(groups["ranged"]) | {"RPG"} == set(groups["barrel_shooter"])

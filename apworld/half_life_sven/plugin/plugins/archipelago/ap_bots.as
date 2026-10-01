@@ -89,7 +89,7 @@ const uint BOT_SKINS_PER_MAP = 8;
 array<string> g_MapBotModels;
 
 /* The client's list of the server's player models, or the built-in one. */
-array<string>@ BotModelCandidates()
+array<string> BotModelCandidates()
 {
 	array<string> models;
 	File@ pFile = g_FileSystem.OpenFile( AP_BOT_MODELS, OpenFile::READ );
@@ -120,7 +120,7 @@ bool g_bBotsPrecached = false;
 
 void PrecacheBots()
 {
-	array<string>@ candidates = BotModelCandidates();
+	array<string> candidates = BotModelCandidates();
 	array<int> order;
 	for( uint i = 0; i < candidates.length(); ++i )
 		order.insertLast( int( i ) );

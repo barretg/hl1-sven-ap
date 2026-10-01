@@ -18,6 +18,13 @@
 *   apt_status          verdict counts and the first untested scenario
 *   apt_give <item>     add an item to the emulated snapshot
 *   apt_take <item>     remove one
+*   apt_unlock <key>    open a mission the scenario held back
+*   apt_unseal <key>    lift a held finale's seal
+*   apt_slot <slot>     report a different slot (the plugin resets its run state)
+*   apt_reload          reload the current map, keeping the emulated state
+*   apt_item <name>     send a filler item event (Medkit, Health Charge ...)
+*   apt_hp <hp> [ap]    set every player's health, and armour if given
+*   apt_ammo            list held weapons' ammo against half their maximum
 *   apt_trap <name>     send a trap event (Bot Swarm Trap, Butterfingers Trap ...)
 *   apt_tp              teleport back to the scenario spot
 *   apt_spawn <class>   spawn an entity in front of you
@@ -62,6 +69,7 @@ class APTSource
 	string map;
 	string pos;     // "" when the weapon is handed over
 	string needs;
+	bool hostile;   // carried by an enemy, dropped when it is killed
 }
 
 array<APTChapter@> g_Chapters;
@@ -125,6 +133,7 @@ void LoadCheckdata()
 			src.map = f[2];
 			src.pos = f[3];
 			src.needs = f[4];
+			src.hostile = f.length() >= 6 && f[5] == "hostile";
 			g_Sources.insertLast( src );
 		}
 		else if( f[0] == "L" && f.length() >= 6 )
@@ -203,6 +212,9 @@ class APTScenario
 	bool forbidAll = false;     // any check at all is a failure
 	string steps;               // "\n"-separated lines
 	bool note = false;          // investigative: answered with !apt_note
+	string hold;                // ";"-separated mission keys locked (and their seals kept)
+	string exclude;             // ";"-separated mission keys left out of the seed
+	string only;                // a campaign key: every other campaign's checks out of the seed
 }
 
 array<APTScenario@> g_Scenarios;
@@ -400,6 +412,7 @@ void BuildScenarios()
 	BuildDisplacerScenarios();
 	BuildDropScenarios();
 	BuildSourceScenarios();
+	BuildParityScenarios();
 }
 
 /*
@@ -492,8 +505,14 @@ void BuildSourceScenarios()
 		string szItem;
 		if( g_ClassItem.get( l.arg.Split( "," )[0], szItem ) )
 			s.take = szItem;
+		if( src.hostile )
+			s.spawn = "monster_shocktrooper";
 		s.steps =
-			( src.pos.Length() > 0
+			( src.hostile
+			  ? "Carried by an enemy on " + src.map + ": one is spawned in front of you. Kill it, touch the drop." + "\n"
+			    + "Also find the map's own trooper: can it be reached and fought?" + "\n"
+			  : "" )
+			+ ( src.pos.Length() > 0
 			  ? "You are dropped at the copy on " + src.map + ". Touch it: expect '" + l.name + "'."
 			  : "Handed over on " + src.map + ", not left lying: play to it: expect '" + l.name + "'." ) + "\n"
 			+ ( src.needs.Length() > 0 ? "Data says it needs: " + src.needs + "." + "\n" : "" )
@@ -501,6 +520,154 @@ void BuildSourceScenarios()
 			+ "Could a player walk here from the mission start with only its own" + "\n"
 			+ "requirements? !apt_pass, or !apt_fail <what else it needs>.";
 	}
+}
+
+/*
+* The Half-Life: Anniversary parity changes. Appended last so the scenario
+* numbers before them keep their recorded verdicts.
+*/
+void BuildParityScenarios()
+{
+	APTScenario@ s;
+
+	@s = Add( "Find: old and new name spellings", "hl_c03" );
+	s.steps =
+		"!find office complex - health charger 1" + "\n"
+		+ "!find office complex: health charger 1" + "\n"
+		+ "Both point at the same charger, named 'Office Complex: Health Charger 1'." + "\n"
+		+ "!find -  matches nothing (a query with no letters or digits).";
+
+	@s = Add( "Menu: tracker labels", "hl_c03" );
+	s.steps =
+		"!menu, tracker, Half-Life, Office Complex." + "\n"
+		+ "Lines read 'Health Charger 1' and so on, with no 'Office Complex:' in front.";
+
+	@s = Add( "Melee Throw: arc and damage", "hl_c03" );
+	s.forbid = "First Crowbar";
+	s.steps =
+		"Crowbar out, right-click across a long room: it flies fast and flat," + "\n"
+		+ "dropping late (speed 1100, low gravity in flight)." + "\n"
+		+ "!apt_spawn monster_headcrab: one throw does four swings' damage." + "\n"
+		+ "Pick it up, then type drop in console: it falls like any dropped weapon.";
+
+	@s = Add( "Find: walk score", "hl_c03" );
+	s.pos = LocPos( "Office Complex: Health Charger 1" );
+	s.steps =
+		"You are at Health Charger 1. !find office complex: health charger 6" + "\n"
+		+ "Straight line is ~1430 units; expect 'About' ~3000 to 3200 units" + "\n"
+		+ "(flat distance plus 3x the height), with 'well above you'.";
+
+	@s = Add( "Find: earliest available copy", "hl_c01_a1" );
+	s.take = "Shotgun";
+	s.only = "half_life";
+	s.steps =
+		"!find first shotgun" + "\n"
+		+ "Expect: 'Any copy on Half-Life's maps sends it.'" + "\n"
+		+ "then 'The earliest available is in:', 'In Office Complex (hl_c03).'" + "\n"
+		+ "and a !warp line.";
+
+	@s = Add( "Find: earliest in a locked map", "hl_c01_a1" );
+	s.take = "Shotgun";
+	s.only = "half_life";
+	s.hold = "office_complex;weve_got_hostiles;power_up;apprehension;surface_tension;lambda_core";
+	s.steps =
+		"Every mission with a shotgun is locked. !find first shotgun" + "\n"
+		+ "Expect 'The earliest is in a locked map:', 'In Office Complex (hl_c03).'" + "\n"
+		+ "and NO !warp line.";
+
+	@s = Add( "Find: earliest needs an item", "of1a1" );
+	s.take = "Shotgun;Displacer Cannon";
+	s.exclude = "of_we_are_pulling_out;of_friendly_fire;of_we_are_not_alone";
+	s.hold = "of_pit_worms_nest;of_the_package";
+	s.steps =
+		"Only Crush Depth's shotgun is left, behind the Displacer Cannon." + "\n"
+		+ "!find opposing force: first shotgun" + "\n"
+		+ "Expect 'The earliest needs the Displacer Cannon, which you do not have:'" + "\n"
+		+ "then Crush Depth, part 2 (of3a2) and a !warp line, and NO separate" + "\n"
+		+ "'Needs the Displacer Cannon to reach.' line.";
+
+	@s = Add( "Duty Calls part 2 barrel", "ba_canal1b" );
+	s.note = true;
+	s.steps =
+		"Investigative. Play to the explosive barrel that opens the way on." + "\n"
+		+ "Can it be set off without a gun (crowbar, grenade, satchel)?" + "\n"
+		+ "Does the RPG set it off? !apt_note what works.";
+
+	@s = Add( "Shock Roach item grants nothing", "hl_c02_a1" );
+	s.take = "Shock Roach";
+	s.steps =
+		"!apt_give Shock Roach: a 'Received' line, but NO roach in your hands," + "\n"
+		+ "now or after kill in console. Weapon switching keeps working.";
+
+	@s = Add( "Shock Roach: trooper drop gated", "of5a2" );
+	s.take = "Shock Roach";
+	s.spawn = "monster_shocktrooper";
+	s.expect = "Opposing Force: First Shock Roach";
+	s.steps =
+		"A shock trooper is spawned in front of you. Kill it, walk over its roach:" + "\n"
+		+ "refused (touch and E), and 'Opposing Force: First Shock Roach' is sent." + "\n"
+		+ "!apt_give Shock Roach, press E on it: picked up. Drop it: you can switch again.";
+
+	@s = Add( "Shock Roach: find line", "of5a2" );
+	s.take = "Shock Roach";
+	s.steps =
+		"!find opposing force: first shock roach" + "\n"
+		+ "Expect 'Carried by an enemy here, dropped when killed.'";
+
+	@s = Add( "Blue Shift: Half-Life weapons", "ba_security2" );
+	s.take = "Tau Cannon;Gluon Gun";
+	s.steps =
+		"!apt_give Tau Cannon then !apt_give Gluon Gun." + "\n"
+		+ "Both arrive with a 'Received' line, draw and fire on this Blue Shift map.";
+
+	@s = Add( "Granted ammo rounds up", "hl_c02_a2" );
+	s.steps =
+		"Type kill in console. After respawn, before firing or picking up: !apt_ammo" + "\n"
+		+ "Every line ends 'ok'. weapon_rpg (odd max) shows owed = half rounded up.";
+
+	@s = Add( "Filler amounts", "hl_c02_a2" );
+	s.steps =
+		"!apt_hp 50 0 then !apt_item Medkit: health 75." + "\n"
+		+ "!apt_hp 50 0 then !apt_item Health Charge: health 65." + "\n"
+		+ "!apt_item Armor Battery: armour 15. Each prints '[AP] Received ...'.";
+
+	@s = Add( "Arrival announcements", "hl_c02_a2" );
+	s.take = "Tau Cannon";
+	s.hold = "on_a_rail;nihilanth";
+	s.steps =
+		"!apt_give Tau Cannon: '[AP] Received Tau Cannon'." + "\n"
+		+ "!apt_unlock on_a_rail: '[AP] On A Rail unlocked. !warp 7 to travel there.'" + "\n"
+		+ "!apt_unlock nihilanth: its unlocked line only. !apt_unseal nihilanth:" + "\n"
+		+ "'[AP] Nihilanth is open. Finish it to win.' !apt_reload: nothing repeats." + "\n"
+		+ "!apt_slot aptest:2: nothing printed. !apt_take HEV Suit, then !apt_give HEV Suit:" + "\n"
+		+ "only the armour line, no 'Received HEV Suit'.";
+
+	@s = Add( "Unreached part refused", APT_HUB );
+	s.steps =
+		"No map is reached. !warp hl 1 2: refused (part 2 never reached)." + "\n"
+		+ "!warp hl 1: goes to Anomalous Materials (a mission's first map always works).";
+
+	@s = Add( "Tracker multi-word filter", APT_HUB );
+	s.steps =
+		"!tracker on a rail : lists only On A Rail's checks." + "\n"
+		+ "Compare !tracker on : far more missions match.";
+
+	@s = Add( "Butterfingers reissue message", "hl_c02_a2" );
+	s.forbid = "First Shotgun";
+	s.steps =
+		"Shotgun out, !apt_trap Butterfingers Trap. Leave it 30s: it comes back with" + "\n"
+		+ "'[AP] The suit reissues your weapon.' once. Again, but pick the dropped gun up" + "\n"
+		+ "after 30s yourself: no message. Again, then kill in console before 30s: no" + "\n"
+		+ "message on respawn. !apt_give Melee Throw, throw the crowbar: only" + "\n"
+		+ "'Your crowbar comes back to you.'";
+
+	@s = Add( "Bot models from the server", "hl_c02_a2" );
+	s.trap = "Bot Swarm Trap";
+	s.steps =
+		"Needs the real client run once first (it writes bot_models.txt)." + "\n"
+		+ "Bots wear varied models, stock or custom, all animating (no T-pose)." + "\n"
+		+ "!apt_redo: a different mix. Delete store/archipelago/bot_models.txt and" + "\n"
+		+ "!apt_redo: only the six built-in models.";
 }
 
 string LocPos( const string& in szName )
@@ -513,6 +680,11 @@ string LocPos( const string& in szName )
 
 void ApplyItems( APTScenario@ s )
 {
+	g_Held = Items( s.hold );
+	g_HeldGoals = Items( s.hold );
+	g_Excluded = Items( s.exclude );
+	g_szSlot = "aptest:1";
+	g_szOnly = s.only;
 	g_Items = BaseItems();
 	array<string> take = Items( s.take );
 	for( uint i = 0; i < take.length(); ++i )
@@ -561,6 +733,11 @@ dictionary g_Found;
 // scenarios need it (a warp needs the map reached); elsewhere it filled the HUD
 // with 118 checks nobody made.
 bool g_bReached = false;
+array<string> g_Held;       // mission keys locked
+array<string> g_HeldGoals;  // finale keys whose seal stays on
+array<string> g_Excluded;
+string g_szSlot = "aptest:1";
+string g_szOnly;
 int g_iSeq = 0;
 array<string> g_Events;    // "<seq>|<kind>|<data>|0"
 
@@ -568,7 +745,8 @@ void WriteSnapshot()
 {
 	array<string> chapters;
 	for( uint i = 0; i < g_Chapters.length(); ++i )
-		chapters.insertLast( g_Chapters[i].key );
+		if( g_Held.find( g_Chapters[i].key ) < 0 && g_Excluded.find( g_Chapters[i].key ) < 0 )
+			chapters.insertLast( g_Chapters[i].key );
 
 	// Only what this scenario sent counts as found, plus every map's
 	// "Reached" for the scenarios that warp; everything else is missing.
@@ -576,6 +754,12 @@ void WriteSnapshot()
 	array<string> missing;
 	for( uint i = 0; i < g_Locs.length(); ++i )
 	{
+		if( g_szOnly.Length() > 0 )
+		{
+			APTChapter@ c = ChapterOfMap( g_Locs[i].map );
+			if( c is null || c.campaign != g_szOnly )
+				continue;
+		}
 		if( ( g_bReached && g_Locs[i].kind == "map_reached" ) || g_Found.exists( g_Locs[i].id ) )
 			checked.insertLast( g_Locs[i].id );
 		else
@@ -589,7 +773,8 @@ void WriteSnapshot()
 		{
 			if( g_Chapters[j - 1].campaign == g_CampaignOrder[i] )
 			{
-				goals.insertLast( g_Chapters[j - 1].key );
+				if( g_HeldGoals.find( g_Chapters[j - 1].key ) < 0 )
+					goals.insertLast( g_Chapters[j - 1].key );
 				break;
 			}
 		}
@@ -597,7 +782,7 @@ void WriteSnapshot()
 
 	string s = "# Written by APTest.\n";
 	s += "session=" + g_szSession + "\n";
-	s += "slot=aptest:1\n";
+	s += "slot=" + g_szSlot + "\n";
 	s += "data_version=\n";
 	s += "connected=" + ( g_bConnected ? "1" : "0" ) + "\n";
 	s += "goal_open=1\n";
@@ -606,7 +791,7 @@ void WriteSnapshot()
 	s += "death_link_amnesty=0\n";
 	s += "goals_open=" + Join( goals, "," ) + "\n";
 	s += "chapters=" + Join( chapters, "," ) + "\n";
-	s += "excluded=\n";
+	s += "excluded=" + Join( g_Excluded, "," ) + "\n";
 	s += "items=" + Join( g_Items, ";" ) + "\n";
 	s += "ungated=" + g_szUngated + "\n";
 	s += "starting=\n";
@@ -1212,6 +1397,43 @@ void Dispatch( CBasePlayer@ pPlayer, const string& in szCmd, const string& in sz
 		WriteSnapshot();
 		Say( "took: " + szArg );
 	}
+	else if( szCmd == "apt_unlock" )
+	{
+		int k = g_Held.find( szArg );
+		if( k >= 0 )
+			g_Held.removeAt( k );
+		WriteSnapshot();
+		Say( "unlocked: " + szArg );
+	}
+	else if( szCmd == "apt_unseal" )
+	{
+		int k = g_HeldGoals.find( szArg );
+		if( k >= 0 )
+			g_HeldGoals.removeAt( k );
+		WriteSnapshot();
+		Say( "unsealed: " + szArg );
+	}
+	else if( szCmd == "apt_slot" )
+	{
+		g_szSlot = szArg;
+		WriteSnapshot();
+		Say( "slot is now: " + szArg );
+	}
+	else if( szCmd == "apt_reload" )
+	{
+		// The emulated state lives in globals, which a map change keeps.
+		Say( "reloading " + string( g_Engine.mapname ) );
+		g_Scheduler.SetTimeout( "DoChangeLevel", 1.0f, string( g_Engine.mapname ) );
+	}
+	else if( szCmd == "apt_item" )
+	{
+		SendEvent( "ITEM", szArg );
+		Say( "sent item: " + szArg );
+	}
+	else if( szCmd == "apt_hp" )
+		SetHealth( szArg );
+	else if( szCmd == "apt_ammo" )
+		ListAmmo( pPlayer );
 	else if( szCmd == "apt_off" )
 	{
 		g_bConnected = false;
@@ -1267,6 +1489,58 @@ CClientCommand g_CC( "apt_pass", "APTest: mark passed [note]", @ConsoleCmd );
 CClientCommand g_CD( "apt_fail", "APTest: mark failed [note]", @ConsoleCmd );
 CClientCommand g_CE( "apt_status", "APTest: progress so far", @ConsoleCmd );
 CClientCommand g_CF( "apt_note", "APTest: record a finding <text>", @ConsoleCmd );
+CClientCommand g_CG( "apt_unlock", "APTest: open a held mission <key>", @ConsoleCmd );
+CClientCommand g_CH( "apt_unseal", "APTest: lift a held finale seal <key>", @ConsoleCmd );
+CClientCommand g_CI( "apt_slot", "APTest: report a different slot <slot>", @ConsoleCmd );
+CClientCommand g_CJ( "apt_reload", "APTest: reload this map, state kept", @ConsoleCmd );
+CClientCommand g_CK( "apt_item", "APTest: send a filler item <name>", @ConsoleCmd );
+CClientCommand g_CL( "apt_hp", "APTest: set health [armour]", @ConsoleCmd );
+CClientCommand g_CM( "apt_ammo", "APTest: held ammo vs half max", @ConsoleCmd );
+
+void SetHealth( const string& in szArg )
+{
+	array<string>@ f = szArg.Split( " " );
+	for( int i = 1; i <= g_Engine.maxClients; ++i )
+	{
+		CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( i );
+		if( pPlayer is null || !pPlayer.IsConnected() || !pPlayer.IsAlive() )
+			continue;
+		pPlayer.pev.health = atof( f[0] );
+		if( f.length() >= 2 && f[1].Length() > 0 )
+			pPlayer.pev.armorvalue = atof( f[1] );
+	}
+	Say( "health set: " + szArg );
+}
+
+/*
+* Each held weapon's primary ammo against what a granted weapon is owed: half
+* its maximum, rounded up. Read right after a respawn, before firing or picking
+* anything up. Weapons sharing an ammo type show the same count.
+*/
+void ListAmmo( CBasePlayer@ pPlayer )
+{
+	if( pPlayer is null )
+		@pPlayer = FirstAlive();
+	if( pPlayer is null )
+		return;
+	for( size_t iSlot = 0; iSlot < MAX_ITEM_TYPES; ++iSlot )
+	{
+		CBasePlayerItem@ pItem = pPlayer.m_rgpPlayerItems( iSlot );
+		while( pItem !is null )
+		{
+			CBasePlayerWeapon@ pWeapon = pItem.GetWeaponPtr();
+			if( pWeapon !is null && pWeapon.m_iPrimaryAmmoType >= 0 && pWeapon.iMaxAmmo1() > 0 )
+			{
+				int iMax = pWeapon.iMaxAmmo1();
+				int iHeld = pPlayer.m_rgAmmo( pWeapon.m_iPrimaryAmmoType );
+				int iWanted = ( iMax + 1 ) / 2;
+				Say( pItem.GetClassname() + ": " + iHeld + " of max " + iMax + ", owed " + iWanted
+				     + ( iMax % 2 == 1 ? " (odd max)" : "" ) + ( iHeld < iWanted ? " LOW" : " ok" ) );
+			}
+			@pItem = cast<CBasePlayerItem@>( pItem.m_hNextItem.GetEntity() );
+		}
+	}
+}
 
 /*
 * A manual verdict, appended to aptest_results.txt so a whole run can be read

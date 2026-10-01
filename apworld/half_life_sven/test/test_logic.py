@@ -840,3 +840,110 @@ class TestLegacyLocationNames(HalfLifeSvenTestBase):
         excluded = option.value
         self.assertIn("Opposing Force: First Glock", excluded)
         self.assertIn("Opposing Force: First PCV", excluded)
+
+
+class TestSlotDataNames(HalfLifeSvenTestBase):
+    """Named as Half-Life: Anniversary names them, with the old key kept."""
+
+    options = {"include_opposing_force": True}
+
+    def test_both_seal_keys_carry_the_same_counts(self) -> None:
+        slot_data = self.multiworld.worlds[self.player].fill_slot_data()
+        self.assertEqual(
+            slot_data["missions_required_by_campaign"],
+            slot_data["campaign_missions_required"],
+        )
+        self.assertEqual(
+            set(slot_data["missions_required_by_campaign"]),
+            {"half_life", "opposing_force"},
+        )
+
+    def test_goal_chapters_maps_each_campaign_to_its_finale(self) -> None:
+        slot_data = self.multiworld.worlds[self.player].fill_slot_data()
+        self.assertEqual(
+            slot_data["goal_chapters"],
+            {"half_life": "nihilanth", "opposing_force": "of_worlds_collide"},
+        )
+
+
+class TestMeleeWeaponsGroup(HalfLifeSvenTestBase):
+    def test_it_holds_the_three_melee_weapons(self) -> None:
+        groups = self.multiworld.worlds[self.player].item_name_groups
+        self.assertEqual(groups["Melee Weapons"], {"Crowbar", "Pipe Wrench", "Spanner"})
+        self.assertLessEqual(groups["Melee Weapons"], groups["Weapons"])
+
+
+class TestDutyCallsBarrel(StartingMissionMixin, HalfLifeSvenTestBase):
+    """Part 2 opens on an explosive barrel that has to be shot, at any logic."""
+
+    options = {
+        "include_half_life": False,
+        "include_blue_shift": True,
+        "logic_difficulty": "loose",
+    }
+
+    def state_with(self, *names: str):
+        from ..data import REQUIREMENT_GROUPS
+
+        world = self.multiworld.worlds[self.player]
+        state = self.multiworld.get_all_state(perform_sweep=False)
+        for name in REQUIREMENT_GROUPS["barrel_shooter"]:
+            while state.has(name, self.player):
+                state.remove(world.create_item(name))
+        for name in names:
+            state.collect(world.create_item(name), True)
+        state.sweep_for_advancements()
+        return state
+
+    def test_part_2_needs_something_to_shoot_with(self) -> None:
+        self.assertFalse(self.can_reach_entrance("Duty Calls: ba_canal1b", self.state_with()))
+
+    def test_a_pistol_is_enough(self) -> None:
+        self.assertTrue(self.can_reach_entrance("Duty Calls: ba_canal1b", self.state_with("Glock")))
+
+    def test_so_is_the_rpg(self) -> None:
+        self.assertTrue(self.can_reach_entrance("Duty Calls: ba_canal1b", self.state_with("RPG")))
+
+    def test_the_mission_door_stays_open(self) -> None:
+        self.assertTrue(self.can_reach_entrance("Enter Duty Calls", self.state_with()))
+
+
+class TestShockRoach(HalfLifeSvenTestBase):
+    options = {"include_opposing_force": True}
+
+    def test_it_is_an_opposing_force_item_and_a_check(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        self.assertIn("Shock Roach", world.available_item_names)
+        names = {location.name for location in self.multiworld.get_locations(self.player)}
+        self.assertIn("Opposing Force: First Shock Roach", names)
+
+
+class TestShockRoachHalfLifeOnly(HalfLifeSvenTestBase):
+    def test_a_half_life_seed_has_none(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        self.assertNotIn("Shock Roach", world.available_item_names)
+
+
+class TestBlueShiftOnlyWeapons(HalfLifeSvenTestBase):
+    """Half-Life's weapons are built in and work on Blue Shift's maps."""
+
+    options = {"include_half_life": False, "include_blue_shift": True}
+
+    def test_it_gets_half_lifes_weapons(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        for name in ("Crossbow", "Tau Cannon", "Gluon Gun", "Hivehand"):
+            self.assertIn(name, world.available_item_names)
+
+    def test_but_not_other_campaigns_own(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        for name in ("Tommy Gun", "Displacer Cannon", "Shock Roach"):
+            self.assertNotIn(name, world.available_item_names)
+
+
+class TestSuspensionOnlyWeapons(HalfLifeSvenTestBase):
+    options = {"include_half_life": False, "suspension": True}
+
+    def test_no_campaign_weapons(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        for name in ("Shotgun", "Crossbow", "Tau Cannon"):
+            self.assertNotIn(name, world.available_item_names)

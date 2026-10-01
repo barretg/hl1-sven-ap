@@ -540,3 +540,101 @@ def test_the_arcade_never_reads_the_engines_bounds(sources: dict[str, str]) -> N
     is what put a guard box in the middle of the bridge."""
     text = sources["ap_suspension.as"]
     assert "absmin" not in text and "absmax" not in text
+
+
+# --- Half-Life: Anniversary parity -----------------------------------------
+
+
+def test_find_matches_on_letters_and_digits(sources: dict[str, str]) -> None:
+    body = function_body(sources["ap_hub.as"], "FindLocation")
+    assert "APSimplify( szQuery )" in body
+    assert "APSimplify( pLocation.name )" in body
+
+
+def test_find_reports_the_walk_score(sources: dict[str, str]) -> None:
+    body = function_body(sources["ap_hub.as"], "DescribeLocation")
+    assert "TravelScore( pPlayer, vecPosition )" in body
+    assert ".Length() )" not in body.split("TravelScore", 1)[0][-200:]
+
+
+def test_find_falls_back_to_the_earliest_source(sources: dict[str, str]) -> None:
+    hub = sources["ap_hub.as"]
+    body = function_body(hub, "DescribeLocation")
+    assert "EarliestSource( pLocation, bAvailable )" in body
+    for lead in (
+        "The earliest available is in:",
+        "The earliest is in a locked map:",
+        "which you do not have:",
+    ):
+        assert lead in body
+    # No warp into a locked mission.
+    assert "if( !ChapterPlayable( pChapter ) )" in body
+    earliest = function_body(hub, "EarliestSource")
+    assert "NeedsMet( pSource.needs )" in earliest
+    assert "ChapterExcluded" in earliest
+
+
+def test_source_records_read_the_optional_drop_field(sources: dict[str, str]) -> None:
+    state = sources["ap_state.as"]
+    assert "if( parts.length() >= 6 )" in state
+    assert "source.drop = parts[5];" in state
+    assert 'pSource.drop == "hostile"' in sources["ap_hub.as"]
+
+
+def test_a_map_without_a_reached_check_counts_as_unreached(sources: dict[str, str]) -> None:
+    body = function_body(sources["ap_hub.as"], "MapReached")
+    assert body.rstrip().endswith("return false;")
+
+
+def test_the_shock_roach_is_never_granted(sources: dict[str, str]) -> None:
+    body = function_body(sources["ap_items.as"], "ApplyLoadout")
+    assert "if( szClassname == SHOCKROACH_CLASSNAME )" in body
+    assert body.index("SHOCKROACH_CLASSNAME") < body.index("pPlayer.GiveNamedItem( szClassname )")
+
+
+def test_granted_ammo_rounds_up(sources: dict[str, str]) -> None:
+    body = function_body(sources["ap_items.as"], "SetLoadoutAmmo")
+    assert "( iMax + 1 ) / 2" in body
+
+
+def test_filler_amounts(sources: dict[str, str]) -> None:
+    body = function_body(sources["ap_items.as"], "GrantFillerItem")
+    assert re.search(r'"Medkit".{0,40}TakeHealth\( 25\.0f', body, re.S)
+    assert re.search(r'"Health Charge".{0,40}TakeHealth\( 15\.0f', body, re.S)
+    assert re.search(r'"Armor Battery".{0,200}TakeArmor\( 15\.0f', body, re.S)
+
+
+def test_arrivals_are_announced_only_on_a_live_change(sources: dict[str, str]) -> None:
+    bridge = sources["ap_bridge.as"]
+    assert re.search(
+        r"bAnnounce = g_bSnapshotSeen && !bNewSession && !bSlotChanged\s*&& bWasConnected && bConnected",
+        bridge,
+    )
+    # Compared against the state before it is replaced.
+    assert bridge.index("AnnounceArrivals( items, chapters, goalsOpen, armour )") < bridge.index(
+        "g_State.unlockedItems = items;"
+    )
+
+
+def test_tracker_filter_takes_every_argument(sources: dict[str, str]) -> None:
+    hub = sources["ap_hub.as"]
+    tracker = hub.split('if( szCommand == "!tracker" )', 1)[1][:500]
+    assert "for( int i = 1; i < pArguments.ArgC(); ++i )" in tracker
+
+
+def test_the_reissue_message_follows_a_butterfingers_drop_only(sources: dict[str, str]) -> None:
+    assert "dictionary g_ButterfingersDrop;" in sources["ap_traps.as"]
+    assert "dictionary g_ReissueDue;" in sources["ap_traps.as"]
+    assert "[AP] The suit reissues your weapon." in sources["ap_items.as"]
+
+
+def test_bots_read_the_servers_model_list(sources: dict[str, str]) -> None:
+    bots = sources["ap_bots.as"]
+    assert "AP_BOT_MODELS" in function_body(bots, "BotModelCandidates")
+    assert "BotModelCandidates()" in function_body(bots, "PrecacheBots")
+
+
+def test_aptest_reads_source_records_of_five_or_six_fields() -> None:
+    aptest = (REPO / "tests" / "aptest" / "aptest.as").read_text(encoding="utf-8")
+    assert 'f[0] == "F" && f.length() >= 5' in aptest
+    assert 'src.hostile = f.length() >= 6 && f[5] == "hostile";' in aptest

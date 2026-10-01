@@ -117,7 +117,9 @@ grenades).
 Opposing Force adds eight more: the desert eagle, SAW, sniper rifle, displacer,
 spore launcher, shock roach, barnacle grapple and pipe wrench. The shock roach
 lies nowhere: shock troopers carry it and drop it when killed, and that drop is
-refused until the item arrives. They Hunger adds nine
+refused until the item arrives. The item never puts a roach in your hands:
+Sven Co-op's roach has to be dropped before you can draw anything else, so it
+only lets you pick one up. They Hunger adds nine
 of its own, from the Colt 1911 and tommy gun to the tesla gun. Blue Shift adds
 none: in Sven Co-op it uses Half-Life's, down to the crowbar. Half-Life's
 weapons are in every seed with a campaign in it, even one without Half-Life,

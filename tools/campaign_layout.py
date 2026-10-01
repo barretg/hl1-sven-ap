@@ -836,8 +836,14 @@ RANGED_WEAPONS = [
     "Sniper Rifle",
     "Displacer Cannon",
     "Spore Launcher",
-    "Shock Roach",
 ]
+
+# Weapon items that only let the weapon be picked up, never put it in hands.
+# Sven Co-op's shock roach is a carried item: nothing else can be drawn until it
+# is dropped, so the plugin never grants it. Holding the item proves nothing
+# about what the player can fight with, so it is in no requirement group and is
+# useful rather than progression.
+PICKUP_ONLY_WEAPONS = ["Shock Roach"]
 
 # Enough punch to kill an armoured target in reasonable time.
 HEAVY_WEAPONS = [

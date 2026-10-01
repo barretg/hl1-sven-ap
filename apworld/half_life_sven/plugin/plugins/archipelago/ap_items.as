@@ -120,6 +120,9 @@ const float SUIT_PICKUP_RESTORE_DELAY = 1.5f;
 // another one. SetLongJump does what the pickup does, without the pickup.
 const string LONGJUMP_CLASSNAME = "item_longjump";
 
+// Gated but never granted: see ApplyLoadout.
+const string SHOCKROACH_CLASSNAME = "weapon_shockrifle";
+
 /* Is the player already carrying this weapon? */
 bool HasItem( CBasePlayer@ pPlayer, const string& in szClassname )
 {
@@ -264,6 +267,12 @@ void ApplyLoadout( CBasePlayer@ pPlayer )
 		// precache its model mid-map on any map without one, which is a
 		// Host_Error.
 		if( szClassname == "item_armorvest" || szClassname == "item_helmet" )
+			continue;
+
+		// The Shock Roach item only lets a dropped roach be picked up. Sven's
+		// roach is a carried item: no other weapon can be drawn until it is
+		// dropped, so handing one out would lock the player's loadout.
+		if( szClassname == SHOCKROACH_CLASSNAME )
 			continue;
 
 		// Owned, but not a thing this map knows how to build. See

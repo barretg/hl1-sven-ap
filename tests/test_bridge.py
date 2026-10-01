@@ -11,10 +11,14 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "apworld" / "half_life_sven"))
 
 from client.bridge import (  # noqa: E402
+    BOT_MODELS_FILE,
+    BOT_SEQUENCES,
     MAX_PENDING_IN_SNAPSHOT,
     Bridge,
+    find_bot_models,
     find_store_dir,
     is_game_dir,
+    write_bot_models,
 )
 
 
@@ -481,3 +485,70 @@ def test_the_lobby_deathlink_defaults_to_the_old_behaviour(bridge: Bridge) -> No
     only thing a lobby wipe has ever done."""
     snapshot(bridge)
     assert "lobby_death_link=on" in bridge.in_path.read_text(encoding="utf-8")
+
+
+# --- bot models ---------------------------------------------------------------
+
+
+def fake_model(path: Path, sequences=BOT_SEQUENCES) -> None:
+    """A studio model header with just enough of a sequence table to read."""
+    header = bytearray(172)
+    header[:4] = b"IDST"
+    header[164:168] = len(sequences).to_bytes(4, "little")
+    header[168:172] = (172).to_bytes(4, "little")
+    table = b"".join(name.encode().ljust(176, b"\0") for name in sequences)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(bytes(header) + table)
+
+
+def test_bot_models_keep_their_case_on_disk(tmp_path: Path) -> None:
+    fake_model(tmp_path / "svencoop/models/player/OP4_Scientist_Einstein/OP4_scientist_Einstein.mdl")
+    fake_model(tmp_path / "svencoop/models/player/helmet/helmet.mdl")
+    assert find_bot_models(tmp_path) == [
+        "models/player/helmet/helmet.mdl",
+        "models/player/OP4_Scientist_Einstein/OP4_scientist_Einstein.mdl",
+    ]
+
+
+def test_bot_models_ignore_files_not_named_for_their_folder(tmp_path: Path) -> None:
+    fake_model(tmp_path / "svencoop/models/player/helmet/helmet_preview.mdl")
+    assert find_bot_models(tmp_path) == []
+
+
+def test_bot_models_skip_a_model_missing_a_sequence(tmp_path: Path) -> None:
+    fake_model(tmp_path / "svencoop_addon/models/player/tpose/tpose.mdl", BOT_SEQUENCES[:-1])
+    fake_model(tmp_path / "svencoop_addon/models/player/fine/fine.mdl")
+    assert find_bot_models(tmp_path) == ["models/player/fine/fine.mdl"]
+
+
+def test_bot_models_first_root_wins(tmp_path: Path) -> None:
+    fake_model(tmp_path / "svencoop/models/player/dup/dup.mdl")
+    fake_model(tmp_path / "svencoop_downloads/models/player/dup/dup.mdl", ())
+    assert find_bot_models(tmp_path) == ["models/player/dup/dup.mdl"]
+
+
+def test_bot_models_accept_the_svencoop_folder(tmp_path: Path) -> None:
+    fake_model(tmp_path / "svencoop_addon/models/player/fine/fine.mdl")
+    assert find_bot_models(tmp_path / "svencoop") == ["models/player/fine/fine.mdl"]
+
+
+def test_write_bot_models_writes_the_list(tmp_path: Path) -> None:
+    fake_model(tmp_path / "svencoop/models/player/helmet/helmet.mdl")
+    store = tmp_path / "store"
+    store.mkdir()
+    assert write_bot_models(tmp_path, store) == 1
+    assert (store / BOT_MODELS_FILE).read_text() == "models/player/helmet/helmet.mdl\n"
+
+
+def test_bot_sequences_match_what_the_bots_play() -> None:
+    import re
+
+    bots = (
+        Path(__file__).resolve().parent.parent / "apworld" / "half_life_sven"
+        / "plugin" / "plugins" / "archipelago" / "ap_bots.as"
+    ).read_text(encoding="utf-8")
+    played = set()
+    for line in bots.splitlines():
+        if "BotSequence(" in line or "szName = " in line or "deaths = {" in line:
+            played.update(re.findall(r'"([a-z_0-9]+)"', line))
+    assert played == set(BOT_SEQUENCES)

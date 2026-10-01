@@ -105,3 +105,36 @@ def test_removed_locations_are_sent_on_reaching_their_map() -> None:
     assert "self.legacy_sent.update(due)" in due
     pump = CLIENT.split("async def pump", 1)[1]
     assert pump.index("ctx.legacy_checks_due(new_checks)") < pump.index('"cmd": "LocationChecks"')
+
+
+def run_goal_parse(slot_data: dict):
+    """Run the client's own goal and seal parsing against `slot_data`."""
+    import textwrap
+    from types import SimpleNamespace
+
+    start = CLIENT.index('            if "goal_chapters" in slot_data:')
+    end = CLIENT.index("            # Absent from slot data reads as", start)
+    body = textwrap.dedent(CLIENT[start:end])
+    ctx = SimpleNamespace(
+        goal_chapters={"nihilanth"}, missions_required=17, campaign_of_chapter={}
+    )
+    exec(body, {}, {"self": ctx, "slot_data": slot_data})
+    return ctx
+
+
+def test_goal_chapters_are_read_as_a_dict() -> None:
+    ctx = run_goal_parse({
+        "goal_chapters": {"half_life": "nihilanth", "opposing_force": "of_worlds_collide"},
+        "missions_required_by_campaign": {"half_life": 17, "opposing_force": 11},
+    })
+    assert ctx.goal_chapters == {"nihilanth", "of_worlds_collide"}
+    assert ctx.missions_required_for == {"half_life": 17, "opposing_force": 11}
+
+
+def test_an_older_seeds_list_and_seal_key_still_read() -> None:
+    ctx = run_goal_parse({
+        "goal_chapters": ["nihilanth", ""],
+        "campaign_missions_required": {"half_life": 8},
+    })
+    assert ctx.goal_chapters == {"nihilanth"}
+    assert ctx.missions_required_for == {"half_life": 8}
