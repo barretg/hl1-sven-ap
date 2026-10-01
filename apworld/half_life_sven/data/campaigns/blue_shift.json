@@ -80,7 +80,13 @@
    "campaign": "blue_shift",
    "is_goal": false,
    "gates": {},
-   "map_gates": {},
+   "map_gates": {
+    "ba_canal1b": {
+     "always": [
+      "barrel_shooter"
+     ]
+    }
+   },
    "requires_chapter": "",
    "complete_on_endgame": false
   },

@@ -629,6 +629,23 @@
   "rpg": [
    "RPG"
   ],
+  "barrel_shooter": [
+   "Glock",
+   ".357 Magnum",
+   "MP5",
+   "Shotgun",
+   "Crossbow",
+   "Tau Cannon",
+   "Gluon Gun",
+   "Hivehand",
+   "Snarks",
+   "Desert Eagle",
+   "SAW",
+   "Sniper Rifle",
+   "Displacer Cannon",
+   "Spore Launcher",
+   "RPG"
+  ],
   "barnacle_grapple": [
    "Barnacle Grapple"
   ],

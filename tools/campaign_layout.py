@@ -477,6 +477,13 @@ BLUE_SHIFT = Campaign(
         "bs_power_struggle": {"strict": ["ranged"]},
         "bs_leap_of_faith": {"strict": ["ranged"]},
     },
+    map_gates={
+        # Duty Calls: past its first health charger and the crowbars, the way on
+        # is opened by shooting an explosive barrel. Nothing melee reaches it,
+        # so from part 2 on the mission needs a ranged weapon or the RPG at any
+        # logic difficulty. The door stays ungated, so it can still start a run.
+        "ba_canal1b": {"always": ["barrel_shooter"]},
+    },
 )
 
 # Three consoles, three episodes. Its check placement is still the plain shape
@@ -900,6 +907,8 @@ REQUIREMENT_GROUPS: dict[str, list[str]] = {
     "underwater": UNDERWATER_WEAPONS,
     "tau_cannon": ["Tau Cannon"],
     "rpg": ["RPG"],
+    # Anything that can set off an explosive barrel from a distance.
+    "barrel_shooter": RANGED_WEAPONS + ["RPG"],
     "barnacle_grapple": ["Barnacle Grapple"],
     "displacer_cannon": ["Displacer Cannon"],
 }
