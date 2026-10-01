@@ -93,3 +93,15 @@ def test_the_first_batch_after_connecting_delivers_no_filler_or_traps() -> None:
     assert receive.index("is_new = not backlog and") < receive.index(
         "self.items_synced = True"
     ), "the batch is marked synced before its items are judged"
+
+
+def test_removed_locations_are_sent_on_reaching_their_map() -> None:
+    """A removed location an old seed still has is sent once its map's
+    "Reached" check is in, from the poll, not the moment the client connects."""
+    assert "def send_legacy_checks" not in CLIENT
+    due = CLIENT.split("def legacy_checks_due", 1)[1].split("\n    def ", 1)[0]
+    assert "self.reached_id_by_map.get(map_name)" in due
+    assert "reached_id in reached" in due
+    assert "self.legacy_sent.update(due)" in due
+    pump = CLIENT.split("async def pump", 1)[1]
+    assert pump.index("ctx.legacy_checks_due(new_checks)") < pump.index('"cmd": "LocationChecks"')

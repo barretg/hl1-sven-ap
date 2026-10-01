@@ -239,8 +239,16 @@ class HalfLifeSvenContext(SuperContext):
         self.location_name_by_id = {
             entry["id"]: entry["name"] for entry in self.campaign["locations"]
         }
-        for location_id, name in LEGACY_LOCATIONS.items():
+        for location_id, (name, _) in LEGACY_LOCATIONS.items():
             self.location_name_by_id.setdefault(location_id, name)
+        # Map -> its "Reached" check, which is what sends a removed location
+        # that stood on that map.
+        self.reached_id_by_map: dict[str, int] = {
+            entry["map"]: entry["id"] for entry in self.campaign["locations"]
+            if entry.get("trigger", {}).get("type") == "map_reached"
+        }
+        # Removed locations already sent this connection.
+        self.legacy_sent: set[int] = set()
         self.campaign_of_chapter = {
             c["key"]: c.get("campaign", "") for c in self.campaign["chapters"]
         }
@@ -578,7 +586,7 @@ class HalfLifeSvenContext(SuperContext):
             # one; only equipment left entirely to the campaign goes ungated.
             placed = set(slot_data.get("placed_at_vanilla", ()))
             self.ungated_classnames = unshuffled_vanilla_classnames(unshuffled - placed)
-            self.send_legacy_checks()
+            self.legacy_sent.clear()
             self.armour_items = dict(slot_data.get("armour_items", {}))
             self.starting_weapons = list(
                 slot_data.get("starting_weapons", self.starting_weapons)
@@ -711,18 +719,26 @@ class HalfLifeSvenContext(SuperContext):
                 f"this drains over a few seconds."
             )
 
-    def send_legacy_checks(self) -> None:
-        """Send every removed check an older seed still has, as soon as it connects.
+    def legacy_checks_due(self, new_checks: list[int]) -> list[int]:
+        """Removed checks an older seed still has that are now due.
 
-        Nothing in the game fires them any more (see `data/legacy.py`), so this
-        is the only way such a seed gets them.
+        Nothing in the game fires them any more (see `data/legacy.py`), so each
+        is sent once its map's "Reached" check is in: reached now, or already on
+        the server, which covers a run that got past the map before this client
+        did. One whose map has no "Reached" check in this seed is sent at once,
+        as every one was before.
         """
-        due = sorted(LEGACY_LOCATIONS.keys() & self.missing_locations)
-        if not due:
-            return
-        for location_id in due:
-            logger.info(f"Check (removed location, sent automatically): {LEGACY_LOCATIONS[location_id]}")
-        asyncio.create_task(self.send_msgs([{"cmd": "LocationChecks", "locations": due}]))
+        reached = set(new_checks) | self.checked_locations
+        in_seed = self.missing_locations | self.checked_locations
+        due = []
+        for location_id, (_, map_name) in sorted(LEGACY_LOCATIONS.items()):
+            if location_id not in self.missing_locations or location_id in self.legacy_sent:
+                continue
+            reached_id = self.reached_id_by_map.get(map_name)
+            if reached_id is None or reached_id not in in_seed or reached_id in reached:
+                due.append(location_id)
+        self.legacy_sent.update(due)
+        return due
 
     def effective_ungated_classnames(self) -> set[str]:
         """`ungated_classnames`, plus every legacy weapon not yet received."""
@@ -1262,6 +1278,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
                 force=True,
             )
 
+    new_checks.extend(ctx.legacy_checks_due(new_checks))
     if new_checks:
         # The plugin fires every check its checkdata.txt knows about, but the
         # seed may not contain all of them: chargesanity off, or a mission left

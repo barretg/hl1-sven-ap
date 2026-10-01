@@ -892,9 +892,15 @@ def test_legacy_ids_stay_reserved_and_out_of_new_seeds(campaign: dict) -> None:
     ids = json.loads((REPO / "apworld" / "half_life_sven" / "data" / "ids.json").read_text())
     live_locations = {entry["id"] for entry in campaign["locations"]}
     live_items = {entry["id"] for entry in campaign["items"]}
-    for location_id, name in LEGACY_LOCATIONS.items():
+    reached_maps = {
+        entry["map"] for entry in campaign["locations"]
+        if entry.get("trigger", {}).get("type") == "map_reached"
+    }
+    for location_id, (name, map_name) in LEGACY_LOCATIONS.items():
         assert location_id not in live_locations, name
         assert location_id in ids["locations"].values(), name
+        # Sent when this map is reached, so the map must have a "Reached" check.
+        assert map_name in reached_maps, name
     for name, (item_id, _) in LEGACY_WEAPONS.items():
         assert item_id not in live_items, name
         assert ids["items"].get(name) == item_id, name

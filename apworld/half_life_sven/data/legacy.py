@@ -5,15 +5,15 @@ plugin and client. Their ids stay reserved in `ids.json`; the apworld never
 creates them, and nothing here is read during generation.
 """
 
-# Removed locations, `{id: name as the old seeds call it}`. The client sends
-# whichever of these a seed still lists as missing the moment it connects:
-# nothing in the game fires them any more, and a seed that put progression on
-# one would otherwise never finish.
-LEGACY_LOCATIONS: dict[int, str] = {
+# Removed locations, `{id: (name as the old seeds call it, map it stood on)}`.
+# The client sends whichever of these a seed still lists as missing once that
+# map's "Reached" check is in: nothing in the game fires them any more, and a
+# seed that put progression on one would otherwise never finish.
+LEGACY_LOCATIONS: dict[int, tuple[str, str]] = {
     # An easter egg past a skylight, reachable only by stacking players.
-    7720310: "Opposing Force - First Minigun",
+    7720310: ("Opposing Force - First Minigun", "of2a4"),
     # Not a Blue Shift pickup at all: Sven Co-op's port adds the suit.
-    7720432: "Blue Shift - First HEV Suit",
+    7720432: ("Blue Shift - First HEV Suit", "ba_tram1"),
 }
 
 # Removed weapon items, `{name: (id, classname)}`. Received in an old seed, the
