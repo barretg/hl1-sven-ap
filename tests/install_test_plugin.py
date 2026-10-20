@@ -23,7 +23,7 @@ sys.path.insert(0, str(REPO_ROOT / "apworld" / "half_life_sven"))
 
 import plugin  # noqa: E402
 
-LINUX_DEFAULT_GAME = Path("/mnt/win/f/SteamLibrary/steamapps/common/Sven Co-op")
+LINUX_DEFAULT_GAME = Path("/games/SteamLibrary/steamapps/common/Sven Co-op")
 
 TEST_SOURCE = REPO_ROOT / "tests" / "aptest" / "aptest.as"
 TEST_SUBDIR = "plugins/aptest"
