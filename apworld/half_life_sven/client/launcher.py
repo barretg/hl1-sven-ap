@@ -38,7 +38,7 @@ except ModuleNotFoundError:
 
 from .. import plugin
 from . import settings
-from ..data.legacy import LEGACY_LOCATIONS, LEGACY_WEAPONS
+from ..data.legacy import LEGACY_LOCATION_SUCCESSORS, LEGACY_LOCATIONS, LEGACY_WEAPONS
 from .bridge import Bridge, find_store_dir, is_game_dir, write_bot_models
 
 GAME_NAME = "Half-Life (Sven Co-op)"
@@ -739,6 +739,13 @@ class HalfLifeSvenContext(SuperContext):
         due = []
         for location_id, (_, map_name) in sorted(LEGACY_LOCATIONS.items()):
             if location_id not in self.missing_locations or location_id in self.legacy_sent:
+                continue
+            successor = LEGACY_LOCATION_SUCCESSORS.get(location_id)
+            if successor is not None:
+                # Never in the same seed as its legacy id, so only the game
+                # firing it now counts.
+                if successor in new_checks:
+                    due.append(location_id)
                 continue
             reached_id = self.reached_id_by_map.get(map_name)
             if reached_id is None or reached_id not in in_seed or reached_id in reached:

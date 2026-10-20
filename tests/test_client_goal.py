@@ -107,6 +107,71 @@ def test_removed_locations_are_sent_on_reaching_their_map() -> None:
     assert pump.index("ctx.legacy_checks_due(new_checks)") < pump.index('"cmd": "LocationChecks"')
 
 
+def run_legacy_checks_due(missing: set[int], checked: set[int], new_checks: list[int],
+                          sent: set[int] | None = None) -> list[int]:
+    """Run the client's own `legacy_checks_due` against a seed's location state."""
+    import sys
+    import textwrap
+    from types import SimpleNamespace
+
+    sys.path.insert(0, str(REPO / "apworld" / "half_life_sven"))
+    from data import load_campaign
+    from data.legacy import LEGACY_LOCATION_SUCCESSORS, LEGACY_LOCATIONS
+
+    source = CLIENT.split("    def legacy_checks_due", 1)[1].split("\n    def ", 1)[0]
+    namespace = {
+        "LEGACY_LOCATIONS": LEGACY_LOCATIONS,
+        "LEGACY_LOCATION_SUCCESSORS": LEGACY_LOCATION_SUCCESSORS,
+    }
+    exec(textwrap.dedent("def legacy_checks_due" + source), namespace)
+    ctx = SimpleNamespace(
+        missing_locations=missing,
+        checked_locations=checked,
+        legacy_sent=set() if sent is None else sent,
+        reached_id_by_map={
+            entry["map"]: entry["id"] for entry in load_campaign()["locations"]
+            if entry.get("trigger", {}).get("type") == "map_reached"
+        },
+    )
+    return namespace["legacy_checks_due"](ctx, new_checks)
+
+
+# Ids as v0.2 seeds have them.
+WC_PART_2_REACHED = 7720227  # of6a4b
+WC_COMPLETE_NOW = 7720436
+WC_PART_3_REACHED_V02 = 7720230
+WC_COMPLETE_V02 = 7720343
+
+
+def test_a_removed_location_waits_for_its_map() -> None:
+    missing = {WC_PART_2_REACHED, WC_PART_3_REACHED_V02}
+    assert run_legacy_checks_due(missing, set(), []) == []
+    assert run_legacy_checks_due(missing, set(), [WC_PART_2_REACHED]) == [WC_PART_3_REACHED_V02]
+    # Reached before this client was running: the server already has it.
+    assert run_legacy_checks_due(
+        {WC_PART_3_REACHED_V02}, {WC_PART_2_REACHED}, []
+    ) == [WC_PART_3_REACHED_V02]
+
+
+def test_a_removed_location_is_sent_once() -> None:
+    missing = {WC_PART_2_REACHED, WC_PART_3_REACHED_V02}
+    sent: set[int] = set()
+    assert run_legacy_checks_due(missing, set(), [WC_PART_2_REACHED], sent)
+    assert run_legacy_checks_due(missing, set(), [WC_PART_2_REACHED], sent) == []
+
+
+def test_a_removed_completion_waits_for_the_current_one() -> None:
+    """v0.2's Worlds Collide completion is not earned by reaching the finale."""
+    missing = {WC_PART_2_REACHED, WC_COMPLETE_V02}
+    assert run_legacy_checks_due(missing, set(), [WC_PART_2_REACHED]) == []
+    assert run_legacy_checks_due(missing, {WC_PART_2_REACHED}, []) == []
+    assert run_legacy_checks_due(missing, set(), [WC_COMPLETE_NOW]) == [WC_COMPLETE_V02]
+
+
+def test_a_seed_without_the_removed_location_sends_nothing() -> None:
+    assert run_legacy_checks_due({WC_PART_2_REACHED}, set(), [WC_PART_2_REACHED, WC_COMPLETE_NOW]) == []
+
+
 def run_goal_parse(slot_data: dict):
     """Run the client's own goal and seal parsing against `slot_data`."""
     import textwrap

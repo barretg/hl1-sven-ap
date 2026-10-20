@@ -16,6 +16,7 @@ from ..data import (
     UNLOCKABLE_CHAPTERS,
     unlockable_chapters_of,
 )
+from ..data.legacy import LEGACY_LOCATIONS, LEGACY_WEAPONS
 from ..items import chapter_unlock_items, unlock_item_for_chapter
 
 
@@ -97,6 +98,23 @@ class TestDefaults(StartingMissionMixin, HalfLifeSvenTestBase):
         pool = {item.name for item in self.multiworld.itempool if item.player == self.player}
         self.assertNotIn("Crowbar", pool)
         self.assertNotIn("Crowbar", world.available_item_names)
+
+    def test_removed_checks_stay_in_the_datapackage_but_not_the_seed(self) -> None:
+        """An old seed still sends these ids, and Universal Tracker rejects the
+        whole datapackage over one it cannot name."""
+        world = self.multiworld.worlds[self.player]
+        pool = {item.name for item in self.multiworld.itempool if item.player == self.player}
+        placed = {loc.name for loc in self.multiworld.get_locations(self.player)}
+        for name, (item_id, _) in LEGACY_WEAPONS.items():
+            self.assertEqual(world.item_name_to_id.get(name), item_id)
+            self.assertNotIn(name, pool)
+        for location_id, (name, _) in LEGACY_LOCATIONS.items():
+            self.assertEqual(world.location_name_to_id.get(name), location_id)
+            self.assertNotIn(name, placed)
+            # A group of the same name would make the name ambiguous in a YAML.
+            self.assertNotIn(name, world.location_name_groups)
+        for name in LEGACY_WEAPONS:
+            self.assertNotIn(name, world.item_name_groups)
 
     def test_victory_needs_every_mission_by_default(self) -> None:
         """With the default missions_required, holding one mission short fails."""

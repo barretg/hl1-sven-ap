@@ -8,6 +8,7 @@
 | Data consistency (`data/` ↔ `checkdata.txt`) | `pytest tests/test_campaign_data.py` | passing |
 | Suspension data and its checkdata records | `pytest tests/test_suspension_data.py` | passing |
 | AngelScript source rules (API calls, record guards, exemptions that regressed) | `pytest tests/test_plugin_source.py` | passing |
+| Back compat: every released tag's item and location ids still resolve (`tests/fixtures/released_ids.json`; rerun `tools/snapshot_released_ids.py` after tagging) | `pytest tests/test_id_stability.py` | passing |
 | Suspension generation | `ArchipelagoGenerate` at the easy cap and at the insane cap with classanity, platinum and priority medals, including a seed with no class in the starting inventory so the explosives gate binds | passing |
 | Suspension in-game | in play | reaching it and reading a round pass; the locks, the medals and the clear are still open |
 | World generation, AP 0.6.7 | `ArchipelagoGenerate` on real seeds | passing |

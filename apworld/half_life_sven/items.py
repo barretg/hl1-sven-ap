@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from BaseClasses import Item, ItemClassification
 
 from .data import EVENT_ITEM_NAMES, GOAL_COMPANIONS, ITEMS, MELEE_STARTERS
+from .data.legacy import LEGACY_WEAPONS
 
 if TYPE_CHECKING:
     from . import HalfLifeSvenWorld
@@ -18,6 +19,9 @@ CLASSIFICATIONS = {
 
 item_table: dict[str, dict] = {entry["name"]: entry for entry in ITEMS}
 item_name_to_id: dict[str, int] = {entry["name"]: entry["id"] for entry in ITEMS}
+# Never created, but an older seed can still hand one out, and a client or
+# tracker resolving it needs the id in the datapackage.
+item_name_to_id.update({name: item_id for name, (item_id, _) in LEGACY_WEAPONS.items()})
 
 filler_items: list[str] = [e["name"] for e in ITEMS if e["classification"] == "filler"]
 filler_weights: list[int] = [e.get("weight", 1) for e in ITEMS if e["classification"] == "filler"]
@@ -103,6 +107,10 @@ class HalfLifeSvenItem(Item):
 def create_item(world: "HalfLifeSvenWorld", name: str) -> HalfLifeSvenItem:
     if name in EVENT_ITEMS:
         return HalfLifeSvenItem(name, ItemClassification.progression, None, world.player)
+    if name in LEGACY_WEAPONS:
+        # Only by plando or a test: no seed puts one in the pool, and no logic
+        # asks for one.
+        return HalfLifeSvenItem(name, ItemClassification.useful, LEGACY_WEAPONS[name][0], world.player)
     entry = item_table[name]
     classification = CLASSIFICATIONS[entry["classification"]]
     return HalfLifeSvenItem(name, classification, entry["id"], world.player)

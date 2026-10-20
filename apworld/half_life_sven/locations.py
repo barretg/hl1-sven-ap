@@ -3,10 +3,12 @@ from __future__ import annotations
 from BaseClasses import Location
 
 from .data import CHAPTERS, LOCATIONS, SUSPENSION_TRIGGERS
-from .data.legacy import LEGACY_LOCATION_NAMES
+from .data.legacy import LEGACY_LOCATION_NAMES, LEGACY_LOCATIONS
 
 location_table: dict[str, dict] = {entry["name"]: entry for entry in LOCATIONS}
 location_name_to_id: dict[str, int] = {entry["name"]: entry["id"] for entry in LOCATIONS}
+# Never placed, but an older seed still lists them; see `data/legacy.py`.
+location_name_to_id.update({name: location_id for location_id, (name, _) in LEGACY_LOCATIONS.items()})
 
 def location_in_seed(entry: dict, excluded_chapters: set[str]) -> bool:
     """Whether a seed leaving these missions out still contains this check.
