@@ -16,6 +16,7 @@ from typing import Any, ClassVar
 
 import settings
 from BaseClasses import Tutorial
+from Options import OptionGroup
 from worlds.AutoWorld import WebWorld, World
 from worlds.LauncherComponents import Component, Type, components, launch_subprocess
 
@@ -23,6 +24,7 @@ from .client.settings import SETTINGS_KEY
 
 from .data import (
     ABILITY_ITEM_NAMES,
+    AIR_ACCELERATE_ITEM,
     ARMOUR_ITEMS,
     CAMPAIGNS,
     CAMPAIGN_MISSION_OPTIONS,
@@ -34,12 +36,15 @@ from .data import (
     GOAL_COMPANIONS,
     INTRO_CHAPTER,
     INTRO_CHAPTERS,
+    MICROWAVE_TRIGGER,
     OPTIONAL_ITEM_NAMES,
     STARTING_WEAPONS,
     SUSPENSION_AWARD,
     SUSPENSION_CLEAR,
     SUSPENSION_SECTION,
     VANILLA_PLACEMENTS,
+    air_accelerate_bounds,
+    air_accelerate_steps,
     melee_starters_for,
     suspension,
     suspension_victory_event,
@@ -59,7 +64,6 @@ from .items import (
     suspension_class_items,
     suspension_difficulty_item,
     trap_items,
-    trap_weights,
     unlock_item_for_chapter,
     weapon_items,
 )
@@ -69,7 +73,46 @@ from .locations import (
     location_name_to_id,
     location_table,
 )
-from .options import HalfLifeSvenOptions
+from .options import (
+    AirAccelerationMaximum,
+    AirAccelerationMinimum,
+    AllowRestrictedStartingWeapon,
+    BlueShiftMissionsRequired,
+    BotSwarmTrapWeight,
+    ButterfingersReissue,
+    ButterfingersTrapWeight,
+    Chargesanity,
+    HalfLifeSvenOptions,
+    HeadcrabTrapWeight,
+    BunnyHopTrapWeight,
+    IncludeBlueShift,
+    IncludeHalfLife,
+    IncludeMicrowave,
+    IncludeOpposingForce,
+    IncludeSuspension,
+    IncludeTheyHunger,
+    MeleeThrow,
+    MissionsRequired,
+    OpposingForceMissionsRequired,
+    ProgressiveAirAcceleration,
+    RandomStartingWeapon,
+    ReloadTrapWeight,
+    ScientistTrapWeight,
+    ShuffleFlashlight,
+    ShuffleHevSuit,
+    ShuffleLongJump,
+    StickyKeyTrapWeight,
+    SuspensionClassanity,
+    SuspensionDifficultyRolldown,
+    SuspensionGoalClasses,
+    SuspensionGoalRequiresAward,
+    SuspensionMaxAwardsArePriority,
+    SuspensionMaxDifficulty,
+    SuspensionRequiredAward,
+    SuspensionStartingClass,
+    TheyHungerMissionsRequired,
+    TrapPercentage,
+)
 from .regions import create_regions
 from .rules import chapter_is_startable
 
@@ -121,6 +164,44 @@ class HalfLifeSvenWeb(WebWorld):
         )
     ]
 
+    # Grouped by what they change: which games, the item pool, which things
+    # are checks, traps, and the arcade map. Anything left out (logic
+    # difficulty, intro missions, DeathLink) stays in Game Options.
+    option_groups = [
+        OptionGroup(
+            "Games",
+            [IncludeHalfLife, MissionsRequired,
+             IncludeOpposingForce, OpposingForceMissionsRequired,
+             IncludeBlueShift, BlueShiftMissionsRequired,
+             IncludeTheyHunger, TheyHungerMissionsRequired],
+        ),
+        OptionGroup(
+            "Item Pool",
+            [RandomStartingWeapon, AllowRestrictedStartingWeapon, ShuffleHevSuit,
+             ShuffleLongJump, ShuffleFlashlight, MeleeThrow,
+             ProgressiveAirAcceleration, AirAccelerationMinimum,
+             AirAccelerationMaximum],
+        ),
+        OptionGroup(
+            "Checks",
+            [Chargesanity, IncludeMicrowave],
+        ),
+        OptionGroup(
+            "Traps",
+            [TrapPercentage, ButterfingersReissue,
+             ScientistTrapWeight, HeadcrabTrapWeight, ButterfingersTrapWeight,
+             BotSwarmTrapWeight, BunnyHopTrapWeight, StickyKeyTrapWeight,
+             ReloadTrapWeight],
+        ),
+        OptionGroup(
+            "Suspension",
+            [IncludeSuspension, SuspensionClassanity, SuspensionMaxDifficulty,
+             SuspensionRequiredAward, SuspensionGoalClasses,
+             SuspensionGoalRequiresAward, SuspensionMaxAwardsArePriority,
+             SuspensionDifficultyRolldown, SuspensionStartingClass],
+        ),
+    ]
+
 
 class HalfLifeSvenWorld(World):
     """Half-Life's campaign, played co-operatively in Sven Co-op, with every
@@ -167,6 +248,9 @@ class HalfLifeSvenWorld(World):
         # Unshuffled equipment that is still a real item, locked to the check
         # where the campaign hands it over: item -> location name.
         self.vanilla_placements: dict[str, str] = {}
+        # Progressive Air Acceleration's `[minimum, maximum]`, or None when the
+        # seed leaves `sv_airaccelerate` to the server.
+        self.air_acceleration: list[int] | None = None
 
         #Suspension, the arcade map. All inert while it is switched off.
         self.suspension_enabled: bool = False
@@ -245,6 +329,8 @@ class HalfLifeSvenWorld(World):
             self.excluded_chapters.add(INTRO_CHAPTER)
         if not self.options.chargesanity:
             self.excluded_triggers.add(CHARGER_TRIGGER)
+        if not self.options.include_microwave:
+            self.excluded_triggers.add(MICROWAVE_TRIGGER)
 
         # Both sets come straight from the seed under the tracker: it may be
         # working without the YAML, in which case its options are defaults and
@@ -252,6 +338,10 @@ class HalfLifeSvenWorld(World):
         if passthrough:
             self.excluded_chapters = set(passthrough.get("excluded_chapters", ()))
             self.excluded_triggers = set(passthrough.get("excluded_triggers", ()))
+            # A seed from before the microwave was a check has none, though its
+            # `excluded_triggers` does not say so.
+            if not passthrough.get("include_microwave", False):
+                self.excluded_triggers.add(MICROWAVE_TRIGGER)
 
         self.choose_starting_weapons()
 
@@ -321,6 +411,18 @@ class HalfLifeSvenWorld(World):
             self.available_item_names.update(
                 name for name, option in ABILITY_ITEM_NAMES.items() if toggled(option)
             )
+
+        # Progressive Air Acceleration: several copies, counted from the two
+        # bounds, so it is not one of `available_item_names`. Under the tracker,
+        # the seed's own bounds; a seed from before it has none.
+        if passthrough is not None:
+            bounds = passthrough.get("air_acceleration")
+            self.air_acceleration = list(bounds) if bounds else None
+        elif self.options.progressive_air_acceleration and self.included_campaigns:
+            self.air_acceleration = list(air_accelerate_bounds(
+                self.options.air_acceleration_minimum.value,
+                self.options.air_acceleration_maximum.value,
+            ))
 
         # Unshuffled equipment that stays where the campaign puts it, as a real
         # item. Only where that check is in the seed; otherwise the campaign
@@ -700,6 +802,11 @@ class HalfLifeSvenWorld(World):
                 for _ in range(max(len(self.suspension_tier_index) - 1, 0))
             ]
 
+        pool += [
+            self.create_item(AIR_ACCELERATE_ITEM)
+            for _ in range(self.air_accelerate_item_count)
+        ]
+
         remaining = len(self.multiworld.get_unfilled_locations(self.player)) - len(pool)
         if remaining < 0:
             raise AssertionError(
@@ -709,10 +816,25 @@ class HalfLifeSvenWorld(World):
 
         self.multiworld.itempool += pool
 
+    @property
+    def air_accelerate_item_count(self) -> int:
+        """How many Progressive Air Acceleration items this seed places."""
+        if not self.air_acceleration:
+            return 0
+        return len(air_accelerate_steps(*self.air_acceleration))
+
+    def trap_weight(self, name: str) -> int:
+        """The YAML's weight for one trap, e.g. `headcrab_trap_weight`."""
+        return getattr(self.options, name.lower().replace(" ", "_") + "_weight").value
+
     def get_filler_names(self, count: int) -> list[str]:
         """Fill the leftover locations, with `trap_percentage` of them traps."""
         traps = round(count * self.options.trap_percentage.value / 100)
-        names = self.random.choices(trap_items, weights=trap_weights, k=traps)
+        weights = [self.trap_weight(name) for name in trap_items]
+        # Every trap weighted to 0 means no traps at all, not a crash.
+        if not any(weights):
+            traps = 0
+        names = self.random.choices(trap_items, weights=weights, k=traps) if traps else []
         names += self.random.choices(
             filler_items, weights=filler_weights, k=count - traps
         )
@@ -783,6 +905,16 @@ class HalfLifeSvenWorld(World):
             "shuffle_longjump": bool(self.options.shuffle_longjump),
             "shuffle_flashlight": bool(self.options.shuffle_flashlight),
             "melee_throw": bool(self.options.melee_throw),
+            # Also for the tracker: seeds from before this key had no microwave
+            # check, though their `excluded_triggers` does not say so.
+            "include_microwave": MICROWAVE_TRIGGER not in self.excluded_triggers,
+            # `[minimum, maximum]` the client walks the items between, or None
+            # when air acceleration is left to the server. Swapped and clamped
+            # here so the client never has to second-guess them.
+            "air_acceleration": self.air_acceleration,
+            # Whether Butterfingers hands the weapon back after its timer, or
+            # only once the player has no weapons left at all. Absent: on.
+            "butterfingers_reissue": bool(self.options.butterfingers_reissue),
             # Unshuffled equipment that is a real item at its vanilla location,
             # so the client must gate its pickup like any other. Seeds from
             # before this existed left the long jump module ungated instead.

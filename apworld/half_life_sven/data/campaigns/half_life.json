@@ -68,7 +68,17 @@
    "gates": {},
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c00": [
+     [
+      "hl_c01_a1",
+      -1531,
+      -2107,
+      -3180
+     ]
+    ]
+   }
   },
   {
    "key": "anomalous_materials",
@@ -83,7 +93,25 @@
    "gates": {},
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c01_a1": [
+     [
+      "hl_c01_a2",
+      -473,
+      -3300,
+      -1336
+     ]
+    ],
+    "hl_c01_a2": [
+     [
+      "hl_c02_a1",
+      1668,
+      1074,
+      594
+     ]
+    ]
+   }
   },
   {
    "key": "unforeseen_consequences",
@@ -98,7 +126,25 @@
    "gates": {},
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c02_a1": [
+     [
+      "hl_c02_a2",
+      2649,
+      1919,
+      919
+     ]
+    ],
+    "hl_c02_a2": [
+     [
+      "hl_c03",
+      -424,
+      1488,
+      -1059
+     ]
+    ]
+   }
   },
   {
    "key": "office_complex",
@@ -112,7 +158,17 @@
    "gates": {},
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c03": [
+     [
+      "hl_c04",
+      -814,
+      -632,
+      1164
+     ]
+    ]
+   }
   },
   {
    "key": "weve_got_hostiles",
@@ -130,7 +186,17 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c04": [
+     [
+      "hl_c05_a1",
+      988,
+      1284,
+      120
+     ]
+    ]
+   }
   },
   {
    "key": "blast_pit",
@@ -150,7 +216,33 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c05_a1": [
+     [
+      "hl_c05_a2",
+      -1002,
+      -664,
+      109
+     ]
+    ],
+    "hl_c05_a2": [
+     [
+      "hl_c05_a3",
+      -3306,
+      7062,
+      -302
+     ]
+    ],
+    "hl_c05_a3": [
+     [
+      "hl_c06",
+      2288,
+      -1072,
+      -2224
+     ]
+    ]
+   }
   },
   {
    "key": "power_up",
@@ -168,7 +260,17 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c06": [
+     [
+      "hl_c07_a1",
+      2560,
+      -2140,
+      128
+     ]
+    ]
+   }
   },
   {
    "key": "on_a_rail",
@@ -187,7 +289,25 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c07_a1": [
+     [
+      "hl_c07_a2",
+      -182,
+      -1172,
+      -694
+     ]
+    ],
+    "hl_c07_a2": [
+     [
+      "hl_c08_a1",
+      2138,
+      374,
+      234
+     ]
+    ]
+   }
   },
   {
    "key": "apprehension",
@@ -206,7 +326,25 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c08_a1": [
+     [
+      "hl_c08_a2",
+      1696,
+      1104,
+      -760
+     ]
+    ],
+    "hl_c08_a2": [
+     [
+      "hl_c09",
+      -2272,
+      640,
+      -1600
+     ]
+    ]
+   }
   },
   {
    "key": "residue_processing",
@@ -224,7 +362,17 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c09": [
+     [
+      "hl_c10",
+      -1464,
+      -2712,
+      -1328
+     ]
+    ]
+   }
   },
   {
    "key": "questionable_ethics",
@@ -242,7 +390,17 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c10": [
+     [
+      "hl_c11_a1",
+      -1280,
+      -2136,
+      232
+     ]
+    ]
+   }
   },
   {
    "key": "surface_tension",
@@ -264,7 +422,55 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c11_a1": [
+     [
+      "hl_c11_a2",
+      5260,
+      -1696,
+      -848
+     ]
+    ],
+    "hl_c11_a2": [
+     [
+      "hl_c11_a3",
+      -3864,
+      1792,
+      28
+     ]
+    ],
+    "hl_c11_a3": [
+     [
+      "hl_c11_a3",
+      160,
+      448,
+      -336
+     ],
+     [
+      "hl_c11_a4",
+      -72,
+      1584,
+      -1056
+     ]
+    ],
+    "hl_c11_a4": [
+     [
+      "hl_c11_a5",
+      -808,
+      -2448,
+      -1584
+     ]
+    ],
+    "hl_c11_a5": [
+     [
+      "hl_c12",
+      -1574,
+      377,
+      -1845
+     ]
+    ]
+   }
   },
   {
    "key": "forget_about_freeman",
@@ -277,12 +483,23 @@
    "is_goal": false,
    "gates": {
     "strict": [
-     "heavy"
+     "heavy",
+     "not_rpg"
     ]
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c12": [
+     [
+      "hl_c13_a1",
+      -1424,
+      -1168,
+      -1140
+     ]
+    ]
+   }
   },
   {
    "key": "lambda_core",
@@ -298,12 +515,53 @@
    "is_goal": false,
    "gates": {
     "strict": [
-     "heavy"
+     "heavy",
+     "not_rpg"
     ]
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c13_a1": [
+     [
+      "hl_c13_a2",
+      -2992,
+      -528,
+      -632
+     ]
+    ],
+    "hl_c13_a2": [
+     [
+      "hl_c13_a3",
+      2232,
+      2368,
+      -64
+     ]
+    ],
+    "hl_c13_a3": [
+     [
+      "hl_c13_a4",
+      -336,
+      -1096,
+      1088
+     ]
+    ],
+    "hl_c13_a4": [
+     [
+      "hl_c13_a4",
+      672,
+      608,
+      224
+     ],
+     [
+      "hl_c14",
+      1144,
+      268,
+      -198
+     ]
+    ]
+   }
   },
   {
    "key": "xen",
@@ -326,7 +584,17 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c14": [
+     [
+      "hl_c15",
+      -388,
+      176,
+      -40
+     ]
+    ]
+   }
   },
   {
    "key": "gonarchs_lair",
@@ -349,7 +617,17 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c15": [
+     [
+      "hl_c16_a1",
+      -3652,
+      3936,
+      -1712
+     ]
+    ]
+   }
   },
   {
    "key": "interloper",
@@ -375,7 +653,41 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c16_a1": [
+     [
+      "hl_c16_a2",
+      1782,
+      -2038,
+      724
+     ]
+    ],
+    "hl_c16_a2": [
+     [
+      "hl_c16_a3",
+      -760,
+      1508,
+      302
+     ]
+    ],
+    "hl_c16_a3": [
+     [
+      "hl_c16_a4",
+      2160,
+      1384,
+      928
+     ]
+    ],
+    "hl_c16_a4": [
+     [
+      "hl_c17",
+      2198,
+      -2345,
+      924
+     ]
+    ]
+   }
   },
   {
    "key": "nihilanth",
@@ -399,7 +711,17 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "hl_c17": [
+     [
+      "hl_c18",
+      1230,
+      1822,
+      3796
+     ]
+    ]
+   }
   }
  ],
  "items": [
@@ -610,6 +932,22 @@
     -3372,
     1556,
     -232
+   ]
+  },
+  {
+   "id": 7720815,
+   "name": "Anomalous Materials: Microwave (Part 1)",
+   "chapter": "anomalous_materials",
+   "map": "hl_c01_a1",
+   "trigger": {
+    "type": "microwave",
+    "map": "hl_c01_a1",
+    "fires": "microwavepopmm1_1"
+   },
+   "position": [
+    -2147,
+    1197,
+    -237
    ]
   },
   {

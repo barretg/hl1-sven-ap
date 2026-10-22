@@ -58,7 +58,17 @@
    "gates": {},
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of0a0": [
+     [
+      "of1a1",
+      -1352,
+      -1416,
+      -72
+     ]
+    ]
+   }
   },
   {
    "key": "of_welcome_to_black_mesa",
@@ -73,7 +83,37 @@
    "gates": {},
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of1a1": [
+     [
+      "of0a0",
+      -336,
+      3440,
+      176
+     ],
+     [
+      "of1a2",
+      1032,
+      -224,
+      336
+     ]
+    ],
+    "of1a2": [
+     [
+      "of1a1",
+      -1416,
+      -2912,
+      160
+     ],
+     [
+      "of1a3",
+      -560,
+      -2752,
+      -1224
+     ]
+    ]
+   }
   },
   {
    "key": "of_we_are_pulling_out",
@@ -89,7 +129,45 @@
    "gates": {},
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of1a3": [
+     [
+      "of1a4",
+      -720,
+      640,
+      120
+     ]
+    ],
+    "of1a4": [
+     [
+      "of1a3",
+      -720,
+      640,
+      280
+     ],
+     [
+      "of1a4b",
+      830,
+      3010,
+      -138
+     ]
+    ],
+    "of1a4b": [
+     [
+      "of1a4",
+      -560,
+      504,
+      312
+     ],
+     [
+      "of1a5",
+      -232,
+      -1655,
+      -171
+     ]
+    ]
+   }
   },
   {
    "key": "of_missing_in_action",
@@ -109,7 +187,51 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of1a5": [
+     [
+      "of1a4b",
+      -880,
+      848,
+      -176
+     ],
+     [
+      "of1a5b",
+      1936,
+      -3488,
+      1371
+     ]
+    ],
+    "of1a5b": [
+     [
+      "of1a5",
+      880,
+      -1904,
+      1376
+     ],
+     [
+      "of1a6",
+      -1696,
+      -2960,
+      2352
+     ]
+    ],
+    "of1a6": [
+     [
+      "of1a5b",
+      860,
+      -2124,
+      -332
+     ],
+     [
+      "of2a1",
+      -616,
+      608,
+      -112
+     ]
+    ]
+   }
   },
   {
    "key": "of_friendly_fire",
@@ -129,7 +251,45 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of2a1": [
+     [
+      "of1a6",
+      2120,
+      2208,
+      80
+     ],
+     [
+      "of2a1b",
+      -1536,
+      672,
+      -424
+     ]
+    ],
+    "of2a1b": [
+     [
+      "of2a1",
+      -1536,
+      672,
+      -136
+     ],
+     [
+      "of2a2",
+      2216,
+      1392,
+      -1368
+     ]
+    ],
+    "of2a2": [
+     [
+      "of2a4",
+      -3516,
+      2056,
+      776
+     ]
+    ]
+   }
   },
   {
    "key": "of_we_are_not_alone",
@@ -149,7 +309,51 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of2a4": [
+     [
+      "of2a3",
+      -1296,
+      600,
+      136
+     ],
+     [
+      "of2a5",
+      752,
+      -608,
+      200
+     ]
+    ],
+    "of2a5": [
+     [
+      "of2a4",
+      160,
+      -608,
+      200
+     ],
+     [
+      "of2a6",
+      -432,
+      -304,
+      1248
+     ]
+    ],
+    "of2a6": [
+     [
+      "of2a5",
+      672,
+      728,
+      -264
+     ],
+     [
+      "of3a1",
+      2656,
+      3280,
+      -460
+     ]
+    ]
+   }
   },
   {
    "key": "of_crush_depth",
@@ -168,7 +372,37 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of3a1": [
+     [
+      "of2a6",
+      448,
+      970,
+      -224
+     ],
+     [
+      "of3a2",
+      -1298,
+      -294,
+      602
+     ]
+    ],
+    "of3a2": [
+     [
+      "of3a1",
+      2602,
+      -618,
+      -214
+     ],
+     [
+      "of3a4",
+      2586,
+      -474,
+      -214
+     ]
+    ]
+   }
   },
   {
    "key": "of_vicarious_reality",
@@ -188,7 +422,51 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of3a4": [
+     [
+      "of3a2",
+      370,
+      598,
+      314
+     ],
+     [
+      "of3a5",
+      -1664,
+      524,
+      96
+     ]
+    ],
+    "of3a5": [
+     [
+      "of3a4",
+      -1392,
+      432,
+      152
+     ],
+     [
+      "of3a6",
+      -2200,
+      2096,
+      -152
+     ]
+    ],
+    "of3a6": [
+     [
+      "of3a5",
+      -2200,
+      2096,
+      -152
+     ],
+     [
+      "of4a1",
+      96,
+      1640,
+      90
+     ]
+    ]
+   }
   },
   {
    "key": "of_pit_worms_nest",
@@ -215,7 +493,77 @@
     }
    },
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of4a1": [
+     [
+      "of3a6",
+      -570,
+      1794,
+      66
+     ],
+     [
+      "of4a2",
+      -2518,
+      460,
+      454
+     ],
+     [
+      "of4a2",
+      -2024,
+      726,
+      448
+     ]
+    ],
+    "of4a2": [
+     [
+      "of4a1",
+      -2850,
+      772,
+      454
+     ],
+     [
+      "of4a1",
+      -2024,
+      854,
+      392
+     ],
+     [
+      "of4a3",
+      -704,
+      -2850,
+      446
+     ]
+    ],
+    "of4a3": [
+     [
+      "of4a2",
+      -824,
+      -2850,
+      446
+     ],
+     [
+      "of4a2",
+      256,
+      -1464,
+      1776
+     ],
+     [
+      "of4a4",
+      3579,
+      -3401,
+      682
+     ]
+    ],
+    "of4a4": [
+     [
+      "of5a1",
+      -520,
+      808,
+      296
+     ]
+    ]
+   }
   },
   {
    "key": "of_foxtrot_uniform",
@@ -239,7 +587,65 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of5a1": [
+     [
+      "of4a4",
+      -1016,
+      888,
+      -840
+     ],
+     [
+      "of5a2",
+      952,
+      -1872,
+      192
+     ]
+    ],
+    "of5a2": [
+     [
+      "of5a1",
+      1480,
+      768,
+      320
+     ],
+     [
+      "of5a3",
+      -1080,
+      1824,
+      72
+     ]
+    ],
+    "of5a3": [
+     [
+      "of5a2",
+      -1416,
+      -160,
+      -120
+     ],
+     [
+      "of5a4",
+      -8,
+      -952,
+      172
+     ]
+    ],
+    "of5a4": [
+     [
+      "of5a3",
+      -3416,
+      -840,
+      44
+     ],
+     [
+      "of6a1",
+      -1916,
+      -3532,
+      -2388
+     ]
+    ]
+   }
   },
   {
    "key": "of_the_package",
@@ -262,7 +668,51 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "of6a1": [
+     [
+      "of5a4",
+      -2504,
+      3296,
+      32
+     ],
+     [
+      "of6a2",
+      2676,
+      -1196,
+      32
+     ]
+    ],
+    "of6a2": [
+     [
+      "of6a1",
+      -1804,
+      996,
+      32
+     ],
+     [
+      "of6a3",
+      1888,
+      -3016,
+      32
+     ]
+    ],
+    "of6a3": [
+     [
+      "of6a2",
+      -608,
+      3464,
+      32
+     ],
+     [
+      "of6a4",
+      1960,
+      1956,
+      -108
+     ]
+    ]
+   }
   },
   {
    "key": "of_worlds_collide",
@@ -284,7 +734,37 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": true
+   "complete_on_endgame": true,
+   "exits": {
+    "of6a4": [
+     [
+      "of6a3",
+      -408,
+      2716,
+      212
+     ],
+     [
+      "of6a4b",
+      -224,
+      1780,
+      -280
+     ]
+    ],
+    "of6a4b": [
+     [
+      "of6a4",
+      -224,
+      1780,
+      -104
+     ],
+     [
+      "of6a5",
+      -2464,
+      -1424,
+      -904
+     ]
+    ]
+   }
   }
  ],
  "items": [

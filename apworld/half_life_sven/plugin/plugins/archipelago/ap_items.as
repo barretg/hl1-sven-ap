@@ -540,6 +540,7 @@ HookReturnCode PlayerPreThink( CBasePlayer@ pPlayer, uint& out uiFlags )
 	}
 
 	MeleeThrowThink( pPlayer );
+	MovementTrapsThink( pPlayer );
 
 	// Every frame rather than on the one-second sweep, so armour from a charger
 	// or a map's own grant is gone before the HUD shows it for more than a blink.
@@ -618,6 +619,49 @@ void EnforceLoadouts()
 
 	// So a level change knows whether anyone is still loading in.
 	TrackPlayerInGame();
+
+	// A map's cfg may set it back; once a second is soon enough to notice.
+	EnforceAirAccelerate();
+
+	// The microwave and anything like it: has the map fired its targetname?
+	PollFiredChecks();
+
+	// Each player's `!trace` line, redrawn before the last one fades.
+	TraceThink();
+}
+
+/*
+* Hold `sv_airaccelerate` where Progressive Air Acceleration says.
+*
+* A server setting, so the whole lobby shares it, which is how every other
+* item here behaves anyway. What the server had before is remembered the first
+* time it is changed and put back once the seed stops asking (a seed without
+* the items, or the client gone), so a session without the option never sees
+* its own value moved.
+*/
+float g_flOriginalAirAccelerate = -1.0f;
+
+void EnforceAirAccelerate()
+{
+	int iWanted = g_State.airAccelerate;
+	float flCurrent = g_EngineFuncs.CVarGetFloat( "sv_airaccelerate" );
+
+	if( iWanted < 0 )
+	{
+		if( g_flOriginalAirAccelerate >= 0.0f )
+		{
+			g_EngineFuncs.CVarSetFloat( "sv_airaccelerate", g_flOriginalAirAccelerate );
+			g_flOriginalAirAccelerate = -1.0f;
+		}
+		return;
+	}
+
+	if( flCurrent != float( iWanted ) )
+	{
+		if( g_flOriginalAirAccelerate < 0.0f )
+			g_flOriginalAirAccelerate = flCurrent;
+		g_EngineFuncs.CVarSetFloat( "sv_airaccelerate", float( iWanted ) );
+	}
 }
 
 /*

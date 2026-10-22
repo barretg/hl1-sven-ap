@@ -965,3 +965,192 @@ class TestSuspensionOnlyWeapons(HalfLifeSvenTestBase):
         world = self.multiworld.worlds[self.player]
         for name in ("Shotgun", "Crossbow", "Tau Cannon"):
             self.assertNotIn(name, world.available_item_names)
+
+
+class TestNotOnlyTheRpg(HalfLifeSvenTestBase):
+    """Strict Forget About Freeman and Lambda Core want more than the RPG."""
+
+    options = {"logic_difficulty": "strict"}
+
+    def state_with(self, *names: str):
+        from ..data import REQUIREMENT_GROUPS
+
+        world = self.multiworld.worlds[self.player]
+        state = self.multiworld.get_all_state(perform_sweep=False)
+        weapons = set(REQUIREMENT_GROUPS["heavy"]) | set(REQUIREMENT_GROUPS["not_rpg"])
+        for name in weapons:
+            while state.has(name, self.player):
+                state.remove(world.create_item(name))
+        for name in names:
+            state.collect(world.create_item(name), True)
+        state.sweep_for_advancements()
+        return state
+
+    def test_the_rpg_alone_is_not_enough(self) -> None:
+        self.assertFalse(self.can_reach_entrance("Enter Lambda Core", self.state_with("RPG")))
+
+    def test_the_rpg_and_a_pistol_are(self) -> None:
+        self.assertTrue(
+            self.can_reach_entrance("Enter Lambda Core", self.state_with("RPG", "Glock"))
+        )
+
+    def test_a_heavy_weapon_on_its_own_still_is(self) -> None:
+        self.assertTrue(self.can_reach_entrance("Enter Lambda Core", self.state_with("Shotgun")))
+
+
+class TestBlueShiftFlashlight(HalfLifeSvenTestBase):
+    """Captive Freight's dark half and the chumtoad cave's snarks."""
+
+    options = {
+        "include_half_life": False,
+        "include_blue_shift": True,
+        "shuffle_flashlight": True,
+        "logic_difficulty": "strict",
+    }
+
+    def state(self, flashlight: bool):
+        world = self.multiworld.worlds[self.player]
+        state = self.multiworld.get_all_state(perform_sweep=False)
+        if not flashlight:
+            state.remove(world.create_item("Flashlight"))
+        state.sweep_for_advancements()
+        return state
+
+    def test_it_is_progression(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        self.assertTrue(world.create_item("Flashlight").advancement)
+
+    def test_captive_freight_part_4_needs_it(self) -> None:
+        entrance = "Captive Freight: ba_yard3a"
+        self.assertFalse(self.can_reach_entrance(entrance, self.state(False)))
+        self.assertTrue(self.can_reach_entrance(entrance, self.state(True)))
+
+
+class TestBlueShiftFlashlightLoose(HalfLifeSvenTestBase):
+    options = {
+        "include_half_life": False,
+        "include_blue_shift": True,
+        "shuffle_flashlight": True,
+        "logic_difficulty": "loose",
+    }
+
+    def test_captive_freight_does_not_need_it(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        state = self.multiworld.get_all_state(perform_sweep=False)
+        state.remove(world.create_item("Flashlight"))
+        state.sweep_for_advancements()
+        self.assertTrue(self.can_reach_entrance("Captive Freight: ba_yard3a", state))
+
+
+class TestMicrowave(HalfLifeSvenTestBase):
+    options = {"include_microwave": True}
+
+    def test_it_is_a_check(self) -> None:
+        names = {location.name for location in self.multiworld.get_locations(self.player)}
+        self.assertIn("Anomalous Materials: Microwave (Part 1)", names)
+
+    def test_slot_data_says_so(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        self.assertTrue(world.fill_slot_data()["include_microwave"])
+
+
+class TestMicrowaveOff(HalfLifeSvenTestBase):
+    def test_it_is_not_a_check_by_default(self) -> None:
+        names = {location.name for location in self.multiworld.get_locations(self.player)}
+        self.assertNotIn("Anomalous Materials: Microwave (Part 1)", names)
+
+
+class TestAirAcceleration(HalfLifeSvenTestBase):
+    options = {"progressive_air_acceleration": True}
+
+    def test_the_count_follows_from_the_bounds(self) -> None:
+        from ..data import AIR_ACCELERATE_ITEM, air_accelerate_steps
+
+        pool = [i.name for i in self.multiworld.itempool if i.player == self.player]
+        self.assertEqual(pool.count(AIR_ACCELERATE_ITEM), len(air_accelerate_steps(10, 100)))
+        self.assertEqual(pool.count(AIR_ACCELERATE_ITEM), 15)
+
+    def test_slot_data_carries_the_bounds(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        self.assertEqual(world.fill_slot_data()["air_acceleration"], [10, 100])
+
+
+class TestAirAccelerationSwapped(HalfLifeSvenTestBase):
+    options = {
+        "progressive_air_acceleration": True,
+        "air_acceleration_minimum": 150,
+        "air_acceleration_maximum": 0,
+    }
+
+    def test_bounds_are_put_the_right_way_round(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        self.assertEqual(world.fill_slot_data()["air_acceleration"], [0, 150])
+        pool = [i.name for i in self.multiworld.itempool if i.player == self.player]
+        self.assertEqual(pool.count("Progressive Air Acceleration"), 23)
+
+
+class TestAirAccelerationOff(HalfLifeSvenTestBase):
+    def test_none_in_the_pool(self) -> None:
+        pool = [i.name for i in self.multiworld.itempool if i.player == self.player]
+        self.assertNotIn("Progressive Air Acceleration", pool)
+        world = self.multiworld.worlds[self.player]
+        self.assertIsNone(world.fill_slot_data()["air_acceleration"])
+
+
+class TestAirAccelerationLadder(HalfLifeSvenTestBase):
+    def test_values_walk_from_minimum_to_maximum(self) -> None:
+        from ..data import air_accelerate_steps, air_accelerate_value
+
+        steps = air_accelerate_steps(10, 100)
+        self.assertEqual(air_accelerate_value(10, 100, 0), 10)
+        self.assertEqual(air_accelerate_value(10, 100, len(steps)), 100)
+        self.assertEqual(air_accelerate_value(10, 100, len(steps) + 5), 100)
+        self.assertEqual(steps, sorted(steps))
+        self.assertEqual(air_accelerate_steps(40, 40), [])
+
+
+class TestTrapWeights(HalfLifeSvenTestBase):
+    options = {
+        "trap_percentage": 100,
+        "scientist_trap_weight": 0,
+        "headcrab_trap_weight": 0,
+        "butterfingers_trap_weight": 0,
+        "bot_swarm_trap_weight": 0,
+        "bunny_hop_trap_weight": 0,
+        "sticky_key_trap_weight": 0,
+        "reload_trap_weight": 10,
+    }
+
+    def test_only_the_weighted_trap_appears(self) -> None:
+        from ..items import trap_items
+
+        pool = [i.name for i in self.multiworld.itempool if i.player == self.player]
+        traps = {name for name in pool if name in trap_items}
+        self.assertEqual(traps, {"Reload Trap"})
+
+
+class TestTrapWeightsAllZero(HalfLifeSvenTestBase):
+    options = {
+        "trap_percentage": 100,
+        "scientist_trap_weight": 0,
+        "headcrab_trap_weight": 0,
+        "butterfingers_trap_weight": 0,
+        "bot_swarm_trap_weight": 0,
+        "bunny_hop_trap_weight": 0,
+        "sticky_key_trap_weight": 0,
+        "reload_trap_weight": 0,
+    }
+
+    def test_no_traps_rather_than_a_crash(self) -> None:
+        from ..items import trap_items
+
+        pool = [i.name for i in self.multiworld.itempool if i.player == self.player]
+        self.assertFalse([name for name in pool if name in trap_items])
+
+
+class TestButterfingersReissueSlotData(HalfLifeSvenTestBase):
+    options = {"butterfingers_reissue": False}
+
+    def test_it_is_sent(self) -> None:
+        world = self.multiworld.worlds[self.player]
+        self.assertFalse(world.fill_slot_data()["butterfingers_reissue"])

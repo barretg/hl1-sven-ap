@@ -4,6 +4,7 @@
 #   M|<key>|<name>|<goal chapter>|<short>|<has intro>  a campaign
 #   C|<index>|<key>|<name>|<map,map,...>|<is_goal>|<campaign key>|<requires chapter>|<complete on endgame>
 #   P|<console>|<chapter key>      hub console button -> the mission it enters
+#   T|<map>|<to map>|<x y z>       a changelevel and where it leads
 #   L|<id>|<map>|<type>|<arg>|<name>[|<x y z>[|<needs>]]
 #   F|<location id>|<map>|<x y z>|<needs>[|<drop>]  a mission's first copy of a weapon
 #   K|<classname>|<item name>      weapon pickup that must be unlocked
@@ -19,8 +20,8 @@
 #   J|<arcade>|<volume>|<mins>|<maxs>   a box the plugin watches
 #   G|<arcade>|<part>|<targetname>|<classname>   the Juggernaut seal
 #   E|<arcade>|<class>|<field>|<value>  how to grant a class without its booth
-V|5
-D|ac779f8dc499
+V|6
+D|30199be327ce
 M|half_life|Half-Life|nihilanth|hl|1
 M|opposing_force|Opposing Force|of_worlds_collide|of|1
 M|blue_shift|Blue Shift|bs_leap_of_faith|bs|1
@@ -101,6 +102,192 @@ P|bs_ch06|bs_leap_of_faith
 P|th_ep01|th_episode_1
 P|th_ep02|th_episode_2
 P|th_ep03|th_episode_3
+T|hl_c00|hl_c01_a1|-1531 -2107 -3180
+T|hl_c01_a1|hl_c01_a2|-473 -3300 -1336
+T|hl_c01_a2|hl_c02_a1|1668 1074 594
+T|hl_c02_a1|hl_c02_a2|2649 1919 919
+T|hl_c02_a2|hl_c03|-424 1488 -1059
+T|hl_c03|hl_c04|-814 -632 1164
+T|hl_c04|hl_c05_a1|988 1284 120
+T|hl_c05_a1|hl_c05_a2|-1002 -664 109
+T|hl_c05_a2|hl_c05_a3|-3306 7062 -302
+T|hl_c05_a3|hl_c06|2288 -1072 -2224
+T|hl_c06|hl_c07_a1|2560 -2140 128
+T|hl_c07_a1|hl_c07_a2|-182 -1172 -694
+T|hl_c07_a2|hl_c08_a1|2138 374 234
+T|hl_c08_a1|hl_c08_a2|1696 1104 -760
+T|hl_c08_a2|hl_c09|-2272 640 -1600
+T|hl_c09|hl_c10|-1464 -2712 -1328
+T|hl_c10|hl_c11_a1|-1280 -2136 232
+T|hl_c11_a1|hl_c11_a2|5260 -1696 -848
+T|hl_c11_a2|hl_c11_a3|-3864 1792 28
+T|hl_c11_a3|hl_c11_a3|160 448 -336
+T|hl_c11_a3|hl_c11_a4|-72 1584 -1056
+T|hl_c11_a4|hl_c11_a5|-808 -2448 -1584
+T|hl_c11_a5|hl_c12|-1574 377 -1845
+T|hl_c12|hl_c13_a1|-1424 -1168 -1140
+T|hl_c13_a1|hl_c13_a2|-2992 -528 -632
+T|hl_c13_a2|hl_c13_a3|2232 2368 -64
+T|hl_c13_a3|hl_c13_a4|-336 -1096 1088
+T|hl_c13_a4|hl_c13_a4|672 608 224
+T|hl_c13_a4|hl_c14|1144 268 -198
+T|hl_c14|hl_c15|-388 176 -40
+T|hl_c15|hl_c16_a1|-3652 3936 -1712
+T|hl_c16_a1|hl_c16_a2|1782 -2038 724
+T|hl_c16_a2|hl_c16_a3|-760 1508 302
+T|hl_c16_a3|hl_c16_a4|2160 1384 928
+T|hl_c16_a4|hl_c17|2198 -2345 924
+T|hl_c17|hl_c18|1230 1822 3796
+T|of0a0|of1a1|-1352 -1416 -72
+T|of1a1|of0a0|-336 3440 176
+T|of1a1|of1a2|1032 -224 336
+T|of1a2|of1a1|-1416 -2912 160
+T|of1a2|of1a3|-560 -2752 -1224
+T|of1a3|of1a4|-720 640 120
+T|of1a4|of1a3|-720 640 280
+T|of1a4|of1a4b|830 3010 -138
+T|of1a4b|of1a4|-560 504 312
+T|of1a4b|of1a5|-232 -1655 -171
+T|of1a5|of1a4b|-880 848 -176
+T|of1a5|of1a5b|1936 -3488 1371
+T|of1a5b|of1a5|880 -1904 1376
+T|of1a5b|of1a6|-1696 -2960 2352
+T|of1a6|of1a5b|860 -2124 -332
+T|of1a6|of2a1|-616 608 -112
+T|of2a1|of1a6|2120 2208 80
+T|of2a1|of2a1b|-1536 672 -424
+T|of2a1b|of2a1|-1536 672 -136
+T|of2a1b|of2a2|2216 1392 -1368
+T|of2a2|of2a4|-3516 2056 776
+T|of2a4|of2a3|-1296 600 136
+T|of2a4|of2a5|752 -608 200
+T|of2a5|of2a4|160 -608 200
+T|of2a5|of2a6|-432 -304 1248
+T|of2a6|of2a5|672 728 -264
+T|of2a6|of3a1|2656 3280 -460
+T|of3a1|of2a6|448 970 -224
+T|of3a1|of3a2|-1298 -294 602
+T|of3a2|of3a1|2602 -618 -214
+T|of3a2|of3a4|2586 -474 -214
+T|of3a4|of3a2|370 598 314
+T|of3a4|of3a5|-1664 524 96
+T|of3a5|of3a4|-1392 432 152
+T|of3a5|of3a6|-2200 2096 -152
+T|of3a6|of3a5|-2200 2096 -152
+T|of3a6|of4a1|96 1640 90
+T|of4a1|of3a6|-570 1794 66
+T|of4a1|of4a2|-2518 460 454
+T|of4a1|of4a2|-2024 726 448
+T|of4a2|of4a1|-2850 772 454
+T|of4a2|of4a1|-2024 854 392
+T|of4a2|of4a3|-704 -2850 446
+T|of4a3|of4a2|-824 -2850 446
+T|of4a3|of4a2|256 -1464 1776
+T|of4a3|of4a4|3579 -3401 682
+T|of4a4|of5a1|-520 808 296
+T|of5a1|of4a4|-1016 888 -840
+T|of5a1|of5a2|952 -1872 192
+T|of5a2|of5a1|1480 768 320
+T|of5a2|of5a3|-1080 1824 72
+T|of5a3|of5a2|-1416 -160 -120
+T|of5a3|of5a4|-8 -952 172
+T|of5a4|of5a3|-3416 -840 44
+T|of5a4|of6a1|-1916 -3532 -2388
+T|of6a1|of5a4|-2504 3296 32
+T|of6a1|of6a2|2676 -1196 32
+T|of6a2|of6a1|-1804 996 32
+T|of6a2|of6a3|1888 -3016 32
+T|of6a3|of6a2|-608 3464 32
+T|of6a3|of6a4|1960 1956 -108
+T|of6a4|of6a3|-408 2716 212
+T|of6a4|of6a4b|-224 1780 -280
+T|of6a4b|of6a4|-224 1780 -104
+T|of6a4b|of6a5|-2464 -1424 -904
+T|ba_tram1|ba_tram2|-1168 208 160
+T|ba_tram2|ba_tram1|-944 864 2368
+T|ba_tram2|ba_tram3|2752 -736 2336
+T|ba_tram3|ba_security1|-1824 3008 672
+T|ba_tram3|ba_tram2|3232 1160 2344
+T|ba_elevator|ba_canal1|-416 1032 456
+T|ba_elevator|ba_maint|-1656 368 3104
+T|ba_maint|ba_elevator|1222 -2136 672
+T|ba_maint|ba_security2|-1509 2052 544
+T|ba_security1|ba_security2|-928 2326 544
+T|ba_security1|ba_tram3|-1232 3008 698
+T|ba_security2|ba_maint|-1723 2052 544
+T|ba_security2|ba_security1|-1064 2574 488
+T|ba_canal1|ba_canal1b|-784 -68 -128
+T|ba_canal1|ba_elevator|2256 292 136
+T|ba_canal1b|ba_canal1|364 -152 -128
+T|ba_canal1b|ba_canal2|-1760 1948 -152
+T|ba_canal2|ba_canal1b|-2328 864 376
+T|ba_canal2|ba_canal1b|1696 300 232
+T|ba_canal2|ba_canal3|360 -1344 704
+T|ba_canal2|ba_yard1|-72 2000 528
+T|ba_canal3|ba_canal2|1592 2528 808
+T|ba_canal3|noba_canal2|1400 -352 640
+T|ba_yard1|ba_canal2|-3416 -3344 -752
+T|ba_yard1|ba_yard2|208 -2348 -568
+T|ba_yard2|ba_yard1|208 -2188 72
+T|ba_yard2|ba_yard3a|1992 -816 -448
+T|ba_yard3|ba_teleport1|1814 1462 -202
+T|ba_yard3|ba_yard3b|592 892 -124
+T|ba_yard3|ba_yard4|2064 1000 -128
+T|ba_yard3a|ba_yard2|1384 -1520 -448
+T|ba_yard3a|ba_yard3b|592 -336 -488
+T|ba_yard3b|ba_yard3|1088 924 -256
+T|ba_yard3b|ba_yard3a|592 -616 -488
+T|ba_yard4|ba_yard3|2064 -632 -266
+T|ba_yard4|ba_yard4a|1920 -1128 248
+T|ba_yard4a|ba_yard4|1920 -1212 248
+T|ba_yard4a|ba_yard5|-504 488 128
+T|ba_yard5|ba_yard4a|-296 488 128
+T|ba_yard5|ba_yard5a|1048 2888 96
+T|ba_yard5a|ba_yard4|2088 -312 120
+T|ba_yard5a|ba_yard5|384 3048 96
+T|ba_teleport1|ba_xen1|8 -52 348
+T|ba_teleport1|ba_xen1|200 -696 -152
+T|ba_teleport1|ba_yard3|-1854 -1042 174
+T|ba_xen1|ba_teleport1|-1828 -2661 1652
+T|ba_xen1|ba_xen2|-724 -2298 246
+T|ba_xen2|ba_xen1|-936 -2278 262
+T|ba_xen2|ba_xen3|2264 2080 -102
+T|ba_xen3|ba_xen2|-2504 -876 282
+T|ba_xen3|ba_xen4|928 -3396 -248
+T|ba_xen4|ba_xen3|-2456 3832 592
+T|ba_xen4|ba_xen5|1920 -352 256
+T|ba_xen5|ba_xen4|1920 -208 256
+T|ba_xen5|ba_xen6|-3712 752 88
+T|ba_xen6|ba_teleport2|-1376 -3280 352
+T|ba_xen6|ba_xen5|1568 -3312 200
+T|ba_power1|ba_power2|1152 -3040 -240
+T|ba_power1|ba_teleport2|-32 1196 664
+T|ba_power2|ba_power1|-416 0 1150
+T|ba_teleport2|ba_outro|200 -712 -152
+T|ba_teleport2|ba_power1|-768 620 -1064
+T|ba_teleport2|ba_xen6|440 -696 -152
+T|ba_outro|ba_teleport2|-616 280 -824
+T|th_ep1_00|th_ep1_01|-232 632 -1788
+T|th_ep1_01|th_ep1_02|-267 -1831 286
+T|th_ep1_02|th_ep1_03|-1291 -4967 272
+T|th_ep1_03|th_ep1_04|-4364 -1620 -576
+T|th_ep1_04|th_ep1_05|9692 -9352 130
+T|th_ep1_05|th_ep2_00|-3412 -32 -826
+T|th_ep1_05|th_ep2_00|-2896 -24 -684
+T|th_ep2_00|th_ep2_01|-1396 6272 -1328
+T|th_ep2_01|th_ep2_02|-1822 6240 776
+T|th_ep2_02|th_ep2_03|-1444 -1390 -502
+T|th_ep2_03|th_ep2_04|-568 440 -1436
+T|th_ep2_04|th_ep3_00|32 -10080 832
+T|th_ep3_00|th_ep3_01|-1416 -3976 104
+T|th_ep3_01|th_ep3_02|-9396 4322 -240
+T|th_ep3_02|th_ep3_03|10904 -2310 -960
+T|th_ep3_03|th_ep3_04|6896 -2960 -2048
+T|th_ep3_04|th_ep3_05|-610 16238 -1038
+T|th_ep3_05|th_ep3_06|-372 2512 -761
+T|th_ep3_06|th_ep3_07|1722 -6114 -596
+T|th_ep3_07|th_ep3_07|616 1208 400
+T|th_ep3_07|they53|2672 -272 240
 L|7720000|hl_c00|map_reached||Black Mesa Inbound: Reached
 L|7720001|hl_c01_a1|map_reached||Anomalous Materials: Part 1 Reached
 L|7720002|hl_c01_a2|map_reached||Anomalous Materials: Part 2 Reached
@@ -503,7 +690,7 @@ L|7720317|ba_yard1|weapon_pickup|weapon_satchel|Blue Shift: First Satchel Charge
 F|7720317|ba_yard1|-2662 -1550 92|
 F|7720317|ba_power1|1029 -2475 -487|
 L|7720318|ba_xen2|weapon_pickup|weapon_snark|Blue Shift: First Snarks|1160 3384 -3576
-F|7720318|ba_xen2|1160 3384 -3576|
+F|7720318|ba_xen2|1160 3384 -3576|Flashlight
 F|7720318|ba_power1|-890 -1822 -112|
 L|7720319|ba_yard1|weapon_pickup|weapon_handgrenade|Blue Shift: First Hand Grenade|-2635 -1550 92
 F|7720319|ba_yard1|-2635 -1550 92|
@@ -990,6 +1177,7 @@ F|7720814|of4a1|-2009 3635 392||hostile
 F|7720814|of5a2|-320 3168 64||hostile
 F|7720814|of6a2|-354 -1200 90||hostile
 F|7720814|of6a4b|-152 -1512 -592||hostile
+L|7720815|hl_c01_a1|microwave|microwavepopmm1_1|Anomalous Materials: Microwave (Part 1)|-2147 1197 -237
 X|suspension|Suspension|suspension|jugger|start_events|end_script
 Y|suspension|easy|Easy|50|vote_button4|win_red_tickets
 Y|suspension|medium|Medium|25|vote_button3|win_blue_tickets

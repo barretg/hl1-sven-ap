@@ -35,6 +35,7 @@ from campaign_layout import (
     CHARGER_CLASSNAMES,
     CLASSNAME_TO_ITEM,
     EQUIPMENT_SHARING_PICKUP,
+    FIRED_CHECKS,
     HEALING_POOL_CLASSNAMES,
     DEFAULT_CAMPAIGN,
     ENABLED_LOCATION_TYPES,
@@ -440,6 +441,29 @@ def source_record(
     return record
 
 
+def map_exits(
+    ents: list[dict[str, str]], centres: dict[str, tuple[float, float, float]]
+) -> list[list]:
+    """`[[to map, x, y, z], ...]`: every changelevel on a map and where it is.
+
+    A brush trigger at its brush's centre, a point one at its origin. One that
+    something else fires (a Xen teleport, a scripted exit) still stands where
+    the way on is, near enough to point at.
+    """
+    exits = []
+    for entity in ents:
+        if entity.get("classname") != "trigger_changelevel" or not entity.get("map"):
+            continue
+        centre = centres.get(entity.get("model", ""))
+        offset = entity_origin(entity.get("origin", ""))
+        if centre is None:
+            if "origin" not in entity:
+                continue
+            centre = (0.0, 0.0, 0.0)
+        exits.append([entity["map"]] + [int(round(centre[i] + offset[i])) for i in range(3)])
+    return sorted(exits)
+
+
 def build(maps_dir: Path, registry: IdRegistry) -> dict:
     # `index` stays global across every campaign, because it is what `!warp <n>`
     # takes in game and a number has to mean one mission whichever campaigns a
@@ -566,6 +590,23 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                             position=position,
                             gates=gated.get(f"{classname}:{entity['model']}"),
                         )
+
+            # One-off map events, sent when the map fires their targetname.
+            # Placed where the entity it names stands, for `!find`. The plugin
+            # hears the firing by answering to the same targetname.
+            for kind, targetname, base_name in FIRED_CHECKS.get(map_name, ()):
+                if kind not in enabled:
+                    continue
+                fired = next((e for e in ents if e.get("targetname") == targetname), None)
+                if fired is None:
+                    raise SystemExit(f"{map_name}: no entity named {targetname}")
+                builder.add(
+                    chapter,
+                    map_name,
+                    f"{base_name}{suffix}",
+                    {"type": kind, "map": map_name, "fires": targetname},
+                    position=entity_origin(fired.get("origin", "")),
+                )
 
             # Every distinct pickup classname present in the map becomes one
             # check: collecting any instance of it fires the check once.
@@ -775,6 +816,12 @@ def build(maps_dir: Path, registry: IdRegistry) -> dict:
                 # True where finishing means the last map *ended*, not that the
                 # player arrived on it.
                 "complete_on_endgame": chapter["key"] in ENDGAME_CHAPTERS,
+                # Where each map's changelevels stand and where they lead, for
+                # `!find` and `!trace` on a part's Reached or the Complete.
+                "exits": {
+                    m: map_exits(entities[m], centres[m]) for m in chapter["maps"]
+                    if map_exits(entities[m], centres[m])
+                },
             }
             for chapter in chapters
         ],
@@ -864,6 +911,9 @@ def build_items(
         ("Headcrab Trap", 25),
         ("Butterfingers Trap", 25),
         ("Bot Swarm Trap", 25),
+        ("Bunny Hop Trap", 25),
+        ("Sticky Key Trap", 25),
+        ("Reload Trap", 25),
     ):
         add(name, "trap", group="trap", weight=weight)
 

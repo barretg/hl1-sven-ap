@@ -29,6 +29,8 @@ void ShowHelp( CBasePlayer@ pPlayer )
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"  !find [text]  point at the nearest check, or one you name\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+		"  !trace [text]  draw a line to it; !trace again to stop\n" );
+	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"  !warp <number or name>  travel to a mission, or \"name 2\" for a part\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"  !warp <game> <number>  a mission counted within one game: !warp of 3\n" );
@@ -37,11 +39,13 @@ void ShowHelp( CBasePlayer@ pPlayer )
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"  !hub  return to the campaign portal\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+		"  !custombots [0|1]  host only: bots in custom player models or not\n" );
+	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"  !help  this list\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"Or press a mission console's button in the hub.\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-		"In console (mind the dot): .ap  .ap_tracker  .ap_find  .ap_warp  .ap_menu\n" );
+		"In console (mind the dot): .ap  .ap_tracker  .ap_find  .ap_trace  .ap_warp  .ap_menu\n" );
 }
 
 void ShowStatus( CBasePlayer@ pPlayer )
@@ -73,8 +77,9 @@ void ShowStatus( CBasePlayer@ pPlayer )
 		// alongside either: having got into a mission is implied by having
 		// emptied it, and the list is read to find where there is still something
 		// left. A mission with nothing left in it is done with whether or not its
-		// own door is still open.
-		else if( ChapterFinished( pChapter ) )
+		// own door is still open. Not one only the server finished: that still
+		// reads as to play, with a note.
+		else if( ChapterDoneHere( pChapter ) )
 			szStatus = "complete";
 		else if( pChapter.isGoal )
 		{
@@ -127,7 +132,7 @@ void ShowStatus( CBasePlayer@ pPlayer )
 
 		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCONSOLE,
 			"  " + ( i < 10 ? " " : "" ) + i + ". " + pChapter.name + szRelative
-			+ "  [" + szStatus + "]\n" );
+			+ "  [" + szStatus + "]" + RemoteNote( pChapter ) + "\n" );
 	}
 
 	// The arcade map is not a mission and has no number, so it is listed apart
@@ -432,6 +437,27 @@ bool ChapterFinished( APChapter@ pChapter )
 }
 
 /*
+* Complete on the server, never finished on this machine for this slot:
+* collected, released, or played elsewhere. The client says which.
+*/
+bool ChapterRemoteComplete( APChapter@ pChapter )
+{
+	return pChapter !is null && g_State.RemoteComplete( pChapter.key )
+	    && ChapterCompletionFound( pChapter );
+}
+
+/* Finished, and here: what the lists call "complete". */
+bool ChapterDoneHere( APChapter@ pChapter )
+{
+	return ChapterFinished( pChapter ) && !ChapterRemoteComplete( pChapter );
+}
+
+string RemoteNote( APChapter@ pChapter )
+{
+	return ChapterRemoteComplete( pChapter ) ? " (Remote Complete)" : "";
+}
+
+/*
 * Which way is it, in words, from where the player is standing and facing.
 *
 * Deliberately a compass rather than a route: the direction is the straight line
@@ -714,6 +740,15 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 			+ ( szPart.Length() > 0 ? ", " + szPart : "" )
 			+ " (" + szMap + ").\n" );
 
+		// A later part of the mission being played: the way there is on this
+		// map, which is more use than a warp.
+		Vector vecWay;
+		if( WayOn( pPlayer, pLocation, vecWay ) )
+		{
+			DescribeWayOn( pPlayer, vecWay );
+			return;
+		}
+
 		// A locked mission's door would refuse the warp.
 		if( !ChapterPlayable( pChapter ) )
 			return;
@@ -739,8 +774,12 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 		if( pLocation.kind == TRIGGER_MAP_REACHED
 		    || pLocation.kind == TRIGGER_CHAPTER_COMPLETE )
 		{
-			g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
-				"[AP] That is this map itself: keep going.\n" );
+			Vector vecWay;
+			if( WayOn( pPlayer, pLocation, vecWay ) )
+				DescribeWayOn( pPlayer, vecWay );
+			else
+				g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+					"[AP] That is this map itself: keep going.\n" );
 		}
 		else
 		{
@@ -765,6 +804,14 @@ void DescribeLocation( CBasePlayer@ pPlayer, APLocation@ pLocation )
 		+ HeightTo( pPlayer, vecPosition ) + ".\n" );
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"[AP] " + SightTo( pPlayer, vecPosition ) + "\n" );
+}
+
+/* Where this map's way on is, for a later part or the mission's end. */
+void DescribeWayOn( CBasePlayer@ pPlayer, const Vector& in vecWay )
+{
+	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+		"[AP] The way on is about " + int( TravelScore( pPlayer, vecWay ) ) + " units "
+		+ BearingTo( pPlayer, vecWay ) + HeightTo( pPlayer, vecWay ) + ".\n" );
 }
 
 /*
@@ -793,14 +840,10 @@ void FindLocation( CBasePlayer@ pPlayer, const string& in szQuery )
 			if( !LocationInSeed( pLocation ) || LocationFound( pLocation ) )
 				continue;
 
-			// A weapon check's copy on this map counts as being on this map.
-			APSource@ pSource = SourceHere( pLocation );
+			// A weapon check's copy on this map counts as being on this map,
+			// and a later part's Reached as being at the way there.
 			Vector vecAt;
-			if( pSource !is null && pSource.hasPosition )
-				vecAt = pSource.position;
-			else if( pLocation.map == g_szCurrentMap && pLocation.hasPosition )
-				vecAt = pLocation.position;
-			else
+			if( !TraceTargetFor( pPlayer, pLocation, vecAt ) )
 				continue;
 
 			float flScore = TravelScore( pPlayer, vecAt );
@@ -2012,7 +2055,10 @@ void ConsoleTracker( const CCommand@ pArgs )
 {
 	CBasePlayer@ pPlayer = g_ConCommandSystem.GetCurrentPlayer();
 	if( pPlayer !is null )
+	{
 		ShowTracker( pPlayer, ConsoleArgs( pArgs ) );
+		TrackMission( pPlayer, ConsoleArgs( pArgs ) );
+	}
 }
 
 void ConsoleFind( const CCommand@ pArgs )
@@ -2070,7 +2116,8 @@ void ReportClientCommands()
 
 	array<CClientCommand@> commands = {
 		@g_CmdStatus, @g_CmdTracker, @g_CmdFind,
-		@g_CmdWarp, @g_CmdHub, @g_CmdHelp, @g_CmdMenu, @g_CmdHud
+		@g_CmdWarp, @g_CmdHub, @g_CmdHelp, @g_CmdMenu, @g_CmdHud,
+		@g_CmdTrace, @g_CmdCustomBots
 	};
 
 	for( uint i = 0; i < commands.length(); ++i )
@@ -2165,6 +2212,31 @@ HookReturnCode ClientSay( SayParameters@ pParams )
 			szFilter += pArguments[i];
 		}
 		ShowTracker( pPlayer, szFilter );
+		TrackMission( pPlayer, szFilter );
+		return HOOK_HANDLED;
+	}
+
+	if( szCommand == "!trace" )
+	{
+		pParams.ShouldHide = true;
+		string szQuery;
+		for( int i = 1; i < pArguments.ArgC(); ++i )
+		{
+			if( szQuery.Length() > 0 )
+				szQuery += " ";
+			szQuery += pArguments[i];
+		}
+		TraceCommand( pPlayer, szQuery );
+		return HOOK_HANDLED;
+	}
+
+	if( szCommand == "!custombots" )
+	{
+		pParams.ShouldHide = true;
+		string szArg;
+		if( pArguments.ArgC() > 1 )
+			szArg = pArguments[1];
+		SetCustomBots( pPlayer, szArg );
 		return HOOK_HANDLED;
 	}
 

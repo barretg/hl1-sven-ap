@@ -27,6 +27,14 @@ const string AP_AMNESTY = AP_DIR + "ap_amnesty.txt";
 // server's model folders. Missing or empty: the built-in list in ap_bots.as.
 const string AP_BOT_MODELS = AP_DIR + "bot_models.txt";
 
+// The same, from the game's own folder only: what bots wear when custom bot
+// models are off. Missing or empty: the built-in list, which is all stock.
+const string AP_BOT_MODELS_STOCK = AP_DIR + "bot_models_stock.txt";
+
+// This machine's preferences, `key=value` lines, kept across sessions and
+// seeds and shared with the client. Today only `custom_bots`.
+const string AP_PREFS = AP_DIR + "ap_prefs.txt";
+
 const string HUB_MAP = "-sp_campaign_portal";
 
 // Location trigger kinds, as emitted by gen_checkdata.py.
@@ -37,6 +45,9 @@ const string TRIGGER_MAP_REACHED = "map_reached";
 const string TRIGGER_CHAPTER_COMPLETE = "chapter_complete";
 const string TRIGGER_CHARGER = "charger";
 const string TRIGGER_WEAPON_PICKUP = "weapon_pickup";
+// The Anomalous Materials microwave: sent when the map fires the targetname in
+// its `arg`.
+const string TRIGGER_MICROWAVE = "microwave";
 
 // A charger check whose unit is this classname is a healing pool.
 const string POOL_CLASSNAME = "trigger_hurt";
@@ -99,6 +110,14 @@ class APLocation
 	array<APSource@> sources;
 }
 
+/* A changelevel on a map, from a T record: where it stands and where it leads. */
+class APExit
+{
+	string map;
+	string to;
+	Vector position;
+}
+
 class APSource
 {
 	string map;
@@ -138,6 +157,24 @@ class APState
 	// client sends nothing and means "on", which is all this ever did.
 	string lobbyDeathLink = "on";
 	int lastEventSeq = 0;
+	// Missions the server counts complete that were never finished on this
+	// machine for this slot: collected, released, or played elsewhere. Shown
+	// "(Remote Complete)" and treated as still to play. Empty from an older
+	// client.
+	dictionary remoteComplete;
+	// Whether Butterfingers hands the weapon back after its timer, or only once
+	// the player has nothing left to fight with. On from an older client.
+	bool butterfingersReissue = true;
+	// The `sv_airaccelerate` to hold, from Progressive Air Acceleration, or -1
+	// to leave the server's own.
+	int airAccelerate = -1;
+	// Melee Throw is in this seed's pool: a throw before it arrives says so.
+	bool meleeThrowInPool = false;
+
+	bool RemoteComplete( const string& in szKey ) const
+	{
+		return remoteComplete.exists( szKey );
+	}
 
 	/*
 	* Does a death here wipe the lobby?
@@ -195,6 +232,8 @@ class APState
 
 array<APChapter@> g_Chapters;
 array<APLocation@> g_Locations;
+// Every changelevel in the campaigns, from T records. Empty in an older file.
+array<APExit@> g_Exits;
 
 // Fingerprint of the id map checkdata.txt was generated from. If the client
 // reports a different one, our location ids mean different things than the
@@ -279,6 +318,10 @@ array<APLocation@> g_MapChargers;
 // Healing pools on this map: chargers whose unit is a `trigger_hurt`. Nothing is
 // pressed, so they are found by standing in one rather than by +use.
 array<APLocation@> g_MapPools;
+
+// One-off map events on this map (the microwave): each answers to the
+// targetname the map fires, through a counter of our own. See ap_locations.
+array<APLocation@> g_MapFired;
 
 // "First time you find this weapon", in this campaign. Anchored in the data to
 // the earliest map holding one, which is only where logic hangs it: any copy on
@@ -527,6 +570,7 @@ void LoadCheckData()
 {
 	g_Chapters.resize( 0 );
 	g_Locations.resize( 0 );
+	g_Exits.resize( 0 );
 	g_LockedClassnames.deleteAll();
 	g_StartingWeapons.resize( 0 );
 	g_DefaultStartingWeapons.resize( 0 );
@@ -647,6 +691,16 @@ void LoadCheckData()
 				pOwner.sources.insertLast( @source );
 			}
 		}
+		else if( parts[0] == "T" && parts.length() >= 4 )
+		{
+			// Appended in format 6; an older file has none, and `!find` on a
+			// Reached or Complete check says "keep going" as it always did.
+			APExit way;
+			way.map = parts[1];
+			way.to = parts[2];
+			way.position = APVectorFromString( parts[3] );
+			g_Exits.insertLast( @way );
+		}
 		else if( parts[0] == "K" && parts.length() >= 3 )
 		{
 			g_LockedClassnames[ parts[1] ] = parts[2];
@@ -748,6 +802,7 @@ void IndexCurrentMap()
 	g_MapKillCounts.resize( 0 );
 	g_MapChargers.resize( 0 );
 	g_MapPools.resize( 0 );
+	g_MapFired.resize( 0 );
 	g_WeaponPickups.resize( 0 );
 	g_iMapKills = 0;
 
@@ -777,6 +832,8 @@ void IndexCurrentMap()
 			g_MapKills.insertLast( pLocation );
 		else if( pLocation.kind == TRIGGER_KILL_COUNT )
 			g_MapKillCounts.insertLast( pLocation );
+		else if( pLocation.kind == TRIGGER_MICROWAVE )
+			g_MapFired.insertLast( pLocation );
 		else if( pLocation.kind == TRIGGER_CHARGER )
 		{
 			if( pLocation.arg.Find( POOL_CLASSNAME + ":" ) == 0 )

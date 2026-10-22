@@ -70,7 +70,15 @@ If the file shrinks, the client treats it as a new game session and rewinds.
 | `GOAL\|<chapter key>` | a finale fell, or `suspension` for a run cleared as the Juggernaut at the capped tier; the client sends `StatusUpdate: CLIENT_GOAL` once every goal in the seed has had one |
 | `DEATH\|<player>\|<cause>\|<forgiven>` | a player died; sent unconditionally. `forgiven` is `1` when DeathLink amnesty absorbed it, so the client does not report it onward |
 | `CHAT\|<player>\|<message>` | in-game chat, for relaying to multiworld chat |
+| `SETTING\|<key>=<value>` | the host changed a machine preference in game (today only `custom_bots`); the plugin has already written `ap_prefs.txt`, so the client only logs it |
 | `ACK\|<seq>` | event consumed; client may drop it |
+
+The plugin writes `CHECK` and `COMPLETE` only while the snapshot says
+`connected=1`. A check refused while the client is away is not marked sent, so
+the next touch or sweep sends it, and arriving on a map sends its "Reached" again
+once the client reconnects. A mission finished while disconnected is not counted
+at all: the game says it "could not be recorded" rather than let the client put
+toward a seal a completion the server never got.
 
 ## `ap_in.txt`: client to game
 
@@ -126,6 +134,10 @@ excluded=black_mesa_inbound
 items=RPG;Shotgun
 ungated=item_longjump
 starting=weapon_crowbar;weapon_medkit
+remote=office_complex
+butterfingers_reissue=1
+air_accelerate=-1
+melee_throw=0
 now=1786000000
 event=4|ITEM|Ammo Cache|1786000000
 event=5|DEATHLINK|PlayerTwo~a gargantua|1786000001
@@ -218,6 +230,23 @@ a starting weapon and a `K` record: by default it is yours, and in a seed that
 started you with something else the gate refuses it, because no item named
 "Crowbar" is ever in a pool.
 
+`remote` is the missions complete on the server but never finished on this
+machine for this slot: collected, released, or played elsewhere. The client keeps
+the ones finished here in `ap_completed.json` beside the bridge files, per slot,
+and `/newrun` forgets them. The game lists the rest with their open or locked
+status and "(Remote Complete)" after it. Absent (an older client) means none.
+
+`butterfingers_reissue` is the seed's option: `0` keeps a dropped weapon on the
+floor past the timer unless the player has nothing else to fight with. Absent
+means `1`, the only behaviour there was.
+
+`air_accelerate` is the `sv_airaccelerate` Progressive Air Acceleration asks
+for, worked out by the client from the seed's bounds and the items received; the
+plugin holds the cvar there and puts the server's own value back at `-1`.
+
+`melee_throw` is `1` when Melee Throw is in the seed's pool, so a throw before
+it arrives is refused out loud rather than silently.
+
 `now` is the client's wall clock at write time. Event freshness is judged by
 comparing an event's timestamp against `now` from the same snapshot, so the two
 sides never have to agree on a clock: and a DeathLink that arrived during a map
@@ -233,6 +262,7 @@ load is correctly recognised as stale rather than killing you on arrival.
 | `TRAP` | trap name, queued on arrival and sprung once the level has been settled for five seconds |
 | `DEATHLINK` | `<source>~<cause>` |
 | `CHAT` | a line of multiworld chat to print in game |
+| `SETTING` | `<key>=<value>`: the client changed a machine preference (`/toggle_custom_bots`); it has already written `ap_prefs.txt` |
 
 Player names and chat text are the only operator-controlled values in the
 protocol, so both sides strip `|` and newlines out of them before they are
@@ -259,6 +289,21 @@ Pipe-delimited so AngelScript can parse it with a single `string.Split("|")`.
 | `K` | classname, item name: pickup refused until that item is held |
 | `S` | classname always granted (the crowbar and the medkit), the default a snapshot's `starting` may override |
 | `R` | classname, comma-separated campaigns whose maps it may be granted on |
+| `T` | map, the map it leads to, `x y z`: a changelevel, for `!find` and `!trace` on a later part's Reached or a mission's Complete (format 6) |
+
+`microwave` locations carry the targetname whose firing sends them as their
+`arg`. The plugin answers to that name with a `trigger_changevalue` of its own,
+the same trick the arcade map's signals use.
+
+## `ap_prefs.txt`
+
+`key=value` lines in the bridge folder: this machine's preferences, kept across
+sessions and seeds, and written by both sides. Today only `custom_bots`: `0`
+makes Bot Swarm's bots wear only the models listed in `bot_models_stock.txt`
+(the game's own folder), so nobody in the lobby has to download one. Missing
+means `1`. The host sets it in game with `!custombots` or `.ap_custom_bots`, or
+in the client with `/toggle_custom_bots`. `/uninstall` removes it with the rest
+of the bridge folder.
 
 The arcade map adds its own records, all scoped by its key so a second one would
 not collide:

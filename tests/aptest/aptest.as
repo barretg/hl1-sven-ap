@@ -29,6 +29,12 @@
 *   apt_tp              teleport back to the scenario spot
 *   apt_spawn <class>   spawn an entity in front of you
 *   apt_off             write a disconnected snapshot and stop
+*   apt_connect <0|1>   report the client disconnected or back, keeping the scenario
+*   apt_air <n>         report sv_airaccelerate n from Progressive Air Acceleration (-1 off)
+*   apt_reissue <0|1>   report butterfingers_reissue
+*   apt_throwpool <0|1> report Melee Throw as in the pool or not
+*   apt_remote <key>    toggle a mission as complete only on the server
+*   apt_setting <k=v>   send a SETTING event, as /toggle_custom_bots does
 *
 * Overwrites ap_in.txt; the real client rewrites it when it next connects.
 */
@@ -215,6 +221,11 @@ class APTScenario
 	string hold;                // ";"-separated mission keys locked (and their seals kept)
 	string exclude;             // ";"-separated mission keys left out of the seed
 	string only;                // a campaign key: every other campaign's checks out of the seed
+	string remote;              // ";"-separated mission keys complete only on the server
+	string found;               // ";"-separated check names already found on the server
+	bool reissue = true;        // butterfingers_reissue
+	int air = -1;               // air_accelerate
+	bool throwPool = false;     // melee_throw: Melee Throw is in the pool
 }
 
 array<APTScenario@> g_Scenarios;
@@ -413,6 +424,7 @@ void BuildScenarios()
 	BuildDropScenarios();
 	BuildSourceScenarios();
 	BuildParityScenarios();
+	BuildV04Scenarios();
 }
 
 /*
@@ -671,6 +683,238 @@ void BuildParityScenarios()
 		+ "!apt_redo: only the six built-in models.";
 }
 
+/*
+* The anniversary v0.4 parity pass: traps, reissue, air acceleration, the
+* microwave, the menu and trace rework, remote completions, the disconnected
+* safeguards and custom bot models. One scenario per thing to look at.
+*/
+void BuildV04Scenarios()
+{
+	APTScenario@ s;
+
+	// --- traps -------------------------------------------------------------
+
+	@s = Add( "v0.4 Bunny Hop Trap", "hl_c03" );
+	s.trap = "Bunny Hop Trap";
+	s.steps =
+		"'[AP] Bunny Hop Trap!' a few seconds after arrival." + "\n"
+		+ "For 15s you jump every time you land, walking or standing still." + "\n"
+		+ "Climb a ladder during it: no jumping off the ladder. Then it stops by itself." + "\n"
+		+ "!apt_trap Bunny Hop Trap then !apt_reload before 15s: no hopping on the new map.";
+
+	@s = Add( "v0.4 Sticky Key Trap", "hl_c03" );
+	s.trap = "Sticky Key Trap";
+	s.steps =
+		"'[AP] Sticky Key Trap! Everyone's <key> key is stuck' names forward, back," + "\n"
+		+ "strafe left or strafe right. For 15s you are pushed that way at walking pace," + "\n"
+		+ "relative to where you look, and can still steer against it. Then it stops." + "\n"
+		+ "!apt_trap Sticky Key Trap twice in a row: the second message may name another" + "\n"
+		+ "key, and only that one is held, for 15s from the second message.";
+
+	@s = Add( "v0.4 Reload Trap", "hl_c03" );
+	s.steps =
+		"Shotgun out, fire twice, note clip + reserve on the HUD." + "\n"
+		+ "!apt_trap Reload Trap: '[AP] Reload Trap!...', the shotgun reloads from empty" + "\n"
+		+ "and clip + reserve is the same total as before. Repeat with the glock and MP5." + "\n"
+		+ "Crowbar out, !apt_trap Reload Trap: 'Nobody had anything loaded.', no error.";
+
+	@s = Add( "v0.4 Butterfingers reissue off", "hl_c03" );
+	s.reissue = false;
+	s.forbid = "First Shotgun";
+	s.steps =
+		"Shotgun out, !apt_trap Butterfingers Trap. Wait 40s without picking it up:" + "\n"
+		+ "NOT reissued (you still hold the crowbar and others)." + "\n"
+		+ "Pick it up yourself: it is yours again, no check." + "\n"
+		+ "Drop it again with the trap, then !apt_reload: on the new map it is back." + "\n"
+		+ "!apt_reissue 1 and drop it again: back after 30s, as before.";
+
+	@s = Add( "v0.4 Butterfingers reissue off, nothing left", "hl_c03" );
+	s.reissue = false;
+	s.take = "*weapons";
+	s.steps =
+		"Only the crowbar and medkit. Crowbar out, !apt_trap Butterfingers Trap," + "\n"
+		+ "do not pick it up: after 30s it IS reissued with" + "\n"
+		+ "'[AP] The suit reissues your weapon.' (nothing else to fight with).";
+
+	// --- air acceleration and Melee Throw ------------------------------------
+
+	@s = Add( "v0.4 Air acceleration", "hl_c03" );
+	s.air = 0;
+	s.steps =
+		"Console: sv_airaccelerate reads 0. Jump and strafe: no air control at all." + "\n"
+		+ "Climb out of water and off a ladder at the top: still possible." + "\n"
+		+ "!apt_air 100: within a second sv_airaccelerate is 100, strafing in the air" + "\n"
+		+ "steers hard. !apt_air -1: it returns to the server's own value (10 by default).";
+
+	@s = Add( "v0.4 Melee Throw refused before the item", "hl_c03" );
+	s.take = "Melee Throw";
+	s.throwPool = true;
+	s.steps =
+		"Crowbar out, right-click: centre text 'You have not found Melee Throw yet.'," + "\n"
+		+ "at most once a second while held. No throw." + "\n"
+		+ "!apt_throwpool 0, right-click: nothing at all (a seed without Melee Throw)." + "\n"
+		+ "!apt_give Melee Throw, right-click: the crowbar is thrown.";
+
+	// --- checks ----------------------------------------------------------------
+
+	@s = Add( "v0.4 Microwave check", "hl_c01_a1" );
+	s.pos = LocPos( "Anomalous Materials: Microwave (Part 1)" );
+	s.expect = "Anomalous Materials: Microwave (Part 1)";
+	s.steps =
+		"You are by the break room microwave. Press its button once: it beeps, no check." + "\n"
+		+ "Keep pressing until the casserole explodes: PASS line for the Microwave." + "\n"
+		+ "!find microwave and !trace microwave both point at the break room.";
+
+	@s = Add( "v0.4 Charger with use held", "hl_c03" );
+	s.pos = LocPos( "Office Complex: Health Charger 1" );
+	s.expect = "Office Complex: Health Charger 1";
+	s.steps =
+		"Turn away from the charger, HOLD use, then turn and walk into it with use" + "\n"
+		+ "still held: the check is sent without letting go. !apt_redo, and try it at" + "\n"
+		+ "full health (it refuses to charge): still sent.";
+
+	// --- disconnected safeguards -----------------------------------------------
+
+	@s = Add( "v0.4 Checks wait for the client", "hl_c03" );
+	s.pos = LocPos( "Office Complex: Health Charger 1" );
+	s.expect = "Office Complex: Health Charger 1";
+	s.steps =
+		"!apt_connect 0 ('Lost the multiworld connection'). Use Health Charger 1:" + "\n"
+		+ "no [AP] line, no PASS. !apt_connect 1: 'Connected to the multiworld'." + "\n"
+		+ "Use the charger again: PASS (the refused press was not marked sent).";
+
+	@s = Add( "v0.4 Reached sent once the client is back", "hl_c03" );
+	s.steps =
+		"!apt_connect 0, then !apt_reload: on arrival NO '[AP] Office Complex: Reached'." + "\n"
+		+ "!apt_connect 1: 'Connected to the multiworld' then '[AP] Office Complex: Reached'.";
+
+	@s = Add( "v0.4 Completion not recorded while disconnected", "hl_c03" );
+	s.steps =
+		"!apt_connect 0, then in console: changelevel hl_c04" + "\n"
+		+ "Expect '[AP] Office Complex could not be recorded: the client is not" + "\n"
+		+ "connected.' and no 'Mission complete' line; ap_out.txt gets no COMPLETE." + "\n"
+		+ "!apt_redo, stay connected, changelevel hl_c04: 'Mission complete: Office Complex'.";
+
+	// --- remote completions --------------------------------------------------
+
+	@s = Add( "v0.4 Remote Complete labels", APT_HUB );
+	s.found = "Office Complex: Complete";
+	s.remote = "office_complex";
+	s.steps =
+		"Office Complex is complete on the server only. !ap: its line reads" + "\n"
+		+ "[unlocked] (Remote Complete), not [complete]." + "\n"
+		+ "!menu, Warp to a mission: Office Complex [open] (Remote Complete)." + "\n"
+		+ "!apt_remote office_complex (now played here): !ap reads [complete].";
+
+	// --- menu ------------------------------------------------------------------
+
+	@s = Add( "v0.4 Menu: main page", "hl_c11_a2" );
+	s.steps =
+		"!menu: Warp to a mission, Tracker, Find the nearest check," + "\n"
+		+ "Trace to the nearest check, Go to the hub, Check counter on/off." + "\n"
+		+ "Pick Trace: a line appears. !menu again: the entry reads Stop tracing," + "\n"
+		+ "and picking it removes the line.";
+
+	@s = Add( "v0.4 Menu: tracker follows the mission", "hl_c11_a2" );
+	s.steps =
+		"!menu, Tracker: 'Tracker: Surface Tension [open]' with Part 1..5 lines," + "\n"
+		+ "Part 2 marked (here), then 'Weapons: x/y' and 'Track another mission'." + "\n"
+		+ "Pick Part 2: its checks, unfound first, found ones '[done]'." + "\n"
+		+ "Pick an unfound charger: where it is in chat AND a red line to it." + "\n"
+		+ "Weapons: First ... lines; picking one with a copy here draws an orange line.";
+
+	@s = Add( "v0.4 Menu: tracking another mission", APT_HUB );
+	s.steps =
+		"!menu, Tracker in the hub: goes straight to the mission list (nothing to follow)." + "\n"
+		+ "Lines read 'Name: x/y'. Pick Blast Pit: the tracker shows Blast Pit." + "\n"
+		+ "!tracker on a rail: console list as before, plus '[AP] !menu's tracker now" + "\n"
+		+ "follows On A Rail.' !menu, Tracker: On A Rail. !tracker on: no change (ambiguous).";
+
+	@s = Add( "v0.4 Menu: warp lists only open missions", APT_HUB );
+	s.reached = true;
+	s.hold = "on_a_rail;apprehension";
+	s.steps =
+		"!menu, Warp, Half-Life: numbered 'N. Name [status]' for open missions only;" + "\n"
+		+ "On A Rail and Apprehension are not listed." + "\n"
+		+ "Pick Surface Tension (parts reached): 'From the start' then 'Part N (x/y found)'." + "\n"
+		+ "Pick Office Complex (one map): warps straight in, no part menu.";
+
+	// --- trace -------------------------------------------------------------------
+
+	@s = Add( "v0.4 Trace: nearest, toggle, auto-off", "hl_c03" );
+	s.pos = LocPos( "Office Complex: Health Charger 1" );
+	s.steps =
+		"!trace: chat says where the nearest check is, and a red line runs from your" + "\n"
+		+ "feet to it, redrawn as you move. !trace again: 'Trace off.', the line goes." + "\n"
+		+ "!trace, then use that charger: 'Found it. Trace off.'" + "\n"
+		+ "!trace first shotgun: an orange line to the shotgun on this map." + "\n"
+		+ "Console .ap_trace works the same.";
+
+	@s = Add( "v0.4 Trace: the way to the next part", "hl_c11_a1" );
+	s.steps =
+		"!find surface tension: part 2 reached: 'The way on is about N units ...'." + "\n"
+		+ "!trace surface tension: part 2 reached: a blue line to the level exit." + "\n"
+		+ "!trace surface tension: complete: a blue line to the same exit (part 2 first)." + "\n"
+		+ "Walk through: on part 2 the old line is gone (map change clears it).";
+
+	@s = Add( "v0.4 Trace: the way out of a mission", "hl_c03" );
+	s.steps =
+		"!find office complex: complete: 'The way on is about N units ...' pointing at" + "\n"
+		+ "the exit to We've Got Hostiles, not 'keep going'." + "\n"
+		+ "!trace office complex: complete: a blue line to it.";
+
+	@s = Add( "v0.4 Trace: nothing on this map", "hl_c03" );
+	s.steps =
+		"!trace surface tension: health charger (part 1): chat names Surface Tension" + "\n"
+		+ "and a !warp line, then 'Nothing on this map to draw a line to.' and no line.";
+
+	@s = Add( "v0.4 Trace: Xen exits", "hl_c14" );
+	s.steps =
+		"!trace with nothing found on Xen: the nearest is drawn. Pick !find xen: complete:" + "\n"
+		+ "it points at the teleport out, not 'keep going'.";
+
+	// --- logic hints ---------------------------------------------------------------
+
+	@s = Add( "v0.4 Chumtoad cave snarks need the flashlight", "ba_xen2" );
+	s.take = "Snarks";
+	s.steps =
+		"!find blue shift: first snarks: 'One is here:' and" + "\n"
+		+ "'[AP] Needs the Flashlight to reach.'";
+
+	@s = Add( "v0.4 Relative warp numbers", APT_HUB );
+	s.reached = true;
+	s.steps =
+		"!warp hl 3 goes to Office Complex. !warp of 3, !warp bs 2, !warp th 1 go to" + "\n"
+		+ "that game's mission of that number (as the hub consoles are numbered)." + "\n"
+		+ "!ap lists each mission with its '(of 3)' style number.";
+
+	// --- custom bot models -------------------------------------------------------
+
+	@s = Add( "v0.4 Custom bot models off", "hl_c02_a2" );
+	s.steps =
+		"Needs the real client run once (writes bot_models_stock.txt)." + "\n"
+		+ "!custombots 0: '[AP] Custom bot models off ...'. store/archipelago/ap_prefs.txt" + "\n"
+		+ "reads custom_bots=0. !apt_reload, then !apt_trap Bot Swarm Trap: only stock" + "\n"
+		+ "Sven player models (nothing from svencoop_addon / svencoop_downloads)." + "\n"
+		+ "!custombots 1, !apt_reload, swarm again: custom models can appear." + "\n"
+		+ "Console .ap_custom_bots 0 does the same. A second, non-admin player gets" + "\n"
+		+ "'Only the host can change the bots' models.' !apt_setting custom_bots=0 prints" + "\n"
+		+ "the off message (what /toggle_custom_bots in the client sends).";
+
+	// --- client side -------------------------------------------------------------
+
+	@s = Add( "v0.4 Client: slot switch, /newrun, toggles", APT_HUB );
+	s.note = true;
+	s.steps =
+		"Real client, not the harness: !apt_off first. Connect slot A, finish a mission." + "\n"
+		+ "Connect slot B from the same client: 'Connected to a different slot;" + "\n"
+		+ "forgetting the last one's finished missions.' and /missions shows none of A's." + "\n"
+		+ "Back to A: /missions shows it complete. /newrun: it reads (Remote Complete)." + "\n"
+		+ "/force_melee_throw in a seed without Melee Throw: crowbar right-click throws." + "\n"
+		+ "/toggle_custom_bots: log line, and ap_prefs.txt flips; /where shows it." + "\n"
+		+ "/uninstall then look in store/archipelago: ap_prefs.txt and ap_completed.json gone.";
+}
+
 string LocPos( const string& in szName )
 {
 	APTLoc@ l = LocByName( szName );
@@ -686,8 +930,21 @@ void ApplyItems( APTScenario@ s )
 	g_Excluded = Items( s.exclude );
 	g_szSlot = "aptest:1";
 	g_szOnly = s.only;
+	g_Remote = Items( s.remote );
+	g_PreFound = Items( s.found );
+	g_bReissue = s.reissue;
+	g_iAir = s.air;
+	g_bThrowPool = s.throwPool;
 	g_Items = BaseItems();
 	array<string> take = Items( s.take );
+	// `*weapons`: every gated item but the crowbar, for a player with nothing
+	// else to fight with.
+	if( take.find( "*weapons" ) >= 0 )
+	{
+		for( uint i = 0; i < g_KeyItems.length(); ++i )
+			if( g_KeyItems[i] != "Crowbar" )
+				take.insertLast( g_KeyItems[i] );
+	}
 	for( uint i = 0; i < take.length(); ++i )
 	{
 		int k = g_Items.find( take[i] );
@@ -722,6 +979,11 @@ array<string> BaseItems()
 }
 
 array<string> g_Items;
+array<string> g_Remote;      // mission keys complete only on the server
+array<string> g_PreFound;    // check names the server already has
+bool g_bReissue = true;
+int g_iAir = -1;
+bool g_bThrowPool = false;
 bool g_bLegacy = false;
 string g_szUngated;
 bool g_bSuspension = false;
@@ -762,7 +1024,8 @@ void WriteSnapshot()
 			if( c is null || c.campaign != g_szOnly )
 				continue;
 		}
-		if( ( g_bReached && g_Locs[i].kind == "map_reached" ) || g_Found.exists( g_Locs[i].id ) )
+		if( ( g_bReached && g_Locs[i].kind == "map_reached" ) || g_Found.exists( g_Locs[i].id )
+		    || g_PreFound.find( g_Locs[i].name ) >= 0 )
 			checked.insertLast( g_Locs[i].id );
 		else
 			missing.insertLast( g_Locs[i].id );
@@ -800,6 +1063,10 @@ void WriteSnapshot()
 	s += "starting=\n";
 	s += "checked=" + Join( checked, "," ) + "\n";
 	s += "missing=" + Join( missing, "," ) + "\n";
+	s += "remote=" + Join( g_Remote, "," ) + "\n";
+	s += "butterfingers_reissue=" + ( g_bReissue ? "1" : "0" ) + "\n";
+	s += "air_accelerate=" + g_iAir + "\n";
+	s += "melee_throw=" + ( g_bThrowPool ? "1" : "0" ) + "\n";
 	if( !g_bLegacy )
 		s += "armour=blue_shift:Security Armor;half_life:HEV Suit;"
 		     "opposing_force:PCV;they_hunger:HEV Suit\n";
@@ -1438,6 +1705,46 @@ void Dispatch( CBasePlayer@ pPlayer, const string& in szCmd, const string& in sz
 		SetHealth( szArg );
 	else if( szCmd == "apt_ammo" )
 		ListAmmo( pPlayer );
+	else if( szCmd == "apt_connect" )
+	{
+		g_bConnected = szArg != "0";
+		WriteSnapshot();
+		Say( g_bConnected ? "client reported connected" : "client reported disconnected" );
+	}
+	else if( szCmd == "apt_air" )
+	{
+		g_iAir = atoi( szArg );
+		WriteSnapshot();
+		Say( "air_accelerate=" + g_iAir + "; sv_airaccelerate is now "
+			+ g_EngineFuncs.CVarGetFloat( "sv_airaccelerate" ) + " (updates within a second)" );
+	}
+	else if( szCmd == "apt_reissue" )
+	{
+		g_bReissue = szArg != "0";
+		WriteSnapshot();
+		Say( "butterfingers_reissue=" + ( g_bReissue ? "1" : "0" ) );
+	}
+	else if( szCmd == "apt_throwpool" )
+	{
+		g_bThrowPool = szArg != "0";
+		WriteSnapshot();
+		Say( "melee_throw=" + ( g_bThrowPool ? "1" : "0" ) );
+	}
+	else if( szCmd == "apt_remote" )
+	{
+		int k = g_Remote.find( szArg );
+		if( k >= 0 )
+			g_Remote.removeAt( k );
+		else
+			g_Remote.insertLast( szArg );
+		WriteSnapshot();
+		Say( "remote=" + Join( g_Remote, "," ) );
+	}
+	else if( szCmd == "apt_setting" )
+	{
+		SendEvent( "SETTING", szArg );
+		Say( "sent setting: " + szArg );
+	}
 	else if( szCmd == "apt_off" )
 	{
 		g_bConnected = false;
@@ -1500,6 +1807,12 @@ CClientCommand g_CJ( "apt_reload", "APTest: reload this map, state kept", @Conso
 CClientCommand g_CK( "apt_item", "APTest: send a filler item <name>", @ConsoleCmd );
 CClientCommand g_CL( "apt_hp", "APTest: set health [armour]", @ConsoleCmd );
 CClientCommand g_CM( "apt_ammo", "APTest: held ammo vs half max", @ConsoleCmd );
+CClientCommand g_CN( "apt_connect", "APTest: report the client connected <0|1>", @ConsoleCmd );
+CClientCommand g_CO( "apt_air", "APTest: report air_accelerate <n>", @ConsoleCmd );
+CClientCommand g_CP( "apt_reissue", "APTest: report butterfingers_reissue <0|1>", @ConsoleCmd );
+CClientCommand g_CQ( "apt_throwpool", "APTest: report Melee Throw in the pool <0|1>", @ConsoleCmd );
+CClientCommand g_CR( "apt_remote", "APTest: toggle a mission remote-complete <key>", @ConsoleCmd );
+CClientCommand g_CS( "apt_setting", "APTest: send a SETTING event <key=value>", @ConsoleCmd );
 
 void SetHealth( const string& in szArg )
 {

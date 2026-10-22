@@ -72,14 +72,40 @@ void MeleeThrowThink( CBasePlayer@ pPlayer )
 	if( ( pPlayer.pev.button & IN_ATTACK2 ) == 0 || ( pPlayer.pev.oldbuttons & IN_ATTACK2 ) != 0 )
 		return;
 
-	if( g_CurrentChapter is null || SuspensionManaged() || !MeleeThrowOwned() )
+	if( g_CurrentChapter is null || SuspensionManaged() )
 		return;
 
 	CBasePlayerItem@ pActive = cast<CBasePlayerItem@>( pPlayer.m_hActiveItem.GetEntity() );
 	if( pActive is null || pActive.GetClassname() != THROWN_CLASSNAME )
 		return;
 
+	if( !MeleeThrowOwned() )
+	{
+		// In the pool and not here yet: say so, as the flashlight does. Not in
+		// this seed at all: secondary fire does nothing, as it always did.
+		if( g_State.meleeThrowInPool )
+			RefuseThrow( pPlayer );
+		return;
+	}
+
 	ThrowMelee( pPlayer );
+}
+
+// When each player was last told, so holding the button is one message a
+// second rather than one a frame.
+dictionary g_flThrowNagged;
+
+void RefuseThrow( CBasePlayer@ pPlayer )
+{
+	string szKey = "" + pPlayer.entindex();
+	float flLast = 0.0f;
+	g_flThrowNagged.get( szKey, flLast );
+	// The clock goes backwards on a new map.
+	if( g_Engine.time - flLast <= 1.0f && g_Engine.time >= flLast )
+		return;
+	g_flThrowNagged[ szKey ] = g_Engine.time;
+	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTCENTER,
+		"You have not found\nMelee Throw yet." );
 }
 
 void ThrowMelee( CBasePlayer@ pPlayer )

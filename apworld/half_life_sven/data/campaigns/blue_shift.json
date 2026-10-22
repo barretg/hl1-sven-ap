@@ -48,7 +48,45 @@
    "gates": {},
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "ba_tram1": [
+     [
+      "ba_tram2",
+      -1168,
+      208,
+      160
+     ]
+    ],
+    "ba_tram2": [
+     [
+      "ba_tram1",
+      -944,
+      864,
+      2368
+     ],
+     [
+      "ba_tram3",
+      2752,
+      -736,
+      2336
+     ]
+    ],
+    "ba_tram3": [
+     [
+      "ba_security1",
+      -1824,
+      3008,
+      672
+     ],
+     [
+      "ba_tram2",
+      3232,
+      1160,
+      2344
+     ]
+    ]
+   }
   },
   {
    "key": "bs_insecurity",
@@ -65,7 +103,65 @@
    "gates": {},
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "ba_security1": [
+     [
+      "ba_security2",
+      -928,
+      2326,
+      544
+     ],
+     [
+      "ba_tram3",
+      -1232,
+      3008,
+      698
+     ]
+    ],
+    "ba_security2": [
+     [
+      "ba_maint",
+      -1723,
+      2052,
+      544
+     ],
+     [
+      "ba_security1",
+      -1064,
+      2574,
+      488
+     ]
+    ],
+    "ba_maint": [
+     [
+      "ba_elevator",
+      1222,
+      -2136,
+      672
+     ],
+     [
+      "ba_security2",
+      -1509,
+      2052,
+      544
+     ]
+    ],
+    "ba_elevator": [
+     [
+      "ba_canal1",
+      -416,
+      1032,
+      456
+     ],
+     [
+      "ba_maint",
+      -1656,
+      368,
+      3104
+     ]
+    ]
+   }
   },
   {
    "key": "bs_duty_calls",
@@ -88,7 +184,77 @@
     }
    },
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "ba_canal1": [
+     [
+      "ba_canal1b",
+      -784,
+      -68,
+      -128
+     ],
+     [
+      "ba_elevator",
+      2256,
+      292,
+      136
+     ]
+    ],
+    "ba_canal1b": [
+     [
+      "ba_canal1",
+      364,
+      -152,
+      -128
+     ],
+     [
+      "ba_canal2",
+      -1760,
+      1948,
+      -152
+     ]
+    ],
+    "ba_canal2": [
+     [
+      "ba_canal1b",
+      -2328,
+      864,
+      376
+     ],
+     [
+      "ba_canal1b",
+      1696,
+      300,
+      232
+     ],
+     [
+      "ba_canal3",
+      360,
+      -1344,
+      704
+     ],
+     [
+      "ba_yard1",
+      -72,
+      2000,
+      528
+     ]
+    ],
+    "ba_canal3": [
+     [
+      "ba_canal2",
+      1592,
+      2528,
+      808
+     ],
+     [
+      "noba_canal2",
+      1400,
+      -352,
+      640
+     ]
+    ]
+   }
   },
   {
    "key": "bs_captive_freight",
@@ -112,9 +278,149 @@
      "ranged"
     ]
    },
-   "map_gates": {},
+   "map_gates": {
+    "ba_yard3a": {
+     "strict": [
+      "flashlight"
+     ]
+    }
+   },
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "ba_yard1": [
+     [
+      "ba_canal2",
+      -3416,
+      -3344,
+      -752
+     ],
+     [
+      "ba_yard2",
+      208,
+      -2348,
+      -568
+     ]
+    ],
+    "ba_yard2": [
+     [
+      "ba_yard1",
+      208,
+      -2188,
+      72
+     ],
+     [
+      "ba_yard3a",
+      1992,
+      -816,
+      -448
+     ]
+    ],
+    "ba_yard3": [
+     [
+      "ba_teleport1",
+      1814,
+      1462,
+      -202
+     ],
+     [
+      "ba_yard3b",
+      592,
+      892,
+      -124
+     ],
+     [
+      "ba_yard4",
+      2064,
+      1000,
+      -128
+     ]
+    ],
+    "ba_yard3a": [
+     [
+      "ba_yard2",
+      1384,
+      -1520,
+      -448
+     ],
+     [
+      "ba_yard3b",
+      592,
+      -336,
+      -488
+     ]
+    ],
+    "ba_yard3b": [
+     [
+      "ba_yard3",
+      1088,
+      924,
+      -256
+     ],
+     [
+      "ba_yard3a",
+      592,
+      -616,
+      -488
+     ]
+    ],
+    "ba_yard4": [
+     [
+      "ba_yard3",
+      2064,
+      -632,
+      -266
+     ],
+     [
+      "ba_yard4a",
+      1920,
+      -1128,
+      248
+     ]
+    ],
+    "ba_yard4a": [
+     [
+      "ba_yard4",
+      1920,
+      -1212,
+      248
+     ],
+     [
+      "ba_yard5",
+      -504,
+      488,
+      128
+     ]
+    ],
+    "ba_yard5": [
+     [
+      "ba_yard4a",
+      -296,
+      488,
+      128
+     ],
+     [
+      "ba_yard5a",
+      1048,
+      2888,
+      96
+     ]
+    ],
+    "ba_yard5a": [
+     [
+      "ba_yard4",
+      2088,
+      -312,
+      120
+     ],
+     [
+      "ba_yard5",
+      384,
+      3048,
+      96
+     ]
+    ]
+   }
   },
   {
    "key": "bs_focal_point",
@@ -138,7 +444,113 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "ba_teleport1": [
+     [
+      "ba_xen1",
+      8,
+      -52,
+      348
+     ],
+     [
+      "ba_xen1",
+      200,
+      -696,
+      -152
+     ],
+     [
+      "ba_yard3",
+      -1854,
+      -1042,
+      174
+     ]
+    ],
+    "ba_xen1": [
+     [
+      "ba_teleport1",
+      -1828,
+      -2661,
+      1652
+     ],
+     [
+      "ba_xen2",
+      -724,
+      -2298,
+      246
+     ]
+    ],
+    "ba_xen2": [
+     [
+      "ba_xen1",
+      -936,
+      -2278,
+      262
+     ],
+     [
+      "ba_xen3",
+      2264,
+      2080,
+      -102
+     ]
+    ],
+    "ba_xen3": [
+     [
+      "ba_xen2",
+      -2504,
+      -876,
+      282
+     ],
+     [
+      "ba_xen4",
+      928,
+      -3396,
+      -248
+     ]
+    ],
+    "ba_xen4": [
+     [
+      "ba_xen3",
+      -2456,
+      3832,
+      592
+     ],
+     [
+      "ba_xen5",
+      1920,
+      -352,
+      256
+     ]
+    ],
+    "ba_xen5": [
+     [
+      "ba_xen4",
+      1920,
+      -208,
+      256
+     ],
+     [
+      "ba_xen6",
+      -3712,
+      752,
+      88
+     ]
+    ],
+    "ba_xen6": [
+     [
+      "ba_teleport2",
+      -1376,
+      -3280,
+      352
+     ],
+     [
+      "ba_xen5",
+      1568,
+      -3312,
+      200
+     ]
+    ]
+   }
   },
   {
    "key": "bs_power_struggle",
@@ -158,7 +570,51 @@
    },
    "map_gates": {},
    "requires_chapter": "",
-   "complete_on_endgame": false
+   "complete_on_endgame": false,
+   "exits": {
+    "ba_teleport2": [
+     [
+      "ba_outro",
+      200,
+      -712,
+      -152
+     ],
+     [
+      "ba_power1",
+      -768,
+      620,
+      -1064
+     ],
+     [
+      "ba_xen6",
+      440,
+      -696,
+      -152
+     ]
+    ],
+    "ba_power1": [
+     [
+      "ba_power2",
+      1152,
+      -3040,
+      -240
+     ],
+     [
+      "ba_teleport2",
+      -32,
+      1196,
+      664
+     ]
+    ],
+    "ba_power2": [
+     [
+      "ba_power1",
+      -416,
+      0,
+      1150
+     ]
+    ]
+   }
   },
   {
    "key": "bs_leap_of_faith",
@@ -176,7 +632,17 @@
    },
    "map_gates": {},
    "requires_chapter": "bs_power_struggle",
-   "complete_on_endgame": true
+   "complete_on_endgame": true,
+   "exits": {
+    "ba_outro": [
+     [
+      "ba_teleport2",
+      -616,
+      280,
+      -824
+     ]
+    ]
+   }
   }
  ],
  "items": [
@@ -1130,7 +1596,12 @@
       1160,
       3384,
       -3576
-     ]
+     ],
+     "gates": {
+      "always": [
+       "flashlight"
+      ]
+     }
     },
     {
      "chapter": "bs_power_struggle",

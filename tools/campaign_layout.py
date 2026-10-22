@@ -157,6 +157,10 @@ class Campaign:
     # "First ..." check. Opposing Force's `item_suit` is the PCV, not an HEV
     # suit. Display only: the key and the id stay the equipment's own.
     equipment_aliases: dict[str, str] = field(default_factory=dict)
+    # One-off map events that are checks, `{map: [(trigger type, targetname,
+    # name)]}`: sent when the map fires that targetname. Each trigger type has
+    # its own YAML switch.
+    fired_checks: dict[str, list[tuple[str, str, str]]] = field(default_factory=dict)
 
 
 HALF_LIFE = Campaign(
@@ -198,6 +202,10 @@ HALF_LIFE = Campaign(
     short="hl",
     # The tram ride: no weapons, no enemies, two checks.
     intro_chapter="black_mesa_inbound",
+    # The break room microwave. Five buttons share its panel, each mastered by
+    # the multisource the one before fired, so only the fifth press reaches
+    # `microwavepopmm1_1`: the multi_manager that bursts the casserole.
+    fired_checks={"hl_c01_a1": [("microwave", "microwavepopmm1_1", "Microwave")]},
     weapons={
         # One Archipelago item can cover several engine classnames. Sven Co-op
         # splits the MP5 into weapon_9mmAR and its own weapon_m16
@@ -235,8 +243,10 @@ HALF_LIFE = Campaign(
         "residue_processing": {"strict": ["ranged"]},
         "questionable_ethics": {"strict": ["ranged"]},
         "surface_tension": {"strict": ["ranged"]},
-        "forget_about_freeman": {"strict": ["heavy"]},
-        "lambda_core": {"strict": ["heavy"]},
+        # `heavy` alone is met by the RPG, which is no way to fight through
+        # either; `not_rpg` asks for a second weapon alongside it.
+        "forget_about_freeman": {"strict": ["heavy", "not_rpg"]},
+        "lambda_core": {"strict": ["heavy", "not_rpg"]},
         # Xen: the long jump module is standard equipment from here on, and the
         # suit is what powers it. Strict logic names the two weapons by hand
         # rather than a tier: the alien grunt and Gonarch fights are not
@@ -471,6 +481,9 @@ BLUE_SHIFT = Campaign(
     # The gun range guard hands it over; there is no glock entity in either
     # security map, so the derived anchor landed in the yards instead.
     weapon_anchors={"Glock": "ba_security2"},
+    # Focal Point part 3 (`ba_xen2`): the snarks are in the chumtoad cave at the bottom of
+    # the pit, too dark to find without the flashlight at any logic difficulty.
+    weapon_source_gates={"ba_xen2": {"Snarks": {"always": ["flashlight"]}}},
     # Barney has no HEV suit. Sven Co-op leaves an `item_suit` at the tram
     # spawn so the HUD works, which is not a moment worth a check.
     no_first_check=["HEV Suit"],
@@ -489,6 +502,9 @@ BLUE_SHIFT = Campaign(
         # so from part 2 on the mission needs a ranged weapon or the RPG at any
         # logic difficulty. The door stays ungated, so it can still start a run.
         "ba_canal1b": {"always": ["barrel_shooter"]},
+        # Captive Freight: part 4 on is dark enough that strict logic wants the
+        # flashlight.
+        "ba_yard3a": {"strict": ["flashlight"]},
     },
 )
 
@@ -597,6 +613,13 @@ GOAL_REQUIRES: dict[str, str] = {
 }
 
 # Missions credited when their last map ends rather than when it loads.
+# `{map: [(trigger type, targetname, name)]}`, every campaign's fired checks.
+FIRED_CHECKS: dict[str, list[tuple[str, str, str]]] = {
+    map_name: checks
+    for campaign in CAMPAIGNS
+    for map_name, checks in campaign.fired_checks.items()
+}
+
 ENDGAME_CHAPTERS: set[str] = {
     key for campaign in CAMPAIGNS for key in campaign.endgame_chapters
 }
@@ -773,12 +796,18 @@ OPTIONAL_ITEMS: dict[str, list[str]] = {
 # on Opposing Force's maps. The flashlight is a key, not an entity.
 EQUIPMENT_SHARING_PICKUP: dict[str, tuple[str, list[str]]] = {
     "PCV": ("progression", ["item_suit"]),
-    "Flashlight": ("useful", []),
+    # Progression: Blue Shift's dark stretches name it in their gates.
+    "Flashlight": ("progression", []),
 }
 
 # Abilities: present only when their YAML toggle is on, absent (not granted)
 # when it is off.
-ABILITY_ITEMS: dict[str, str] = {"Melee Throw": "useful"}
+ABILITY_ITEMS: dict[str, str] = {
+    "Melee Throw": "useful",
+    # Several copies, each a step up `sv_airaccelerate`; see the world's
+    # `data/__init__.py` for the ladder.
+    "Progressive Air Acceleration": "useful",
+}
 
 # Every classname the plugin holds back until its item arrives, mapped to that
 # item. A seed's starting weapons are checked ahead of this table, so a classname
@@ -933,6 +962,12 @@ REQUIREMENT_GROUPS: dict[str, list[str]] = {
     + ["RPG", "Hand Grenade", "Satchel Charge"],
     "barnacle_grapple": ["Barnacle Grapple"],
     "displacer_cannon": ["Displacer Cannon"],
+    # Every fighting weapon but the RPG. A gate checks each group on its own,
+    # so the RPG alone satisfies `heavy` and `explosives` both; naming this
+    # beside them asks for a second weapon.
+    "not_rpg": list(dict.fromkeys(
+        w for w in RANGED_WEAPONS + HEAVY_WEAPONS + EXPLOSIVES if w != "RPG")),
+    "flashlight": ["Flashlight"],
 }
 
 # --- Which location types to generate -------------------------------------
@@ -957,6 +992,7 @@ ENABLED_LOCATION_TYPES = {
     "chapter_complete",
     "charger",
     "weapon_pickup",
+    "microwave",
     # "pickup",  # the per-map variant, superseded by weapon_pickup
     # "kill",
     # "kill_count",

@@ -299,8 +299,12 @@ def test_a_released_completion_marks_the_mission_complete(
     text = sources["ap_hub.as"]
 
     status = function_body(text, "ShowStatus")
-    assert "ChapterFinished(" in status, (
+    assert "ChapterDoneHere(" in status, (
         "the mission list is back to judging completion by all-found alone"
+    )
+    done_here = function_body(text, "ChapterDoneHere")
+    assert "ChapterFinished(" in done_here and "ChapterRemoteComplete(" in done_here, (
+        "a mission only the server finished reads as complete here"
     )
 
     finished = function_body(text, "ChapterFinished")

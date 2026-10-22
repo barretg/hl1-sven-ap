@@ -256,6 +256,60 @@ void SweepHealingPools()
 	}
 }
 
+/*
+* One-off map events: the Anomalous Materials microwave. Each is sent when the
+* map fires a targetname, which a plugin cannot hook directly; so, as the arcade
+* map's signals do, a `trigger_changevalue` of ours answers to the same name and
+* sets a counter, and the sweep reads the counter. Nothing about the map changes:
+* firing a name reaches every entity that has it.
+*/
+string FiredCounterName( APLocation@ pLocation )
+{
+	return "ap_fired_" + pLocation.id;
+}
+
+void SetupFiredChecks()
+{
+	for( uint i = 0; i < g_MapFired.length(); ++i )
+	{
+		APLocation@ pLocation = g_MapFired[i];
+		string szCounter = FiredCounterName( pLocation );
+		if( g_EntityFuncs.FindEntityByTargetname( null, szCounter ) !is null )
+			continue;
+
+		dictionary counter;
+		counter[ "targetname" ] = szCounter;
+		g_EntityFuncs.CreateEntity( "info_target", counter, true );
+
+		dictionary signal;
+		signal[ "targetname" ] = pLocation.arg;
+		signal[ "target" ] = szCounter;
+		signal[ "m_iszValueName" ] = "frags";
+		signal[ "m_iszNewValue" ] = "1";
+		signal[ "m_iszValueType" ] = "0";
+		g_EntityFuncs.CreateEntity( "trigger_changevalue", signal, true );
+	}
+}
+
+/*
+* Once a second. The counter stays set, so a firing while the check could not
+* be sent (the client away) goes out once it can.
+*/
+void PollFiredChecks()
+{
+	for( uint i = 0; i < g_MapFired.length(); ++i )
+	{
+		APLocation@ pLocation = g_MapFired[i];
+		if( g_SentChecks.exists( "" + pLocation.id ) )
+			continue;
+
+		CBaseEntity@ pCounter = g_EntityFuncs.FindEntityByTargetname(
+			null, FiredCounterName( pLocation ) );
+		if( pCounter !is null && pCounter.pev.frags >= 1.0f )
+			SendCheck( pLocation );
+	}
+}
+
 bool AnyPlayerInside( CBaseEntity@ pVolume )
 {
 	Vector vecMin = pVolume.pev.absmin;
@@ -338,6 +392,17 @@ void CompleteChapter( APChapter@ pChapter )
 	// be credited when its map ended must not be credited twice if MapChange saw
 	// it leave after all.
 	ClearPendingFinale();
+
+	// Nobody to tell. A COMPLETE written now would never reach the server, and
+	// the client counting it anyway put toward a seal a mission whose completion
+	// check the server never got. Said out loud, so the player knows to play it
+	// again once the client is back.
+	if( !g_State.connected )
+	{
+		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[AP] " + pChapter.name
+			+ " could not be recorded: the client is not connected.\n" );
+		return;
+	}
 
 	for( uint i = 0; i < g_Locations.length(); ++i )
 	{

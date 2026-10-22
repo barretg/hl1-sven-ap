@@ -109,6 +109,12 @@ void SendCheck( APLocation@ pLocation )
 	if( !g_bMissionActive )
 		return;
 
+	// Nobody to hear it. A check written while the client is disconnected never
+	// reaches the server, and once marked sent here it would never be tried
+	// again; left unsent, the next touch or sweep sends it.
+	if( !g_State.connected )
+		return;
+
 	string szKey = "" + pLocation.id;
 	if( g_SentChecks.exists( szKey ) )
 		return;
@@ -143,6 +149,10 @@ void SendAck( int iSeq )
 *   death_link=0|1
 *   death_link_amnesty=<n>        deaths forgiven before one is reported out
 *   connected=0|1
+*   remote=<key>,<key>,...        missions complete only on the server
+*   butterfingers_reissue=0|1     the suit hands a dropped weapon back
+*   air_accelerate=<n>            sv_airaccelerate to hold; -1 leaves it
+*   melee_throw=0|1               Melee Throw is in the pool
 *   event=<seq>|<kind>|<payload>|<unixtime>
 */
 void BridgePoll()
@@ -178,6 +188,11 @@ void BridgePoll()
 	dictionary armour;
 	dictionary checked;
 	dictionary missing;
+	dictionary remote;
+	// What an older client means by leaving each of these out.
+	bool bReissue = true;
+	int iAirAccelerate = -1;
+	bool bThrowInPool = false;
 	array<string> starting;
 	bool bGoalOpen = false;
 	bool bConnected = false;
@@ -277,6 +292,22 @@ void BridgePoll()
 					missing[ szId ] = true;
 			}
 		}
+		else if( szKey == "remote" )
+		{
+			array<string>@ keys = szValue.Split( "," );
+			for( uint i = 0; i < keys.length(); ++i )
+			{
+				string szChapter = APTrim( keys[i] );
+				if( szChapter.Length() > 0 )
+					remote[ szChapter ] = true;
+			}
+		}
+		else if( szKey == "butterfingers_reissue" )
+			bReissue = szValue != "0";
+		else if( szKey == "air_accelerate" )
+			iAirAccelerate = atoi( szValue );
+		else if( szKey == "melee_throw" )
+			bThrowInPool = szValue == "1";
 		else if( szKey == "starting" )
 		{
 			array<string>@ names = szValue.Split( ";" );
@@ -424,6 +455,12 @@ void BridgePoll()
 	g_State.deathLink = bDeathLink;
 	g_State.deathLinkAmnesty = iAmnesty;
 	g_State.lobbyDeathLink = szLobbyDeath;
+	g_State.remoteComplete = remote;
+	g_State.butterfingersReissue = bReissue;
+	g_State.airAccelerate = iAirAccelerate;
+	g_State.meleeThrowInPool = bThrowInPool;
+
+	EnforceAirAccelerate();
 
 	// An item arriving opens a Suspension tier or class, and the locks are
 	// entity state rather than a question asked at press time: so they have to
@@ -431,8 +468,14 @@ void BridgePoll()
 	SuspensionSyncLocks();
 
 	if( bConnected && !bWasConnected )
+	{
 		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
 			"[AP] Connected to the multiworld. Type !help for commands.\n" );
+		// Arriving on this map was refused while nobody was listening, and
+		// nothing else will send it: the check fires on arrival only.
+		if( g_bMissionActive )
+			RegisterMapReached();
+	}
 	else if( !bConnected && bWasConnected )
 		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[AP] Lost the multiworld connection.\n" );
 
@@ -564,6 +607,8 @@ void HandleEvent( const string& in szPayload )
 		SpringTrap( szData );
 	else if( szKind == "CHAT" )
 		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, szData + "\n" );
+	else if( szKind == "SETTING" )
+		ApplySetting( szData );
 
 	SendAck( iSeq );
 }

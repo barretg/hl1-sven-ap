@@ -109,6 +109,11 @@ def test_uninstall_leaves_nothing_behind(game: Path) -> None:
     store = scripts / "plugins" / "store" / "archipelago"
     (store / "ap_out.txt").write_text("CHECK|7720001\n", encoding="utf-8")
     (store / "ap_in.txt").write_text("connected=1\n", encoding="utf-8")
+    # Machine preferences and the local completion record go too: uninstall
+    # cleans up fully.
+    (store / "ap_prefs.txt").write_text("custom_bots=0\n", encoding="utf-8")
+    (store / "ap_completed.json").write_text("{}", encoding="utf-8")
+    (store / "bot_models_stock.txt").write_text("", encoding="utf-8")
 
     removed, deregistered = plugin.uninstall(game)
 

@@ -88,11 +88,153 @@ const uint BOT_SKINS_PER_MAP = 8;
 // This map's sample, chosen in PrecacheBots. Spawning picks from these.
 array<string> g_MapBotModels;
 
-/* The client's list of the server's player models, or the built-in one. */
+// --- custom bot models ----------------------------------------------------
+//
+// Whether bots may wear any player model the server has, or only the game's
+// own. Custom models are downloaded by every client that sees a bot in one, so
+// a host can turn them off to spare the lobby the downloads. A machine
+// preference rather than a seed's: kept in `ap_prefs.txt`, which the client's
+// `/toggle_custom_bots` writes too. Read at each map start, which is also the
+// only moment the bots' models can change.
+
+const string PREF_CUSTOM_BOTS = "custom_bots";
+
+/* `key=value` from ap_prefs.txt, or "" when the file or key is missing. */
+string ReadPref( const string& in szKey )
+{
+	File@ pFile = g_FileSystem.OpenFile( AP_PREFS, OpenFile::READ );
+	if( pFile is null || !pFile.IsOpen() )
+		return "";
+
+	string szFound;
+	while( !pFile.EOFReached() )
+	{
+		string szLine;
+		pFile.ReadLine( szLine );
+		szLine = APTrim( szLine );
+		int iEquals = szLine.Find( "=" );
+		if( iEquals > 0 && APTrim( szLine.SubString( 0, iEquals ) ) == szKey )
+			szFound = APTrim( szLine.SubString( iEquals + 1 ) );
+	}
+	pFile.Close();
+	return szFound;
+}
+
+/* Set one preference, keeping every other line the file has. */
+void WritePref( const string& in szKey, const string& in szValue )
+{
+	array<string> lines;
+	File@ pIn = g_FileSystem.OpenFile( AP_PREFS, OpenFile::READ );
+	if( pIn !is null && pIn.IsOpen() )
+	{
+		while( !pIn.EOFReached() )
+		{
+			string szLine;
+			pIn.ReadLine( szLine );
+			szLine = APTrim( szLine );
+			int iEquals = szLine.Find( "=" );
+			if( iEquals > 0 && APTrim( szLine.SubString( 0, iEquals ) ) != szKey )
+				lines.insertLast( szLine );
+		}
+		pIn.Close();
+	}
+	lines.insertLast( szKey + "=" + szValue );
+
+	File@ pOut = g_FileSystem.OpenFile( AP_PREFS, OpenFile::WRITE );
+	if( pOut is null || !pOut.IsOpen() )
+	{
+		APLog( "could not write " + AP_PREFS );
+		return;
+	}
+	for( uint i = 0; i < lines.length(); ++i )
+		pOut.Write( lines[i] + "\n" );
+	pOut.Close();
+}
+
+/* On unless the file says `custom_bots=0`, which is all there was before it. */
+bool CustomBotsEnabled()
+{
+	return ReadPref( PREF_CUSTOM_BOTS ) != "0";
+}
+
+/* A `SETTING` event from the client: it has already written the file. */
+void ApplySetting( const string& in szSetting )
+{
+	int iEquals = szSetting.Find( "=" );
+	if( iEquals <= 0 )
+		return;
+	string szKey = szSetting.SubString( 0, iEquals );
+	string szValue = szSetting.SubString( iEquals + 1 );
+	if( szKey == PREF_CUSTOM_BOTS )
+		AnnounceCustomBots( szValue != "0" );
+}
+
+void AnnounceCustomBots( bool bOn )
+{
+	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, bOn
+		? "[AP] Custom bot models on, from the next map.\n"
+		: "[AP] Custom bot models off: bots wear the game's own, from the next map.\n" );
+}
+
+/*
+* `.ap_custom_bots [0|1]` and `!custombots [0|1]`. The host's alone: on a listen
+* server that is the player running it, elsewhere a server admin. With no
+* argument it flips the setting.
+*/
+void SetCustomBots( CBasePlayer@ pPlayer, const string& in szArg )
+{
+	if( g_PlayerFuncs.AdminLevel( pPlayer ) < ADMIN_YES )
+	{
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+			"[AP] Only the host can change the bots' models.\n" );
+		return;
+	}
+
+	string szWanted = APTrim( szArg );
+	bool bOn = false;
+	if( szWanted == "1" || szWanted == "on" )
+		bOn = true;
+	else if( szWanted == "0" || szWanted == "off" )
+		bOn = false;
+	else if( szWanted.Length() == 0 )
+		bOn = !CustomBotsEnabled();
+	else
+	{
+		g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+			"[AP] Custom bot models are " + ( CustomBotsEnabled() ? "on" : "off" )
+			+ ". Usage: .ap_custom_bots 0 or 1\n" );
+		return;
+	}
+
+	WritePref( PREF_CUSTOM_BOTS, bOn ? "1" : "0" );
+	BridgeSend( "SETTING|" + PREF_CUSTOM_BOTS + "=" + ( bOn ? "1" : "0" ) );
+	AnnounceCustomBots( bOn );
+}
+
+void ConsoleCustomBots( const CCommand@ pArgs )
+{
+	CBasePlayer@ pPlayer = g_ConCommandSystem.GetCurrentPlayer();
+	if( pPlayer is null )
+		return;
+	string szArg;
+	if( pArgs.ArgC() > 1 )
+		szArg = pArgs[1];
+	SetCustomBots( pPlayer, szArg );
+}
+
+CClientCommand g_CmdCustomBots( "ap_custom_bots",
+	"0 or 1: whether bots may wear custom player models (host only)", @ConsoleCustomBots );
+
+/*
+* The client's list of the server's player models, or the built-in one. With
+* custom models off, the client's list of the game's own instead: the built-in
+* list is all stock, so it stands in for either.
+*/
 array<string> BotModelCandidates()
 {
 	array<string> models;
-	File@ pFile = g_FileSystem.OpenFile( AP_BOT_MODELS, OpenFile::READ );
+	File@ pFile = g_FileSystem.OpenFile(
+		CustomBotsEnabled() ? AP_BOT_MODELS : AP_BOT_MODELS_STOCK, OpenFile::READ );
 
 	if( pFile !is null && pFile.IsOpen() )
 	{

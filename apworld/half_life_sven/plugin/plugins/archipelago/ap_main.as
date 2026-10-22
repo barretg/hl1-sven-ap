@@ -24,6 +24,7 @@
 #include "ap_suspension"
 #include "ap_hub"
 #include "ap_menu"
+#include "ap_trace"
 
 // How often to look for a new snapshot from the client. Fast enough that an item
 // arrives while it still feels connected to the check that earned it.
@@ -90,6 +91,8 @@ void Initialise()
 	// Map entities, so gone with the map; the lists would only hold dead handles.
 	ClearBots();
 	ClearThrown();
+	// Each line pointed at something on the map we just left.
+	ClearTraces();
 	// The queued traps themselves are kept, carrying them here is the point:
 	// but this map has to earn its own settled seconds before they land.
 	ResetTrapGround();
@@ -199,6 +202,7 @@ void MapInit()
 	// why this is here and not in Initialise alongside everything else: that runs
 	// on plugin load too, and precaching there is the Host_Error.
 	PrecacheTrapMonsters();
+	PrecacheTrace();
 }
 
 void MapStart()
@@ -213,6 +217,9 @@ void MapStart()
 	BlockPlayerDrops();
 
 	BridgeHello();
+
+	// The microwave's listener, on whatever map has one.
+	SetupFiredChecks();
 
 	// A mission that ends rather than travels was being played when the last map
 	// stopped, so it is finished now. Consumed before anything else, and before

@@ -33,6 +33,7 @@ PLUGIN_FILES = (
     "plugins/archipelago/ap_state.as",
     "plugins/archipelago/ap_suspension.as",
     "plugins/archipelago/ap_throw.as",
+    "plugins/archipelago/ap_trace.as",
     "plugins/archipelago/ap_traps.as",
     "plugins/store/archipelago/checkdata.txt",
 )

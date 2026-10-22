@@ -14,7 +14,7 @@ from Options import (
     Visibility,
 )
 
-from .data import unlockable_chapters_of
+from .data import AIR_ACCELERATE_CAP, unlockable_chapters_of
 
 _CAMPAIGN_KEYS = ("half_life", "opposing_force", "blue_shift", "they_hunger")
 
@@ -305,6 +305,54 @@ class MeleeThrow(Toggle):
     display_name = "Add Melee Throw"
 
 
+class ProgressiveAirAcceleration(Toggle):
+    """Add Progressive Air Acceleration items to the item pool.
+
+    Air acceleration (`sv_airaccelerate`) is how much you can steer and gain
+    speed in mid-air by strafing. It starts at Air Acceleration Minimum and each
+    item raises it a step, the last one reaching Air Acceleration Maximum. Steps
+    start at 2 and grow by about a tenth each, so the count follows from the two
+    bounds: 15 items for the defaults, 23 for the full 0 to 150.
+
+    It is a server setting, so the whole lobby shares it. When off, air
+    acceleration is left at whatever the server has (10 by default).
+    """
+
+    display_name = "Progressive Air Acceleration"
+
+
+class AirAccelerationMinimum(Range):
+    """Air acceleration before any Progressive Air Acceleration item arrives.
+    Ignored unless Progressive Air Acceleration is on. The default is 10; 0 is no
+    air control at all."""
+
+    display_name = "Air Acceleration Minimum"
+    range_start = 0
+    range_end = AIR_ACCELERATE_CAP
+    default = 10
+
+
+class AirAccelerationMaximum(Range):
+    """Air acceleration once every Progressive Air Acceleration item has
+    arrived. Ignored unless Progressive Air Acceleration is on. Gains past 150
+    are negligible, so that is the ceiling."""
+
+    display_name = "Air Acceleration Maximum"
+    range_start = 0
+    range_end = AIR_ACCELERATE_CAP
+    default = 100
+
+
+class IncludeMicrowave(Toggle):
+    """The break room microwave in Anomalous Materials is a check.
+
+    One press only starts it beeping: keep pressing its button until the
+    casserole inside explodes.
+    """
+
+    display_name = "Include Microwave"
+
+
 class LobbyDeathLink(Choice):
     """Whether one player's death takes the rest of the lobby with it.
 
@@ -356,22 +404,118 @@ class DeathLinkAmnesty(Range):
 class TrapPercentage(Range):
     """Percentage of your filler items replaced by traps.
 
-    Four exist, all of them the whole lobby's problem:
+    Seven exist, all of them the whole lobby's problem, and each picked by its
+    weight below:
 
     - Scientist Trap: four scientists, one of each variant, appear around every
       player.
     - Headcrab Trap: four headcrabs each, same idea, considerably less friendly.
     - Butterfingers Trap: everyone drops the weapon they are holding. The suit
-      reissues it after half a minute if you cannot find it again.
+      reissues it after half a minute if you cannot find it again (see
+      Butterfingers Reissue).
     - Bot Swarm Trap: six crowbar-wielding bots appear around the lobby, run
       about crouch-jumping over things, and swing at whatever they bump into:
       players included.
+    - Bunny Hop Trap: everyone jumps every time they land, for fifteen seconds.
+    - Sticky Key Trap: everyone is pushed along one movement direction (forward,
+      back, or a strafe) for fifteen seconds. You are told which.
+    - Reload Trap: the weapon in everyone's hands reloads from empty. The clip
+      goes back into the reserve first, so no ammo is lost.
     """
 
     display_name = "Trap Percentage"
     range_start = 0
     range_end = 100
     default = 15
+
+
+class ButterfingersReissue(DefaultOnToggle):
+    """Whether the suit hands back a weapon the Butterfingers Trap knocked away.
+
+    When on, it comes back after half a minute if you have not picked it up.
+
+    When off, you have to go and get it. The suit only steps in once you have no
+    weapons left at all. Moving to another map still returns it.
+    """
+
+    display_name = "Butterfingers Reissue"
+
+
+class ScientistTrapWeight(Range):
+    """How often the Scientist Trap is picked when a filler slot becomes a trap,
+    relative to the other trap weights. 0 leaves it out.
+    """
+
+    display_name = "Scientist Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 25
+
+
+class HeadcrabTrapWeight(Range):
+    """How often the Headcrab Trap is picked when a filler slot becomes a trap,
+    relative to the other trap weights. 0 leaves it out.
+    """
+
+    display_name = "Headcrab Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 25
+
+
+class ButterfingersTrapWeight(Range):
+    """How often the Butterfingers Trap is picked when a filler slot becomes a trap,
+    relative to the other trap weights. 0 leaves it out.
+    """
+
+    display_name = "Butterfingers Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 25
+
+
+class BotSwarmTrapWeight(Range):
+    """How often the Bot Swarm Trap is picked when a filler slot becomes a trap,
+    relative to the other trap weights. 0 leaves it out.
+    """
+
+    display_name = "Bot Swarm Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 25
+
+
+class BunnyHopTrapWeight(Range):
+    """How often the Bunny Hop Trap is picked when a filler slot becomes a trap,
+    relative to the other trap weights. 0 leaves it out.
+    """
+
+    display_name = "Bunny Hop Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 25
+
+
+class StickyKeyTrapWeight(Range):
+    """How often the Sticky Key Trap is picked when a filler slot becomes a trap,
+    relative to the other trap weights. 0 leaves it out.
+    """
+
+    display_name = "Sticky Key Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 25
+
+
+class ReloadTrapWeight(Range):
+    """How often the Reload Trap is picked when a filler slot becomes a trap,
+    relative to the other trap weights. 0 leaves it out.
+    """
+
+    display_name = "Reload Trap Weight"
+    range_start = 0
+    range_end = 100
+    default = 25
 
 
 # --- Suspension -----------------------------------------------------------
@@ -587,13 +731,25 @@ class HalfLifeSvenOptions(PerGameCommonOptions):
     exclude_intro_missions: ExcludeIntroMissions
     include_black_mesa_inbound: IncludeBlackMesaInbound
     chargesanity: Chargesanity
+    include_microwave: IncludeMicrowave
     random_starting_weapon: RandomStartingWeapon
     allow_restricted_starting_weapon: AllowRestrictedStartingWeapon
     shuffle_hev_suit: ShuffleHevSuit
     shuffle_longjump: ShuffleLongJump
     shuffle_flashlight: ShuffleFlashlight
     melee_throw: MeleeThrow
+    progressive_air_acceleration: ProgressiveAirAcceleration
+    air_acceleration_minimum: AirAccelerationMinimum
+    air_acceleration_maximum: AirAccelerationMaximum
     trap_percentage: TrapPercentage
+    butterfingers_reissue: ButterfingersReissue
+    scientist_trap_weight: ScientistTrapWeight
+    headcrab_trap_weight: HeadcrabTrapWeight
+    butterfingers_trap_weight: ButterfingersTrapWeight
+    bot_swarm_trap_weight: BotSwarmTrapWeight
+    bunny_hop_trap_weight: BunnyHopTrapWeight
+    sticky_key_trap_weight: StickyKeyTrapWeight
+    reload_trap_weight: ReloadTrapWeight
     suspension: IncludeSuspension
     suspension_classanity: SuspensionClassanity
     suspension_max_difficulty: SuspensionMaxDifficulty

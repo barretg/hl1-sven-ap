@@ -12,6 +12,12 @@ Directions:
     bot_models.txt
                 here -> game, the player models bots may wear. Written once per
                 client start; read by the plugin at each map start.
+    bot_models_stock.txt
+                the same, from the game's own folder only: what bots wear when
+                custom bot models are off.
+    ap_prefs.txt
+                both ways, `key=value` lines: this machine's preferences, kept
+                across sessions and seeds. Today only `custom_bots`.
 """
 
 from __future__ import annotations
@@ -193,6 +199,10 @@ class Bridge:
         slot: str = "",
         armour: dict[str, str] | None = None,
         suspension: dict | None = None,
+        remote: list[str] | None = None,
+        butterfingers_reissue: bool = True,
+        air_accelerate: int = -1,
+        melee_throw: bool = False,
         force: bool = False,
     ) -> bool:
         """Rewrite ap_in.txt. Returns True if anything was written.
@@ -250,6 +260,19 @@ class Bridge:
             # player can never make.
             "checked=" + ",".join(str(i) for i in checked or ()),
             "missing=" + ",".join(str(i) for i in missing or ()),
+            # Missions complete on the server but never finished on this machine
+            # for this slot: collected, released, or played elsewhere. The game
+            # shows them "(Remote Complete)". Absent from an older client: none.
+            "remote=" + ",".join(sorted(remote or ())),
+            # Whether Butterfingers hands the weapon back after its timer, or
+            # only once the player has no weapons left at all.
+            f"butterfingers_reissue={1 if butterfingers_reissue else 0}",
+            # The `sv_airaccelerate` to hold, from Progressive Air Acceleration.
+            # -1 leaves it to the server.
+            f"air_accelerate={int(air_accelerate)}",
+            # Melee Throw is in the pool, so a throw before it arrives is refused
+            # out loud rather than silently.
+            f"melee_throw={1 if melee_throw else 0}",
         ]
 
         # Campaign -> the item that is armour on its maps. Absent for a seed
@@ -398,7 +421,18 @@ def model_sequences(path: Path) -> set[str] | None:
     }
 
 
-def find_bot_models(game_dir: str | os.PathLike[str]) -> list[str]:
+# The folder of those that ships with the game. Every client has these, so bots
+# wearing them never send anyone off to download a model.
+STOCK_MODEL_ROOT = "svencoop"
+
+BOT_MODELS_STOCK_FILE = "bot_models_stock.txt"
+
+PREFS_NAME = "ap_prefs.txt"
+
+
+def find_bot_models(
+    game_dir: str | os.PathLike[str], roots: tuple[str, ...] = PLAYER_MODEL_ROOTS
+) -> list[str]:
     """Every player model the server has that the bots can wear.
 
     A player model is `models/player/<dir>/<file>.mdl` with `<file>` matching
@@ -412,7 +446,7 @@ def find_bot_models(game_dir: str | os.PathLike[str]) -> list[str]:
     if root.name.lower() == "svencoop":
         root = root.parent
     found: dict[str, str] = {}
-    for folder in PLAYER_MODEL_ROOTS:
+    for folder in roots:
         players = root / folder / "models" / "player"
         try:
             dirs = sorted(d for d in players.iterdir() if d.is_dir())
@@ -433,19 +467,58 @@ def find_bot_models(game_dir: str | os.PathLike[str]) -> list[str]:
     return sorted(found.values(), key=str.lower)
 
 
-def write_bot_models(game_dir: str | os.PathLike[str], store_dir: str | os.PathLike[str]) -> int:
-    """Write `bot_models.txt` for the plugin; returns how many models it lists.
-    An empty list leaves the plugin on its built-in models."""
-    models = find_bot_models(game_dir)
-    target = Path(store_dir) / BOT_MODELS_FILE
-    text = "".join(m + "\n" for m in models)
+def write_store_file(target: Path, text: str) -> None:
+    """Replace a file the plugin reads, falling back to a write in place."""
     temp = target.with_suffix(".tmp")
     try:
         temp.write_text(text, encoding="utf-8")
         os.replace(temp, target)
     except OSError:
-        # The plugin may have it open; it is only read at map start, so a
+        # The plugin may have it open; it only reads these at map start, so a
         # write in place is safe enough.
         target.write_text(text, encoding="utf-8")
         temp.unlink(missing_ok=True)
+
+
+def write_bot_models(game_dir: str | os.PathLike[str], store_dir: str | os.PathLike[str]) -> int:
+    """Write `bot_models.txt` and `bot_models_stock.txt` for the plugin; returns
+    how many models the full list has. An empty list leaves the plugin on its
+    built-in models, which are all stock."""
+    models = find_bot_models(game_dir)
+    stock = find_bot_models(game_dir, (STOCK_MODEL_ROOT,))
+    store = Path(store_dir)
+    write_store_file(store / BOT_MODELS_FILE, "".join(m + "\n" for m in models))
+    write_store_file(store / BOT_MODELS_STOCK_FILE, "".join(m + "\n" for m in stock))
     return len(models)
+
+
+def read_prefs(store_dir: str | os.PathLike[str]) -> dict[str, str]:
+    """This machine's preferences. A missing or unreadable file reads as none."""
+    try:
+        text = (Path(store_dir) / PREFS_NAME).read_text(encoding="utf-8")
+    except OSError:
+        return {}
+    prefs: dict[str, str] = {}
+    for line in text.splitlines():
+        key, sep, value = line.strip().partition("=")
+        if sep and key:
+            prefs[key.strip()] = value.strip()
+    return prefs
+
+
+def write_pref(store_dir: str | os.PathLike[str], key: str, value: str) -> None:
+    """Set one preference, keeping every other line the file has."""
+    store = Path(store_dir)
+    store.mkdir(parents=True, exist_ok=True)
+    prefs = read_prefs(store)
+    prefs[key] = value
+    write_store_file(
+        store / PREFS_NAME, "".join(f"{k}={v}\n" for k, v in sorted(prefs.items()))
+    )
+
+
+def custom_bots_enabled(store_dir: str | os.PathLike[str]) -> bool:
+    """Whether bots may wear models from outside the game's own folder.
+
+    On unless the file says `custom_bots=0`, which is all there was before it."""
+    return read_prefs(store_dir).get("custom_bots", "1") != "0"

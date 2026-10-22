@@ -42,7 +42,9 @@ OUT_PATH = (
 # exactly as it did.
 # 5 appended the campaign's short name and whether it opens on an intro mission
 # to `M`, for `!warp of 3`, and `trigger_hurt` chargers: the healing pools.
-FORMAT_VERSION = 5
+# 6 added `T` records, every changelevel and where it leads, and the `microwave`
+# type, whose `arg` is the targetname whose firing sends it.
+FORMAT_VERSION = 6
 
 
 def arcade_records(arcades) -> list[str]:
@@ -164,6 +166,7 @@ def render(campaign: dict) -> str:
         "#   C|<index>|<key>|<name>|<map,map,...>|<is_goal>|<campaign key>"
         "|<requires chapter>|<complete on endgame>",
         "#   P|<console>|<chapter key>      hub console button -> the mission it enters",
+        "#   T|<map>|<to map>|<x y z>       a changelevel and where it leads",
         "#   L|<id>|<map>|<type>|<arg>|<name>[|<x y z>[|<needs>]]",
         "#   F|<location id>|<map>|<x y z>|<needs>[|<drop>]  a mission's first copy of a weapon",
         "#   K|<classname>|<item name>      weapon pickup that must be unlocked",
@@ -213,6 +216,13 @@ def render(campaign: dict) -> str:
         for console, chapter_key in sorted(entry.get("consoles", {}).items()):
             lines.append(f"P|{console}|{chapter_key}")
 
+    # Where each map's ways on stand, for `!find` and `!trace` on a part's
+    # Reached or a mission's Complete.
+    for chapter in campaign["chapters"]:
+        for map_name, exits in sorted(chapter.get("exits", {}).items()):
+            for to, x, y, z in exits:
+                lines.append(f"T|{map_name}|{to}|{x} {y} {z}")
+
     # By id, not in list order. The plugin keys these by id and never cares, but
     # emitting them in whatever order the data files happen to merge in means any
     # future change to the data layout rewrites half this file for no reason.
@@ -233,6 +243,8 @@ def render(campaign: dict) -> str:
             arg = f"{trigger['class']}:{trigger['difficulty']}"
         elif kind == "suspension_award":
             arg = f"{trigger['award']}:{trigger['difficulty']}"
+        elif kind == "microwave":
+            arg = trigger["fires"]
         elif kind == "charger":
             # `<classname>:<brush model>`, which is what the plugin matches the
             # entity a player pressed +use on against. Gains `@<origin>` only

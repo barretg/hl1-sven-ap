@@ -1,6 +1,6 @@
 /*
-* In-game menus and the check counter: the same warp and tracker as the chat
-* commands, without typing or opening the console.
+* In-game menus and the check counter: the same warp, tracker, find and trace
+* as the chat commands, without typing or opening the console.
 *
 * Sven Co-op gives a plugin two kinds of UI. `CTextMenu` is the numbered menu
 * in the corner of the screen, picked with the number keys and paged by itself
@@ -8,6 +8,10 @@
 * screen for a while. Nothing richer is reachable from a server plugin: no VGUI
 * panels, no clickable windows. So the warp is a chain of menus, the tracker is
 * menus down to a list of what is left, and the counter is a HUD line.
+*
+* Laid out page for page like Half-Life: Anniversary's and Half-Life 2's
+* `!menu`: the tracker opens on the mission being played, picking a check
+* traces a line to it, and the warp lists only what is open.
 *
 * Menu items are told apart by their text rather than by a payload, one table of
 * text -> action per player, so every label in one menu is kept unique.
@@ -20,6 +24,10 @@ array<dictionary> g_MenuActions( MENU_SLOTS );
 
 // Players who have the check counter switched on, by entindex.
 dictionary g_HudOn;
+
+// The mission each player's tracker shows, by entindex -> chapter key. Absent
+// follows wherever the player is. A key, not an index, like Half-Life 2's.
+dictionary g_TrackedMission;
 
 const int HUD_CHANNEL = 3;
 
@@ -87,17 +95,21 @@ void RunMenuActionLater( int iIndex, string szAction )
 * Actions are `verb|argument`:
 *
 *   main                 the top menu
-*   warp                 the campaigns
-*   warpc|<campaign>     one campaign's missions
+*   warp                 the games, when the seed has more than one
+*   warpc|<campaign>     one game's open missions
 *   warpm|<index>        one mission: its start, or a part already reached
 *   go|<index>           warp to a mission
 *   gomap|<map>          warp to a part
 *   arcade               warp to the arcade map
-*   track                the campaigns, with counts
-*   trackc|<campaign>    one campaign's missions, with counts
-*   trackm|<index>       one mission's checks, found ones marked
-*   find|<id>            point at one location
+*   tracker              the tracked mission, or the one being played
+*   trackg               the games, to track a mission in
+*   trackc|<campaign>    one game's missions, to track one
+*   trackset|<key>       track this mission
+*   trackp|<map>         one part's checks
+*   trackw|<campaign>    one game's weapon checks
+*   trace|<id>           say where a check is and trace a line to it
 *   near                 point at the nearest check on this map
+*   tracenear            trace the nearest check, or stop tracing
 *   hub                  back to the hub
 *   hud                  the check counter on or off
 */
@@ -121,22 +133,27 @@ void RunMenuAction( CBasePlayer@ pPlayer, const string& in szAction )
 		WarpToMap( pPlayer, ChapterForMap( szArg ), szArg );
 	else if( szVerb == "arcade" )
 		WarpToArcade( pPlayer );
-	else if( szVerb == "track" )
+	else if( szVerb == "tracker" )
+		ShowTrackerMenu( pPlayer );
+	else if( szVerb == "trackg" )
 		ShowTrackCampaigns( pPlayer );
 	else if( szVerb == "trackc" )
 		ShowTrackMissions( pPlayer, szArg );
-	else if( szVerb == "trackm" )
-		ShowTrackMission( pPlayer, atoi( szArg ) );
+	else if( szVerb == "trackset" )
+	{
+		g_TrackedMission[ "" + pPlayer.entindex() ] = szArg;
+		ShowTrackerMenu( pPlayer );
+	}
+	else if( szVerb == "trackp" )
+		ShowTrackPart( pPlayer, szArg );
 	else if( szVerb == "trackw" )
 		ShowTrackWeapons( pPlayer, szArg );
-	else if( szVerb == "find" )
-	{
-		APLocation@ pLocation = LocationById( atoi( szArg ) );
-		if( pLocation !is null )
-			DescribeLocation( pPlayer, pLocation );
-	}
+	else if( szVerb == "trace" )
+		TraceById( pPlayer, atoi( szArg ) );
 	else if( szVerb == "near" )
 		FindLocation( pPlayer, "" );
+	else if( szVerb == "tracenear" )
+		TraceCommand( pPlayer, "" );
 	else if( szVerb == "hub" )
 	{
 		g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, "[AP] Returning to the hub...\n" );
@@ -160,10 +177,12 @@ void ShowMainMenu( CBasePlayer@ pPlayer )
 {
 	CTextMenu@ pMenu = NewMenu( pPlayer, "Archipelago" );
 	MenuAdd( pPlayer, pMenu, "Warp to a mission", "warp" );
-	MenuAdd( pPlayer, pMenu, "Tracker", "track" );
-	MenuAdd( pPlayer, pMenu, "Nearest check here", "near" );
+	MenuAdd( pPlayer, pMenu, "Tracker", "tracker" );
+	MenuAdd( pPlayer, pMenu, "Find the nearest check", "near" );
+	MenuAdd( pPlayer, pMenu,
+		TraceActive( pPlayer ) ? "Stop tracing" : "Trace to the nearest check", "tracenear" );
+	MenuAdd( pPlayer, pMenu, "Go to the hub", "hub" );
 	MenuAdd( pPlayer, pMenu, "Check counter on/off", "hud" );
-	MenuAdd( pPlayer, pMenu, "Return to the hub", "hub" );
 	MenuOpen( pPlayer, pMenu );
 }
 
@@ -201,7 +220,7 @@ void ShowWarpCampaigns( CBasePlayer@ pPlayer )
 		return;
 	}
 
-	CTextMenu@ pMenu = NewMenu( pPlayer, "Warp: which game?" );
+	CTextMenu@ pMenu = NewMenu( pPlayer, "Warp to a mission" );
 	for( uint i = 0; i < keys.length(); ++i )
 		MenuAdd( pPlayer, pMenu, CampaignDisplay( keys[i] ), "warpc|" + keys[i] );
 	if( g_pArcade !is null && g_Suspension.enabled )
@@ -209,48 +228,71 @@ void ShowWarpCampaigns( CBasePlayer@ pPlayer )
 	MenuOpen( pPlayer, pMenu );
 }
 
-/* A short status for a menu line: what `!ap` says, in a word. */
+/*
+* What `!ap` says, in a word, and "(Remote Complete)" after it for a mission
+* only the server finished.
+*/
 string ChapterMenuStatus( APChapter@ pChapter )
 {
-	if( ChapterFinished( pChapter ) )
-		return "done";
-	if( ChapterPlayable( pChapter ) )
-		return "open";
-	if( pChapter.isGoal || ChapterIsSealed( pChapter.key ) )
-		return "sealed";
-	return "locked";
+	string szStatus;
+	if( ChapterDoneHere( pChapter ) )
+		szStatus = "done";
+	else if( ChapterPlayable( pChapter ) )
+		szStatus = "open";
+	else if( pChapter.isGoal || ChapterIsSealed( pChapter.key ) )
+		szStatus = "sealed";
+	else
+		szStatus = "locked";
+	return "[" + szStatus + "]" + RemoteNote( pChapter );
 }
 
+/* Only the missions that can be entered now: the rest are a key press for a refusal. */
 void ShowWarpMissions( CBasePlayer@ pPlayer, const string& in szCampaign )
 {
-	CTextMenu@ pMenu = NewMenu( pPlayer, "Warp: " + CampaignDisplay( szCampaign ) );
+	string szTitle = "Warp to a mission";
+	if( SeedCampaigns().length() > 1 )
+		szTitle += ": " + CampaignDisplay( szCampaign );
 
+	array<APChapter@> open;
 	for( uint i = 0; i < g_Chapters.length(); ++i )
 	{
 		APChapter@ pChapter = g_Chapters[i];
-		if( pChapter.campaign != szCampaign || g_State.ChapterExcluded( pChapter.key ) )
-			continue;
+		if( pChapter.campaign == szCampaign && !g_State.ChapterExcluded( pChapter.key )
+		    && ChapterPlayable( pChapter ) )
+			open.insertLast( pChapter );
+	}
 
+	if( open.length() == 0 )
+		szTitle += "\n(nothing open yet)";
+
+	CTextMenu@ pMenu = NewMenu( pPlayer, szTitle );
+	for( uint i = 0; i < open.length(); ++i )
+	{
+		APChapter@ pChapter = open[i];
 		int iRelative = RelativeNumber( pChapter );
 		string szNumber = iRelative >= 0 ? "" + iRelative + ". " : "";
 		MenuAdd( pPlayer, pMenu,
-			szNumber + pChapter.name + " [" + ChapterMenuStatus( pChapter ) + "]",
-			"warpm|" + i );
+			szNumber + pChapter.name + " " + ChapterMenuStatus( pChapter ),
+			"warpm|" + pChapter.index );
 	}
+	if( open.length() == 0 )
+		MenuAdd( pPlayer, pMenu, "Back", "main" );
 
 	MenuOpen( pPlayer, pMenu );
 }
 
 /*
 * One mission. With nothing but its start reached, that is a warp and no menu;
-* otherwise its start and every part already stood in.
+* otherwise its start and every part already stood in, with what each still has.
 */
 void ShowWarpParts( CBasePlayer@ pPlayer, int iIndex )
 {
-	if( iIndex < 0 || uint( iIndex ) >= g_Chapters.length() )
+	APChapter@ pChapter = null;
+	for( uint i = 0; i < g_Chapters.length(); ++i )
+		if( g_Chapters[i].index == iIndex )
+			@pChapter = g_Chapters[i];
+	if( pChapter is null )
 		return;
-
-	APChapter@ pChapter = g_Chapters[iIndex];
 
 	array<string> reached;
 	for( uint i = 1; i < pChapter.maps.length(); ++i )
@@ -266,11 +308,13 @@ void ShowWarpParts( CBasePlayer@ pPlayer, int iIndex )
 	}
 
 	CTextMenu@ pMenu = NewMenu( pPlayer, pChapter.name );
-	MenuAdd( pPlayer, pMenu, "Start (" + pChapter.FirstMap() + ")", "go|" + iIndex );
+	MenuAdd( pPlayer, pMenu, "From the start", "go|" + iIndex );
 	for( uint i = 0; i < reached.length(); ++i )
 	{
+		uint uiFound, uiTotal;
+		PartCounts( reached[i], uiFound, uiTotal );
 		MenuAdd( pPlayer, pMenu,
-			PartLabel( pChapter, reached[i] ) + " (" + reached[i] + ")",
+			PartLabel( pChapter, reached[i] ) + " (" + uiFound + "/" + uiTotal + " found)",
 			"gomap|" + reached[i] );
 	}
 	MenuOpen( pPlayer, pMenu );
@@ -310,8 +354,8 @@ void WeaponCounts( const string& in szCampaign, uint& out uiFound, uint& out uiT
 	}
 }
 
-/* Found and in-seed counts for a mission, by map membership like `!tracker`. */
-void ChapterCounts( APChapter@ pChapter, uint& out uiFound, uint& out uiTotal )
+/* Found and in-seed counts for one part's checks, weapons apart. */
+void PartCounts( const string& in szMap, uint& out uiFound, uint& out uiTotal )
 {
 	uiFound = 0;
 	uiTotal = 0;
@@ -319,13 +363,26 @@ void ChapterCounts( APChapter@ pChapter, uint& out uiFound, uint& out uiTotal )
 	for( uint i = 0; i < g_Locations.length(); ++i )
 	{
 		APLocation@ pLocation = g_Locations[i];
-		if( IsWeaponCheck( pLocation ) )
-			continue;
-		if( !ChapterHasMap( pChapter, pLocation.map ) || !LocationInSeed( pLocation ) )
+		if( IsWeaponCheck( pLocation ) || pLocation.map != szMap || !LocationInSeed( pLocation ) )
 			continue;
 		++uiTotal;
 		if( LocationFound( pLocation ) )
 			++uiFound;
+	}
+}
+
+/* Found and in-seed counts for a mission, by map membership like `!tracker`. */
+void ChapterCounts( APChapter@ pChapter, uint& out uiFound, uint& out uiTotal )
+{
+	uiFound = 0;
+	uiTotal = 0;
+
+	for( uint i = 0; i < pChapter.maps.length(); ++i )
+	{
+		uint uiF, uiT;
+		PartCounts( pChapter.maps[i], uiF, uiT );
+		uiFound += uiF;
+		uiTotal += uiT;
 	}
 }
 
@@ -337,6 +394,88 @@ bool TrackerReady( CBasePlayer@ pPlayer )
 	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
 		"[AP] No location data yet; check the client.\n" );
 	return false;
+}
+
+/* The mission this player's tracker shows: the one they chose, or where they are. */
+APChapter@ TrackedChapter( CBasePlayer@ pPlayer )
+{
+	string szKey;
+	if( g_TrackedMission.get( "" + pPlayer.entindex(), szKey ) )
+	{
+		APChapter@ pChosen = ChapterByKey( szKey );
+		if( pChosen !is null && !g_State.ChapterExcluded( pChosen.key ) )
+			return pChosen;
+	}
+	return g_CurrentChapter;
+}
+
+/*
+* `!tracker <mission>` also makes that mission the menu's: the text matched as
+* `!warp` matches names, and only an unambiguous match counts.
+*/
+void TrackMission( CBasePlayer@ pPlayer, const string& in szFilter )
+{
+	string szWanted = APTrim( szFilter );
+	szWanted.ToLowercase();
+	if( szWanted.Length() == 0 )
+		return;
+
+	array<int> matches;
+	MatchChapters( szWanted, matches );
+	if( matches.length() != 1 )
+		return;
+
+	APChapter@ pChapter = g_Chapters[matches[0]];
+	if( g_State.ChapterExcluded( pChapter.key ) )
+		return;
+	g_TrackedMission[ "" + pPlayer.entindex() ] = pChapter.key;
+	g_PlayerFuncs.ClientPrint( pPlayer, HUD_PRINTTALK,
+		"[AP] !menu's tracker now follows " + pChapter.name + ".\n" );
+}
+
+/*
+* The tracked mission: a line per part with checks, "(here)" on the one being
+* stood in, the game's weapons, and a way to track another. In the hub with
+* nothing chosen there is nothing to follow, so it asks which.
+*/
+void ShowTrackerMenu( CBasePlayer@ pPlayer )
+{
+	if( !TrackerReady( pPlayer ) )
+		return;
+
+	APChapter@ pChapter = TrackedChapter( pPlayer );
+	if( pChapter is null )
+	{
+		ShowTrackCampaigns( pPlayer );
+		return;
+	}
+
+	CTextMenu@ pMenu = NewMenu( pPlayer,
+		"Tracker: " + pChapter.name + " " + ChapterMenuStatus( pChapter ) );
+
+	for( uint i = 0; i < pChapter.maps.length(); ++i )
+	{
+		string szMap = pChapter.maps[i];
+		uint uiFound, uiTotal;
+		PartCounts( szMap, uiFound, uiTotal );
+		if( uiTotal == 0 )
+			continue;
+
+		string szPart = pChapter.maps.length() > 1 ? "Part " + ( i + 1 ) : "Checks";
+		MenuAdd( pPlayer, pMenu,
+			szPart + ": " + uiFound + "/" + uiTotal
+			+ ( szMap == g_szCurrentMap ? " (here)" : "" ),
+			"trackp|" + szMap );
+	}
+
+	uint uiWFound, uiWTotal;
+	WeaponCounts( pChapter.campaign, uiWFound, uiWTotal );
+	if( uiWTotal > 0 )
+		MenuAdd( pPlayer, pMenu, "Weapons: " + uiWFound + "/" + uiWTotal,
+			"trackw|" + pChapter.campaign );
+
+	MenuAdd( pPlayer, pMenu, "Track another mission", "trackg" );
+	MenuOpen( pPlayer, pMenu );
 }
 
 void ShowTrackCampaigns( CBasePlayer@ pPlayer )
@@ -351,42 +490,19 @@ void ShowTrackCampaigns( CBasePlayer@ pPlayer )
 		return;
 	}
 
-	CTextMenu@ pMenu = NewMenu( pPlayer, "Tracker: which game?" );
+	CTextMenu@ pMenu = NewMenu( pPlayer, "Track a mission" );
 	for( uint i = 0; i < keys.length(); ++i )
-	{
-		uint uiFound = 0;
-		uint uiTotal = 0;
-		for( uint j = 0; j < g_Chapters.length(); ++j )
-		{
-			if( g_Chapters[j].campaign != keys[i] || g_State.ChapterExcluded( g_Chapters[j].key ) )
-				continue;
-			uint uiF, uiT;
-			ChapterCounts( g_Chapters[j], uiF, uiT );
-			uiFound += uiF;
-			uiTotal += uiT;
-		}
-		uint uiWF, uiWT;
-		WeaponCounts( keys[i], uiWF, uiWT );
-		uiFound += uiWF;
-		uiTotal += uiWT;
-		MenuAdd( pPlayer, pMenu,
-			CampaignDisplay( keys[i] ) + "  " + uiFound + "/" + uiTotal, "trackc|" + keys[i] );
-	}
+		MenuAdd( pPlayer, pMenu, CampaignDisplay( keys[i] ), "trackc|" + keys[i] );
 	MenuOpen( pPlayer, pMenu );
 }
 
 void ShowTrackMissions( CBasePlayer@ pPlayer, const string& in szCampaign )
 {
-	CTextMenu@ pMenu = NewMenu( pPlayer, "Tracker: " + CampaignDisplay( szCampaign ) );
+	string szTitle = "Track a mission";
+	if( SeedCampaigns().length() > 1 )
+		szTitle += ": " + CampaignDisplay( szCampaign );
 
-	uint uiWFound, uiWTotal;
-	WeaponCounts( szCampaign, uiWFound, uiWTotal );
-	if( uiWTotal > 0 )
-	{
-		MenuAdd( pPlayer, pMenu,
-			"Weapons  " + uiWFound + "/" + uiWTotal + ( uiWFound == uiWTotal ? " (done)" : "" ),
-			"trackw|" + szCampaign );
-	}
+	CTextMenu@ pMenu = NewMenu( pPlayer, szTitle );
 
 	for( uint i = 0; i < g_Chapters.length(); ++i )
 	{
@@ -396,38 +512,48 @@ void ShowTrackMissions( CBasePlayer@ pPlayer, const string& in szCampaign )
 
 		uint uiFound, uiTotal;
 		ChapterCounts( pChapter, uiFound, uiTotal );
-		if( uiTotal == 0 )
-			continue;
-
 		MenuAdd( pPlayer, pMenu,
-			pChapter.name + "  " + uiFound + "/" + uiTotal
-			+ ( uiFound == uiTotal ? " (done)" : "" ),
-			"trackm|" + i );
+			pChapter.name + ": " + uiFound + "/" + uiTotal
+			+ ( pChapter is g_CurrentChapter ? " (here)" : "" ),
+			"trackset|" + pChapter.key );
 	}
 
 	MenuOpen( pPlayer, pMenu );
 }
 
 /*
-* One mission's checks, unfound first. Found ones follow, marked `[done]`: a
-* text menu cannot grey out a single entry, so position and the mark say it.
-* Picking any of them points at it, as `!find` would.
+* A list of checks, unfound first. Found ones follow, marked `[done]`: a text
+* menu cannot grey out a single entry, so position and the mark say it.
+* Picking any of them says where it is and traces a line to it.
 */
-void ShowTrackMission( CBasePlayer@ pPlayer, int iIndex )
+void ShowCheckList( CBasePlayer@ pPlayer, const string& in szTitle,
+                    array<APLocation@>@ left, array<APLocation@>@ done, const string& in szPrefix )
 {
-	if( iIndex < 0 || uint( iIndex ) >= g_Chapters.length() )
-		return;
+	CTextMenu@ pMenu = NewMenu( pPlayer, szTitle + ": " + done.length() + "/"
+		+ ( left.length() + done.length() ) + " found" );
 
-	APChapter@ pChapter = g_Chapters[iIndex];
+	for( uint i = 0; i < left.length(); ++i )
+		MenuAdd( pPlayer, pMenu, ShortLabel( szPrefix, left[i] ), "trace|" + left[i].id );
+	for( uint i = 0; i < done.length(); ++i )
+		MenuAdd( pPlayer, pMenu, "[done] " + ShortLabel( szPrefix, done[i] ),
+			"trace|" + done[i].id );
+
+	MenuOpen( pPlayer, pMenu );
+}
+
+/* One part's checks, weapons apart: they belong to the game, not the map. */
+void ShowTrackPart( CBasePlayer@ pPlayer, const string& in szMap )
+{
+	APChapter@ pChapter = ChapterForMap( szMap );
+	if( pChapter is null )
+		return;
 
 	array<APLocation@> left;
 	array<APLocation@> done;
 	for( uint i = 0; i < g_Locations.length(); ++i )
 	{
 		APLocation@ pLocation = g_Locations[i];
-		if( IsWeaponCheck( pLocation ) )
-			continue;
-		if( !ChapterHasMap( pChapter, pLocation.map ) || !LocationInSeed( pLocation ) )
+		if( IsWeaponCheck( pLocation ) || pLocation.map != szMap || !LocationInSeed( pLocation ) )
 			continue;
 		if( LocationFound( pLocation ) )
 			done.insertLast( pLocation );
@@ -442,20 +568,14 @@ void ShowTrackMission( CBasePlayer@ pPlayer, int iIndex )
 		return;
 	}
 
-	CTextMenu@ pMenu = NewMenu( pPlayer, pChapter.name + ": " + done.length() + "/"
-		+ ( left.length() + done.length() ) + " found" );
-
-	for( uint i = 0; i < left.length(); ++i )
-		MenuAdd( pPlayer, pMenu, MenuLocationLabel( pChapter, left[i] ),
-			"find|" + left[i].id );
-	for( uint i = 0; i < done.length(); ++i )
-		MenuAdd( pPlayer, pMenu, "[done] " + MenuLocationLabel( pChapter, done[i] ),
-			"find|" + done[i].id );
-
-	MenuOpen( pPlayer, pMenu );
+	string szPart = PartLabel( pChapter, szMap );
+	szPart.ToLowercase();
+	ShowCheckList( pPlayer,
+		pChapter.name + ( szPart.Length() > 0 ? ", " + szPart : "" ),
+		left, done, pChapter.name + ": " );
 }
 
-/* One game's weapon checks, laid out like a mission's. */
+/* One game's weapon checks, laid out like a part's. */
 void ShowTrackWeapons( CBasePlayer@ pPlayer, const string& in szCampaign )
 {
 	array<APLocation@> left;
@@ -480,34 +600,16 @@ void ShowTrackWeapons( CBasePlayer@ pPlayer, const string& in szCampaign )
 		return;
 	}
 
-	CTextMenu@ pMenu = NewMenu( pPlayer, szGame + " weapons: " + done.length() + "/"
-		+ ( left.length() + done.length() ) + " found" );
-
-	for( uint i = 0; i < left.length(); ++i )
-		MenuAdd( pPlayer, pMenu, WeaponLabel( szGame, left[i] ), "find|" + left[i].id );
-	for( uint i = 0; i < done.length(); ++i )
-		MenuAdd( pPlayer, pMenu, "[done] " + WeaponLabel( szGame, done[i] ), "find|" + done[i].id );
-
-	MenuOpen( pPlayer, pMenu );
-}
-
-/* `Opposing Force: First Glock` reads as `First Glock` under its game's title. */
-string WeaponLabel( const string& in szGame, APLocation@ pLocation )
-{
-	string szPrefix = szGame + ": ";
-	if( pLocation.name.Length() > szPrefix.Length()
-	    && pLocation.name.SubString( 0, szPrefix.Length() ) == szPrefix )
-		return pLocation.name.SubString( szPrefix.Length() );
-	return pLocation.name;
+	ShowCheckList( pPlayer, szGame + " weapons", left, done, szGame + ": " );
 }
 
 /*
-* A location's name without its mission, which the menu title already says.
-* `Surface Tension: Health Charger (Part 2)` reads as `Health Charger (Part 2)`.
+* A location's name without what the menu title already says. `Surface Tension:
+* Health Charger (Part 2)` reads as `Health Charger (Part 2)`, and `Opposing
+* Force: First Glock` as `First Glock`.
 */
-string MenuLocationLabel( APChapter@ pChapter, APLocation@ pLocation )
+string ShortLabel( const string& in szPrefix, APLocation@ pLocation )
 {
-	string szPrefix = pChapter.name + ": ";
 	if( pLocation.name.Length() > szPrefix.Length()
 	    && pLocation.name.SubString( 0, szPrefix.Length() ) == szPrefix )
 		return pLocation.name.SubString( szPrefix.Length() );

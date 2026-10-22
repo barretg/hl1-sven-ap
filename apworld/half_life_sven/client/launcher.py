@@ -7,8 +7,10 @@ the Archipelago Launcher and can be started with an `archipelago://` URI.
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import sys
+from pathlib import Path
 
 import Utils
 from CommonClient import (
@@ -38,11 +40,26 @@ except ModuleNotFoundError:
 
 from .. import plugin
 from . import settings
+from ..data import AIR_ACCELERATE_ITEM, air_accelerate_value
 from ..data.legacy import LEGACY_LOCATION_SUCCESSORS, LEGACY_LOCATIONS, LEGACY_WEAPONS
-from .bridge import Bridge, find_store_dir, is_game_dir, write_bot_models
+from .bridge import (
+    Bridge,
+    custom_bots_enabled,
+    find_store_dir,
+    is_game_dir,
+    write_bot_models,
+    write_pref,
+)
 
 GAME_NAME = "Half-Life (Sven Co-op)"
 POLL_INTERVAL = 0.2
+
+MELEE_THROW_ITEM = "Melee Throw"
+
+# Which missions were finished on this machine, per slot, so the rest of the
+# server's completions can be told apart as remote. Kept in the bridge folder,
+# which `/uninstall` clears.
+COMPLETED_NAME = "ap_completed.json"
 
 # Suspension's own goal, alongside each campaign's finale. Not a chapter key: the
 # arcade map has no missions. Nothing in the game reports it either: winning it
@@ -57,8 +74,10 @@ SUSPENSION_GOAL_KEY = "suspension"
 # here and are easy to forget between sessions.
 IN_GAME_COMMANDS = (
     ("!ap", "list every mission and its unlock status"),
+    ("!menu", "warp, tracker, find and trace in one menu"),
     ("!tracker [map]", "locations found and still out there, printed to console"),
     ("!find [text]", "point at the nearest unfound check, or one you name"),
+    ("!trace [text]", "draw a line to the nearest unfound check; again to stop"),
     ("!warp <number or name>", "travel to an unlocked mission"),
     ("!hub", "return to the campaign portal"),
     ("!help", "show these commands in game"),
@@ -70,7 +89,9 @@ IN_GAME_COMMANDS = (
 # commands with the `concommandns` field from default_plugins.txt, and with none
 # set the separator survives on its own: the server logs these as `.ap` and so
 # on at load, and `ap` without the dot is simply an unknown command.
-IN_GAME_CONSOLE_COMMANDS = ".ap, .ap_tracker, .ap_find, .ap_warp, .ap_hub, .ap_help"
+IN_GAME_CONSOLE_COMMANDS = (
+    ".ap, .ap_menu, .ap_tracker, .ap_find, .ap_trace, .ap_warp, .ap_hub, .ap_help"
+)
 
 # Only a first guess for where Steam put the game. Sven Co-op is commonly on a
 # secondary library drive, in which case the picker takes over.
@@ -128,6 +149,54 @@ class HalfLifeSvenCommandProcessor(ClientCommandProcessor):
         if self.ctx.game_dir:
             state = "installed" if plugin.is_installed(self.ctx.game_dir) else "not installed"
             logger.info(f"Plugin: {state}")
+            custom = custom_bots_enabled(find_store_dir(self.ctx.game_dir))
+            logger.info(f"Custom bot models: {'on' if custom else 'off'}")
+        return True
+
+    def _cmd_toggle_custom_bots(self) -> bool:
+        """Let Bot Swarm bots wear custom player models, or only the game's own."""
+        if not self.ctx.game_dir:
+            logger.error("No game folder set. Run /gamedir first.")
+            return True
+        store = find_store_dir(self.ctx.game_dir)
+        enabled = not custom_bots_enabled(store)
+        try:
+            write_pref(store, "custom_bots", "1" if enabled else "0")
+        except OSError as exc:
+            logger.error(f"Could not save the setting: {exc}")
+            return True
+        # Tell a running game now, rather than at its next look at the file.
+        if self.ctx.bridge is not None:
+            self.ctx.bridge.queue_event("SETTING", f"custom_bots={1 if enabled else 0}")
+        logger.info(
+            "Custom bot models on: bots may wear any player model this server has."
+            if enabled
+            else "Custom bot models off: bots wear only the game's own player models, "
+            "so nobody has to download one."
+        )
+        logger.info("Takes effect from the next map.")
+        return True
+
+    def _cmd_newrun(self) -> bool:
+        """Starting this slot over: forget the missions finished on this machine."""
+        if not self.ctx.slot_identity:
+            logger.info("Connect to the slot first.")
+            return True
+        self.ctx.played_missions.clear()
+        self.ctx.save_played_missions()
+        logger.info(
+            "Forgot this slot's local completions. Every mission the server counts "
+            "now shows as (Remote Complete) until you finish it again."
+        )
+        return True
+
+    def _cmd_force_melee_throw(self) -> bool:
+        """Toggle Melee Throw on for a seed that has no Melee Throw item."""
+        if self.ctx.melee_throw:
+            logger.info("This seed has Melee Throw in its pool; find the item to throw.")
+            return True
+        self.ctx.force_melee_throw = not self.ctx.force_melee_throw
+        logger.info(f"Melee Throw {'forced on' if self.ctx.force_melee_throw else 'off'}.")
         return True
 
     def _cmd_install(self) -> bool:
@@ -344,6 +413,21 @@ class HalfLifeSvenContext(SuperContext):
         # rather than one handed over by a collect or release.
         self.suspension_played = False
         self.session_slot = ""
+        # The slot the per-run state above belongs to. See `forget_other_slot`.
+        self.state_slot = ""
+        # Missions this slot finished on this machine, from `ap_completed.json`.
+        # Anything else the server counts is remote: collected, released, or
+        # played from another machine.
+        self.played_missions: set[str] = set()
+        # Progressive Air Acceleration's bounds from slot data, or None, and how
+        # many of the items have arrived.
+        self.air_acceleration: list[int] | None = None
+        self.air_accelerate_received = 0
+        # Whether Butterfingers hands the weapon back after its timer.
+        self.butterfingers_reissue = True
+        # Melee Throw is in this seed's pool, and `/force_melee_throw`.
+        self.melee_throw = False
+        self.force_melee_throw = False
         self.chat_relay = True
         self.bridge_failures = 0
         # How far through the server's item history we have got. Guards against
@@ -518,6 +602,9 @@ class HalfLifeSvenContext(SuperContext):
             self.sync_completed_missions()
 
         if cmd == "Connected":
+            self.forget_other_slot()
+
+        if cmd == "Connected":
             slot_data = args.get("slot_data", {})
             self.items_synced = False
             if self.slot_identity != self.session_slot:
@@ -627,8 +714,17 @@ class HalfLifeSvenContext(SuperContext):
             if self.death_link_enabled:
                 asyncio.create_task(self.update_death_link(True), name="UpdateDeathLink")
 
+            # Absent from a seed generated before each existed, which reads as
+            # the behaviour it had: no air acceleration items, the weapon handed
+            # back, and no Melee Throw in the pool.
+            bounds = slot_data.get("air_acceleration")
+            self.air_acceleration = list(bounds) if bounds else None
+            self.butterfingers_reissue = bool(slot_data.get("butterfingers_reissue", True))
+            self.melee_throw = bool(slot_data.get("melee_throw", False))
+
             # A mission we already finished before a reconnect still counts.
             self.sync_completed_missions()
+            self.resume_played_missions()
 
             for campaign_key in sorted(self.missions_required_for):
                 name = self.campaign_names.get(campaign_key, campaign_key or "?")
@@ -704,6 +800,7 @@ class HalfLifeSvenContext(SuperContext):
             self.suspension_classes.clear()
             # Recounted from the batch, or a reconnect would open every tier.
             self.suspension_open = 0
+            self.air_accelerate_received = 0
 
         backlog = not self.items_synced
         for offset, item in enumerate(items):
@@ -765,7 +862,10 @@ class HalfLifeSvenContext(SuperContext):
         if entry is None:
             return
         group = entry.get("group")
-        if group == "chapter":
+        if entry["name"] == AIR_ACCELERATE_ITEM:
+            # Counted rather than collected, like the Suspension tiers.
+            self.air_accelerate_received += 1
+        elif group == "chapter":
             self.unlocked_chapters.add(entry["chapter"])
         elif group == "suspension_class":
             self.suspension_classes.add(entry["class"])
@@ -834,7 +934,127 @@ class HalfLifeSvenContext(SuperContext):
         Not `item_names`: CommonContext owns that one for its datapackage lookup,
         and shadowing it with a read-only property breaks its constructor.
         """
-        return self.unlocked_items | self.always_unlocked
+        held = self.unlocked_items | self.always_unlocked
+        if self.force_melee_throw and not self.melee_throw:
+            held = held | {MELEE_THROW_ITEM}
+        return held
+
+    @property
+    def air_accelerate(self) -> int:
+        """The `sv_airaccelerate` the game should hold, or -1 to leave it be."""
+        if not self.air_acceleration:
+            return -1
+        minimum, maximum = self.air_acceleration
+        return air_accelerate_value(minimum, maximum, self.air_accelerate_received)
+
+    @property
+    def is_connected(self) -> bool:
+        return self.server is not None and not self.server.socket.closed
+
+    #which slot, and what was played here -------------------------------
+
+    def forget_other_slot(self) -> None:
+        """Drop what this client run learned about a different slot.
+
+        `completed_missions` only ever grows, so connecting one client to a
+        second slot or seed carried the first one's finished missions into it,
+        counted toward a seal they had nothing to do with. A reconnect to the
+        same slot keeps everything: the game may have reported a completion the
+        server has not echoed yet.
+        """
+        identity = self.slot_identity
+        if identity == self.state_slot:
+            return
+        if self.state_slot:
+            logger.info(
+                "Connected to a different slot; forgetting the last one's finished missions."
+            )
+            self.force_melee_throw = False
+        self.state_slot = identity
+        self.played_missions.clear()
+        self.completed_missions.clear()
+        self.legacy_sent.clear()
+        self.goal_sent = False
+        self.suspension_played = False
+        self.sync_completed_missions()
+
+    def record_path(self) -> Path | None:
+        return self.bridge.dir / COMPLETED_NAME if self.bridge else None
+
+    def read_record(self) -> dict:
+        path = self.record_path()
+        try:
+            data = json.loads(path.read_text(encoding="utf-8")) if path else {}
+        except (OSError, ValueError):
+            return {}
+        return data if isinstance(data, dict) else {}
+
+    def resume_played_missions(self) -> None:
+        """On connect: the slot's local completions, joined with any finished
+        before it was named. A run under way with no record (a client from
+        before the record existed) counts what the server has as played here,
+        rather than every completion reading as remote."""
+        saved = self.read_record().get(self.slot_identity)
+        if isinstance(saved, list):
+            self.played_missions |= {str(key) for key in saved}
+        elif self.checked_locations:
+            self.played_missions |= self.completed_missions
+        self.save_played_missions()
+
+    def save_played_missions(self) -> None:
+        path = self.record_path()
+        if path is None or not self.slot_identity:
+            return
+        record = self.read_record()
+        record[self.slot_identity] = sorted(self.played_missions)
+        try:
+            path.parent.mkdir(parents=True, exist_ok=True)
+            temp = path.with_suffix(".tmp")
+            temp.write_text(json.dumps(record), encoding="utf-8")
+            os.replace(temp, path)
+        except OSError as exc:
+            logger.warning(f"Could not save which missions were finished here ({exc}).")
+
+    def finished_here(self, chapter_key: str) -> None:
+        """The game finished a mission on this machine."""
+        self.completed_missions.add(chapter_key)
+        if chapter_key not in self.played_missions:
+            self.played_missions.add(chapter_key)
+            self.save_played_missions()
+
+    @property
+    def remote_completed(self) -> set[str]:
+        """Completed on the server, never finished on this machine."""
+        return self.completed_missions - self.played_missions - {SUSPENSION_GOAL_KEY}
+
+    def publish_snapshot(self, force: bool = False) -> None:
+        """Write everything the game needs to know into the bridge."""
+        if self.bridge is None:
+            return
+        self.bridge.write_snapshot(
+            connected=self.is_connected,
+            chapters=sorted(self.open_chapters),
+            items=sorted(self.held_item_names),
+            goal_open=self.goal_open,
+            goals_open=sorted(self.open_goal_chapters),
+            death_link=self.death_link_enabled,
+            death_link_amnesty=self.death_link_amnesty,
+            lobby_death_link=self.lobby_death_link,
+            excluded=sorted(self.excluded_chapters),
+            ungated=sorted(self.effective_ungated_classnames()),
+            starting=list(self.starting_weapons),
+            checked=sorted(self.checked_locations),
+            missing=sorted(self.missing_locations),
+            data_version=self.data_version,
+            slot=self.slot_identity,
+            armour=self.armour_items,
+            suspension=self.suspension_state,
+            remote=sorted(self.remote_completed),
+            butterfingers_reissue=self.butterfingers_reissue,
+            air_accelerate=self.air_accelerate,
+            melee_throw=self.melee_throw,
+            force=force,
+        )
 
     #Suspension ------------------------------------------------------
 
@@ -1051,6 +1271,7 @@ class HalfLifeSvenContext(SuperContext):
 
     def print_missions(self) -> None:
         shown_campaign = ""
+        remote = self.remote_completed
         for chapter in self.campaign["chapters"]:
             campaign_key = chapter.get("campaign", "")
             if campaign_key != shown_campaign and campaign_key in self.missions_required_for:
@@ -1065,7 +1286,7 @@ class HalfLifeSvenContext(SuperContext):
                     campaign_key, self.missions_required
                 )
                 paired = self.goal_prerequisite.get(chapter["key"], "")
-                if chapter["key"] in self.completed_missions:
+                if chapter["key"] in self.completed_missions and chapter["key"] not in remote:
                     status = "complete"
                 elif self.goal_chapter_open(chapter["key"]):
                     status = "OPEN"
@@ -1075,7 +1296,7 @@ class HalfLifeSvenContext(SuperContext):
                     # The count is met and it is still shut, so say what is left
                     # rather than showing a full bar next to a sealed mission.
                     status = f"sealed (finish {self.chapter_name(paired)})"
-            elif chapter["key"] in self.completed_missions:
+            elif chapter["key"] in self.completed_missions and chapter["key"] not in remote:
                 status = "complete"
             elif chapter["key"] in self.goal_companions:
                 # Sealed by the count like the finale it leads into, so it is
@@ -1093,7 +1314,8 @@ class HalfLifeSvenContext(SuperContext):
                 status = "unlocked"
             else:
                 status = "locked"
-            logger.info(f"  {chapter['index']:2d}. {chapter['name']:26} [{status}]")
+            note = " (Remote Complete)" if chapter["key"] in remote else ""
+            logger.info(f"  {chapter['index']:2d}. {chapter['name']:26} [{status}]{note}")
 
     def make_gui(self):
         """Name the window for this game rather than "Archipelago Text Client".
@@ -1225,13 +1447,13 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
         if event.kind == "CHECK":
             new_checks.append(int(event.arg))
         elif event.kind == "COMPLETE":
-            ctx.completed_missions.add(event.arg)
+            ctx.finished_here(event.arg)
         elif event.kind == "GOAL":
             # One campaign's finale, not necessarily the run. The game reports
             # each as it falls; the slot is only won once every campaign in the
             # seed has had its own, so the decision is made here rather than in
             # the plugin, which knows nothing about the others.
-            ctx.completed_missions.add(event.arg)
+            ctx.finished_here(event.arg)
             name = ctx.campaign_names.get(ctx.campaign_of_chapter.get(event.arg, ""), "")
             if not ctx.run_complete:
                 remaining = sorted(
@@ -1270,26 +1492,15 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
                     await ctx.send_msgs([{"cmd": "Say", "text": f"[{player}] {text}"}])
         elif event.kind == "HELLO":
             logger.info(f"Game is on {event.arg}.")
-            ctx.bridge.write_snapshot(
-                connected=ctx.server is not None,
-                chapters=sorted(ctx.open_chapters),
-                items=sorted(ctx.held_item_names),
-                goal_open=ctx.goal_open,
-                goals_open=sorted(ctx.open_goal_chapters),
-                death_link=ctx.death_link_enabled,
-                death_link_amnesty=ctx.death_link_amnesty,
-                lobby_death_link=ctx.lobby_death_link,
-                excluded=sorted(ctx.excluded_chapters),
-                ungated=sorted(ctx.effective_ungated_classnames()),
-                starting=list(ctx.starting_weapons),
-                checked=sorted(ctx.checked_locations),
-                missing=sorted(ctx.missing_locations),
-                data_version=ctx.data_version,
-                slot=ctx.slot_identity,
-                armour=ctx.armour_items,
-                suspension=ctx.suspension_state,
-                force=True,
-            )
+            ctx.publish_snapshot(force=True)
+        elif event.kind == "SETTING":
+            # The host changed a machine preference in game; the plugin has
+            # already written it to the file.
+            key, _, value = event.arg.partition("=")
+            if key == "custom_bots":
+                logger.info(
+                    f"Custom bot models turned {'on' if value == '1' else 'off'} in game."
+                )
 
     new_checks.extend(ctx.legacy_checks_due(new_checks))
     if new_checks:
@@ -1321,25 +1532,7 @@ async def pump(ctx: HalfLifeSvenContext) -> None:
     # Always published, even if reading failed: the snapshot is how the game
     # learns about unlocks, and it must not be skipped just because ap_out.txt
     # was momentarily unreadable.
-    ctx.bridge.write_snapshot(
-        connected=ctx.server is not None,
-        chapters=sorted(ctx.open_chapters),
-        items=sorted(ctx.held_item_names),
-        goal_open=ctx.goal_open,
-        goals_open=sorted(ctx.open_goal_chapters),
-        death_link=ctx.death_link_enabled,
-        death_link_amnesty=ctx.death_link_amnesty,
-        lobby_death_link=ctx.lobby_death_link,
-        excluded=sorted(ctx.excluded_chapters),
-        ungated=sorted(ctx.effective_ungated_classnames()),
-        starting=list(ctx.starting_weapons),
-        checked=sorted(ctx.checked_locations),
-        missing=sorted(ctx.missing_locations),
-        data_version=ctx.data_version,
-        slot=ctx.slot_identity,
-        armour=ctx.armour_items,
-        suspension=ctx.suspension_state,
-    )
+    ctx.publish_snapshot()
 
 
 async def main(args) -> None:

@@ -540,6 +540,53 @@ def test_write_bot_models_writes_the_list(tmp_path: Path) -> None:
     assert (store / BOT_MODELS_FILE).read_text() == "models/player/helmet/helmet.mdl\n"
 
 
+def test_write_bot_models_writes_a_stock_only_list(tmp_path: Path) -> None:
+    """Custom models off: bots wear only what ships with the game, so nobody
+    in the lobby has to download one."""
+    from client.bridge import BOT_MODELS_STOCK_FILE
+
+    fake_model(tmp_path / "svencoop/models/player/helmet/helmet.mdl")
+    fake_model(tmp_path / "svencoop_addon/models/player/mine/mine.mdl")
+    fake_model(tmp_path / "svencoop_downloads/models/player/theirs/theirs.mdl")
+    store = tmp_path / "store"
+    store.mkdir()
+    assert write_bot_models(tmp_path, store) == 3
+    assert (store / BOT_MODELS_STOCK_FILE).read_text() == "models/player/helmet/helmet.mdl\n"
+
+
+def test_prefs_round_trip_and_default(tmp_path: Path) -> None:
+    from client.bridge import (
+        PREFS_NAME, custom_bots_enabled, read_prefs, write_pref,
+    )
+
+    assert custom_bots_enabled(tmp_path)
+    (tmp_path / PREFS_NAME).write_text("other=7\n", encoding="utf-8")
+    write_pref(tmp_path, "custom_bots", "0")
+    assert not custom_bots_enabled(tmp_path)
+    assert read_prefs(tmp_path) == {"other": "7", "custom_bots": "0"}
+
+
+def test_snapshot_carries_remote_and_the_new_switches(bridge: Bridge) -> None:
+    bridge.write_snapshot(
+        connected=True, chapters=[], items=[], goal_open=False, death_link=False,
+        remote=["office_complex", "blast_pit"], butterfingers_reissue=False,
+        air_accelerate=34, melee_throw=True,
+    )
+    text = bridge.in_path.read_text(encoding="utf-8")
+    assert "remote=blast_pit,office_complex" in text
+    assert "butterfingers_reissue=0" in text
+    assert "air_accelerate=34" in text
+    assert "melee_throw=1" in text
+
+
+def test_snapshot_defaults_for_the_new_switches(bridge: Bridge) -> None:
+    snapshot(bridge)
+    text = bridge.in_path.read_text(encoding="utf-8")
+    assert "remote=\n" in text
+    assert "butterfingers_reissue=1" in text
+    assert "air_accelerate=-1" in text
+
+
 def test_bot_sequences_match_what_the_bots_play() -> None:
     import re
 

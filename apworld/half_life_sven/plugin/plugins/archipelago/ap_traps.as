@@ -192,6 +192,15 @@ bool WeaponWithheld( CBasePlayer@ pPlayer, const string& in szClassname )
 	if( flAge >= flHold )
 	{
 		string szKey = DroppedKey( pPlayer, szClassname );
+
+		// `butterfingers_reissue` off: the timer only means something once the
+		// player has nothing left to fight with, and then the suit steps in
+		// after all rather than leave them punching air until the next map.
+		if( g_ButterfingersDrop.exists( szKey ) && !g_State.butterfingersReissue
+		    && !HasWeaponUnderAnyName( pPlayer, szClassname )
+		    && HasOtherWeapon( pPlayer, szClassname ) )
+			return true;
+
 		if( g_ButterfingersDrop.exists( szKey ) )
 			g_ReissueDue[ szKey ] = true;
 
@@ -200,6 +209,26 @@ bool WeaponWithheld( CBasePlayer@ pPlayer, const string& in szClassname )
 	}
 
 	return true;
+}
+
+/*
+* Is the player holding anything to fight with besides this weapon? The medkit
+* is in every inventory and fights nothing, so it does not count.
+*/
+bool HasOtherWeapon( CBasePlayer@ pPlayer, const string& in szClassname )
+{
+	for( size_t iSlot = 0; iSlot < MAX_ITEM_TYPES; ++iSlot )
+	{
+		CBasePlayerItem@ pItem = pPlayer.m_rgpPlayerItems( iSlot );
+		while( pItem !is null )
+		{
+			string szHeld = pItem.GetClassname();
+			if( szHeld != szClassname && szHeld != "weapon_medkit" )
+				return true;
+			@pItem = cast<CBasePlayerItem@>( pItem.m_hNextItem.GetEntity() );
+		}
+	}
+	return false;
 }
 
 /* Too soon to pick it straight back up? */
@@ -519,7 +548,10 @@ bool KnownTrap( const string& in szName )
 	return szName == "Scientist Trap"
 	    || szName == "Headcrab Trap"
 	    || szName == "Butterfingers Trap"
-	    || szName == "Bot Swarm Trap";
+	    || szName == "Bot Swarm Trap"
+	    || szName == "Bunny Hop Trap"
+	    || szName == "Sticky Key Trap"
+	    || szName == "Reload Trap";
 }
 
 /*
@@ -602,6 +634,7 @@ void ProcessTrapQueue()
 void ResetTrapGround()
 {
 	g_flTrapGroundSince = 0.0f;
+	ClearMovementTraps();
 
 	// Earned back by MapInit, which is the only place a precache is legal. Set
 	// here rather than trusted from the last map: the precache table belongs to
@@ -619,8 +652,169 @@ void SpringTrapNow( const string& in szName )
 		Butterfingers();
 	else if( szName == "Bot Swarm Trap" )
 		BotSwarm();
+	else if( szName == "Bunny Hop Trap" )
+		SpringBunnyHop();
+	else if( szName == "Sticky Key Trap" )
+		SpringStickyKey();
+	else if( szName == "Reload Trap" )
+		SpringReload();
 	else
 		APLog( "unknown trap: " + szName );
+}
+
+// --- movement traps -------------------------------------------------------
+//
+// Bunny Hop and Sticky Key take over a movement key for fifteen seconds. A
+// plugin cannot press a client's keys (Sven filters stuffed `+` commands), so
+// both act on the player's velocity from PlayerPreThink instead: the server
+// owns movement, and the client's prediction is corrected to it the same way a
+// trigger_push corrects it. The whole lobby, like every trap here. A map change
+// ends both: the engine's clock starts again with the map.
+
+const float MOVEMENT_TRAP_SECONDS = 15.0f;
+
+// sqrt( 2 * 800 * 45 ): a normal jump's take-off speed under default gravity.
+const float BUNNY_HOP_SPEED = 268.0f;
+
+// What a held movement key settles at: walking pace on the ground, and a much
+// smaller nudge in the air, where a real key has little grip either.
+const float STICKY_KEY_SPEED = 220.0f;
+const float STICKY_KEY_AIR_PUSH = 12.0f;
+
+float g_flBunnyHopUntil = 0.0f;
+float g_flStickyKeyUntil = 0.0f;
+// 0 forward, 1 back, 2 left, 3 right.
+int g_iStickyKey = 0;
+
+array<string> STICKY_KEY_NAMES = { "forward", "back", "strafe left", "strafe right" };
+
+void ClearMovementTraps()
+{
+	g_flBunnyHopUntil = 0.0f;
+	g_flStickyKeyUntil = 0.0f;
+}
+
+void SpringBunnyHop()
+{
+	g_flBunnyHopUntil = g_Engine.time + MOVEMENT_TRAP_SECONDS;
+	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+		"[AP] Bunny Hop Trap! Everyone jumps on landing for fifteen seconds.\n" );
+}
+
+/* A second one while the first is held swaps the key and restarts the clock. */
+void SpringStickyKey()
+{
+	g_iStickyKey = Math.RandomLong( 0, 3 );
+	g_flStickyKeyUntil = g_Engine.time + MOVEMENT_TRAP_SECONDS;
+	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK,
+		"[AP] Sticky Key Trap! Everyone's " + STICKY_KEY_NAMES[g_iStickyKey]
+		+ " key is stuck for fifteen seconds.\n" );
+}
+
+/* Per frame, per living player, from PlayerPreThink. */
+void MovementTrapsThink( CBasePlayer@ pPlayer )
+{
+	if( g_flBunnyHopUntil <= 0.0f && g_flStickyKeyUntil <= 0.0f )
+		return;
+
+	// The clock goes backwards on a new map: whatever was running is over.
+	if( g_flBunnyHopUntil > g_Engine.time + MOVEMENT_TRAP_SECONDS
+	 || g_flStickyKeyUntil > g_Engine.time + MOVEMENT_TRAP_SECONDS )
+	{
+		ClearMovementTraps();
+		return;
+	}
+
+	// Ladders and water have movement of their own, and shoving a player off a
+	// ladder is a fall nobody asked for.
+	if( pPlayer.pev.movetype == MOVETYPE_FLY || pPlayer.pev.waterlevel >= 2 )
+		return;
+
+	bool bOnGround = ( pPlayer.pev.flags & FL_ONGROUND ) != 0;
+
+	if( g_flStickyKeyUntil > g_Engine.time )
+		PushStickyKey( pPlayer, bOnGround );
+	else if( g_flStickyKeyUntil > 0.0f )
+		g_flStickyKeyUntil = 0.0f;
+
+	if( g_flBunnyHopUntil > g_Engine.time )
+	{
+		if( bOnGround && pPlayer.pev.velocity.z <= 0.0f )
+		{
+			pPlayer.pev.velocity.z = BUNNY_HOP_SPEED;
+			pPlayer.pev.flags &= ~FL_ONGROUND;
+		}
+	}
+	else if( g_flBunnyHopUntil > 0.0f )
+		g_flBunnyHopUntil = 0.0f;
+}
+
+void PushStickyKey( CBasePlayer@ pPlayer, bool bOnGround )
+{
+	// Flat, from the view's yaw only: looking at the floor must not slow it.
+	Vector vecAngles( 0.0f, pPlayer.pev.v_angle.y, 0.0f );
+	Math.MakeVectors( vecAngles );
+	Vector vecDir = g_Engine.v_forward;
+	if( g_iStickyKey == 1 )
+		vecDir = vecDir * -1.0f;
+	else if( g_iStickyKey == 2 )
+		vecDir = g_Engine.v_right * -1.0f;
+	else if( g_iStickyKey == 3 )
+		vecDir = g_Engine.v_right;
+
+	Vector vecVelocity = pPlayer.pev.velocity;
+	// By hand: Vector's `*` is component-wise, not a dot product.
+	float flAlong = vecVelocity.x * vecDir.x + vecVelocity.y * vecDir.y;
+
+	if( bOnGround )
+	{
+		// Topped up to walking pace along the key, never slowed: running the
+		// same way already is not something the key would undo.
+		if( flAlong < STICKY_KEY_SPEED )
+			vecVelocity = vecVelocity + vecDir * ( STICKY_KEY_SPEED - flAlong );
+	}
+	else if( flAlong < STICKY_KEY_SPEED )
+		vecVelocity = vecVelocity + vecDir * STICKY_KEY_AIR_PUSH;
+
+	pPlayer.pev.velocity = vecVelocity;
+}
+
+/*
+* Reload Trap: the weapon in everyone's hands reloads from empty. The clip goes
+* back into the reserve first, so no ammo is lost; an emptied clip is what makes
+* the weapon reload itself on its next frame, animation and all.
+*/
+void SpringReload()
+{
+	int iReloaded = 0;
+
+	for( int i = 1; i <= g_Engine.maxClients; ++i )
+	{
+		CBasePlayer@ pPlayer = g_PlayerFuncs.FindPlayerByIndex( i );
+		if( pPlayer is null || !pPlayer.IsConnected() || !pPlayer.IsAlive() )
+			continue;
+
+		CBasePlayerWeapon@ pWeapon = cast<CBasePlayerWeapon@>(
+			pPlayer.m_hActiveItem.GetEntity() );
+		if( pWeapon is null || pWeapon.m_iClip <= 0 )
+			continue;
+
+		int iType = pWeapon.m_iPrimaryAmmoType;
+		string szAmmo = pWeapon.pszAmmo1();
+		if( iType < 0 || szAmmo.Length() == 0 )
+			continue;
+
+		// Capped at what it comes to, not the ammo's usual maximum, so a full
+		// reserve still takes the clip back.
+		int iHeld = pPlayer.m_rgAmmo( iType );
+		pPlayer.GiveAmmo( pWeapon.m_iClip, szAmmo, iHeld + pWeapon.m_iClip );
+		pWeapon.m_iClip = 0;
+		++iReloaded;
+	}
+
+	g_PlayerFuncs.ClientPrintAll( HUD_PRINTTALK, iReloaded > 0
+		? "[AP] Reload Trap! Everyone's clip is back in the box.\n"
+		: "[AP] Reload Trap! Nobody had anything loaded.\n" );
 }
 
 /*

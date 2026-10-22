@@ -183,7 +183,8 @@ def test_locations_outnumber_progression_items(campaign: dict) -> None:
 def test_traps_exist_and_are_classified_as_traps(campaign: dict) -> None:
     traps = [item for item in campaign["items"] if item.get("group") == "trap"]
     assert {item["name"] for item in traps} == {
-        "Scientist Trap", "Headcrab Trap", "Butterfingers Trap", "Bot Swarm Trap"
+        "Scientist Trap", "Headcrab Trap", "Butterfingers Trap", "Bot Swarm Trap",
+        "Bunny Hop Trap", "Sticky Key Trap", "Reload Trap",
     }
     for item in traps:
         assert item["classification"] == "trap", item["name"]
@@ -698,8 +699,9 @@ def test_no_item_or_check_exists_for_a_weapon_the_game_lacks(campaign: dict) -> 
 def test_placeable_locations_carry_a_position(campaign: dict) -> None:
     """`!find` can only point at a check that knows where it is.
 
-    Chargers and weapon pickups are somewhere; reaching a map or finishing a
-    mission is not a place, so those carry nothing and `!find` says so.
+    Chargers, weapon pickups and fired checks are somewhere; reaching a map or
+    finishing a mission is not a place, so those carry nothing and `!find`
+    points at the way on instead.
     """
     from campaign_layout import WEAPON_ANCHORS
 
@@ -711,14 +713,14 @@ def test_placeable_locations_carry_a_position(campaign: dict) -> None:
 
     for entry in campaign["locations"]:
         kind = entry["trigger"]["type"]
-        if kind == "charger" or (
+        if kind in ("charger", "microwave") or (
             kind == "weapon_pickup"
             and not any(entry["name"].endswith(f"First {n}") for n in handed_over)
         ):
             assert "position" in entry, entry["name"]
             assert len(entry["position"]) == 3, entry["name"]
             assert all(isinstance(v, int) for v in entry["position"]), entry["name"]
-        elif kind not in ("charger", "weapon_pickup"):
+        elif kind not in ("charger", "weapon_pickup", "microwave"):
             assert "position" not in entry, entry["name"]
 
 

@@ -1,5 +1,5 @@
 {
- "data_version": "ac779f8dc499",
+ "data_version": "30199be327ce",
  "files": [
   "campaigns/half_life.json",
   "campaigns/opposing_force.json",
@@ -486,13 +486,19 @@
   {
    "id": 7710095,
    "name": "Flashlight",
-   "classification": "useful",
+   "classification": "progression",
    "group": "optional",
    "classnames": []
   },
   {
    "id": 7710096,
    "name": "Melee Throw",
+   "classification": "useful",
+   "group": "ability"
+  },
+  {
+   "id": 7710099,
+   "name": "Progressive Air Acceleration",
    "classification": "useful",
    "group": "ability"
   },
@@ -560,6 +566,27 @@
   {
    "id": 7710097,
    "name": "Bot Swarm Trap",
+   "classification": "trap",
+   "group": "trap",
+   "weight": 25
+  },
+  {
+   "id": 7710100,
+   "name": "Bunny Hop Trap",
+   "classification": "trap",
+   "group": "trap",
+   "weight": 25
+  },
+  {
+   "id": 7710101,
+   "name": "Sticky Key Trap",
+   "classification": "trap",
+   "group": "trap",
+   "weight": 25
+  },
+  {
+   "id": 7710102,
+   "name": "Reload Trap",
    "classification": "trap",
    "group": "trap",
    "weight": 25
@@ -663,6 +690,28 @@
   ],
   "displacer_cannon": [
    "Displacer Cannon"
+  ],
+  "not_rpg": [
+   "Glock",
+   ".357 Magnum",
+   "MP5",
+   "Shotgun",
+   "Crossbow",
+   "Tau Cannon",
+   "Gluon Gun",
+   "Hivehand",
+   "Snarks",
+   "Desert Eagle",
+   "SAW",
+   "Sniper Rifle",
+   "Displacer Cannon",
+   "Spore Launcher",
+   "Hand Grenade",
+   "Satchel Charge",
+   "Tripmine"
+  ],
+  "flashlight": [
+   "Flashlight"
   ]
  },
  "starting_weapons": [
