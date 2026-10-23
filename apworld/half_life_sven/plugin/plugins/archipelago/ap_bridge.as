@@ -34,6 +34,13 @@ string g_szSession;
 // empty, which is no news rather than a new slot.
 string g_szSlot;
 
+// Whether the client ends each snapshot with `end=1`. An older client never
+// does, and its snapshots are taken as they come, as they always were. Once one
+// has been seen, a snapshot without it is a read that caught the client
+// mid-write: a truncated `slot=` there reads as a different slot and would send
+// the lobby back to the hub for nothing.
+bool g_bSnapshotEnds = false;
+
 // The client's wall-clock time when it last wrote the snapshot. Event freshness
 // is judged against this, so the two sides never have to agree on a clock.
 float g_flSnapshotNow = 0.0f;
@@ -154,6 +161,7 @@ void SendAck( int iSeq )
 *   air_accelerate=<n>            sv_airaccelerate to hold; -1 leaves it
 *   melee_throw=0|1               Melee Throw is in the pool
 *   event=<seq>|<kind>|<payload>|<unixtime>
+*   end=1                         always the last line; see g_bSnapshotEnds
 */
 void BridgePoll()
 {
@@ -176,9 +184,28 @@ void BridgePoll()
 
 	if( szInput == g_szLastInput )
 		return;
-	g_szLastInput = szInput;
 
 	array<string>@ inputLines = szInput.Split( "\n" );
+
+	// A snapshot is only whole if its last line is the end marker. Once the
+	// client has shown it sends one, anything else is a torn read and is left
+	// uncached so the next poll reads the file again.
+	bool bEnds = false;
+	for( int iLine = int( inputLines.length() ) - 1; iLine >= 0; --iLine )
+	{
+		string szLine = APTrim( inputLines[iLine] );
+		if( szLine.Length() == 0 )
+			continue;
+		bEnds = szLine == "end=1";
+		break;
+	}
+
+	if( bEnds )
+		g_bSnapshotEnds = true;
+	else if( g_bSnapshotEnds )
+		return;
+
+	g_szLastInput = szInput;
 
 	dictionary chapters;
 	dictionary excluded;

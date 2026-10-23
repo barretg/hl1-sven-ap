@@ -92,6 +92,13 @@ def test_snapshot_contents(bridge: Bridge) -> None:
     assert "now=" in text
 
 
+def test_snapshot_ends_with_marker(bridge: Bridge) -> None:
+    """The plugin drops any snapshot not ending in `end=1` as a torn read."""
+    snapshot(bridge)
+    lines = bridge.in_path.read_text(encoding="utf-8").splitlines()
+    assert lines[-1] == "end=1"
+
+
 def test_snapshot_carries_excluded_missions(bridge: Bridge) -> None:
     """"Not in this seed" has to be distinguishable from "locked"."""
     snapshot(bridge)

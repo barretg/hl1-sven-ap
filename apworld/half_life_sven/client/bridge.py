@@ -315,6 +315,11 @@ class Bridge:
 
         full = [body, f"now={time.time():.0f}"]
         full += [self._pending[seq].render() for seq in pending]
+        # Always last. A plugin that has seen this once treats a snapshot
+        # without it as a torn read of an in-place write and waits for the next
+        # poll, rather than acting on a half file (a truncated `slot=` looked
+        # like a new slot and sent the lobby back to the hub).
+        full.append("end=1")
 
         self.dir.mkdir(parents=True, exist_ok=True)
         self._publish("\n".join(full) + "\n")
