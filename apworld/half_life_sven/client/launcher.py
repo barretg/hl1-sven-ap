@@ -745,16 +745,6 @@ class HalfLifeSvenContext(SuperContext):
         elif cmd == "PrintJSON":
             self.relay_to_game(args)
 
-        elif cmd == "Bounced":
-            tags = args.get("tags", [])
-            if "DeathLink" in tags and self.death_link_enabled and self.bridge:
-                data = args.get("data", {})
-                source = data.get("source", "someone")
-                cause = data.get("cause") or "an unknown fate"
-                # The plugin splits the event line on '|', so the two fields are
-                # joined with '~' instead.
-                self.bridge.queue_event("DEATHLINK", f"{source}~{cause}")
-
     def relay_to_game(self, args: dict) -> None:
         """Show multiworld chat in the game.
 
@@ -1329,9 +1319,18 @@ class HalfLifeSvenContext(SuperContext):
         return ui
 
     def on_deathlink(self, data: dict) -> None:
-        # CommonContext calls this for DeathLink bounces too; the Bounced handler
-        # above already queued it, so there is nothing extra to do here.
+        # CommonContext only calls this for a DeathLink that is not our own echo
+        # (it matches `time` against the one send_death stamped). Queueing from
+        # the raw Bounced packet instead wiped the lobby a second time for every
+        # death we sent out.
         super().on_deathlink(data)
+        if not self.death_link_enabled or self.bridge is None:
+            return
+        source = data.get("source", "someone")
+        cause = data.get("cause") or "an unknown fate"
+        # The plugin splits the event line on '|', so the two fields are
+        # joined with '~' instead.
+        self.bridge.queue_event("DEATHLINK", f"{source}~{cause}")
 
 
 def load_campaign() -> dict:

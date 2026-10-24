@@ -255,6 +255,10 @@ void ClearWithheldWeapons()
 	g_ButterfingersDrop.deleteAll();
 	g_ReissueDue.deleteAll();
 	g_TrapDrops.resize( 0 );
+	g_PlacedMines.resize( 0 );
+	g_PlacedMineOrigins.resize( 0 );
+	g_PlacedMineGoneAt.resize( 0 );
+	g_LooseMines.resize( 0 );
 
 	g_PendingDrops.resize( 0 );
 	for( uint i = 0; i < g_szHeldWeapons.length(); ++i )
@@ -406,6 +410,89 @@ void TrackPlayerDrops( CBasePlayer@ pPlayer )
 		if( BookDrop( drop ) || g_Engine.time > drop.flUntil )
 			g_PendingDrops.removeAt( i - 1 );
 	}
+}
+
+/*
+* A placed tripmine whose surface moves (a door, a lift, a monster) comes off and
+* lands as a `weapon_tripmine` pickup. That is a mine somebody was carrying, not
+* one found, so the copy it turns into is booked with the trap drops.
+*
+* The placed mines are tracked by their last known origin, which follows one
+* that is falling, and any loose `weapon_tripmine` not seen before that turns up
+* next to one is the mine coming off. Copies lying in the map from the start are
+* in `g_LooseMines` from the first pass, so a map mine near a placed one is not
+* mistaken for it.
+*/
+const string PLACED_MINE_CLASSNAME = "monster_tripmine";
+const string MINE_PICKUP_CLASSNAME = "weapon_tripmine";
+const float MINE_DETACH_RADIUS = 64.0f;
+const float MINE_DETACH_GRACE = 1.0f;
+
+array<EHandle> g_PlacedMines;
+array<Vector> g_PlacedMineOrigins;
+array<float> g_PlacedMineGoneAt;   // 0 while the mine is still there
+array<EHandle> g_LooseMines;
+
+bool KnownLooseMine( CBaseEntity@ pEntity )
+{
+	for( uint i = 0; i < g_LooseMines.length(); ++i )
+		if( g_LooseMines[i].IsValid() && g_LooseMines[i].GetEntity() is pEntity )
+			return true;
+	return false;
+}
+
+/* From FastThink, and from the pickup hook so a quick grab is not missed. */
+void TrackPlacedTripmines()
+{
+	for( uint i = g_LooseMines.length(); i > 0; --i )
+	{
+		if( !g_LooseMines[i - 1].IsValid() )
+			g_LooseMines.removeAt( i - 1 );
+	}
+
+	CBaseEntity@ pEntity = null;
+	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname( pEntity, MINE_PICKUP_CLASSNAME ) ) !is null )
+	{
+		if( InInventory( pEntity ) || KnownLooseMine( pEntity ) )
+			continue;
+		g_LooseMines.insertLast( EHandle( pEntity ) );
+
+		for( uint i = 0; i < g_PlacedMineOrigins.length(); ++i )
+		{
+			if( ( pEntity.pev.origin - g_PlacedMineOrigins[i] ).Length() <= MINE_DETACH_RADIUS )
+			{
+				RegisterTrapDrop( pEntity );
+				break;
+			}
+		}
+	}
+
+	// A mine that is gone is remembered a moment longer, in case its pickup
+	// spawns a frame or two after it is removed.
+	array<EHandle> mines;
+	array<Vector> origins;
+	array<float> gone;
+	for( uint i = 0; i < g_PlacedMines.length(); ++i )
+	{
+		if( g_PlacedMines[i].IsValid() )
+			continue;
+		float flGone = g_PlacedMineGoneAt[i] > 0.0f ? g_PlacedMineGoneAt[i] : g_Engine.time;
+		if( g_Engine.time - flGone > MINE_DETACH_GRACE )
+			continue;
+		mines.insertLast( g_PlacedMines[i] );
+		origins.insertLast( g_PlacedMineOrigins[i] );
+		gone.insertLast( flGone );
+	}
+	@pEntity = null;
+	while( ( @pEntity = g_EntityFuncs.FindEntityByClassname( pEntity, PLACED_MINE_CLASSNAME ) ) !is null )
+	{
+		mines.insertLast( EHandle( pEntity ) );
+		origins.insertLast( pEntity.pev.origin );
+		gone.insertLast( 0.0f );
+	}
+	g_PlacedMines = mines;
+	g_PlacedMineOrigins = origins;
+	g_PlacedMineGoneAt = gone;
 }
 
 /*

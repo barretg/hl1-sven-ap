@@ -72,7 +72,7 @@ void MeleeThrowThink( CBasePlayer@ pPlayer )
 	if( ( pPlayer.pev.button & IN_ATTACK2 ) == 0 || ( pPlayer.pev.oldbuttons & IN_ATTACK2 ) != 0 )
 		return;
 
-	if( g_CurrentChapter is null || SuspensionManaged() )
+	if( SuspensionManaged() )
 		return;
 
 	CBasePlayerItem@ pActive = cast<CBasePlayerItem@>( pPlayer.m_hActiveItem.GetEntity() );
@@ -81,12 +81,17 @@ void MeleeThrowThink( CBasePlayer@ pPlayer )
 
 	if( !MeleeThrowOwned() )
 	{
-		// In the pool and not here yet: say so, as the flashlight does. Not in
-		// this seed at all: secondary fire does nothing, as it always did.
+		// In the pool and not here yet: say so, as the flashlight does, the hub
+		// included. Not in this seed at all: secondary fire does nothing, as it
+		// always did.
 		if( g_State.meleeThrowInPool )
 			RefuseThrow( pPlayer );
 		return;
 	}
+
+	// The throw itself is for missions only.
+	if( g_CurrentChapter is null )
+		return;
 
 	ThrowMelee( pPlayer );
 }

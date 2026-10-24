@@ -847,6 +847,11 @@ HookReturnCode PickupCanCollect( CBaseEntity@ pPickup, CBaseEntity@ pOther, bool
 
 	string szClassname = pPickup.GetClassname();
 
+	// A mine that came off a moving surface may be touched before FastThink
+	// has seen it land.
+	if( szClassname == MINE_PICKUP_CLASSNAME )
+		TrackPlacedTripmines();
+
 	// Walking over the weapon is what sends the check, whether or not the player
 	// is allowed to keep it: that is the whole point of the randomiser. A
 	// weapon put into your hands is not walked over, though: the check belongs

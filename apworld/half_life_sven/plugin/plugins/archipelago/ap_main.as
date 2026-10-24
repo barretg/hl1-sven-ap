@@ -349,6 +349,7 @@ void FastThink()
 {
 	BotsThink();
 	ThrownThink();
+	TrackPlacedTripmines();
 	SweepHealingPools();
 }
 
