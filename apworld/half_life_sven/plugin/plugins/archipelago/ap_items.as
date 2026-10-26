@@ -469,9 +469,16 @@ string ArmourItemHere()
 	return DEFAULT_ARMOUR_ITEM;
 }
 
-/* Does armour work here? */
+/*
+* Does armour work here?
+*
+* Always on the arcade map: it belongs to no campaign, so no campaign's armour
+* item gates it.
+*/
 bool ArmourAllowed()
 {
+	if( SuspensionMap() )
+		return true;
 	return g_State.ItemUnlocked( ArmourItemHere() );
 }
 
